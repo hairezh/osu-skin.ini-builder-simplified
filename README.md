@@ -1,1 +1,1 @@
-# osu-skin.ini-builder-simplified
+# osu skin.ini builder - simplified
