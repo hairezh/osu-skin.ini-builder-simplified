@@ -495,7 +495,7 @@ function maniaBlockForKeys(keys){
   lines.push(`UpsideDown: ${bool01($("mUpsideDown").checked)}`);
   lines.push(`KeysUnderNotes: ${bool01($("mKeysUnderNotes").checked)}`);
 
-  lines.push(`ColumnLineWidth: ${csvRepeat(0, keys)}`);
+  lines.push(`ColumnLineWidth: ${csvRepeat(0, keys + 1)}`);
 
   pushIf(lines, "BarlineHeight", $("mBarlineHeight").value);
   pushIf(lines, "WidthForNoteHeightScale", $("mNoteHeightScale").value);
