@@ -64,8 +64,7 @@
     padding:7px 9px; outline:none;
     font:inherit;
   }
-  textarea{min-height:300px; resize:vertical;}
-  input[type="checkbox"]{transform:translateY(1px);}
+  textarea{min-height:320px; resize:vertical;}
   input[type="color"]{width:44px; height:34px; border:1px solid var(--border); border-radius:var(--r); background:transparent; padding:0;}
   .hint{color:rgba(232,232,232,.38); font-size:12px; margin:8px 0 0;}
   .sep{height:1px; background:var(--border); margin:12px 0;}
@@ -74,6 +73,36 @@
   .grid2{display:grid; grid-template-columns: 1fr 1fr; gap:10px;}
   .kbd{border:1px solid var(--border); border-bottom-color:rgba(255,255,255,.14); background:rgba(0,0,0,.22); border-radius:6px; padding:1px 6px;}
   .groupTitle{font-size:12px; color:rgba(232,232,232,.70); margin:2px 0 8px;}
+
+  /* Minimal switch */
+  .switch{display:inline-flex; align-items:center; gap:8px;}
+  .switch input{display:none;}
+  .sw{
+    width:44px; height:24px;
+    border:1px solid var(--border);
+    background:rgba(0,0,0,.22);
+    border-radius:6px;
+    position:relative;
+    transition:140ms linear;
+  }
+  .sw::after{
+    content:"";
+    width:18px; height:18px;
+    position:absolute; top:50%; left:3px;
+    transform:translateY(-50%);
+    border-radius:5px;
+    background:rgba(255,255,255,.25);
+    transition:140ms linear;
+  }
+  .switch input:checked + .sw{
+    border-color:rgba(255,255,255,.18);
+    background:rgba(255,255,255,.05);
+  }
+  .switch input:checked + .sw::after{
+    left:23px;
+    background:rgba(255,255,255,.55);
+  }
+
   @media (max-width: 980px){ .main{grid-template-columns: 1fr;} }
 </style>
 </head>
@@ -82,14 +111,11 @@
   <div class="topbar">
     <div class="controls">
       <button class="btn primary" id="downloadIni">Download skin.ini</button>
-      <button class="btn" id="copyIni">Copy</button>
       <button class="btn danger" id="clearWipe">Clear (wipe)</button>
-      <span class="pill" title="Everything stays in your browser (localStorage).">Local autosave • no uploads</span>
+      <span class="pill" id="savePulse"></span>
     </div>
     <div class="controls">
-      <span class="pill" id="statChars">Chars: 0</span>
-      <span class="pill" id="statLines">Lines: 0</span>
-      <span class="pill" id="savePulse"></span>
+      <span class="pill">Minimal builder</span>
     </div>
   </div>
 
@@ -104,30 +130,44 @@
         <div class="mini">General includes Colours + Fonts. Mania auto-builds 4K→7K.</div>
       </div>
 
-      <!-- GENERAL TAB -->
+      <!-- GENERAL -->
       <div class="panelBody" id="tab-general">
         <div class="groupTitle">[General]</div>
         <div class="row"><label>Name</label><input type="text" id="gName" placeholder="My Skin"></div>
         <div class="row"><label>Author</label><input type="text" id="gAuthor" placeholder="Your name"></div>
+        <div class="row"><label>Version</label><input type="text" id="gVersion" value="latest" readonly></div>
+
+        <div class="sep"></div>
+        <div class="groupTitle">Cursor</div>
+
         <div class="row">
-          <label>Version</label>
-          <select id="gVersion">
-            <option value="">(leave empty)</option>
-            <option>1.0</option><option>2.0</option><option>2.2</option><option>2.5</option>
-          </select>
+          <label>CursorCentre</label>
+          <div class="inline">
+            <label class="switch"><input type="checkbox" id="gCursorCentre" checked><span class="sw"></span></label>
+          </div>
+        </div>
+        <div class="row">
+          <label>CursorExpand</label>
+          <div class="inline">
+            <label class="switch"><input type="checkbox" id="gCursorExpand"><span class="sw"></span></label>
+          </div>
+        </div>
+        <div class="row">
+          <label>CursorRotate</label>
+          <div class="inline">
+            <label class="switch"><input type="checkbox" id="gCursorRotate"><span class="sw"></span></label>
+          </div>
+        </div>
+        <div class="row">
+          <label>CursorTrailRotate</label>
+          <div class="inline">
+            <label class="switch"><input type="checkbox" id="gCursorTrailRotate"><span class="sw"></span></label>
+          </div>
         </div>
 
         <div class="sep"></div>
-
-        <div class="groupTitle">Cursor toggles</div>
-        <div class="row"><label>CursorCentre</label><div class="inline"><input type="checkbox" id="gCursorCentre" checked><span class="mini">0/1</span></div></div>
-        <div class="row"><label>CursorExpand</label><div class="inline"><input type="checkbox" id="gCursorExpand"><span class="mini">0/1</span></div></div>
-        <div class="row"><label>CursorRotate</label><div class="inline"><input type="checkbox" id="gCursorRotate"><span class="mini">0/1</span></div></div>
-        <div class="row"><label>CursorTrailRotate</label><div class="inline"><input type="checkbox" id="gCursorTrailRotate"><span class="mini">0/1</span></div></div>
-
-        <div class="sep"></div>
-
         <div class="groupTitle">[Colours] (menu/UI)</div>
+
         <div class="row">
           <label>MenuGlow</label>
           <div class="inline"><input type="color" id="cMenuGlowPick"><input type="text" id="cMenuGlow" placeholder="255,255,255"></div>
@@ -142,8 +182,8 @@
         </div>
 
         <div class="sep"></div>
-
         <div class="groupTitle">[Fonts]</div>
+
         <div class="grid2">
           <div>
             <div class="row"><label>ScorePrefix</label><input type="text" id="fScorePrefix" placeholder="score"></div>
@@ -154,40 +194,22 @@
             <div class="row"><label>ComboOverlap</label><input type="number" id="fComboOverlap" value="0"></div>
           </div>
         </div>
-
-        <p class="hint">Export will include a clean [General] + [Colours] + [Fonts].</p>
       </div>
 
-      <!-- MANIA TAB -->
+      <!-- MANIA -->
       <div class="panelBody" id="tab-mania" style="display:none">
         <div class="mini">One config → auto-generates 4K, 5K, 6K, 7K blocks.</div>
         <div class="sep"></div>
 
         <div class="groupTitle">A) Essentials</div>
-        <div class="row">
-          <label>Keys range</label>
-          <div class="inline">
-            <span class="mini">Auto:</span>
-            <span class="kbd">4K</span><span class="mini">→</span><span class="kbd">7K</span>
-            <span class="mini">(fixed)</span>
-          </div>
-        </div>
-
-        <div class="row">
-          <label>ColumnWidth (per col)</label>
-          <input type="number" id="mColWidth" value="70">
-        </div>
-
-        <div class="row">
-          <label>ColumnSpacing (between)</label>
-          <input type="number" id="mColSpacing" value="0">
-        </div>
+        <div class="row"><label>ColumnWidth (per col)</label><input type="number" id="mColWidth" value="70"></div>
+        <div class="row"><label>ColumnSpacing (between)</label><input type="number" id="mColSpacing" value="0"></div>
 
         <div class="row">
           <label>Auto-center ColumnStart</label>
           <div class="inline">
-            <input type="checkbox" id="mAutoCenter" checked>
-            <span class="mini">Adds ColumnStart automatically</span>
+            <label class="switch"><input type="checkbox" id="mAutoCenter" checked><span class="sw"></span></label>
+            <span class="mini">Desmos-style</span>
           </div>
         </div>
 
@@ -206,10 +228,7 @@
           </div>
         </div>
 
-        <div class="row">
-          <label>Fine adjust (px)</label>
-          <input type="number" id="mCenterOffset" value="0">
-        </div>
+        <div class="row"><label>Fine adjust (px)</label><input type="number" id="mCenterOffset" value="0"></div>
 
         <div class="row"><label>HitPosition</label><input type="number" id="mHitPos" value="402"></div>
         <div class="row"><label>ScorePosition</label><input type="number" id="mScorePos" value="260"></div>
@@ -218,30 +237,24 @@
         <div class="row">
           <label>JudgementLine</label>
           <div class="inline">
-            <input type="checkbox" id="mJudgementLine" checked>
-            <span class="mini">0/1</span>
+            <label class="switch"><input type="checkbox" id="mJudgementLine" checked><span class="sw"></span></label>
           </div>
         </div>
-
         <div class="row">
           <label>UpsideDown</label>
           <div class="inline">
-            <input type="checkbox" id="mUpsideDown">
-            <span class="mini">0/1</span>
+            <label class="switch"><input type="checkbox" id="mUpsideDown"><span class="sw"></span></label>
           </div>
         </div>
-
         <div class="row">
           <label>KeysUnderNotes</label>
           <div class="inline">
-            <input type="checkbox" id="mKeysUnderNotes">
-            <span class="mini">0/1</span>
+            <label class="switch"><input type="checkbox" id="mKeysUnderNotes"><span class="sw"></span></label>
           </div>
         </div>
 
         <div class="sep"></div>
         <div class="groupTitle">B) Reading refinements</div>
-        <div class="row"><label>ColumnLineWidth (per col)</label><input type="number" id="mLineWidth" value="0"></div>
         <div class="row"><label>BarlineHeight</label><input type="number" id="mBarlineHeight" value=""></div>
         <div class="row"><label>WidthForNoteHeightScale</label><input type="number" id="mNoteHeightScale" value=""></div>
         <div class="row"><label>LightPosition</label><input type="number" id="mLightPos" value=""></div>
@@ -250,22 +263,31 @@
         <div class="groupTitle">C) Stage / Lighting</div>
         <div class="grid2">
           <div>
-            <div class="row"><label>StageLeft</label><input type="text" id="mStageLeft" placeholder=""></div>
-            <div class="row"><label>StageRight</label><input type="text" id="mStageRight" placeholder=""></div>
-            <div class="row"><label>StageBottom</label><input type="text" id="mStageBottom" placeholder=""></div>
-            <div class="row"><label>StageHint</label><input type="text" id="mStageHint" placeholder=""></div>
-            <div class="row"><label>StageLight</label><input type="text" id="mStageLight" placeholder=""></div>
+            <div class="row"><label>StageLeft</label><input type="text" id="mStageLeft"></div>
+            <div class="row"><label>StageRight</label><input type="text" id="mStageRight"></div>
+            <div class="row"><label>StageBottom</label><input type="text" id="mStageBottom"></div>
+            <div class="row"><label>StageHint</label><input type="text" id="mStageHint"></div>
+            <div class="row"><label>StageLight</label><input type="text" id="mStageLight"></div>
           </div>
           <div>
-            <div class="row"><label>LightingNWidth</label><input type="number" id="mLightNWidth" value=""></div>
-            <div class="row"><label>LightingLWidth</label><input type="number" id="mLightLWidth" value=""></div>
-            <div class="row"><label>LightingN</label><input type="text" id="mLightingN" placeholder=""></div>
-            <div class="row"><label>LightingL</label><input type="text" id="mLightingL" placeholder=""></div>
+            <div class="row"><label>LightingNWidth</label><input type="number" id="mLightNWidth"></div>
+            <div class="row"><label>LightingLWidth</label><input type="number" id="mLightLWidth"></div>
+            <div class="row"><label>LightingN</label><input type="text" id="mLightingN"></div>
+            <div class="row"><label>LightingL</label><input type="text" id="mLightingL"></div>
           </div>
         </div>
 
         <div class="sep"></div>
         <div class="groupTitle">D) Colours</div>
+
+        <div class="row">
+          <label>Colour (all keys)</label>
+          <div class="inline">
+            <input type="color" id="mKeyColourPick">
+            <input type="text" id="mKeyColour" placeholder="255,255,255">
+          </div>
+        </div>
+
         <div class="row">
           <label>ColourHold</label>
           <div class="inline"><input type="color" id="mHoldPick"><input type="text" id="mColourHold" placeholder="255,255,255"></div>
@@ -275,33 +297,8 @@
           <div class="inline"><input type="color" id="mBreakPick"><input type="text" id="mColourBreak" placeholder="255,80,80"></div>
         </div>
 
-        <div class="mini">Colour# (for keys) — set up to 7. 4K/5K/6K use the first N.</div>
-        <div class="grid2" style="margin-top:8px">
-          <div class="inline">
-            <span class="mini">1</span><input type="color" id="kCol1"><input type="text" id="kRgb1" placeholder="255,255,255">
-          </div>
-          <div class="inline">
-            <span class="mini">2</span><input type="color" id="kCol2"><input type="text" id="kRgb2" placeholder="255,255,255">
-          </div>
-          <div class="inline">
-            <span class="mini">3</span><input type="color" id="kCol3"><input type="text" id="kRgb3" placeholder="255,255,255">
-          </div>
-          <div class="inline">
-            <span class="mini">4</span><input type="color" id="kCol4"><input type="text" id="kRgb4" placeholder="255,255,255">
-          </div>
-          <div class="inline">
-            <span class="mini">5</span><input type="color" id="kCol5"><input type="text" id="kRgb5" placeholder="255,255,255">
-          </div>
-          <div class="inline">
-            <span class="mini">6</span><input type="color" id="kCol6"><input type="text" id="kRgb6" placeholder="255,255,255">
-          </div>
-          <div class="inline">
-            <span class="mini">7</span><input type="color" id="kCol7"><input type="text" id="kRgb7" placeholder="255,255,255">
-          </div>
-        </div>
-
         <div class="sep"></div>
-        <div class="groupTitle">E) Images (simplified patterns)</div>
+        <div class="groupTitle">E) Images (patterns)</div>
         <div class="mini">Use <span class="kbd">{n}</span> for key number (1..Keys). Example: <span class="kbd">key{n}</span>.</div>
 
         <div class="grid2" style="margin-top:8px">
@@ -321,22 +318,22 @@
             <div class="row"><label>NoteImage#T pattern</label><input type="text" id="pNoteT" placeholder="note{n}T"></div>
           </div>
           <div class="row" style="grid-template-columns:190px 1fr;">
-            <label>WarningArrow</label><input type="text" id="mWarningArrow" placeholder="">
+            <label>WarningArrow</label><input type="text" id="mWarningArrow">
           </div>
         </div>
 
         <div class="sep"></div>
         <div class="groupTitle">F) Hit sprites</div>
         <div class="grid2">
-          <div class="row"><label>Hit0</label><input type="text" id="h0" placeholder=""></div>
-          <div class="row"><label>Hit50</label><input type="text" id="h50" placeholder=""></div>
-          <div class="row"><label>Hit100</label><input type="text" id="h100" placeholder=""></div>
-          <div class="row"><label>Hit200</label><input type="text" id="h200" placeholder=""></div>
-          <div class="row"><label>Hit300</label><input type="text" id="h300" placeholder=""></div>
-          <div class="row"><label>Hit300g</label><input type="text" id="h300g" placeholder=""></div>
+          <div class="row"><label>Hit0</label><input type="text" id="h0"></div>
+          <div class="row"><label>Hit50</label><input type="text" id="h50"></div>
+          <div class="row"><label>Hit100</label><input type="text" id="h100"></div>
+          <div class="row"><label>Hit200</label><input type="text" id="h200"></div>
+          <div class="row"><label>Hit300</label><input type="text" id="h300"></div>
+          <div class="row"><label>Hit300g</label><input type="text" id="h300g"></div>
         </div>
 
-        <p class="hint">Export writes 4 blocks: Keys 4/5/6/7, ordered by importance and kept compact.</p>
+        <p class="hint">Export writes 4 blocks: Keys 4/5/6/7, organized and simplified.</p>
       </div>
     </div>
 
@@ -357,11 +354,10 @@
 <script>
 /* ========= helpers ========= */
 const $ = (id)=>document.getElementById(id);
-const STORAGE_KEY = "aeditor_skinini_builder_v2";
+const STORAGE_KEY = "aeditor_skinini_builder_v3";
 
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 const bool01 = (b)=> (b ? "1" : "0");
-
 function cleanLine(s){ return String(s??"").replace(/\r/g,"").trimEnd(); }
 
 function rgbToHex(rgb){
@@ -405,11 +401,7 @@ function csvBetween(value, keys){
   return csvRepeat(value, Math.max(0, keys-1));
 }
 
-/* Desmos-style auto-center:
-   usableWidth = 480 * aspectRatio
-   columnSum = (colWidth*keys) + (colSpacing*(keys-1))
-   columnStart = round(usableWidth/2 - columnSum/2) + offset
-*/
+/* Desmos-style auto-center */
 function getAspectRatio(){
   const preset = $("mARPreset").value;
   let w = Number($("mARW").value || 16);
@@ -426,14 +418,13 @@ function getAspectRatio(){
   if(!Number.isFinite(w) || !Number.isFinite(h) || h === 0) return 16/9;
   return w / h;
 }
-
 function calcColumnStart(keys, colWidth, colSpacing, aspectRatio, offset){
   const usableWidth = 480 * aspectRatio;
   const columnSum = (colWidth * keys) + (colSpacing * (keys - 1));
   return Math.round((usableWidth/2) - (columnSum/2)) + Number(offset || 0);
 }
 
-/* Pattern expander for KeyImage#/NoteImage# */
+/* Pattern expander */
 function pat(pattern, n){
   const p = String(pattern||"").trim();
   if(!p) return "";
@@ -461,15 +452,13 @@ function pushIf(arr, key, value){
 function maniaBlockForKeys(keys){
   const lines = [];
 
-  // Read common inputs
   const colW = Number($("mColWidth").value || 0);
   const colS = Number($("mColSpacing").value || 0);
-  const lineW = Number($("mLineWidth").value || 0);
   const ar = getAspectRatio();
   const autoCenter = $("mAutoCenter").checked;
   const offset = Number($("mCenterOffset").value || 0);
 
-  // --- A) Essentials (ordered)
+  // A) Essentials
   lines.push(`Keys: ${keys}`);
   lines.push(`ColumnWidth: ${csvRepeat(colW, keys)}`);
   lines.push(`ColumnSpacing: ${csvBetween(colS, keys)}`);
@@ -477,9 +466,6 @@ function maniaBlockForKeys(keys){
   if(autoCenter){
     const cs = calcColumnStart(keys, colW, colS, ar, offset);
     lines.push(`ColumnStart: ${cs}`);
-  } else {
-    // if user disables auto-center, you can still set manual start by writing offset as ColumnStart if desired
-    // (keeping simple: omit)
   }
 
   pushIf(lines, "HitPosition", $("mHitPos").value);
@@ -490,13 +476,15 @@ function maniaBlockForKeys(keys){
   lines.push(`UpsideDown: ${bool01($("mUpsideDown").checked)}`);
   lines.push(`KeysUnderNotes: ${bool01($("mKeysUnderNotes").checked)}`);
 
-  // --- B) Reading refinements (ordered)
-  lines.push(`ColumnLineWidth: ${csvRepeat(lineW, keys)}`);
+  // ColumnLineWidth always 0 (not editable)
+  lines.push(`ColumnLineWidth: ${csvRepeat(0, keys)}`);
+
+  // B) Reading refinements
   pushIf(lines, "BarlineHeight", $("mBarlineHeight").value);
   pushIf(lines, "WidthForNoteHeightScale", $("mNoteHeightScale").value);
   pushIf(lines, "LightPosition", $("mLightPos").value);
 
-  // --- C) Stage / Lighting (ordered by shorter names inside group)
+  // C) Stage / Lighting
   pushIf(lines, "StageLeft", $("mStageLeft").value);
   pushIf(lines, "StageRight", $("mStageRight").value);
   pushIf(lines, "StageBottom", $("mStageBottom").value);
@@ -508,18 +496,18 @@ function maniaBlockForKeys(keys){
   pushIf(lines, "LightingN", $("mLightingN").value);
   pushIf(lines, "LightingL", $("mLightingL").value);
 
-  // --- D) Colours (ordered: hold/break first, then Colour#)
+  // D) Colours (one colour for all keys)
   pushIf(lines, "ColourHold", $("mColourHold").value);
   pushIf(lines, "ColourBreak", $("mColourBreak").value);
 
-  // Colour# (1..keys), taking first N from 1..7
-  for(let i=1;i<=keys;i++){
-    const v = cleanLine($("kRgb"+i).value);
-    if(v) lines.push(`Colour${i}: ${v}`);
+  const keyColour = cleanLine($("mKeyColour").value);
+  if(keyColour){
+    for(let i=1;i<=keys;i++){
+      lines.push(`Colour${i}: ${keyColour}`);
+    }
   }
 
-  // --- E) Images (patterns)
-  // KeyImage#
+  // E) Images (patterns)
   const pKey = $("pKey").value;
   const pKeyD = $("pKeyD").value;
   const pNote = $("pNote").value;
@@ -554,7 +542,7 @@ function maniaBlockForKeys(keys){
 
   pushIf(lines, "WarningArrow", $("mWarningArrow").value);
 
-  // --- F) Hit sprites (ordered)
+  // F) Hit sprites
   pushIf(lines, "Hit0", $("h0").value);
   pushIf(lines, "Hit50", $("h50").value);
   pushIf(lines, "Hit100", $("h100").value);
@@ -562,7 +550,6 @@ function maniaBlockForKeys(keys){
   pushIf(lines, "Hit300", $("h300").value);
   pushIf(lines, "Hit300g", $("h300g").value);
 
-  // remove empties (safety)
   return lines.filter(x => x.trim() !== "");
 }
 
@@ -573,29 +560,20 @@ function genIni(){
   const G = [];
   pushIf(G, "Name", $("gName").value);
   pushIf(G, "Author", $("gAuthor").value);
-  pushIf(G, "Version", $("gVersion").value);
+  // forced latest
+  G.push(`Version: latest`);
   G.push(`CursorCentre: ${bool01($("gCursorCentre").checked)}`);
   G.push(`CursorExpand: ${bool01($("gCursorExpand").checked)}`);
   G.push(`CursorRotate: ${bool01($("gCursorRotate").checked)}`);
   G.push(`CursorTrailRotate: ${bool01($("gCursorTrailRotate").checked)}`);
+  out.push("[General]", ...G, "");
 
-  if(G.length){
-    out.push("[General]");
-    out.push(...G);
-    out.push("");
-  }
-
-  // [Colours] (menu/UI)
+  // [Colours]
   const C = [];
   pushIf(C, "MenuGlow", $("cMenuGlow").value);
   pushIf(C, "SongSelectActiveText", $("cSongActive").value);
   pushIf(C, "SongSelectInactiveText", $("cSongInactive").value);
-
-  if(C.length){
-    out.push("[Colours]");
-    out.push(...C);
-    out.push("");
-  }
+  if(C.length) out.push("[Colours]", ...C, "");
 
   // [Fonts]
   const F = [];
@@ -603,14 +581,9 @@ function genIni(){
   pushIf(F, "ScoreOverlap", $("fScoreOverlap").value);
   pushIf(F, "ComboPrefix", $("fComboPrefix").value);
   pushIf(F, "ComboOverlap", $("fComboOverlap").value);
+  if(F.length) out.push("[Fonts]", ...F, "");
 
-  if(F.length){
-    out.push("[Fonts]");
-    out.push(...F);
-    out.push("");
-  }
-
-  // [Mania] blocks: 4K..7K (best choice for usability/compat)
+  // [Mania] blocks: 4K..7K
   for(const keys of [4,5,6,7]){
     out.push("[Mania]");
     out.push(...maniaBlockForKeys(keys));
@@ -625,39 +598,71 @@ function genIni(){
 let saveTimer = null;
 function saveState(){
   const s = {
-    gName: $("gName").value, gAuthor: $("gAuthor").value, gVersion: $("gVersion").value,
-    gCursorCentre: $("gCursorCentre").checked, gCursorExpand: $("gCursorExpand").checked,
-    gCursorRotate: $("gCursorRotate").checked, gCursorTrailRotate: $("gCursorTrailRotate").checked,
+    gName: $("gName").value,
+    gAuthor: $("gAuthor").value,
 
-    cMenuGlow: $("cMenuGlow").value, cSongActive: $("cSongActive").value, cSongInactive: $("cSongInactive").value,
+    gCursorCentre: $("gCursorCentre").checked,
+    gCursorExpand: $("gCursorExpand").checked,
+    gCursorRotate: $("gCursorRotate").checked,
+    gCursorTrailRotate: $("gCursorTrailRotate").checked,
 
-    fScorePrefix: $("fScorePrefix").value, fScoreOverlap: $("fScoreOverlap").value,
-    fComboPrefix: $("fComboPrefix").value, fComboOverlap: $("fComboOverlap").value,
+    cMenuGlow: $("cMenuGlow").value,
+    cSongActive: $("cSongActive").value,
+    cSongInactive: $("cSongInactive").value,
 
-    mColWidth: $("mColWidth").value, mColSpacing: $("mColSpacing").value,
-    mAutoCenter: $("mAutoCenter").checked, mARPreset: $("mARPreset").value,
-    mARW: $("mARW").value, mARH: $("mARH").value, mCenterOffset: $("mCenterOffset").value,
+    fScorePrefix: $("fScorePrefix").value,
+    fScoreOverlap: $("fScoreOverlap").value,
+    fComboPrefix: $("fComboPrefix").value,
+    fComboOverlap: $("fComboOverlap").value,
 
-    mHitPos: $("mHitPos").value, mScorePos: $("mScorePos").value, mComboPos: $("mComboPos").value,
-    mJudgementLine: $("mJudgementLine").checked, mUpsideDown: $("mUpsideDown").checked, mKeysUnderNotes: $("mKeysUnderNotes").checked,
+    mColWidth: $("mColWidth").value,
+    mColSpacing: $("mColSpacing").value,
+    mAutoCenter: $("mAutoCenter").checked,
+    mARPreset: $("mARPreset").value,
+    mARW: $("mARW").value,
+    mARH: $("mARH").value,
+    mCenterOffset: $("mCenterOffset").value,
 
-    mLineWidth: $("mLineWidth").value, mBarlineHeight: $("mBarlineHeight").value,
-    mNoteHeightScale: $("mNoteHeightScale").value, mLightPos: $("mLightPos").value,
+    mHitPos: $("mHitPos").value,
+    mScorePos: $("mScorePos").value,
+    mComboPos: $("mComboPos").value,
+    mJudgementLine: $("mJudgementLine").checked,
+    mUpsideDown: $("mUpsideDown").checked,
+    mKeysUnderNotes: $("mKeysUnderNotes").checked,
 
-    mStageLeft: $("mStageLeft").value, mStageRight: $("mStageRight").value,
-    mStageBottom: $("mStageBottom").value, mStageHint: $("mStageHint").value, mStageLight: $("mStageLight").value,
-    mLightNWidth: $("mLightNWidth").value, mLightLWidth: $("mLightLWidth").value,
-    mLightingN: $("mLightingN").value, mLightingL: $("mLightingL").value,
+    mBarlineHeight: $("mBarlineHeight").value,
+    mNoteHeightScale: $("mNoteHeightScale").value,
+    mLightPos: $("mLightPos").value,
 
-    mColourHold: $("mColourHold").value, mColourBreak: $("mColourBreak").value,
-    kRgb: [1,2,3,4,5,6,7].map(i => $("kRgb"+i).value),
+    mStageLeft: $("mStageLeft").value,
+    mStageRight: $("mStageRight").value,
+    mStageBottom: $("mStageBottom").value,
+    mStageHint: $("mStageHint").value,
+    mStageLight: $("mStageLight").value,
 
-    pKey: $("pKey").value, pKeyD: $("pKeyD").value,
-    pNote: $("pNote").value, pNoteH: $("pNoteH").value, pNoteL: $("pNoteL").value, pNoteT: $("pNoteT").value,
+    mLightNWidth: $("mLightNWidth").value,
+    mLightLWidth: $("mLightLWidth").value,
+    mLightingN: $("mLightingN").value,
+    mLightingL: $("mLightingL").value,
+
+    mKeyColour: $("mKeyColour").value,
+    mColourHold: $("mColourHold").value,
+    mColourBreak: $("mColourBreak").value,
+
+    pKey: $("pKey").value,
+    pKeyD: $("pKeyD").value,
+    pNote: $("pNote").value,
+    pNoteH: $("pNoteH").value,
+    pNoteL: $("pNoteL").value,
+    pNoteT: $("pNoteT").value,
     mWarningArrow: $("mWarningArrow").value,
 
-    h0: $("h0").value, h50: $("h50").value, h100: $("h100").value,
-    h200: $("h200").value, h300: $("h300").value, h300g: $("h300g").value,
+    h0: $("h0").value,
+    h50: $("h50").value,
+    h100: $("h100").value,
+    h200: $("h200").value,
+    h300: $("h300").value,
+    h300g: $("h300g").value,
   };
 
   try{
@@ -666,7 +671,6 @@ function saveState(){
     setTimeout(()=>{ $("savePulse").textContent=""; }, 700);
   }catch(e){}
 }
-
 function loadState(){
   let raw=null;
   try{ raw = localStorage.getItem(STORAGE_KEY); }catch(e){}
@@ -678,7 +682,7 @@ function loadState(){
 
     $("gName").value = s.gName ?? "";
     $("gAuthor").value = s.gAuthor ?? "";
-    $("gVersion").value = s.gVersion ?? "";
+
     $("gCursorCentre").checked = !!s.gCursorCentre;
     $("gCursorExpand").checked = !!s.gCursorExpand;
     $("gCursorRotate").checked = !!s.gCursorRotate;
@@ -708,7 +712,6 @@ function loadState(){
     $("mUpsideDown").checked = !!s.mUpsideDown;
     $("mKeysUnderNotes").checked = !!s.mKeysUnderNotes;
 
-    $("mLineWidth").value = s.mLineWidth ?? "0";
     $("mBarlineHeight").value = s.mBarlineHeight ?? "";
     $("mNoteHeightScale").value = s.mNoteHeightScale ?? "";
     $("mLightPos").value = s.mLightPos ?? "";
@@ -724,45 +727,9 @@ function loadState(){
     $("mLightingN").value = s.mLightingN ?? "";
     $("mLightingL").value = s.mLightingL ?? "";
 
+    $("mKeyColour").value = s.mKeyColour ?? "";
     $("mColourHold").value = s.mColourHold ?? "";
     $("mColourBreak").value = s.mColourBreak ?? "";
-    const arr = Array.isArray(s.kRgb) ? s.kRgb : (Array.isArray(s.kRgb) ? s.kRgb : []);
-    if(Array.isArray(s.kRgb)){
-      for(let i=1;i<=7;i++) $("kRgb"+i).value = s.kRgb[i-1] ?? "";
-    } else if(Array.isArray(s.kRgb)){
-      // noop
-    } else if(Array.isArray(s.kRgb)){
-      // noop
-    } else if(Array.isArray(s.kRgb)){
-      // noop
-    } else if(Array.isArray(s.kRgb)){
-      // noop
-    } else if(Array.isArray(s.kRgb)){
-      // noop
-    } else if(Array.isArray(s.kRgb)){
-      // noop
-    } else if(Array.isArray(s.kRgb)){
-      // noop
-    } else if(Array.isArray(s.kRgb)){
-      // noop
-    } else if(Array.isArray(s.kRgb)){
-      // noop
-    } else if(Array.isArray(s.kRgb)){
-      // noop
-    } else if(Array.isArray(s.kRgb)){
-      // noop
-    } else if(Array.isArray(s.kRgb)){
-      // noop
-    } else if(Array.isArray(s.kRgb)){
-      // noop
-    } else if(Array.isArray(s.kRgb)){
-      // noop
-    } else {
-      // fallback: array saved in s.kRgb
-      if(Array.isArray(arr)){
-        for(let i=1;i<=7;i++) $("kRgb"+i).value = arr[i-1] ?? "";
-      }
-    }
 
     $("pKey").value = s.pKey ?? "";
     $("pKeyD").value = s.pKeyD ?? "";
@@ -783,10 +750,7 @@ function loadState(){
 
 /* ========= live update ========= */
 function updatePreview(){
-  const ini = genIni();
-  $("preview").value = ini;
-  $("statChars").textContent = `Chars: ${ini.length}`;
-  $("statLines").textContent = `Lines: ${ini ? ini.split("\n").length : 0}`;
+  $("preview").value = genIni();
 }
 function scheduleUpdate(){
   updatePreview();
@@ -807,84 +771,51 @@ function downloadIni(){
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
-async function copyIni(){
-  const text = $("preview").value;
-  try{
-    await navigator.clipboard.writeText(text);
-    $("savePulse").textContent = "Copied";
-    setTimeout(()=>{ $("savePulse").textContent=""; }, 700);
-  }catch(e){
-    $("preview").focus(); $("preview").select();
-    document.execCommand("copy");
-  }
-}
 function clearWipe(){
   if(!confirm("Clear everything (and remove local autosave)?")) return;
   try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
   location.reload();
 }
-
 $("downloadIni").addEventListener("click", downloadIni);
-$("copyIni").addEventListener("click", copyIni);
 $("clearWipe").addEventListener("click", clearWipe);
 
 /* Bind inputs */
 [
-  "gName","gAuthor","gVersion",
+  "gName","gAuthor",
   "gCursorCentre","gCursorExpand","gCursorRotate","gCursorTrailRotate",
   "cMenuGlow","cSongActive","cSongInactive",
   "fScorePrefix","fScoreOverlap","fComboPrefix","fComboOverlap",
   "mColWidth","mColSpacing","mAutoCenter","mARPreset","mARW","mARH","mCenterOffset",
   "mHitPos","mScorePos","mComboPos","mJudgementLine","mUpsideDown","mKeysUnderNotes",
-  "mLineWidth","mBarlineHeight","mNoteHeightScale","mLightPos",
+  "mBarlineHeight","mNoteHeightScale","mLightPos",
   "mStageLeft","mStageRight","mStageBottom","mStageHint","mStageLight",
   "mLightNWidth","mLightLWidth","mLightingN","mLightingL",
-  "mColourHold","mColourBreak",
+  "mKeyColour","mColourHold","mColourBreak",
   "pKey","pKeyD","pNote","pNoteH","pNoteL","pNoteT","mWarningArrow",
-  "h0","h50","h100","h200","h300","h300g",
-  "kRgb1","kRgb2","kRgb3","kRgb4","kRgb5","kRgb6","kRgb7"
+  "h0","h50","h100","h200","h300","h300g"
 ].forEach(id=>{
   $(id).addEventListener("input", scheduleUpdate);
   $(id).addEventListener("change", scheduleUpdate);
 });
 
-/* Colour sync bindings */
+/* Colour sync */
 bindColourSync("cMenuGlowPick","cMenuGlow");
 bindColourSync("cSongActivePick","cSongActive");
 bindColourSync("cSongInactivePick","cSongInactive");
+
+bindColourSync("mKeyColourPick","mKeyColour");
 bindColourSync("mHoldPick","mColourHold");
 bindColourSync("mBreakPick","mColourBreak");
-for(let i=1;i<=7;i++){
-  // per-key colour
-  const pickId = "kCol"+i;
-  const txtId = "kRgb"+i;
-  // init pick
-  const hx = rgbToHex($(txtId).value);
-  if(hx) $(pickId).value = hx;
-  $(pickId).addEventListener("input", ()=>{
-    $(txtId).value = hexToRgb($(pickId).value);
-    scheduleUpdate();
-  });
-  $(txtId).addEventListener("input", ()=>{
-    const hx2 = rgbToHex($(txtId).value);
-    if(hx2) $(pickId).value = hx2;
-    scheduleUpdate();
-  });
-}
 
-/* Init defaults (nice) */
+/* Init defaults */
 function seedDefaultsIfEmpty(){
   if(!$("cMenuGlow").value) $("cMenuGlow").value = "255,255,255";
   if(!$("cSongActive").value) $("cSongActive").value = "255,255,255";
   if(!$("cSongInactive").value) $("cSongInactive").value = "160,160,160";
 
-  // Key colours default (soft tournament-ish)
-  const defs = ["255,255,255","255,220,120","180,240,255","255,170,220","200,255,200","255,200,160","220,200,255"];
-  for(let i=1;i<=7;i++){
-    if(!$("kRgb"+i).value) $("kRgb"+i).value = defs[i-1];
-    const hx = rgbToHex($("kRgb"+i).value);
-    if(hx) $("kCol"+i).value = hx;
-  }
+  if(!$("mKeyColour").value) $("mKeyColour").value = "255,255,255";
+  if(!$("mColourHold").value) $("mColourHold").value = "255,255,255";
+  if(!$("mColourBreak").value) $("mColourBreak").value = "255,80,80";
 }
 
 loadState();
