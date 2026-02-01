@@ -98,7 +98,6 @@
     font:inherit;
   }
 
-  /* Expand preview vertically */
   textarea{
     min-height: calc(100vh - 170px);
     resize: none;
@@ -113,7 +112,6 @@
   .kbd{border:1px solid var(--border); border-bottom-color:rgba(255,255,255,.14); background:rgba(0,0,0,.22); border-radius:6px; padding:1px 6px;}
   .groupTitle{font-size:12px; color:rgba(232,232,232,.70); margin:2px 0 8px;}
 
-  /* Minimal switch */
   .switch{display:inline-flex; align-items:center; gap:8px;}
   .switch input{display:none;}
   .sw{
@@ -157,6 +155,7 @@
       <span class="pill" id="savePulse"></span>
     </div>
     <div class="controls">
+      <button class="btn" id="togglePretty">Pretty: OFF</button>
       <span class="pill">Version L1.4</span>
     </div>
   </div>
@@ -398,6 +397,45 @@ const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 const bool01 = (b)=> (b ? "1" : "0");
 function cleanLine(s){ return String(s??"").replace(/\r/g,"").trimEnd(); }
 
+/* -------------------------
+   Pretty format (optional)
+-------------------------- */
+let prettyFormat = false;
+
+function padKey(key, width){
+  const k = String(key);
+  return k + " ".repeat(Math.max(1, width - k.length));
+}
+function fmtKV(key, value, keyPad=30){
+  const v = cleanLine(value);
+  if(prettyFormat){
+    return `${padKey(key, keyPad)}: ${v}`;
+  }
+  return `${key}: ${v}`;
+}
+function pushIfFmt(arr, key, value, keyPad=30){
+  const v = cleanLine(value);
+  if(v !== "") arr.push(fmtKV(key, v, keyPad));
+}
+function pushBoolFmt(arr, key, bool, keyPad=30){
+  arr.push(fmtKV(key, bool01(!!bool), keyPad));
+}
+function header(arr, title){
+  if(prettyFormat){
+    arr.push(`; [${title}]`);
+  }
+}
+function spacer(arr){
+  if(prettyFormat) arr.push("");
+}
+
+/* ui for pretty */
+function applyPrettyButton(){
+  const b = $("togglePretty");
+  b.textContent = `Pretty: ${prettyFormat ? "ON" : "OFF"}`;
+  b.classList.toggle("primary", prettyFormat);
+}
+
 function rgbToHex(rgb){
   const m = String(rgb||"").match(/^\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*$/);
   if(!m) return null;
@@ -592,12 +630,7 @@ function calcColumnStart(keys, colWidth, colSpacing, aspectRatio, offset){
   return Math.round((usableWidth/2) - (columnSum/2)) + Number(offset || 0);
 }
 
-/* ini gen helpers */
-function pushIf(arr, key, value){
-  const v = cleanLine(value);
-  if(v !== "") arr.push(`${key}: ${v}`);
-}
-
+/* ini gen */
 function maniaBlockForKeys(keys){
   const mode = maniaModes[keys] || defaultMode(keys);
   const lines = [];
@@ -608,46 +641,61 @@ function maniaBlockForKeys(keys){
   const autoCenter = !!mode.mAutoCenter;
   const offset = Number(mode.mCenterOffset || 0);
 
-  lines.push(`Keys: ${keys}`);
-  lines.push(`ColumnWidth: ${csvRepeat(colW, keys)}`);
-  lines.push(`ColumnSpacing: ${csvBetween(colS, keys)}`);
+  lines.push(fmtKV("Keys", keys));
+  spacer(lines);
+
+  lines.push(fmtKV("ColumnWidth", csvRepeat(colW, keys)));
+  lines.push(fmtKV("ColumnSpacing", csvBetween(colS, keys)));
+  spacer(lines);
 
   if(autoCenter){
-    lines.push(`ColumnStart: ${calcColumnStart(keys, colW, colS, ar, offset)}`);
+    lines.push(fmtKV("ColumnStart", calcColumnStart(keys, colW, colS, ar, offset)));
   }
 
-  pushIf(lines, "HitPosition", mode.mHitPos);
-  pushIf(lines, "ScorePosition", mode.mScorePos);
-  pushIf(lines, "ComboPosition", mode.mComboPos);
+  pushIfFmt(lines, "HitPosition", mode.mHitPos);
+  pushIfFmt(lines, "ScorePosition", mode.mScorePos);
+  pushIfFmt(lines, "ComboPosition", mode.mComboPos);
+  spacer(lines);
 
-  lines.push(`JudgementLine: ${bool01(!!mode.mJudgementLine)}`);
-  lines.push(`UpsideDown: ${bool01(!!mode.mUpsideDown)}`);
-  lines.push(`KeysUnderNotes: ${bool01(!!mode.mKeysUnderNotes)}`);
+  pushBoolFmt(lines, "JudgementLine", !!mode.mJudgementLine);
+  spacer(lines);
 
-  lines.push(`ColumnLineWidth: ${csvRepeat(0, keys + 1)}`);
+  pushBoolFmt(lines, "UpsideDown", !!mode.mUpsideDown);
+  spacer(lines);
 
-  pushIf(lines, "BarlineHeight", mode.mBarlineHeight);
-  pushIf(lines, "WidthForNoteHeightScale", mode.mNoteHeightScale);
-  pushIf(lines, "LightPosition", mode.mLightPos);
+  pushBoolFmt(lines, "KeysUnderNotes", !!mode.mKeysUnderNotes);
+  spacer(lines);
 
-  pushIf(lines, "StageLeft", mode.mStageLeft);
-  pushIf(lines, "StageRight", mode.mStageRight);
-  pushIf(lines, "StageBottom", mode.mStageBottom);
-  pushIf(lines, "StageHint", mode.mStageHint);
-  pushIf(lines, "StageLight", mode.mStageLight);
+  lines.push(fmtKV("ColumnLineWidth", csvRepeat(0, keys + 1)));
+  pushIfFmt(lines, "BarlineHeight", mode.mBarlineHeight);
+  pushIfFmt(lines, "WidthForNoteHeightScale", mode.mNoteHeightScale);
+  pushIfFmt(lines, "LightPosition", mode.mLightPos);
+  spacer(lines);
 
-  pushIf(lines, "LightingNWidth", mode.mLightNWidth);
-  pushIf(lines, "LightingLWidth", mode.mLightLWidth);
-  pushIf(lines, "LightingN", mode.mLightingN);
-  pushIf(lines, "LightingL", mode.mLightingL);
+  header(lines, "stage");
+  pushIfFmt(lines, "StageLeft", mode.mStageLeft);
+  pushIfFmt(lines, "StageRight", mode.mStageRight);
+  pushIfFmt(lines, "StageBottom", mode.mStageBottom);
+  pushIfFmt(lines, "StageHint", mode.mStageHint);
+  pushIfFmt(lines, "StageLight", mode.mStageLight);
+
+  pushIfFmt(lines, "LightingNWidth", mode.mLightNWidth);
+  pushIfFmt(lines, "LightingLWidth", mode.mLightLWidth);
+  pushIfFmt(lines, "LightingN", mode.mLightingN);
+  pushIfFmt(lines, "LightingL", mode.mLightingL);
+  spacer(lines);
 
   /* shared stuff below */
-  pushIf(lines, "ColourHold", $("mColourHold").value);
-  pushIf(lines, "ColourBreak", $("mColourBreak").value);
+  pushIfFmt(lines, "ColourHold", $("mColourHold").value);
+  pushIfFmt(lines, "ColourBreak", $("mColourBreak").value);
+  spacer(lines);
 
   const keyColour = cleanLine($("mKeyColour").value);
   if(keyColour){
-    for(let idx=0; idx<keys; idx++) lines.push(`Colour${idx}: ${keyColour}`);
+    for(let idx=0; idx<keys; idx++){
+      lines.push(fmtKV(`Colour${idx}`, keyColour));
+    }
+    spacer(lines);
   }
 
   const pKey = $("pKey").value;
@@ -657,39 +705,52 @@ function maniaBlockForKeys(keys){
   const pNoteL = $("pNoteL").value;
   const pNoteT = $("pNoteT").value;
 
+  header(lines, "keys");
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
-    const a = pat(pKey, n); if(a) lines.push(`KeyImage${idx}: ${a}`);
+    const a = pat(pKey, n); if(a) lines.push(fmtKV(`KeyImage${idx}`, a));
   }
+  spacer(lines);
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
-    const a = pat(pKeyD, n); if(a) lines.push(`KeyImage${idx}D: ${a}`);
+    const a = pat(pKeyD, n); if(a) lines.push(fmtKV(`KeyImage${idx}D`, a));
   }
-  for(let idx=0; idx<keys; idx++){
-    const n = idx + 1;
-    const a = pat(pNote, n); if(a) lines.push(`NoteImage${idx}: ${a}`);
-  }
-  for(let idx=0; idx<keys; idx++){
-    const n = idx + 1;
-    const a = pat(pNoteH, n); if(a) lines.push(`NoteImage${idx}H: ${a}`);
-  }
-  for(let idx=0; idx<keys; idx++){
-    const n = idx + 1;
-    const a = pat(pNoteL, n); if(a) lines.push(`NoteImage${idx}L: ${a}`);
-  }
-  for(let idx=0; idx<keys; idx++){
-    const n = idx + 1;
-    const a = pat(pNoteT, n); if(a) lines.push(`NoteImage${idx}T: ${a}`);
-  }
+  spacer(lines);
 
-  pushIf(lines, "WarningArrow", $("mWarningArrow").value);
+  header(lines, "notes");
+  for(let idx=0; idx<keys; idx++){
+    const n = idx + 1;
+    const a = pat(pNote, n); if(a) lines.push(fmtKV(`NoteImage${idx}`, a));
+  }
+  spacer(lines);
+  for(let idx=0; idx<keys; idx++){
+    const n = idx + 1;
+    const a = pat(pNoteH, n); if(a) lines.push(fmtKV(`NoteImage${idx}H`, a));
+  }
+  spacer(lines);
 
-  pushIf(lines, "Hit0", $("h0").value);
-  pushIf(lines, "Hit50", $("h50").value);
-  pushIf(lines, "Hit100", $("h100").value);
-  pushIf(lines, "Hit200", $("h200").value);
-  pushIf(lines, "Hit300", $("h300").value);
-  pushIf(lines, "Hit300g", $("h300g").value);
+  header(lines, "ln");
+  for(let idx=0; idx<keys; idx++){
+    const n = idx + 1;
+    const a = pat(pNoteL, n); if(a) lines.push(fmtKV(`NoteImage${idx}L`, a));
+  }
+  spacer(lines);
+  for(let idx=0; idx<keys; idx++){
+    const n = idx + 1;
+    const a = pat(pNoteT, n); if(a) lines.push(fmtKV(`NoteImage${idx}T`, a));
+  }
+  spacer(lines);
+
+  pushIfFmt(lines, "WarningArrow", $("mWarningArrow").value);
+  spacer(lines);
+
+  header(lines, "hits");
+  pushIfFmt(lines, "Hit0", $("h0").value);
+  pushIfFmt(lines, "Hit50", $("h50").value);
+  pushIfFmt(lines, "Hit100", $("h100").value);
+  pushIfFmt(lines, "Hit200", $("h200").value);
+  pushIfFmt(lines, "Hit300", $("h300").value);
+  pushIfFmt(lines, "Hit300g", $("h300g").value);
 
   return lines.filter(x => x.trim() !== "");
 }
@@ -698,26 +759,26 @@ function genIni(){
   const out = [];
 
   const G = [];
-  pushIf(G, "Name", $("gName").value);
-  pushIf(G, "Author", $("gAuthor").value);
-  G.push("Version: latest");
-  G.push(`CursorCentre: ${bool01($("gCursorCentre").checked)}`);
-  G.push(`CursorExpand: ${bool01($("gCursorExpand").checked)}`);
-  G.push(`CursorRotate: ${bool01($("gCursorRotate").checked)}`);
-  G.push(`CursorTrailRotate: ${bool01($("gCursorTrailRotate").checked)}`);
+  pushIfFmt(G, "Name", $("gName").value);
+  pushIfFmt(G, "Author", $("gAuthor").value);
+  G.push(fmtKV("Version", "latest"));
+  pushBoolFmt(G, "CursorCentre", $("gCursorCentre").checked);
+  pushBoolFmt(G, "CursorExpand", $("gCursorExpand").checked);
+  pushBoolFmt(G, "CursorRotate", $("gCursorRotate").checked);
+  pushBoolFmt(G, "CursorTrailRotate", $("gCursorTrailRotate").checked);
   out.push("[General]", ...G, "");
 
   const C = [];
-  pushIf(C, "MenuGlow", $("cMenuGlow").value);
-  pushIf(C, "SongSelectActiveText", $("cSongActive").value);
-  pushIf(C, "SongSelectInactiveText", $("cSongInactive").value);
+  pushIfFmt(C, "MenuGlow", $("cMenuGlow").value);
+  pushIfFmt(C, "SongSelectActiveText", $("cSongActive").value);
+  pushIfFmt(C, "SongSelectInactiveText", $("cSongInactive").value);
   if(C.length) out.push("[Colours]", ...C, "");
 
   const F = [];
-  pushIf(F, "ScorePrefix", $("fScorePrefix").value);
-  pushIf(F, "ScoreOverlap", $("fScoreOverlap").value);
-  pushIf(F, "ComboPrefix", $("fComboPrefix").value);
-  pushIf(F, "ComboOverlap", $("fComboOverlap").value);
+  pushIfFmt(F, "ScorePrefix", $("fScorePrefix").value);
+  pushIfFmt(F, "ScoreOverlap", $("fScoreOverlap").value);
+  pushIfFmt(F, "ComboPrefix", $("fComboPrefix").value);
+  pushIfFmt(F, "ComboOverlap", $("fComboOverlap").value);
   if(F.length) out.push("[Fonts]", ...F, "");
 
   for(const keys of [4,5,6,7]){
@@ -780,7 +841,10 @@ function saveState(){
 
     // per keymode
     currentKeys: String(currentKeys),
-    maniaModes: maniaModes
+    maniaModes: maniaModes,
+
+    // pretty
+    prettyFormat: prettyFormat ? "1" : "0"
   };
 
   try{
@@ -846,12 +910,14 @@ function loadState(){
     currentKeys = ([4,5,6,7].includes(ck) ? ck : 4);
     $("mKeysSelect").value = String(currentKeys);
     applyModeToUI(maniaModes[currentKeys] || defaultMode(currentKeys));
+
+    // pretty
+    prettyFormat = (s.prettyFormat === "1");
   }catch(e){}
 }
 
 /* live update */
 function updatePreview(){
-  // always keep current mode stored before generating
   saveCurrentModeIntoState();
   $("preview").value = genIni();
 }
@@ -882,11 +948,16 @@ function clearWipe(){
 $("downloadIni").addEventListener("click", downloadIni);
 $("clearWipe").addEventListener("click", clearWipe);
 
+/* pretty toggle */
+$("togglePretty").addEventListener("click", ()=>{
+  prettyFormat = !prettyFormat;
+  applyPrettyButton();
+  scheduleUpdate();
+});
+
 /* keymode selector */
 $("mKeysSelect").addEventListener("change", ()=>{
-  // save old mode
   saveCurrentModeIntoState();
-  // switch
   currentKeys = Number($("mKeysSelect").value || "4");
   if(!maniaModes[currentKeys]) maniaModes[currentKeys] = defaultMode(currentKeys);
   applyModeToUI(maniaModes[currentKeys]);
@@ -900,14 +971,12 @@ $("mKeysSelect").addEventListener("change", ()=>{
   "cMenuGlow","cSongActive","cSongInactive",
   "fScorePrefix","fScoreOverlap","fComboPrefix","fComboOverlap",
 
-  /* mania per keymode fields (same ids, but stored per mode) */
   "mColWidth","mColSpacing","mAutoCenter","mARPreset","mARW","mARH","mCenterOffset",
   "mHitPos","mScorePos","mComboPos","mJudgementLine","mUpsideDown","mKeysUnderNotes",
   "mBarlineHeight","mNoteHeightScale","mLightPos",
   "mStageLeft","mStageRight","mStageBottom","mStageHint","mStageLight",
   "mLightNWidth","mLightLWidth","mLightingN","mLightingL",
 
-  /* shared mania fields */
   "mKeyColour","mColourHold","mColourBreak",
   "pKey","pKeyD","pNote","pNoteH","pNoteL","pNoteT","mWarningArrow",
   "h0","h50","h100","h200","h300","h300g"
@@ -941,6 +1010,7 @@ seedDefaultsIfEmpty();
 $("mKeysSelect").value = String(currentKeys);
 applyModeToUI(maniaModes[currentKeys]);
 
+applyPrettyButton();
 updatePreview();
 </script>
 </body>
