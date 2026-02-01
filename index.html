@@ -172,10 +172,10 @@
         <span class="pill" id="savePulse"></span>
       </div>
       <div class="controls">
-        <span class="pill">Version L1.4</span>
+        <span class="pill">Version 1.4 [Beta]</span>
 
         <span class="pill" style="display:flex; align-items:center; gap:10px;">
-          <span class="switchLabel">Pretty</span>
+          <span class="switchLabel">hairez-style</span>
           <label class="switch" title="Pretty formatting (aligned + spaced groups)">
             <input type="checkbox" id="prettyFormat" checked>
             <span class="sw"></span>
@@ -269,7 +269,7 @@
           </div>
 
           <div class="sep"></div>
-          <div class="groupTitle">A) Essentials (per keymode)</div>
+          <div class="groupTitle">♦ Essentials (per keymode)</div>
           <div class="row"><label>ColumnWidth (per col)</label><input type="number" id="mColWidth" value="70"></div>
           <div class="row"><label>ColumnSpacing (between)</label><input type="number" id="mColSpacing" value="0"></div>
 
@@ -315,7 +315,7 @@
           </div>
 
           <div class="sep"></div>
-          <div class="groupTitle">B) Reading refinements (per keymode)</div>
+          <div class="groupTitle">♦ Reading refinements (per keymode)</div>
           <div class="row"><label>BarlineHeight</label><input type="number" id="mBarlineHeight" value=""></div>
           <div class="row"><label>WidthForNoteHeightScale</label><input type="number" id="mNoteHeightScale" value=""></div>
           <div class="row"><label>LightPosition</label><input type="number" id="mLightPos" value=""></div>
@@ -339,7 +339,7 @@
           </div>
 
           <div class="sep"></div>
-          <div class="groupTitle">D) Colours (shared)</div>
+          <div class="groupTitle">♦ Colours (shared)</div>
 
           <div class="row">
             <label>Colour (all keys)</label>
@@ -359,7 +359,7 @@
           </div>
 
           <div class="sep"></div>
-          <div class="groupTitle">E) Images (patterns) (shared)</div>
+          <div class="groupTitle">♦ Images (patterns) (shared)</div>
           <div class="mini">
             skin.ini indexes are <span class="kbd">0..Keys-1</span>, but <span class="kbd">{n}</span> stays <span class="kbd">1..Keys</span> for filenames.
             Example: <span class="kbd">key{n}</span>.
@@ -387,7 +387,7 @@
           </div>
 
           <div class="sep"></div>
-          <div class="groupTitle">F) Hit sprites (shared)</div>
+          <div class="groupTitle">♦ Hit sprites (shared)</div>
           <div class="grid2">
             <div class="row"><label>Hit0</label><input type="text" id="h0"></div>
             <div class="row"><label>Hit50</label><input type="text" id="h50"></div>
@@ -402,12 +402,12 @@
       <!-- RIGHT PREVIEW -->
       <div class="panel">
         <div class="panelHead">
-          <div class="mini">Generated skin.ini</div>
-          <div class="mini">Mania: per keymode (4K/5K/6K/7K)</div>
+          <div class="mini">skin.ini preview</div>
+          <div class="mini">Mania: Includes 4k/5k/6k/7k</div>
         </div>
         <div class="panelBody">
           <textarea id="preview" readonly></textarea>
-          <p class="hint">This is exactly what will be downloaded as <span class="kbd">skin.ini</span>.</p>
+          <p class="hint">This is exactly what will be downloaded as skin.ini.</p>
         </div>
       </div>
     </div>
@@ -517,11 +517,11 @@ function defaultMode(keys){
     mARH: "9",
     mCenterOffset: "0",
 
-    mHitPos: "402",
+    mHitPos: "435",
     mScorePos: "260",
     mComboPos: "240",
 
-    mJudgementLine: true,
+    mJudgementLine: false,
     mUpsideDown: false,
     mKeysUnderNotes: false,
 
