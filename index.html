@@ -11,7 +11,14 @@
       --bg:#0b0c0f; --fg:#e8e8e8; --muted:#7a7a7a;
       --border:rgba(255,255,255,.08); --panel:rgba(255,255,255,.03);
       --fs:14px; --lh:1.6; --r:6px;
+
+      /* select */
+      --selBg:#000;
+      --selBg2:#0a0a0a;
+      --selBorder:rgba(255,255,255,.12);
+      --selHi:#111;
     }
+
     *{ box-sizing:border-box; }
 
     /* Scrollbars (Firefox) */
@@ -92,6 +99,7 @@
 
     .row{ display:grid; grid-template-columns: 190px 1fr; gap:10px; align-items:center; margin-bottom:8px; }
     .row label{ color:rgba(232,232,232,.70); font-size:12px; }
+
     input[type="text"], input[type="number"], select, textarea{
       width:100%;
       border:1px solid var(--border); border-radius:var(--r);
@@ -99,6 +107,52 @@
       padding:7px 9px; outline:none;
       font:inherit;
     }
+
+    /* ===== SELECT PRETO (dropdown) ===== */
+    select{
+      background: var(--selBg) !important;
+      color: var(--fg) !important;
+      border: 1px solid var(--selBorder) !important;
+
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+
+      /* espaço pro "arrow" */
+      padding-right: 34px;
+
+      /* arrow fake */
+      background-image:
+        linear-gradient(45deg, transparent 50%, rgba(255,255,255,.55) 50%),
+        linear-gradient(135deg, rgba(255,255,255,.55) 50%, transparent 50%),
+        linear-gradient(to right, transparent, transparent);
+      background-position:
+        calc(100% - 18px) 50%,
+        calc(100% - 12px) 50%,
+        0 0;
+      background-size:
+        6px 6px,
+        6px 6px,
+        100% 100%;
+      background-repeat: no-repeat;
+    }
+
+    select:focus{
+      border-color: rgba(255,255,255,.22) !important;
+      background: var(--selBg) !important;
+      box-shadow: 0 0 0 2px rgba(255,255,255,.06);
+    }
+
+    /* tenta forçar a lista aberta (depende do browser/OS) */
+    select option{
+      background: var(--selBg) !important;
+      color: var(--fg) !important;
+    }
+    select option:checked{
+      background: var(--selHi) !important;
+      color: var(--fg) !important;
+    }
+    /* ===== /SELECT PRETO ===== */
 
     textarea{
       min-height: calc(100vh - 170px);
@@ -706,7 +760,7 @@ function maniaBlockForKeys(keys){
     spacer(lines);
   }
 
-  /* images (THIS is where your spacing request is applied) */
+  /* images (spaced groups) */
   const pKey = $("pKey").value;
   const pKeyD = $("pKeyD").value;
   const pNote = $("pNote").value;
@@ -719,7 +773,7 @@ function maniaBlockForKeys(keys){
     const n = idx + 1;
     const a = pat(pKey, n); if(a) lines.push(fmtKV(`KeyImage${idx}`, a));
   }
-  spacer(lines); // space between KeyImage and KeyImageD
+  spacer(lines);
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
     const a = pat(pKeyD, n); if(a) lines.push(fmtKV(`KeyImage${idx}D`, a));
@@ -731,7 +785,7 @@ function maniaBlockForKeys(keys){
     const n = idx + 1;
     const a = pat(pNote, n); if(a) lines.push(fmtKV(`NoteImage${idx}`, a));
   }
-  spacer(lines); // space between NoteImage and NoteImageH
+  spacer(lines);
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
     const a = pat(pNoteH, n); if(a) lines.push(fmtKV(`NoteImage${idx}H`, a));
@@ -743,7 +797,7 @@ function maniaBlockForKeys(keys){
     const n = idx + 1;
     const a = pat(pNoteL, n); if(a) lines.push(fmtKV(`NoteImage${idx}L`, a));
   }
-  spacer(lines); // space between NoteImageL and NoteImageT
+  spacer(lines);
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
     const a = pat(pNoteT, n); if(a) lines.push(fmtKV(`NoteImage${idx}T`, a));
@@ -761,16 +815,13 @@ function maniaBlockForKeys(keys){
   pushIfFmt(lines, "Hit300", $("h300").value);
   pushIfFmt(lines, "Hit300g", $("h300g").value);
 
-  // remove trailing spacers
   while(lines.length && lines[lines.length-1] === "") lines.pop();
-
-  return lines.filter(x => String(x).trim() !== "" || (prettyFormat && x === ""));
+  return lines;
 }
 
 function genIni(){
   const out = [];
 
-  // General
   out.push("[General]");
   pushIfFmt(out, "Name", $("gName").value);
   pushIfFmt(out, "Author", $("gAuthor").value);
@@ -781,7 +832,6 @@ function genIni(){
   pushIfFmt(out, "CursorTrailRotate", bool01($("gCursorTrailRotate").checked));
   out.push("");
 
-  // Colours
   const hasColours = cleanLine($("cMenuGlow").value) || cleanLine($("cSongActive").value) || cleanLine($("cSongInactive").value);
   if(hasColours){
     out.push("[Colours]");
@@ -791,7 +841,6 @@ function genIni(){
     out.push("");
   }
 
-  // Fonts
   const hasFonts = cleanLine($("fScorePrefix").value) || cleanLine($("fComboPrefix").value) || cleanLine($("fScoreOverlap").value) || cleanLine($("fComboOverlap").value);
   if(hasFonts){
     out.push("[Fonts]");
@@ -802,11 +851,9 @@ function genIni(){
     out.push("");
   }
 
-  // Mania blocks
   for(const keys of [4,5,6,7]){
     out.push("[Mania]");
-    const block = maniaBlockForKeys(keys);
-    out.push(...block);
+    out.push(...maniaBlockForKeys(keys));
     out.push("");
   }
 
@@ -844,7 +891,6 @@ function saveState(){
     fComboPrefix: $("fComboPrefix").value,
     fComboOverlap: $("fComboOverlap").value,
 
-    // shared mania
     mKeyColour: $("mKeyColour").value,
     mColourHold: $("mColourHold").value,
     mColourBreak: $("mColourBreak").value,
@@ -864,7 +910,6 @@ function saveState(){
     h300: $("h300").value,
     h300g: $("h300g").value,
 
-    // per keymode
     currentKeys: String(currentKeys),
     maniaModes: maniaModes
   };
@@ -924,7 +969,6 @@ function loadState(){
     $("h300").value = s.h300 ?? "";
     $("h300g").value = s.h300g ?? "";
 
-    // per keymode
     if(s.maniaModes && typeof s.maniaModes === "object"){
       for(const k of ["4","5","6","7"]){
         if(s.maniaModes[k]) maniaModes[Number(k)] = s.maniaModes[k];
@@ -992,14 +1036,12 @@ $("mKeysSelect").addEventListener("change", ()=>{
   "cMenuGlow","cSongActive","cSongInactive",
   "fScorePrefix","fScoreOverlap","fComboPrefix","fComboOverlap",
 
-  /* mania per keymode fields */
   "mColWidth","mColSpacing","mAutoCenter","mARPreset","mARW","mARH","mCenterOffset",
   "mHitPos","mScorePos","mComboPos","mJudgementLine","mUpsideDown","mKeysUnderNotes",
   "mBarlineHeight","mNoteHeightScale","mLightPos",
   "mStageLeft","mStageRight","mStageBottom","mStageHint","mStageLight",
   "mLightNWidth","mLightLWidth","mLightingN","mLightingL",
 
-  /* shared mania fields */
   "mKeyColour","mColourHold","mColourBreak",
   "pKey","pKeyD","pNote","pNoteH","pNoteL","pNoteT","mWarningArrow",
   "h0","h50","h100","h200","h300","h300g"
@@ -1033,8 +1075,7 @@ $("mKeysSelect").value = String(currentKeys);
 applyModeToUI(maniaModes[currentKeys]);
 updatePreview();
 </script>
-  
-   <script src="snow.js?v=1"></script>
 
+<script src="snow.js?v=1"></script>
 </body>
 </html>
