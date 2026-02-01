@@ -118,10 +118,8 @@
       -webkit-appearance: none;
       -moz-appearance: none;
 
-      /* espaço pro "arrow" */
       padding-right: 34px;
 
-      /* arrow fake */
       background-image:
         linear-gradient(45deg, transparent 50%, rgba(255,255,255,.55) 50%),
         linear-gradient(135deg, rgba(255,255,255,.55) 50%, transparent 50%),
@@ -136,14 +134,11 @@
         100% 100%;
       background-repeat: no-repeat;
     }
-
     select:focus{
       border-color: rgba(255,255,255,.22) !important;
       background: var(--selBg) !important;
       box-shadow: 0 0 0 2px rgba(255,255,255,.06);
     }
-
-    /* tenta forçar a lista aberta (depende do browser/OS) */
     select option{
       background: var(--selBg) !important;
       color: var(--fg) !important;
@@ -225,7 +220,7 @@
         <span class="pill" id="savePulse"></span>
       </div>
       <div class="controls">
-        <span class="pill">Version 1.4 [Beta]</span>
+        <span class="pill">Version 1.5 [per-mode folders]</span>
 
         <span class="pill" style="display:flex; align-items:center; gap:10px;">
           <span class="switchLabel">hairez-style</span>
@@ -245,7 +240,7 @@
             <div class="tab active" data-tab="general">General</div>
             <div class="tab" data-tab="mania">Mania</div>
           </div>
-          <div class="mini">General includes Colours + Fonts. Mania edits each keymode separately.</div>
+          <div class="mini">General includes Colours + Fonts. Mania edits each keymode separately (now with per-mode folder).</div>
         </div>
 
         <!-- GENERAL -->
@@ -412,7 +407,16 @@
           </div>
 
           <div class="sep"></div>
-          <div class="groupTitle">♦ Images (patterns) (shared)</div>
+          <div class="groupTitle">♦ Images (shared patterns + per-mode folder)</div>
+
+          <div class="row">
+            <label>Mode folder (per keymode)</label>
+            <input type="text" id="mFolder" placeholder="ex: mania\\4k (or mania/4k)">
+          </div>
+          <div class="mini" style="margin:-2px 0 8px;">
+            This folder is applied only to the currently selected keymode (4K/5K/6K/7K). Leave empty to disable.
+          </div>
+
           <div class="mini">
             skin.ini indexes are <span class="kbd">0..Keys-1</span>, but <span class="kbd">{n}</span> stays <span class="kbd">1..Keys</span> for filenames.
             Example: <span class="kbd">key{n}</span>.
@@ -468,11 +472,11 @@
 
 <script>
 const $ = (id)=>document.getElementById(id);
-const STORAGE_KEY = "aeditor_skinini_builder_v6_pretty_groups";
+const STORAGE_KEY = "aeditor_skinini_builder_v7_permode_folder";
 
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 const bool01 = (b)=> (b ? "1" : "0");
-function cleanLine(s){ return String(s??"").replace(/\r/g,"").trimEnd(); }
+function cleanLine(s){ return String(s??"").replace(/\\r/g,"").trimEnd(); }
 
 /* Pretty formatting toggle */
 let prettyFormat = true;
@@ -500,8 +504,21 @@ function header(arr, title){
   }
 }
 
+/* path join (keeps your slashes consistent) */
+function normSlashes(s){
+  return String(s||"").trim().replace(/\//g, "\\\\");
+}
+function joinPath(folder, file){
+  const f = normSlashes(folder);
+  const x = String(file||"").trim();
+  if(!f) return x;
+  if(!x) return "";
+  const f2 = f.endsWith("\\") ? f : (f + "\\");
+  return f2 + x.replace(/^\\\\+/, "");
+}
+
 function rgbToHex(rgb){
-  const m = String(rgb||"").match(/^\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*$/);
+  const m = String(rgb||"").match(/^\\s*(\\d{1,3})\\s*,\\s*(\\d{1,3})\\s*,\\s*(\\d{1,3})\\s*$/);
   if(!m) return null;
   const r = clamp(parseInt(m[1],10),0,255);
   const g = clamp(parseInt(m[2],10),0,255);
@@ -562,6 +579,8 @@ document.querySelectorAll(".tab").forEach(t=>{
 -------------------------- */
 function defaultMode(keys){
   return {
+    mFolder: "",
+
     mColWidth: "70",
     mColSpacing: "0",
     mAutoCenter: true,
@@ -606,6 +625,8 @@ let currentKeys = 4;
 
 function readModeFromUI(){
   return {
+    mFolder: $("mFolder").value,
+
     mColWidth: $("mColWidth").value,
     mColSpacing: $("mColSpacing").value,
     mAutoCenter: $("mAutoCenter").checked,
@@ -640,6 +661,8 @@ function readModeFromUI(){
 }
 
 function applyModeToUI(mode){
+  $("mFolder").value = mode.mFolder ?? "";
+
   $("mColWidth").value = mode.mColWidth ?? "70";
   $("mColSpacing").value = mode.mColSpacing ?? "0";
   $("mAutoCenter").checked = !!mode.mAutoCenter;
@@ -736,7 +759,6 @@ function maniaBlockForKeys(keys){
   pushIfFmt(lines, "LightPosition", mode.mLightPos);
   spacer(lines);
 
-  /* stage / lighting */
   header(lines, "stage");
   pushIfFmt(lines, "StageLeft", mode.mStageLeft);
   pushIfFmt(lines, "StageRight", mode.mStageRight);
@@ -749,7 +771,6 @@ function maniaBlockForKeys(keys){
   pushIfFmt(lines, "LightingL", mode.mLightingL);
   spacer(lines);
 
-  /* shared colours */
   pushIfFmt(lines, "ColourHold", $("mColourHold").value);
   pushIfFmt(lines, "ColourBreak", $("mColourBreak").value);
   spacer(lines);
@@ -760,7 +781,8 @@ function maniaBlockForKeys(keys){
     spacer(lines);
   }
 
-  /* images (spaced groups) */
+  /* images with per-mode folder */
+  const folder = mode.mFolder || "";
   const pKey = $("pKey").value;
   const pKeyD = $("pKeyD").value;
   const pNote = $("pNote").value;
@@ -771,36 +793,42 @@ function maniaBlockForKeys(keys){
   header(lines, "keys");
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
-    const a = pat(pKey, n); if(a) lines.push(fmtKV(`KeyImage${idx}`, a));
+    const a = pat(pKey, n);
+    if(a) lines.push(fmtKV(`KeyImage${idx}`, joinPath(folder, a)));
   }
   spacer(lines);
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
-    const a = pat(pKeyD, n); if(a) lines.push(fmtKV(`KeyImage${idx}D`, a));
+    const a = pat(pKeyD, n);
+    if(a) lines.push(fmtKV(`KeyImage${idx}D`, joinPath(folder, a)));
   }
   spacer(lines);
 
   header(lines, "notes");
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
-    const a = pat(pNote, n); if(a) lines.push(fmtKV(`NoteImage${idx}`, a));
+    const a = pat(pNote, n);
+    if(a) lines.push(fmtKV(`NoteImage${idx}`, joinPath(folder, a)));
   }
   spacer(lines);
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
-    const a = pat(pNoteH, n); if(a) lines.push(fmtKV(`NoteImage${idx}H`, a));
+    const a = pat(pNoteH, n);
+    if(a) lines.push(fmtKV(`NoteImage${idx}H`, joinPath(folder, a)));
   }
   spacer(lines);
 
   header(lines, "ln");
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
-    const a = pat(pNoteL, n); if(a) lines.push(fmtKV(`NoteImage${idx}L`, a));
+    const a = pat(pNoteL, n);
+    if(a) lines.push(fmtKV(`NoteImage${idx}L`, joinPath(folder, a)));
   }
   spacer(lines);
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
-    const a = pat(pNoteT, n); if(a) lines.push(fmtKV(`NoteImage${idx}T`, a));
+    const a = pat(pNoteT, n);
+    if(a) lines.push(fmtKV(`NoteImage${idx}T`, joinPath(folder, a)));
   }
   spacer(lines);
 
@@ -1036,12 +1064,15 @@ $("mKeysSelect").addEventListener("change", ()=>{
   "cMenuGlow","cSongActive","cSongInactive",
   "fScorePrefix","fScoreOverlap","fComboPrefix","fComboOverlap",
 
+  /* per-mode */
+  "mFolder",
   "mColWidth","mColSpacing","mAutoCenter","mARPreset","mARW","mARH","mCenterOffset",
   "mHitPos","mScorePos","mComboPos","mJudgementLine","mUpsideDown","mKeysUnderNotes",
   "mBarlineHeight","mNoteHeightScale","mLightPos",
   "mStageLeft","mStageRight","mStageBottom","mStageHint","mStageLight",
   "mLightNWidth","mLightLWidth","mLightingN","mLightingL",
 
+  /* shared mania */
   "mKeyColour","mColourHold","mColourBreak",
   "pKey","pKeyD","pNote","pNoteH","pNoteL","pNoteT","mWarningArrow",
   "h0","h50","h100","h200","h300","h300g"
