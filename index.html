@@ -169,7 +169,7 @@
           <div class="tab active" data-tab="general">General</div>
           <div class="tab" data-tab="mania">Mania</div>
         </div>
-        <div class="mini">General includes Colours + Fonts. Mania auto-builds 4K→7K.</div>
+        <div class="mini">General includes Colours + Fonts. Mania now edits each keymode separately.</div>
       </div>
 
       <!-- GENERAL -->
@@ -232,10 +232,21 @@
 
       <!-- MANIA -->
       <div class="panelBody" id="tab-mania" style="display:none">
-        <div class="mini">One config → auto-generates 4K, 5K, 6K, 7K blocks.</div>
-        <div class="sep"></div>
+        <div class="row">
+          <label>Edit keymode</label>
+          <div class="inline">
+            <select id="mKeysSelect" style="max-width:160px">
+              <option value="4">4K</option>
+              <option value="5">5K</option>
+              <option value="6">6K</option>
+              <option value="7">7K</option>
+            </select>
+            <span class="mini">Each keymode has its own values.</span>
+          </div>
+        </div>
 
-        <div class="groupTitle">A) Essentials</div>
+        <div class="sep"></div>
+        <div class="groupTitle">A) Essentials (per keymode)</div>
         <div class="row"><label>ColumnWidth (per col)</label><input type="number" id="mColWidth" value="70"></div>
         <div class="row"><label>ColumnSpacing (between)</label><input type="number" id="mColSpacing" value="0"></div>
 
@@ -281,13 +292,13 @@
         </div>
 
         <div class="sep"></div>
-        <div class="groupTitle">B) Reading refinements</div>
+        <div class="groupTitle">B) Reading refinements (per keymode)</div>
         <div class="row"><label>BarlineHeight</label><input type="number" id="mBarlineHeight" value=""></div>
         <div class="row"><label>WidthForNoteHeightScale</label><input type="number" id="mNoteHeightScale" value=""></div>
         <div class="row"><label>LightPosition</label><input type="number" id="mLightPos" value=""></div>
 
         <div class="sep"></div>
-        <div class="groupTitle">C) Stage / Lighting</div>
+        <div class="groupTitle">C) Stage / Lighting (per keymode)</div>
         <div class="grid2">
           <div>
             <div class="row"><label>StageLeft</label><input type="text" id="mStageLeft"></div>
@@ -305,7 +316,7 @@
         </div>
 
         <div class="sep"></div>
-        <div class="groupTitle">D) Colours</div>
+        <div class="groupTitle">D) Colours (shared)</div>
 
         <div class="row">
           <label>Colour (all keys)</label>
@@ -325,7 +336,7 @@
         </div>
 
         <div class="sep"></div>
-        <div class="groupTitle">E) Images (patterns)</div>
+        <div class="groupTitle">E) Images (patterns) (shared)</div>
         <div class="mini">
           skin.ini indexes are <span class="kbd">0..Keys-1</span>, but <span class="kbd">{n}</span> stays <span class="kbd">1..Keys</span> for filenames.
           Example: <span class="kbd">key{n}</span>.
@@ -353,7 +364,7 @@
         </div>
 
         <div class="sep"></div>
-        <div class="groupTitle">F) Hit sprites</div>
+        <div class="groupTitle">F) Hit sprites (shared)</div>
         <div class="grid2">
           <div class="row"><label>Hit0</label><input type="text" id="h0"></div>
           <div class="row"><label>Hit50</label><input type="text" id="h50"></div>
@@ -369,7 +380,7 @@
     <div class="panel">
       <div class="panelHead">
         <div class="mini">Generated skin.ini</div>
-        <div class="mini">Mania: auto 4K→7K</div>
+        <div class="mini">Mania: per keymode (4K/5K/6K/7K)</div>
       </div>
       <div class="panelBody">
         <textarea id="preview" readonly></textarea>
@@ -381,7 +392,7 @@
 
 <script>
 const $ = (id)=>document.getElementById(id);
-const STORAGE_KEY = "aeditor_skinini_builder_v4";
+const STORAGE_KEY = "aeditor_skinini_builder_v5_perkeymode";
 
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 const bool01 = (b)=> (b ? "1" : "0");
@@ -426,28 +437,6 @@ function csvRepeat(value, count){
 function csvBetween(value, keys){
   return csvRepeat(value, Math.max(0, keys-1));
 }
-
-function getAspectRatio(){
-  const preset = $("mARPreset").value;
-  let w = Number($("mARW").value || 16);
-  let h = Number($("mARH").value || 9);
-
-  if(preset !== "custom"){
-    const [pw,ph] = preset.split(":").map(Number);
-    if(Number.isFinite(pw) && Number.isFinite(ph) && ph !== 0){
-      w = pw; h = ph;
-      $("mARW").value = String(pw);
-      $("mARH").value = String(ph);
-    }
-  }
-  if(!Number.isFinite(w) || !Number.isFinite(h) || h === 0) return 16/9;
-  return w / h;
-}
-function calcColumnStart(keys, colWidth, colSpacing, aspectRatio, offset){
-  const usableWidth = 480 * aspectRatio;
-  const columnSum = (colWidth * keys) + (colSpacing * (keys - 1));
-  return Math.round((usableWidth/2) - (columnSum/2)) + Number(offset || 0);
-}
 function pat(pattern, n){
   const p = String(pattern||"").trim();
   if(!p) return "";
@@ -466,19 +455,158 @@ document.querySelectorAll(".tab").forEach(t=>{
   t.addEventListener("click", ()=> setTab(t.dataset.tab));
 });
 
-/* ini gen */
+/* -------------------------
+   Mania per-keymode state
+-------------------------- */
+function defaultMode(keys){
+  return {
+    mColWidth: "70",
+    mColSpacing: "0",
+    mAutoCenter: true,
+    mARPreset: "16:9",
+    mARW: "16",
+    mARH: "9",
+    mCenterOffset: "0",
+
+    mHitPos: "402",
+    mScorePos: "260",
+    mComboPos: "240",
+
+    mJudgementLine: true,
+    mUpsideDown: false,
+    mKeysUnderNotes: false,
+
+    mBarlineHeight: "",
+    mNoteHeightScale: "",
+    mLightPos: "",
+
+    mStageLeft: "",
+    mStageRight: "",
+    mStageBottom: "",
+    mStageHint: "",
+    mStageLight: "",
+
+    mLightNWidth: "",
+    mLightLWidth: "",
+    mLightingN: "",
+    mLightingL: ""
+  };
+}
+
+const maniaModes = {
+  4: defaultMode(4),
+  5: defaultMode(5),
+  6: defaultMode(6),
+  7: defaultMode(7),
+};
+
+let currentKeys = 4;
+
+function readModeFromUI(){
+  return {
+    mColWidth: $("mColWidth").value,
+    mColSpacing: $("mColSpacing").value,
+    mAutoCenter: $("mAutoCenter").checked,
+    mARPreset: $("mARPreset").value,
+    mARW: $("mARW").value,
+    mARH: $("mARH").value,
+    mCenterOffset: $("mCenterOffset").value,
+
+    mHitPos: $("mHitPos").value,
+    mScorePos: $("mScorePos").value,
+    mComboPos: $("mComboPos").value,
+
+    mJudgementLine: $("mJudgementLine").checked,
+    mUpsideDown: $("mUpsideDown").checked,
+    mKeysUnderNotes: $("mKeysUnderNotes").checked,
+
+    mBarlineHeight: $("mBarlineHeight").value,
+    mNoteHeightScale: $("mNoteHeightScale").value,
+    mLightPos: $("mLightPos").value,
+
+    mStageLeft: $("mStageLeft").value,
+    mStageRight: $("mStageRight").value,
+    mStageBottom: $("mStageBottom").value,
+    mStageHint: $("mStageHint").value,
+    mStageLight: $("mStageLight").value,
+
+    mLightNWidth: $("mLightNWidth").value,
+    mLightLWidth: $("mLightLWidth").value,
+    mLightingN: $("mLightingN").value,
+    mLightingL: $("mLightingL").value
+  };
+}
+
+function applyModeToUI(mode){
+  $("mColWidth").value = mode.mColWidth ?? "70";
+  $("mColSpacing").value = mode.mColSpacing ?? "0";
+  $("mAutoCenter").checked = !!mode.mAutoCenter;
+
+  $("mARPreset").value = mode.mARPreset ?? "16:9";
+  $("mARW").value = mode.mARW ?? "16";
+  $("mARH").value = mode.mARH ?? "9";
+  $("mCenterOffset").value = mode.mCenterOffset ?? "0";
+
+  $("mHitPos").value = mode.mHitPos ?? "402";
+  $("mScorePos").value = mode.mScorePos ?? "260";
+  $("mComboPos").value = mode.mComboPos ?? "240";
+
+  $("mJudgementLine").checked = (mode.mJudgementLine ?? true);
+  $("mUpsideDown").checked = !!mode.mUpsideDown;
+  $("mKeysUnderNotes").checked = !!mode.mKeysUnderNotes;
+
+  $("mBarlineHeight").value = mode.mBarlineHeight ?? "";
+  $("mNoteHeightScale").value = mode.mNoteHeightScale ?? "";
+  $("mLightPos").value = mode.mLightPos ?? "";
+
+  $("mStageLeft").value = mode.mStageLeft ?? "";
+  $("mStageRight").value = mode.mStageRight ?? "";
+  $("mStageBottom").value = mode.mStageBottom ?? "";
+  $("mStageHint").value = mode.mStageHint ?? "";
+  $("mStageLight").value = mode.mStageLight ?? "";
+
+  $("mLightNWidth").value = mode.mLightNWidth ?? "";
+  $("mLightLWidth").value = mode.mLightLWidth ?? "";
+  $("mLightingN").value = mode.mLightingN ?? "";
+  $("mLightingL").value = mode.mLightingL ?? "";
+}
+
+function getAspectRatio(mode){
+  const preset = mode.mARPreset;
+  let w = Number(mode.mARW || 16);
+  let h = Number(mode.mARH || 9);
+
+  if(preset !== "custom"){
+    const [pw,ph] = preset.split(":").map(Number);
+    if(Number.isFinite(pw) && Number.isFinite(ph) && ph !== 0){
+      w = pw; h = ph;
+    }
+  }
+  if(!Number.isFinite(w) || !Number.isFinite(h) || h === 0) return 16/9;
+  return w / h;
+}
+
+function calcColumnStart(keys, colWidth, colSpacing, aspectRatio, offset){
+  const usableWidth = 480 * aspectRatio;
+  const columnSum = (colWidth * keys) + (colSpacing * (keys - 1));
+  return Math.round((usableWidth/2) - (columnSum/2)) + Number(offset || 0);
+}
+
+/* ini gen helpers */
 function pushIf(arr, key, value){
   const v = cleanLine(value);
   if(v !== "") arr.push(`${key}: ${v}`);
 }
 
 function maniaBlockForKeys(keys){
+  const mode = maniaModes[keys] || defaultMode(keys);
   const lines = [];
-  const colW = Number($("mColWidth").value || 0);
-  const colS = Number($("mColSpacing").value || 0);
-  const ar = getAspectRatio();
-  const autoCenter = $("mAutoCenter").checked;
-  const offset = Number($("mCenterOffset").value || 0);
+
+  const colW = Number(mode.mColWidth || 0);
+  const colS = Number(mode.mColSpacing || 0);
+  const ar = getAspectRatio(mode);
+  const autoCenter = !!mode.mAutoCenter;
+  const offset = Number(mode.mCenterOffset || 0);
 
   lines.push(`Keys: ${keys}`);
   lines.push(`ColumnWidth: ${csvRepeat(colW, keys)}`);
@@ -488,35 +616,35 @@ function maniaBlockForKeys(keys){
     lines.push(`ColumnStart: ${calcColumnStart(keys, colW, colS, ar, offset)}`);
   }
 
-  pushIf(lines, "HitPosition", $("mHitPos").value);
-  pushIf(lines, "ScorePosition", $("mScorePos").value);
-  pushIf(lines, "ComboPosition", $("mComboPos").value);
+  pushIf(lines, "HitPosition", mode.mHitPos);
+  pushIf(lines, "ScorePosition", mode.mScorePos);
+  pushIf(lines, "ComboPosition", mode.mComboPos);
 
-  lines.push(`JudgementLine: ${bool01($("mJudgementLine").checked)}`);
-  lines.push(`UpsideDown: ${bool01($("mUpsideDown").checked)}`);
-  lines.push(`KeysUnderNotes: ${bool01($("mKeysUnderNotes").checked)}`);
+  lines.push(`JudgementLine: ${bool01(!!mode.mJudgementLine)}`);
+  lines.push(`UpsideDown: ${bool01(!!mode.mUpsideDown)}`);
+  lines.push(`KeysUnderNotes: ${bool01(!!mode.mKeysUnderNotes)}`);
 
   lines.push(`ColumnLineWidth: ${csvRepeat(0, keys + 1)}`);
 
-  pushIf(lines, "BarlineHeight", $("mBarlineHeight").value);
-  pushIf(lines, "WidthForNoteHeightScale", $("mNoteHeightScale").value);
-  pushIf(lines, "LightPosition", $("mLightPos").value);
+  pushIf(lines, "BarlineHeight", mode.mBarlineHeight);
+  pushIf(lines, "WidthForNoteHeightScale", mode.mNoteHeightScale);
+  pushIf(lines, "LightPosition", mode.mLightPos);
 
-  pushIf(lines, "StageLeft", $("mStageLeft").value);
-  pushIf(lines, "StageRight", $("mStageRight").value);
-  pushIf(lines, "StageBottom", $("mStageBottom").value);
-  pushIf(lines, "StageHint", $("mStageHint").value);
-  pushIf(lines, "StageLight", $("mStageLight").value);
+  pushIf(lines, "StageLeft", mode.mStageLeft);
+  pushIf(lines, "StageRight", mode.mStageRight);
+  pushIf(lines, "StageBottom", mode.mStageBottom);
+  pushIf(lines, "StageHint", mode.mStageHint);
+  pushIf(lines, "StageLight", mode.mStageLight);
 
-  pushIf(lines, "LightingNWidth", $("mLightNWidth").value);
-  pushIf(lines, "LightingLWidth", $("mLightLWidth").value);
-  pushIf(lines, "LightingN", $("mLightingN").value);
-  pushIf(lines, "LightingL", $("mLightingL").value);
+  pushIf(lines, "LightingNWidth", mode.mLightNWidth);
+  pushIf(lines, "LightingLWidth", mode.mLightLWidth);
+  pushIf(lines, "LightingN", mode.mLightingN);
+  pushIf(lines, "LightingL", mode.mLightingL);
 
+  /* shared stuff below */
   pushIf(lines, "ColourHold", $("mColourHold").value);
   pushIf(lines, "ColourBreak", $("mColourBreak").value);
 
-  // 0-based in skin.ini (0..keys-1)
   const keyColour = cleanLine($("mKeyColour").value);
   if(keyColour){
     for(let idx=0; idx<keys; idx++) lines.push(`Colour${idx}: ${keyColour}`);
@@ -529,7 +657,6 @@ function maniaBlockForKeys(keys){
   const pNoteL = $("pNoteL").value;
   const pNoteT = $("pNoteT").value;
 
-  // skin.ini index is 0-based, but {n} is 1-based for filenames
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
     const a = pat(pKey, n); if(a) lines.push(`KeyImage${idx}: ${a}`);
@@ -605,7 +732,14 @@ function genIni(){
 
 /* autosave */
 let saveTimer = null;
+
+function saveCurrentModeIntoState(){
+  maniaModes[currentKeys] = readModeFromUI();
+}
+
 function saveState(){
+  saveCurrentModeIntoState();
+
   const s = {
     gName: $("gName").value,
     gAuthor: $("gAuthor").value,
@@ -624,36 +758,7 @@ function saveState(){
     fComboPrefix: $("fComboPrefix").value,
     fComboOverlap: $("fComboOverlap").value,
 
-    mColWidth: $("mColWidth").value,
-    mColSpacing: $("mColSpacing").value,
-    mAutoCenter: $("mAutoCenter").checked,
-    mARPreset: $("mARPreset").value,
-    mARW: $("mARW").value,
-    mARH: $("mARH").value,
-    mCenterOffset: $("mCenterOffset").value,
-
-    mHitPos: $("mHitPos").value,
-    mScorePos: $("mScorePos").value,
-    mComboPos: $("mComboPos").value,
-    mJudgementLine: $("mJudgementLine").checked,
-    mUpsideDown: $("mUpsideDown").checked,
-    mKeysUnderNotes: $("mKeysUnderNotes").checked,
-
-    mBarlineHeight: $("mBarlineHeight").value,
-    mNoteHeightScale: $("mNoteHeightScale").value,
-    mLightPos: $("mLightPos").value,
-
-    mStageLeft: $("mStageLeft").value,
-    mStageRight: $("mStageRight").value,
-    mStageBottom: $("mStageBottom").value,
-    mStageHint: $("mStageHint").value,
-    mStageLight: $("mStageLight").value,
-
-    mLightNWidth: $("mLightNWidth").value,
-    mLightLWidth: $("mLightLWidth").value,
-    mLightingN: $("mLightingN").value,
-    mLightingL: $("mLightingL").value,
-
+    // shared mania
     mKeyColour: $("mKeyColour").value,
     mColourHold: $("mColourHold").value,
     mColourBreak: $("mColourBreak").value,
@@ -672,6 +777,10 @@ function saveState(){
     h200: $("h200").value,
     h300: $("h300").value,
     h300g: $("h300g").value,
+
+    // per keymode
+    currentKeys: String(currentKeys),
+    maniaModes: maniaModes
   };
 
   try{
@@ -680,6 +789,7 @@ function saveState(){
     setTimeout(()=>{ $("savePulse").textContent=""; }, 700);
   }catch(e){}
 }
+
 function loadState(){
   let raw=null;
   try{ raw = localStorage.getItem(STORAGE_KEY); }catch(e){}
@@ -706,36 +816,6 @@ function loadState(){
     $("fComboPrefix").value = s.fComboPrefix ?? "";
     $("fComboOverlap").value = s.fComboOverlap ?? "0";
 
-    $("mColWidth").value = s.mColWidth ?? "70";
-    $("mColSpacing").value = s.mColSpacing ?? "0";
-    $("mAutoCenter").checked = (s.mAutoCenter ?? true);
-    $("mARPreset").value = s.mARPreset ?? "16:9";
-    $("mARW").value = s.mARW ?? "16";
-    $("mARH").value = s.mARH ?? "9";
-    $("mCenterOffset").value = s.mCenterOffset ?? "0";
-
-    $("mHitPos").value = s.mHitPos ?? "402";
-    $("mScorePos").value = s.mScorePos ?? "260";
-    $("mComboPos").value = s.mComboPos ?? "240";
-    $("mJudgementLine").checked = (s.mJudgementLine ?? true);
-    $("mUpsideDown").checked = !!s.mUpsideDown;
-    $("mKeysUnderNotes").checked = !!s.mKeysUnderNotes;
-
-    $("mBarlineHeight").value = s.mBarlineHeight ?? "";
-    $("mNoteHeightScale").value = s.mNoteHeightScale ?? "";
-    $("mLightPos").value = s.mLightPos ?? "";
-
-    $("mStageLeft").value = s.mStageLeft ?? "";
-    $("mStageRight").value = s.mStageRight ?? "";
-    $("mStageBottom").value = s.mStageBottom ?? "";
-    $("mStageHint").value = s.mStageHint ?? "";
-    $("mStageLight").value = s.mStageLight ?? "";
-
-    $("mLightNWidth").value = s.mLightNWidth ?? "";
-    $("mLightLWidth").value = s.mLightLWidth ?? "";
-    $("mLightingN").value = s.mLightingN ?? "";
-    $("mLightingL").value = s.mLightingL ?? "";
-
     $("mKeyColour").value = s.mKeyColour ?? "";
     $("mColourHold").value = s.mColourHold ?? "";
     $("mColourBreak").value = s.mColourBreak ?? "";
@@ -754,11 +834,25 @@ function loadState(){
     $("h200").value = s.h200 ?? "";
     $("h300").value = s.h300 ?? "";
     $("h300g").value = s.h300g ?? "";
+
+    // per keymode
+    if(s.maniaModes && typeof s.maniaModes === "object"){
+      for(const k of ["4","5","6","7"]){
+        if(s.maniaModes[k]) maniaModes[Number(k)] = s.maniaModes[k];
+      }
+    }
+
+    const ck = Number(s.currentKeys || "4");
+    currentKeys = ([4,5,6,7].includes(ck) ? ck : 4);
+    $("mKeysSelect").value = String(currentKeys);
+    applyModeToUI(maniaModes[currentKeys] || defaultMode(currentKeys));
   }catch(e){}
 }
 
 /* live update */
 function updatePreview(){
+  // always keep current mode stored before generating
+  saveCurrentModeIntoState();
   $("preview").value = genIni();
 }
 function scheduleUpdate(){
@@ -788,17 +882,32 @@ function clearWipe(){
 $("downloadIni").addEventListener("click", downloadIni);
 $("clearWipe").addEventListener("click", clearWipe);
 
+/* keymode selector */
+$("mKeysSelect").addEventListener("change", ()=>{
+  // save old mode
+  saveCurrentModeIntoState();
+  // switch
+  currentKeys = Number($("mKeysSelect").value || "4");
+  if(!maniaModes[currentKeys]) maniaModes[currentKeys] = defaultMode(currentKeys);
+  applyModeToUI(maniaModes[currentKeys]);
+  scheduleUpdate();
+});
+
 /* binds */
 [
   "gName","gAuthor",
   "gCursorCentre","gCursorExpand","gCursorRotate","gCursorTrailRotate",
   "cMenuGlow","cSongActive","cSongInactive",
   "fScorePrefix","fScoreOverlap","fComboPrefix","fComboOverlap",
+
+  /* mania per keymode fields (same ids, but stored per mode) */
   "mColWidth","mColSpacing","mAutoCenter","mARPreset","mARW","mARH","mCenterOffset",
   "mHitPos","mScorePos","mComboPos","mJudgementLine","mUpsideDown","mKeysUnderNotes",
   "mBarlineHeight","mNoteHeightScale","mLightPos",
   "mStageLeft","mStageRight","mStageBottom","mStageHint","mStageLight",
   "mLightNWidth","mLightLWidth","mLightingN","mLightingL",
+
+  /* shared mania fields */
   "mKeyColour","mColourHold","mColourBreak",
   "pKey","pKeyD","pNote","pNoteH","pNoteL","pNoteT","mWarningArrow",
   "h0","h50","h100","h200","h300","h300g"
@@ -827,6 +936,11 @@ function seedDefaultsIfEmpty(){
 
 loadState();
 seedDefaultsIfEmpty();
+
+/* ensure UI is initialized even with no save */
+$("mKeysSelect").value = String(currentKeys);
+applyModeToUI(maniaModes[currentKeys]);
+
 updatePreview();
 </script>
 </body>
