@@ -11,1071 +11,247 @@
       --bg:#0b0c0f; --fg:#e8e8e8; --muted:#7a7a7a;
       --border:rgba(255,255,255,.08); --panel:rgba(255,255,255,.03);
       --fs:14px; --lh:1.6; --r:6px;
-
-      /* select */
-      --selBg:#000;
-      --selBg2:#0a0a0a;
-      --selBorder:rgba(255,255,255,.12);
-      --selHi:#111;
     }
 
     *{ box-sizing:border-box; }
 
-    /* Scrollbars (Firefox) */
-    *{
-      scrollbar-width: thin;
-      scrollbar-color: rgba(200,200,200,.35) rgba(0,0,0,.15);
-    }
-    /* Scrollbars (Chromium/WebKit) */
-    *::-webkit-scrollbar{ width:10px; height:10px; }
-    *::-webkit-scrollbar-track{
-      background: rgba(0,0,0,.15);
-      border-radius: 6px;
-    }
-    *::-webkit-scrollbar-thumb{
-      background: rgba(200,200,200,.30);
-      border: 2px solid rgba(0,0,0,.15);
-      border-radius: 6px;
-    }
-    *::-webkit-scrollbar-thumb:hover{
-      background: rgba(200,200,200,.42);
-    }
-
     body{
       margin:0; background:var(--bg); color:var(--fg);
-      font:var(--fs)/var(--lh) ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font:var(--fs)/var(--lh) ui-monospace, Menlo, Consolas, monospace;
       height:100vh;
     }
+
     .app{ height:100vh; display:flex; flex-direction:column; }
 
     .topbar{
-      position:sticky; top:0; z-index:10;
-      display:flex; align-items:center; justify-content:space-between;
+      display:flex; gap:8px; flex-wrap:wrap;
       padding:8px 10px; border-bottom:1px solid var(--border);
-      background:linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.15)), var(--panel);
-      gap:10px; flex-wrap:wrap;
+      background:rgba(255,255,255,.03);
+      align-items:center; justify-content:space-between;
     }
-    .controls{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+
+    .controls{ display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+
     .btn{
-      cursor:pointer; padding:6px 10px; border-radius:var(--r);
-      border:1px solid var(--border); background:rgba(0,0,0,.25);
-      color:var(--muted); font-weight:600;
+      padding:6px 10px;
+      border-radius:6px;
+      border:1px solid var(--border);
+      background:rgba(0,0,0,.25);
+      color:var(--muted);
+      cursor:pointer;
+      font-weight:600;
     }
-    .btn:hover{ color:var(--fg); border-color:rgba(255,255,255,.18); }
-    .btn.primary{ color:var(--fg); background:rgba(255,255,255,.06); }
-    .btn.danger:hover{ border-color:rgba(255,120,120,.35); color:rgba(255,210,210,.95); }
-    .pill{
-      padding:6px 10px; border:1px solid var(--border); border-radius:var(--r);
-      background:rgba(0,0,0,.18); color:rgba(232,232,232,.38); font-size:12px;
+    .btn.active{
+      background:rgba(255,255,255,.08);
+      color:var(--fg);
+      border-color:rgba(255,255,255,.2);
     }
 
     .main{
-      flex:1; min-height:0;
-      display:grid; grid-template-columns: 1.1fr 0.9fr;
-      gap:10px; padding:10px;
+      flex:1;
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:10px;
+      padding:10px;
     }
+
     .panel{
-      border:1px solid var(--border); border-radius:var(--r);
+      border:1px solid var(--border);
+      border-radius:6px;
       background:rgba(255,255,255,.02);
-      min-height:0; overflow:hidden;
-      display:flex; flex-direction:column;
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
     }
+
     .panelHead{
-      padding:8px 10px; border-bottom:1px solid var(--border);
-      display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      padding:8px 10px;
+      border-bottom:1px solid var(--border);
+      font-size:12px;
+      color:rgba(232,232,232,.6);
     }
-    .tabs{ display:flex; gap:6px; flex-wrap:wrap; }
-    .tab{
-      cursor:pointer; padding:6px 10px; border-radius:var(--r);
-      border:1px solid var(--border); background:rgba(0,0,0,.18);
-      color:var(--muted); font-weight:600; user-select:none;
-    }
-    .tab.active{ color:var(--fg); border-color:rgba(255,255,255,.18); background:rgba(255,255,255,.05); }
 
     .panelBody{
-      padding:10px; overflow:auto;
-      flex:1; min-height:0;
+      padding:10px;
+      overflow:auto;
+      flex:1;
     }
 
-    .row{ display:grid; grid-template-columns: 190px 1fr; gap:10px; align-items:center; margin-bottom:8px; }
-    .row label{ color:rgba(232,232,232,.70); font-size:12px; }
-
-    input[type="text"], input[type="number"], select, textarea{
+    textarea{
       width:100%;
-      border:1px solid var(--border); border-radius:var(--r);
-      background:rgba(0,0,0,.22); color:var(--fg);
-      padding:7px 9px; outline:none;
+      height:100%;
+      resize:none;
+      background:rgba(0,0,0,.25);
+      border:1px solid var(--border);
+      color:var(--fg);
+      padding:10px;
+      border-radius:6px;
       font:inherit;
     }
 
-    /* ===== SELECT PRETO (dropdown) ===== */
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      margin-bottom:8px;
+    }
+
     select{
-      background: var(--selBg) !important;
-      color: var(--fg) !important;
-      border: 1px solid var(--selBorder) !important;
-
-      appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-
-      /* espaço pro "arrow" */
-      padding-right: 34px;
-
-      /* arrow fake */
-      background-image:
-        linear-gradient(45deg, transparent 50%, rgba(255,255,255,.55) 50%),
-        linear-gradient(135deg, rgba(255,255,255,.55) 50%, transparent 50%),
-        linear-gradient(to right, transparent, transparent);
-      background-position:
-        calc(100% - 18px) 50%,
-        calc(100% - 12px) 50%,
-        0 0;
-      background-size:
-        6px 6px,
-        6px 6px,
-        100% 100%;
-      background-repeat: no-repeat;
-    }
-
-    select:focus{
-      border-color: rgba(255,255,255,.22) !important;
-      background: var(--selBg) !important;
-      box-shadow: 0 0 0 2px rgba(255,255,255,.06);
-    }
-
-    /* tenta forçar a lista aberta (depende do browser/OS) */
-    select option{
-      background: var(--selBg) !important;
-      color: var(--fg) !important;
-    }
-    select option:checked{
-      background: var(--selHi) !important;
-      color: var(--fg) !important;
-    }
-    /* ===== /SELECT PRETO ===== */
-
-    textarea{
-      min-height: calc(100vh - 170px);
-      resize:none;
-    }
-
-    input[type="color"]{
-      width:44px; height:34px;
-      border:1px solid var(--border); border-radius:var(--r);
-      background:transparent; padding:0;
-    }
-
-    .hint{ color:rgba(232,232,232,.38); font-size:12px; margin:8px 0 0; }
-    .sep{ height:1px; background:var(--border); margin:12px 0; }
-    .mini{ font-size:12px; color:rgba(232,232,232,.45); }
-    .inline{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
-    .grid2{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
-    .kbd{ border:1px solid var(--border); border-bottom-color:rgba(255,255,255,.14); background:rgba(0,0,0,.22); border-radius:6px; padding:1px 6px; }
-    .groupTitle{ font-size:12px; color:rgba(232,232,232,.70); margin:2px 0 8px; }
-
-    /* Minimal switch */
-    .switch{ display:inline-flex; align-items:center; gap:8px; }
-    .switch input{ display:none; }
-    .sw{
-      width:44px; height:24px;
+      background:black;
+      color:white;
       border:1px solid var(--border);
-      background:rgba(0,0,0,.22);
+      padding:6px;
       border-radius:6px;
-      position:relative;
-      transition:140ms linear;
-    }
-    .sw::after{
-      content:"";
-      width:18px; height:18px;
-      position:absolute; top:50%; left:3px;
-      transform:translateY(-50%);
-      border-radius:5px;
-      background:rgba(255,255,255,.25);
-      transition:140ms linear;
-    }
-    .switch input:checked + .sw{
-      border-color:rgba(255,255,255,.18);
-      background:rgba(255,255,255,.05);
-    }
-    .switch input:checked + .sw::after{
-      left:23px;
-      background:rgba(255,255,255,.55);
-    }
-
-    .switchLabel{
-      font-size:12px;
-      color:rgba(232,232,232,.55);
-      font-weight:600;
-      user-select:none;
-    }
-
-    @media (max-width: 980px){
-      .main{ grid-template-columns: 1fr; }
-      textarea{ min-height: 55vh; }
     }
   </style>
 </head>
 
 <body>
-  <div class="app">
-    <div class="topbar">
-      <div class="controls">
-        <button class="btn primary" id="downloadIni">Download skin.ini</button>
-        <button class="btn danger" id="clearWipe">Clear (wipe)</button>
-        <span class="pill" id="savePulse"></span>
-      </div>
-      <div class="controls">
-        <span class="pill">Version 1.4 [Beta]</span>
+<div class="app">
 
-        <span class="pill" style="display:flex; align-items:center; gap:10px;">
-          <span class="switchLabel">hairez-style</span>
-          <label class="switch" title="Pretty formatting (aligned + spaced groups)">
-            <input type="checkbox" id="prettyFormat" checked>
-            <span class="sw"></span>
-          </label>
-        </span>
-      </div>
+  <!-- TOP -->
+  <div class="topbar">
+    <div class="controls">
+      <button class="btn active" id="toggle4">4K</button>
+      <button class="btn" id="toggle6">6K</button>
+      <button class="btn" id="toggle7">7K</button>
     </div>
 
-    <div class="main">
-      <!-- LEFT -->
-      <div class="panel">
-        <div class="panelHead">
-          <div class="tabs">
-            <div class="tab active" data-tab="general">General</div>
-            <div class="tab" data-tab="mania">Mania</div>
-          </div>
-          <div class="mini">General includes Colours + Fonts. Mania edits each keymode separately.</div>
-        </div>
-
-        <!-- GENERAL -->
-        <div class="panelBody" id="tab-general">
-          <div class="groupTitle">[General]</div>
-          <div class="row"><label>Name</label><input type="text" id="gName" placeholder="My Skin"></div>
-          <div class="row"><label>Author</label><input type="text" id="gAuthor" placeholder="Your name"></div>
-          <div class="row"><label>Version</label><input type="text" id="gVersion" value="latest" readonly></div>
-
-          <div class="sep"></div>
-          <div class="groupTitle">Cursor</div>
-
-          <div class="row">
-            <label>CursorCentre</label>
-            <div class="inline"><label class="switch"><input type="checkbox" id="gCursorCentre" checked><span class="sw"></span></label></div>
-          </div>
-          <div class="row">
-            <label>CursorExpand</label>
-            <div class="inline"><label class="switch"><input type="checkbox" id="gCursorExpand"><span class="sw"></span></label></div>
-          </div>
-          <div class="row">
-            <label>CursorRotate</label>
-            <div class="inline"><label class="switch"><input type="checkbox" id="gCursorRotate"><span class="sw"></span></label></div>
-          </div>
-          <div class="row">
-            <label>CursorTrailRotate</label>
-            <div class="inline"><label class="switch"><input type="checkbox" id="gCursorTrailRotate"><span class="sw"></span></label></div>
-          </div>
-
-          <div class="sep"></div>
-          <div class="groupTitle">[Colours] (menu/UI)</div>
-
-          <div class="row">
-            <label>MenuGlow</label>
-            <div class="inline"><input type="color" id="cMenuGlowPick"><input type="text" id="cMenuGlow" placeholder="255,255,255"></div>
-          </div>
-          <div class="row">
-            <label>SongSelectActiveText</label>
-            <div class="inline"><input type="color" id="cSongActivePick"><input type="text" id="cSongActive" placeholder="255,255,255"></div>
-          </div>
-          <div class="row">
-            <label>SongSelectInactiveText</label>
-            <div class="inline"><input type="color" id="cSongInactivePick"><input type="text" id="cSongInactive" placeholder="160,160,160"></div>
-          </div>
-
-          <div class="sep"></div>
-          <div class="groupTitle">[Fonts]</div>
-
-          <div class="grid2">
-            <div>
-              <div class="row"><label>ScorePrefix</label><input type="text" id="fScorePrefix" placeholder="score"></div>
-              <div class="row"><label>ScoreOverlap</label><input type="number" id="fScoreOverlap" value="0"></div>
-            </div>
-            <div>
-              <div class="row"><label>ComboPrefix</label><input type="text" id="fComboPrefix" placeholder="combo"></div>
-              <div class="row"><label>ComboOverlap</label><input type="number" id="fComboOverlap" value="0"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- MANIA -->
-        <div class="panelBody" id="tab-mania" style="display:none">
-          <div class="row">
-            <label>Edit keymode</label>
-            <div class="inline">
-              <select id="mKeysSelect" style="max-width:160px">
-                <option value="4">4K</option>
-                <option value="5">5K</option>
-                <option value="6">6K</option>
-                <option value="7">7K</option>
-              </select>
-              <span class="mini">Each keymode has its own values.</span>
-            </div>
-          </div>
-
-          <div class="sep"></div>
-          <div class="groupTitle">♦ Essentials (per keymode)</div>
-          <div class="row"><label>ColumnWidth (per col)</label><input type="number" id="mColWidth" value="70"></div>
-          <div class="row"><label>ColumnSpacing (between)</label><input type="number" id="mColSpacing" value="0"></div>
-
-          <div class="row">
-            <label>Auto-center ColumnStart</label>
-            <div class="inline">
-              <label class="switch"><input type="checkbox" id="mAutoCenter" checked><span class="sw"></span></label>
-            </div>
-          </div>
-
-          <div class="row">
-            <label>Aspect ratio</label>
-            <div class="inline">
-              <select id="mARPreset">
-                <option value="16:9" selected>16:9</option>
-                <option value="4:3">4:3</option>
-                <option value="21:9">21:9</option>
-                <option value="custom">Custom</option>
-              </select>
-              <input type="number" id="mARW" value="16" style="max-width:110px" title="Custom width">
-              <input type="number" id="mARH" value="9" style="max-width:110px" title="Custom height">
-              <span class="mini">AR = W/H</span>
-            </div>
-          </div>
-
-          <div class="row"><label>Fine adjust (px)</label><input type="number" id="mCenterOffset" value="0"></div>
-
-          <div class="row"><label>HitPosition</label><input type="number" id="mHitPos" value="402"></div>
-          <div class="row"><label>ScorePosition</label><input type="number" id="mScorePos" value="260"></div>
-          <div class="row"><label>ComboPosition</label><input type="number" id="mComboPos" value="240"></div>
-
-          <div class="row">
-            <label>JudgementLine</label>
-            <div class="inline"><label class="switch"><input type="checkbox" id="mJudgementLine" checked><span class="sw"></span></label></div>
-          </div>
-          <div class="row">
-            <label>UpsideDown</label>
-            <div class="inline"><label class="switch"><input type="checkbox" id="mUpsideDown"><span class="sw"></span></label></div>
-          </div>
-          <div class="row">
-            <label>KeysUnderNotes</label>
-            <div class="inline"><label class="switch"><input type="checkbox" id="mKeysUnderNotes"><span class="sw"></span></label></div>
-          </div>
-
-          <div class="sep"></div>
-          <div class="groupTitle">♦ Reading refinements (per keymode)</div>
-          <div class="row"><label>BarlineHeight</label><input type="number" id="mBarlineHeight" value=""></div>
-          <div class="row"><label>WidthForNoteHeightScale</label><input type="number" id="mNoteHeightScale" value=""></div>
-          <div class="row"><label>LightPosition</label><input type="number" id="mLightPos" value=""></div>
-
-          <div class="sep"></div>
-          <div class="groupTitle">♦ Stage / Lighting (per keymode)</div>
-          <div class="grid2">
-            <div>
-              <div class="row"><label>StageLeft</label><input type="text" id="mStageLeft"></div>
-              <div class="row"><label>StageRight</label><input type="text" id="mStageRight"></div>
-              <div class="row"><label>StageBottom</label><input type="text" id="mStageBottom"></div>
-              <div class="row"><label>StageHint</label><input type="text" id="mStageHint"></div>
-              <div class="row"><label>StageLight</label><input type="text" id="mStageLight"></div>
-            </div>
-            <div>
-              <div class="row"><label>LightingNWidth</label><input type="number" id="mLightNWidth"></div>
-              <div class="row"><label>LightingLWidth</label><input type="number" id="mLightLWidth"></div>
-              <div class="row"><label>LightingN</label><input type="text" id="mLightingN"></div>
-              <div class="row"><label>LightingL</label><input type="text" id="mLightingL"></div>
-            </div>
-          </div>
-
-          <div class="sep"></div>
-          <div class="groupTitle">♦ Colours (shared)</div>
-
-          <div class="row">
-            <label>Colour (all keys)</label>
-            <div class="inline">
-              <input type="color" id="mKeyColourPick">
-              <input type="text" id="mKeyColour" placeholder="255,255,255">
-            </div>
-          </div>
-
-          <div class="row">
-            <label>ColourHold</label>
-            <div class="inline"><input type="color" id="mHoldPick"><input type="text" id="mColourHold" placeholder="255,255,255"></div>
-          </div>
-          <div class="row">
-            <label>ColourBreak</label>
-            <div class="inline"><input type="color" id="mBreakPick"><input type="text" id="mColourBreak" placeholder="255,80,80"></div>
-          </div>
-
-          <div class="sep"></div>
-          <div class="groupTitle">♦ Images (patterns) (shared)</div>
-          <div class="mini">
-            skin.ini indexes are <span class="kbd">0..Keys-1</span>, but <span class="kbd">{n}</span> stays <span class="kbd">1..Keys</span> for filenames.
-            Example: <span class="kbd">key{n}</span>.
-          </div>
-
-          <div class="grid2" style="margin-top:8px">
-            <div>
-              <div class="row"><label>KeyImage# pattern</label><input type="text" id="pKey" placeholder="key{n}"></div>
-              <div class="row"><label>KeyImage#D pattern</label><input type="text" id="pKeyD" placeholder="key{n}D"></div>
-            </div>
-            <div>
-              <div class="row"><label>NoteImage# pattern</label><input type="text" id="pNote" placeholder="note{n}"></div>
-              <div class="row"><label>NoteImage#H pattern</label><input type="text" id="pNoteH" placeholder="note{n}H"></div>
-            </div>
-          </div>
-
-          <div class="grid2">
-            <div>
-              <div class="row"><label>NoteImage#L pattern</label><input type="text" id="pNoteL" placeholder="note{n}L"></div>
-              <div class="row"><label>NoteImage#T pattern</label><input type="text" id="pNoteT" placeholder="note{n}T"></div>
-            </div>
-            <div class="row" style="grid-template-columns:190px 1fr;">
-              <label>WarningArrow</label><input type="text" id="mWarningArrow">
-            </div>
-          </div>
-
-          <div class="sep"></div>
-          <div class="groupTitle">♦ Hit sprites (shared)</div>
-          <div class="grid2">
-            <div class="row"><label>Hit0</label><input type="text" id="h0"></div>
-            <div class="row"><label>Hit50</label><input type="text" id="h50"></div>
-            <div class="row"><label>Hit100</label><input type="text" id="h100"></div>
-            <div class="row"><label>Hit200</label><input type="text" id="h200"></div>
-            <div class="row"><label>Hit300</label><input type="text" id="h300"></div>
-            <div class="row"><label>Hit300g</label><input type="text" id="h300g"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- RIGHT PREVIEW -->
-      <div class="panel">
-        <div class="panelHead">
-          <div class="mini">skin.ini preview</div>
-          <div class="mini">Mania: Includes 4k/5k/6k/7k</div>
-        </div>
-        <div class="panelBody">
-          <textarea id="preview" readonly></textarea>
-          <p class="hint">This is exactly what will be downloaded as skin.ini.</p>
-        </div>
-      </div>
+    <div class="controls">
+      <button class="btn" id="downloadIni">Download skin.ini</button>
     </div>
   </div>
 
+  <div class="main">
+    <!-- LEFT -->
+    <div class="panel">
+      <div class="panelHead">Mania</div>
+      <div class="panelBody">
+
+        <div class="row">
+          <label>Edit keymode</label>
+          <select id="mKeysSelect"></select>
+        </div>
+
+        <div class="row">
+          <label>ColumnWidth</label>
+          <input type="number" id="mColWidth" value="70">
+        </div>
+
+        <div class="row">
+          <label>ColumnSpacing</label>
+          <input type="number" id="mColSpacing" value="0">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="panel">
+      <div class="panelHead">skin.ini preview</div>
+      <div class="panelBody">
+        <textarea id="preview" readonly></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-const $ = (id)=>document.getElementById(id);
-const STORAGE_KEY = "aeditor_skinini_builder_v6_pretty_groups";
+const $ = id => document.getElementById(id);
 
-const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
-const bool01 = (b)=> (b ? "1" : "0");
-function cleanLine(s){ return String(s??"").replace(/\r/g,"").trimEnd(); }
+const STORAGE_KEY = "skin_modes_active";
 
-/* Pretty formatting toggle */
-let prettyFormat = true;
-
-/* Key/value formatting */
-function fmtKV(key, value){
-  const v = cleanLine(value);
-  if(prettyFormat){
-    const k = String(key).padEnd(32, " ");
-    return `${k} : ${v}`;
-  }
-  return `${key}: ${v}`;
-}
-function pushIfFmt(arr, key, value){
-  const v = cleanLine(value);
-  if(v !== "") arr.push(fmtKV(key, v));
-}
-function spacer(arr){
-  if(prettyFormat) arr.push("");
-}
-function header(arr, title){
-  if(prettyFormat){
-    arr.push(`// ${title} --`);
-    arr.push("");
-  }
-}
-
-function rgbToHex(rgb){
-  const m = String(rgb||"").match(/^\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*$/);
-  if(!m) return null;
-  const r = clamp(parseInt(m[1],10),0,255);
-  const g = clamp(parseInt(m[2],10),0,255);
-  const b = clamp(parseInt(m[3],10),0,255);
-  return "#" + [r,g,b].map(x=>x.toString(16).padStart(2,"0")).join("");
-}
-function hexToRgb(hex){
-  const h = String(hex||"").replace("#","").trim();
-  if(!/^[0-9a-fA-F]{6}$/.test(h)) return "";
-  const r = parseInt(h.slice(0,2),16);
-  const g = parseInt(h.slice(2,4),16);
-  const b = parseInt(h.slice(4,6),16);
-  return `${r},${g},${b}`;
-}
-function bindColourSync(pickId, textId){
-  const pick = $(pickId);
-  const txt = $(textId);
-  const hx = rgbToHex(txt.value);
-  if(hx) pick.value = hx;
-
-  pick.addEventListener("input", ()=>{
-    txt.value = hexToRgb(pick.value);
-    scheduleUpdate();
-  });
-  txt.addEventListener("input", ()=>{
-    const hx2 = rgbToHex(txt.value);
-    if(hx2) pick.value = hx2;
-    scheduleUpdate();
-  });
-}
-
-function csvRepeat(value, count){
-  return Array.from({length: count}, ()=>String(value)).join(",");
-}
-function csvBetween(value, keys){
-  return csvRepeat(value, Math.max(0, keys-1));
-}
-function pat(pattern, n){
-  const p = String(pattern||"").trim();
-  if(!p) return "";
-  return p.replaceAll("{n}", String(n));
-}
-
-/* tabs */
-function setTab(name){
-  document.querySelectorAll(".tab").forEach(t=>{
-    t.classList.toggle("active", t.dataset.tab === name);
-  });
-  $("tab-general").style.display = (name==="general") ? "block" : "none";
-  $("tab-mania").style.display   = (name==="mania") ? "block" : "none";
-}
-document.querySelectorAll(".tab").forEach(t=>{
-  t.addEventListener("click", ()=> setTab(t.dataset.tab));
-});
-
-/* -------------------------
-   Mania per-keymode state
--------------------------- */
-function defaultMode(keys){
-  return {
-    mColWidth: "70",
-    mColSpacing: "0",
-    mAutoCenter: true,
-    mARPreset: "16:9",
-    mARW: "16",
-    mARH: "9",
-    mCenterOffset: "0",
-
-    mHitPos: "435",
-    mScorePos: "260",
-    mComboPos: "240",
-
-    mJudgementLine: false,
-    mUpsideDown: false,
-    mKeysUnderNotes: false,
-
-    mBarlineHeight: "",
-    mNoteHeightScale: "",
-    mLightPos: "",
-
-    mStageLeft: "",
-    mStageRight: "",
-    mStageBottom: "",
-    mStageHint: "",
-    mStageLight: "",
-
-    mLightNWidth: "",
-    mLightLWidth: "",
-    mLightingN: "",
-    mLightingL: ""
-  };
-}
-
-const maniaModes = {
-  4: defaultMode(4),
-  5: defaultMode(5),
-  6: defaultMode(6),
-  7: defaultMode(7),
-};
+/* ===== ACTIVE MODES ===== */
+let activeModes = { 4:true, 6:false, 7:false };
 
 let currentKeys = 4;
 
-function readModeFromUI(){
-  return {
-    mColWidth: $("mColWidth").value,
-    mColSpacing: $("mColSpacing").value,
-    mAutoCenter: $("mAutoCenter").checked,
-    mARPreset: $("mARPreset").value,
-    mARW: $("mARW").value,
-    mARH: $("mARH").value,
-    mCenterOffset: $("mCenterOffset").value,
+const modesData = {
+  4:{ colW:70, colS:0 },
+  6:{ colW:70, colS:0 },
+  7:{ colW:70, colS:0 }
+};
 
-    mHitPos: $("mHitPos").value,
-    mScorePos: $("mScorePos").value,
-    mComboPos: $("mComboPos").value,
-
-    mJudgementLine: $("mJudgementLine").checked,
-    mUpsideDown: $("mUpsideDown").checked,
-    mKeysUnderNotes: $("mKeysUnderNotes").checked,
-
-    mBarlineHeight: $("mBarlineHeight").value,
-    mNoteHeightScale: $("mNoteHeightScale").value,
-    mLightPos: $("mLightPos").value,
-
-    mStageLeft: $("mStageLeft").value,
-    mStageRight: $("mStageRight").value,
-    mStageBottom: $("mStageBottom").value,
-    mStageHint: $("mStageHint").value,
-    mStageLight: $("mStageLight").value,
-
-    mLightNWidth: $("mLightNWidth").value,
-    mLightLWidth: $("mLightLWidth").value,
-    mLightingN: $("mLightingN").value,
-    mLightingL: $("mLightingL").value
-  };
+function refreshModeButtons(){
+  [4,6,7].forEach(k=>{
+    $("toggle"+k).classList.toggle("active", activeModes[k]);
+  });
 }
 
-function applyModeToUI(mode){
-  $("mColWidth").value = mode.mColWidth ?? "70";
-  $("mColSpacing").value = mode.mColSpacing ?? "0";
-  $("mAutoCenter").checked = !!mode.mAutoCenter;
-
-  $("mARPreset").value = mode.mARPreset ?? "16:9";
-  $("mARW").value = mode.mARW ?? "16";
-  $("mARH").value = mode.mARH ?? "9";
-  $("mCenterOffset").value = mode.mCenterOffset ?? "0";
-
-  $("mHitPos").value = mode.mHitPos ?? "402";
-  $("mScorePos").value = mode.mScorePos ?? "260";
-  $("mComboPos").value = mode.mComboPos ?? "240";
-
-  $("mJudgementLine").checked = (mode.mJudgementLine ?? true);
-  $("mUpsideDown").checked = !!mode.mUpsideDown;
-  $("mKeysUnderNotes").checked = !!mode.mKeysUnderNotes;
-
-  $("mBarlineHeight").value = mode.mBarlineHeight ?? "";
-  $("mNoteHeightScale").value = mode.mNoteHeightScale ?? "";
-  $("mLightPos").value = mode.mLightPos ?? "";
-
-  $("mStageLeft").value = mode.mStageLeft ?? "";
-  $("mStageRight").value = mode.mStageRight ?? "";
-  $("mStageBottom").value = mode.mStageBottom ?? "";
-  $("mStageHint").value = mode.mStageHint ?? "";
-  $("mStageLight").value = mode.mStageLight ?? "";
-
-  $("mLightNWidth").value = mode.mLightNWidth ?? "";
-  $("mLightLWidth").value = mode.mLightLWidth ?? "";
-  $("mLightingN").value = mode.mLightingN ?? "";
-  $("mLightingL").value = mode.mLightingL ?? "";
-}
-
-function getAspectRatio(mode){
-  const preset = mode.mARPreset;
-  let w = Number(mode.mARW || 16);
-  let h = Number(mode.mARH || 9);
-
-  if(preset !== "custom"){
-    const [pw,ph] = preset.split(":").map(Number);
-    if(Number.isFinite(pw) && Number.isFinite(ph) && ph !== 0){
-      w = pw; h = ph;
+function refreshSelect(){
+  const sel = $("mKeysSelect");
+  sel.innerHTML = "";
+  Object.keys(activeModes).forEach(k=>{
+    if(activeModes[k]){
+      const o = document.createElement("option");
+      o.value = k;
+      o.textContent = k+"K";
+      sel.appendChild(o);
     }
+  });
+  if(!activeModes[currentKeys]){
+    currentKeys = Number(sel.value);
   }
-  if(!Number.isFinite(w) || !Number.isFinite(h) || h === 0) return 16/9;
-  return w / h;
-}
-
-function calcColumnStart(keys, colWidth, colSpacing, aspectRatio, offset){
-  const usableWidth = 480 * aspectRatio;
-  const columnSum = (colWidth * keys) + (colSpacing * (keys - 1));
-  return Math.round((usableWidth/2) - (columnSum/2)) + Number(offset || 0);
-}
-
-/* ini gen */
-function maniaBlockForKeys(keys){
-  const mode = maniaModes[keys] || defaultMode(keys);
-  const lines = [];
-
-  const colW = Number(mode.mColWidth || 0);
-  const colS = Number(mode.mColSpacing || 0);
-  const ar = getAspectRatio(mode);
-  const autoCenter = !!mode.mAutoCenter;
-  const offset = Number(mode.mCenterOffset || 0);
-
-  lines.push(fmtKV("Keys", keys));
-  spacer(lines);
-
-  lines.push(fmtKV("ColumnWidth", csvRepeat(colW, keys)));
-  lines.push(fmtKV("ColumnSpacing", csvBetween(colS, keys)));
-  spacer(lines);
-
-  if(autoCenter){
-    lines.push(fmtKV("ColumnStart", calcColumnStart(keys, colW, colS, ar, offset)));
-  }
-
-  pushIfFmt(lines, "HitPosition", mode.mHitPos);
-  pushIfFmt(lines, "ScorePosition", mode.mScorePos);
-  pushIfFmt(lines, "ComboPosition", mode.mComboPos);
-  spacer(lines);
-
-  lines.push(fmtKV("JudgementLine", bool01(!!mode.mJudgementLine)));
-  spacer(lines);
-
-  lines.push(fmtKV("UpsideDown", bool01(!!mode.mUpsideDown)));
-  spacer(lines);
-
-  lines.push(fmtKV("KeysUnderNotes", bool01(!!mode.mKeysUnderNotes)));
-  spacer(lines);
-
-  lines.push(fmtKV("ColumnLineWidth", csvRepeat(0, keys + 1)));
-  pushIfFmt(lines, "BarlineHeight", mode.mBarlineHeight);
-  pushIfFmt(lines, "WidthForNoteHeightScale", mode.mNoteHeightScale);
-  pushIfFmt(lines, "LightPosition", mode.mLightPos);
-  spacer(lines);
-
-  /* stage / lighting */
-  header(lines, "stage");
-  pushIfFmt(lines, "StageLeft", mode.mStageLeft);
-  pushIfFmt(lines, "StageRight", mode.mStageRight);
-  pushIfFmt(lines, "StageBottom", mode.mStageBottom);
-  pushIfFmt(lines, "StageHint", mode.mStageHint);
-  pushIfFmt(lines, "StageLight", mode.mStageLight);
-  pushIfFmt(lines, "LightingNWidth", mode.mLightNWidth);
-  pushIfFmt(lines, "LightingLWidth", mode.mLightLWidth);
-  pushIfFmt(lines, "LightingN", mode.mLightingN);
-  pushIfFmt(lines, "LightingL", mode.mLightingL);
-  spacer(lines);
-
-  /* shared colours */
-  pushIfFmt(lines, "ColourHold", $("mColourHold").value);
-  pushIfFmt(lines, "ColourBreak", $("mColourBreak").value);
-  spacer(lines);
-
-  const keyColour = cleanLine($("mKeyColour").value);
-  if(keyColour){
-    for(let idx=0; idx<keys; idx++) lines.push(fmtKV(`Colour${idx}`, keyColour));
-    spacer(lines);
-  }
-
-  /* images (spaced groups) */
-  const pKey = $("pKey").value;
-  const pKeyD = $("pKeyD").value;
-  const pNote = $("pNote").value;
-  const pNoteH = $("pNoteH").value;
-  const pNoteL = $("pNoteL").value;
-  const pNoteT = $("pNoteT").value;
-
-  header(lines, "keys");
-  for(let idx=0; idx<keys; idx++){
-    const n = idx + 1;
-    const a = pat(pKey, n); if(a) lines.push(fmtKV(`KeyImage${idx}`, a));
-  }
-  spacer(lines);
-  for(let idx=0; idx<keys; idx++){
-    const n = idx + 1;
-    const a = pat(pKeyD, n); if(a) lines.push(fmtKV(`KeyImage${idx}D`, a));
-  }
-  spacer(lines);
-
-  header(lines, "notes");
-  for(let idx=0; idx<keys; idx++){
-    const n = idx + 1;
-    const a = pat(pNote, n); if(a) lines.push(fmtKV(`NoteImage${idx}`, a));
-  }
-  spacer(lines);
-  for(let idx=0; idx<keys; idx++){
-    const n = idx + 1;
-    const a = pat(pNoteH, n); if(a) lines.push(fmtKV(`NoteImage${idx}H`, a));
-  }
-  spacer(lines);
-
-  header(lines, "ln");
-  for(let idx=0; idx<keys; idx++){
-    const n = idx + 1;
-    const a = pat(pNoteL, n); if(a) lines.push(fmtKV(`NoteImage${idx}L`, a));
-  }
-  spacer(lines);
-  for(let idx=0; idx<keys; idx++){
-    const n = idx + 1;
-    const a = pat(pNoteT, n); if(a) lines.push(fmtKV(`NoteImage${idx}T`, a));
-  }
-  spacer(lines);
-
-  pushIfFmt(lines, "WarningArrow", $("mWarningArrow").value);
-  spacer(lines);
-
-  header(lines, "hits");
-  pushIfFmt(lines, "Hit0", $("h0").value);
-  pushIfFmt(lines, "Hit50", $("h50").value);
-  pushIfFmt(lines, "Hit100", $("h100").value);
-  pushIfFmt(lines, "Hit200", $("h200").value);
-  pushIfFmt(lines, "Hit300", $("h300").value);
-  pushIfFmt(lines, "Hit300g", $("h300g").value);
-
-  while(lines.length && lines[lines.length-1] === "") lines.pop();
-  return lines;
+  sel.value = currentKeys;
 }
 
 function genIni(){
-  const out = [];
-
-  out.push("[General]");
-  pushIfFmt(out, "Name", $("gName").value);
-  pushIfFmt(out, "Author", $("gAuthor").value);
-  out.push(fmtKV("Version", "latest"));
-  pushIfFmt(out, "CursorCentre", bool01($("gCursorCentre").checked));
-  pushIfFmt(out, "CursorExpand", bool01($("gCursorExpand").checked));
-  pushIfFmt(out, "CursorRotate", bool01($("gCursorRotate").checked));
-  pushIfFmt(out, "CursorTrailRotate", bool01($("gCursorTrailRotate").checked));
-  out.push("");
-
-  const hasColours = cleanLine($("cMenuGlow").value) || cleanLine($("cSongActive").value) || cleanLine($("cSongInactive").value);
-  if(hasColours){
-    out.push("[Colours]");
-    pushIfFmt(out, "MenuGlow", $("cMenuGlow").value);
-    pushIfFmt(out, "SongSelectActiveText", $("cSongActive").value);
-    pushIfFmt(out, "SongSelectInactiveText", $("cSongInactive").value);
-    out.push("");
-  }
-
-  const hasFonts = cleanLine($("fScorePrefix").value) || cleanLine($("fComboPrefix").value) || cleanLine($("fScoreOverlap").value) || cleanLine($("fComboOverlap").value);
-  if(hasFonts){
-    out.push("[Fonts]");
-    pushIfFmt(out, "ScorePrefix", $("fScorePrefix").value);
-    pushIfFmt(out, "ScoreOverlap", $("fScoreOverlap").value);
-    pushIfFmt(out, "ComboPrefix", $("fComboPrefix").value);
-    pushIfFmt(out, "ComboOverlap", $("fComboOverlap").value);
-    out.push("");
-  }
-
-  for(const keys of [4,5,6,7]){
+  let out = [];
+  Object.keys(activeModes).forEach(k=>{
+    if(!activeModes[k]) return;
+    const m = modesData[k];
     out.push("[Mania]");
-    out.push(...maniaBlockForKeys(keys));
+    out.push(`Keys: ${k}`);
+    out.push(`ColumnWidth: ${Array(k).fill(m.colW).join(",")}`);
+    out.push(`ColumnSpacing: ${Array(k-1).fill(m.colS).join(",")}`);
     out.push("");
-  }
-
-  while(out.length && out[out.length-1] === "") out.pop();
+  });
   return out.join("\n");
 }
 
-/* autosave */
-let saveTimer = null;
-
-function saveCurrentModeIntoState(){
-  maniaModes[currentKeys] = readModeFromUI();
-}
-
-function saveState(){
-  saveCurrentModeIntoState();
-
-  const s = {
-    prettyFormat: !!prettyFormat,
-
-    gName: $("gName").value,
-    gAuthor: $("gAuthor").value,
-
-    gCursorCentre: $("gCursorCentre").checked,
-    gCursorExpand: $("gCursorExpand").checked,
-    gCursorRotate: $("gCursorRotate").checked,
-    gCursorTrailRotate: $("gCursorTrailRotate").checked,
-
-    cMenuGlow: $("cMenuGlow").value,
-    cSongActive: $("cSongActive").value,
-    cSongInactive: $("cSongInactive").value,
-
-    fScorePrefix: $("fScorePrefix").value,
-    fScoreOverlap: $("fScoreOverlap").value,
-    fComboPrefix: $("fComboPrefix").value,
-    fComboOverlap: $("fComboOverlap").value,
-
-    mKeyColour: $("mKeyColour").value,
-    mColourHold: $("mColourHold").value,
-    mColourBreak: $("mColourBreak").value,
-
-    pKey: $("pKey").value,
-    pKeyD: $("pKeyD").value,
-    pNote: $("pNote").value,
-    pNoteH: $("pNoteH").value,
-    pNoteL: $("pNoteL").value,
-    pNoteT: $("pNoteT").value,
-    mWarningArrow: $("mWarningArrow").value,
-
-    h0: $("h0").value,
-    h50: $("h50").value,
-    h100: $("h100").value,
-    h200: $("h200").value,
-    h300: $("h300").value,
-    h300g: $("h300g").value,
-
-    currentKeys: String(currentKeys),
-    maniaModes: maniaModes
-  };
-
-  try{
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
-    $("savePulse").textContent = "Saved";
-    setTimeout(()=>{ $("savePulse").textContent=""; }, 700);
-  }catch(e){}
-}
-
-function loadState(){
-  let raw=null;
-  try{ raw = localStorage.getItem(STORAGE_KEY); }catch(e){}
-  if(!raw) return;
-
-  try{
-    const s = JSON.parse(raw);
-    if(!s) return;
-
-    prettyFormat = (s.prettyFormat ?? true) ? true : false;
-    $("prettyFormat").checked = prettyFormat;
-
-    $("gName").value = s.gName ?? "";
-    $("gAuthor").value = s.gAuthor ?? "";
-
-    $("gCursorCentre").checked = !!s.gCursorCentre;
-    $("gCursorExpand").checked = !!s.gCursorExpand;
-    $("gCursorRotate").checked = !!s.gCursorRotate;
-    $("gCursorTrailRotate").checked = !!s.gCursorTrailRotate;
-
-    $("cMenuGlow").value = s.cMenuGlow ?? "";
-    $("cSongActive").value = s.cSongActive ?? "";
-    $("cSongInactive").value = s.cSongInactive ?? "";
-
-    $("fScorePrefix").value = s.fScorePrefix ?? "";
-    $("fScoreOverlap").value = s.fScoreOverlap ?? "0";
-    $("fComboPrefix").value = s.fComboPrefix ?? "";
-    $("fComboOverlap").value = s.fComboOverlap ?? "0";
-
-    $("mKeyColour").value = s.mKeyColour ?? "";
-    $("mColourHold").value = s.mColourHold ?? "";
-    $("mColourBreak").value = s.mColourBreak ?? "";
-
-    $("pKey").value = s.pKey ?? "";
-    $("pKeyD").value = s.pKeyD ?? "";
-    $("pNote").value = s.pNote ?? "";
-    $("pNoteH").value = s.pNoteH ?? "";
-    $("pNoteL").value = s.pNoteL ?? "";
-    $("pNoteT").value = s.pNoteT ?? "";
-    $("mWarningArrow").value = s.mWarningArrow ?? "";
-
-    $("h0").value = s.h0 ?? "";
-    $("h50").value = s.h50 ?? "";
-    $("h100").value = s.h100 ?? "";
-    $("h200").value = s.h200 ?? "";
-    $("h300").value = s.h300 ?? "";
-    $("h300g").value = s.h300g ?? "";
-
-    if(s.maniaModes && typeof s.maniaModes === "object"){
-      for(const k of ["4","5","6","7"]){
-        if(s.maniaModes[k]) maniaModes[Number(k)] = s.maniaModes[k];
-      }
-    }
-
-    const ck = Number(s.currentKeys || "4");
-    currentKeys = ([4,5,6,7].includes(ck) ? ck : 4);
-    $("mKeysSelect").value = String(currentKeys);
-    applyModeToUI(maniaModes[currentKeys] || defaultMode(currentKeys));
-  }catch(e){}
-}
-
-/* live update */
 function updatePreview(){
-  saveCurrentModeIntoState();
+  modesData[currentKeys].colW = $("mColWidth").value;
+  modesData[currentKeys].colS = $("mColSpacing").value;
   $("preview").value = genIni();
-}
-function scheduleUpdate(){
-  updatePreview();
-  if(saveTimer) clearTimeout(saveTimer);
-  saveTimer = setTimeout(saveState, 250);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(activeModes));
 }
 
-/* actions */
-function downloadIni(){
-  const text = $("preview").value;
-  const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
-  const url = URL.createObjectURL(blob);
+[4,6,7].forEach(k=>{
+  $("toggle"+k).onclick = ()=>{
+    activeModes[k] = !activeModes[k];
+    refreshModeButtons();
+    refreshSelect();
+    updatePreview();
+  };
+});
+
+$("mKeysSelect").onchange = ()=>{
+  currentKeys = Number($("mKeysSelect").value);
+  $("mColWidth").value = modesData[currentKeys].colW;
+  $("mColSpacing").value = modesData[currentKeys].colS;
+};
+
+["mColWidth","mColSpacing"].forEach(id=>{
+  $(id).oninput = updatePreview;
+});
+
+$("downloadIni").onclick = ()=>{
+  const blob = new Blob([$("preview").value],{type:"text/plain"});
   const a = document.createElement("a");
-  a.href = url;
+  a.href = URL.createObjectURL(blob);
   a.download = "skin.ini";
-  document.body.appendChild(a);
   a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-function clearWipe(){
-  if(!confirm("Clear everything (and remove local autosave)?")) return;
-  try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
-  location.reload();
-}
-$("downloadIni").addEventListener("click", downloadIni);
-$("clearWipe").addEventListener("click", clearWipe);
-
-/* pretty toggle */
-$("prettyFormat").addEventListener("change", ()=>{
-  prettyFormat = $("prettyFormat").checked;
-  scheduleUpdate();
-});
-
-/* keymode selector */
-$("mKeysSelect").addEventListener("change", ()=>{
-  saveCurrentModeIntoState();
-  currentKeys = Number($("mKeysSelect").value || "4");
-  if(!maniaModes[currentKeys]) maniaModes[currentKeys] = defaultMode(currentKeys);
-  applyModeToUI(maniaModes[currentKeys]);
-  scheduleUpdate();
-});
-
-/* binds */
-[
-  "gName","gAuthor",
-  "gCursorCentre","gCursorExpand","gCursorRotate","gCursorTrailRotate",
-  "cMenuGlow","cSongActive","cSongInactive",
-  "fScorePrefix","fScoreOverlap","fComboPrefix","fComboOverlap",
-
-  "mColWidth","mColSpacing","mAutoCenter","mARPreset","mARW","mARH","mCenterOffset",
-  "mHitPos","mScorePos","mComboPos","mJudgementLine","mUpsideDown","mKeysUnderNotes",
-  "mBarlineHeight","mNoteHeightScale","mLightPos",
-  "mStageLeft","mStageRight","mStageBottom","mStageHint","mStageLight",
-  "mLightNWidth","mLightLWidth","mLightingN","mLightingL",
-
-  "mKeyColour","mColourHold","mColourBreak",
-  "pKey","pKeyD","pNote","pNoteH","pNoteL","pNoteT","mWarningArrow",
-  "h0","h50","h100","h200","h300","h300g"
-].forEach(id=>{
-  $(id).addEventListener("input", scheduleUpdate);
-  $(id).addEventListener("change", scheduleUpdate);
-});
-
-/* Colour sync */
-bindColourSync("cMenuGlowPick","cMenuGlow");
-bindColourSync("cSongActivePick","cSongActive");
-bindColourSync("cSongInactivePick","cSongInactive");
-bindColourSync("mKeyColourPick","mKeyColour");
-bindColourSync("mHoldPick","mColourHold");
-bindColourSync("mBreakPick","mColourBreak");
-
-function seedDefaultsIfEmpty(){
-  if(!$("cMenuGlow").value) $("cMenuGlow").value = "255,255,255";
-  if(!$("cSongActive").value) $("cSongActive").value = "255,255,255";
-  if(!$("cSongInactive").value) $("cSongInactive").value = "160,160,160";
-
-  if(!$("mKeyColour").value) $("mKeyColour").value = "255,255,255";
-  if(!$("mColourHold").value) $("mColourHold").value = "255,255,255";
-  if(!$("mColourBreak").value) $("mColourBreak").value = "255,80,80";
-}
+};
 
 /* init */
-loadState();
-seedDefaultsIfEmpty();
-$("mKeysSelect").value = String(currentKeys);
-applyModeToUI(maniaModes[currentKeys]);
+const saved = localStorage.getItem(STORAGE_KEY);
+if(saved) activeModes = JSON.parse(saved);
+
+refreshModeButtons();
+refreshSelect();
+$("mColWidth").value = modesData[currentKeys].colW;
+$("mColSpacing").value = modesData[currentKeys].colS;
 updatePreview();
 </script>
-
-<script src="snow.js?v=1"></script>
 </body>
 </html>
