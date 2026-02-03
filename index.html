@@ -14,7 +14,6 @@
 
       /* select */
       --selBg:#000;
-      --selBg2:#0a0a0a;
       --selBorder:rgba(255,255,255,.12);
       --selHi:#111;
     }
@@ -200,7 +199,7 @@
         <span class="pill" id="savePulse"></span>
       </div>
       <div class="controls">
-        <span class="pill">Version 1.5 [Beta]</span>
+        <span class="pill">Version 1.6 [Beta]</span>
 
         <span class="pill" style="display:flex; align-items:center; gap:10px;">
           <span class="switchLabel">hairez-style</span>
@@ -220,7 +219,7 @@
             <div class="tab active" data-tab="general">General</div>
             <div class="tab" data-tab="mania">Mania</div>
           </div>
-          <div class="mini">General includes Colours + Fonts. Mania uses toggles (4K/6K/7K only).</div>
+          <div class="mini">Mania uses toggles (4K/6K/7K only). Patterns are per keymode.</div>
         </div>
 
         <!-- GENERAL -->
@@ -339,34 +338,6 @@
           </div>
 
           <div class="sep"></div>
-          <div class="groupTitle">♦ Images (patterns) (shared)</div>
-          <div class="mini">
-            skin.ini indexes are <span class="kbd">0..Keys-1</span>, but <span class="kbd">{n}</span> stays <span class="kbd">1..Keys</span> for filenames.
-            Example: <span class="kbd">key{n}</span>.
-          </div>
-
-          <div class="grid2" style="margin-top:8px">
-            <div>
-              <div class="row"><label>KeyImage# pattern</label><input type="text" id="pKey" placeholder="key{n}"></div>
-              <div class="row"><label>KeyImage#D pattern</label><input type="text" id="pKeyD" placeholder="key{n}D"></div>
-            </div>
-            <div>
-              <div class="row"><label>NoteImage# pattern</label><input type="text" id="pNote" placeholder="note{n}"></div>
-              <div class="row"><label>NoteImage#H pattern</label><input type="text" id="pNoteH" placeholder="note{n}H"></div>
-            </div>
-          </div>
-
-          <div class="grid2">
-            <div>
-              <div class="row"><label>NoteImage#L pattern</label><input type="text" id="pNoteL" placeholder="note{n}L"></div>
-              <div class="row"><label>NoteImage#T pattern</label><input type="text" id="pNoteT" placeholder="note{n}T"></div>
-            </div>
-            <div class="row" style="grid-template-columns:190px 1fr;">
-              <label>WarningArrow</label><input type="text" id="mWarningArrow">
-            </div>
-          </div>
-
-          <div class="sep"></div>
           <div class="groupTitle">♦ Hit sprites (shared)</div>
           <div class="grid2">
             <div class="row"><label>Hit0</label><input type="text" id="h0"></div>
@@ -395,7 +366,7 @@
 
 <script>
 const $ = (id)=>document.getElementById(id);
-const STORAGE_KEY = "aeditor_skinini_builder_v7_4k6k7k_toggles";
+const STORAGE_KEY = "aeditor_skinini_builder_v8_patterns_per_mode";
 
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 const bool01 = (b)=> (b ? "1" : "0");
@@ -518,7 +489,16 @@ function defaultMode(keys){
     mLightNWidth: "",
     mLightLWidth: "",
     mLightingN: "",
-    mLightingL: ""
+    mLightingL: "",
+
+    /* patterns per keymode */
+    pKey: "key{n}",
+    pKeyD: "key{n}D",
+    pNote: "note{n}",
+    pNoteH: "note{n}H",
+    pNoteL: "note{n}L",
+    pNoteT: "note{n}T",
+    mWarningArrow: ""
   };
 }
 
@@ -609,6 +589,34 @@ function renderModeBlock(keys){
           <div class="row"><label>LightingL</label><input type="text" id="${modeId("mLightingL",keys)}"></div>
         </div>
       </div>
+
+      <div class="sep"></div>
+      <div class="groupTitle">♦ Images (patterns) (${keys}K)</div>
+      <div class="mini">
+        skin.ini indexes are <span class="kbd">0..Keys-1</span>, but <span class="kbd">{n}</span> stays <span class="kbd">1..Keys</span> for filenames.
+        Example: <span class="kbd">key{n}</span>.
+      </div>
+
+      <div class="grid2" style="margin-top:8px">
+        <div>
+          <div class="row"><label>KeyImage# pattern</label><input type="text" id="${modeId("pKey",keys)}" placeholder="key{n}"></div>
+          <div class="row"><label>KeyImage#D pattern</label><input type="text" id="${modeId("pKeyD",keys)}" placeholder="key{n}D"></div>
+        </div>
+        <div>
+          <div class="row"><label>NoteImage# pattern</label><input type="text" id="${modeId("pNote",keys)}" placeholder="note{n}"></div>
+          <div class="row"><label>NoteImage#H pattern</label><input type="text" id="${modeId("pNoteH",keys)}" placeholder="note{n}H"></div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div>
+          <div class="row"><label>NoteImage#L pattern</label><input type="text" id="${modeId("pNoteL",keys)}" placeholder="note{n}L"></div>
+          <div class="row"><label>NoteImage#T pattern</label><input type="text" id="${modeId("pNoteT",keys)}" placeholder="note{n}T"></div>
+        </div>
+        <div class="row" style="grid-template-columns:190px 1fr;">
+          <label>WarningArrow</label><input type="text" id="${modeId("mWarningArrow",keys)}">
+        </div>
+      </div>
     </div>
   `;
 }
@@ -645,6 +653,15 @@ function applyModeToUI(keys, mode){
   $(modeId("mLightLWidth",keys)).value = mode.mLightLWidth ?? "";
   $(modeId("mLightingN",keys)).value = mode.mLightingN ?? "";
   $(modeId("mLightingL",keys)).value = mode.mLightingL ?? "";
+
+  /* patterns */
+  $(modeId("pKey",keys)).value = mode.pKey ?? "key{n}";
+  $(modeId("pKeyD",keys)).value = mode.pKeyD ?? "key{n}D";
+  $(modeId("pNote",keys)).value = mode.pNote ?? "note{n}";
+  $(modeId("pNoteH",keys)).value = mode.pNoteH ?? "note{n}H";
+  $(modeId("pNoteL",keys)).value = mode.pNoteL ?? "note{n}L";
+  $(modeId("pNoteT",keys)).value = mode.pNoteT ?? "note{n}T";
+  $(modeId("mWarningArrow",keys)).value = mode.mWarningArrow ?? "";
 }
 
 function readModeFromUI(keys){
@@ -678,7 +695,16 @@ function readModeFromUI(keys){
     mLightNWidth: $(modeId("mLightNWidth",keys)).value,
     mLightLWidth: $(modeId("mLightLWidth",keys)).value,
     mLightingN: $(modeId("mLightingN",keys)).value,
-    mLightingL: $(modeId("mLightingL",keys)).value
+    mLightingL: $(modeId("mLightingL",keys)).value,
+
+    /* patterns */
+    pKey: $(modeId("pKey",keys)).value,
+    pKeyD: $(modeId("pKeyD",keys)).value,
+    pNote: $(modeId("pNote",keys)).value,
+    pNoteH: $(modeId("pNoteH",keys)).value,
+    pNoteL: $(modeId("pNoteL",keys)).value,
+    pNoteT: $(modeId("pNoteT",keys)).value,
+    mWarningArrow: $(modeId("mWarningArrow",keys)).value
   };
 }
 
@@ -778,12 +804,13 @@ function maniaBlockForKeys(keys){
     spacer(lines);
   }
 
-  const pKey = $("pKey").value;
-  const pKeyD = $("pKeyD").value;
-  const pNote = $("pNote").value;
-  const pNoteH = $("pNoteH").value;
-  const pNoteL = $("pNoteL").value;
-  const pNoteT = $("pNoteT").value;
+  /* patterns per-mode */
+  const pKey = mode.pKey || "";
+  const pKeyD = mode.pKeyD || "";
+  const pNote = mode.pNote || "";
+  const pNoteH = mode.pNoteH || "";
+  const pNoteL = mode.pNoteL || "";
+  const pNoteT = mode.pNoteT || "";
 
   header(lines, "keys");
   for(let idx=0; idx<keys; idx++){
@@ -821,7 +848,7 @@ function maniaBlockForKeys(keys){
   }
   spacer(lines);
 
-  pushIfFmt(lines, "WarningArrow", $("mWarningArrow").value);
+  pushIfFmt(lines, "WarningArrow", mode.mWarningArrow);
   spacer(lines);
 
   header(lines, "hits");
@@ -920,14 +947,6 @@ function saveState(){
     mColourHold: $("mColourHold").value,
     mColourBreak: $("mColourBreak").value,
 
-    pKey: $("pKey").value,
-    pKeyD: $("pKeyD").value,
-    pNote: $("pNote").value,
-    pNoteH: $("pNoteH").value,
-    pNoteL: $("pNoteL").value,
-    pNoteT: $("pNoteT").value,
-    mWarningArrow: $("mWarningArrow").value,
-
     h0: $("h0").value,
     h50: $("h50").value,
     h100: $("h100").value,
@@ -989,14 +1008,6 @@ function loadState(){
     $("mKeyColour").value = s.mKeyColour ?? "";
     $("mColourHold").value = s.mColourHold ?? "";
     $("mColourBreak").value = s.mColourBreak ?? "";
-
-    $("pKey").value = s.pKey ?? "";
-    $("pKeyD").value = s.pKeyD ?? "";
-    $("pNote").value = s.pNote ?? "";
-    $("pNoteH").value = s.pNoteH ?? "";
-    $("pNoteL").value = s.pNoteL ?? "";
-    $("pNoteT").value = s.pNoteT ?? "";
-    $("mWarningArrow").value = s.mWarningArrow ?? "";
 
     $("h0").value = s.h0 ?? "";
     $("h50").value = s.h50 ?? "";
@@ -1067,14 +1078,10 @@ $("km6").addEventListener("change", onToggleModes);
 $("km7").addEventListener("change", onToggleModes);
 
 /* input delegation for dynamic mode blocks */
-$("tab-mania").addEventListener("input", (e)=>{
-  const t = e.target;
-  if(!t || !t.id) return;
+$("tab-mania").addEventListener("input", ()=>{
   scheduleUpdate();
 });
-$("tab-mania").addEventListener("change", (e)=>{
-  const t = e.target;
-  if(!t || !t.id) return;
+$("tab-mania").addEventListener("change", ()=>{
   scheduleUpdate();
 });
 
@@ -1086,7 +1093,6 @@ $("tab-mania").addEventListener("change", (e)=>{
   "fScorePrefix","fScoreOverlap","fComboPrefix","fComboOverlap",
 
   "mKeyColour","mColourHold","mColourBreak",
-  "pKey","pKeyD","pNote","pNoteH","pNoteL","pNoteT","mWarningArrow",
   "h0","h50","h100","h200","h300","h300g"
 ].forEach(id=>{
   $(id).addEventListener("input", scheduleUpdate);
