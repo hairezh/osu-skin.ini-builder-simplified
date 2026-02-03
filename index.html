@@ -225,7 +225,7 @@
         <!-- GENERAL -->
         <div class="panelBody" id="tab-general">
           <div class="groupTitle">[General]</div>
-          <div class="row"><label>Name</label><input type="text" id="gName" placeholder="My Skin"></div>
+          <div class="row"><label>Name</label><input type="text" id="gName" placeholder="Example: my skin"></div>
           <div class="row"><label>Author</label><input type="text" id="gAuthor" placeholder="Your name"></div>
           <div class="row"><label>Version</label><input type="text" id="gVersion" value="latest" readonly></div>
 
@@ -254,15 +254,15 @@
 
           <div class="row">
             <label>MenuGlow</label>
-            <div class="inline"><input type="color" id="cMenuGlowPick"><input type="text" id="cMenuGlow" placeholder="255,255,255"></div>
+            <div class="inline"><input type="color" id="cMenuGlowPick"><input type="text" id="cMenuGlow" placeholder="0,0,0"></div>
           </div>
           <div class="row">
             <label>SongSelectActiveText</label>
-            <div class="inline"><input type="color" id="cSongActivePick"><input type="text" id="cSongActive" placeholder="255,255,255"></div>
+            <div class="inline"><input type="color" id="cSongActivePick"><input type="text" id="cSongActive" placeholder="200,200,200"></div>
           </div>
           <div class="row">
             <label>SongSelectInactiveText</label>
-            <div class="inline"><input type="color" id="cSongInactivePick"><input type="text" id="cSongInactive" placeholder="160,160,160"></div>
+            <div class="inline"><input type="color" id="cSongInactivePick"><input type="text" id="cSongInactive" placeholder="100,100,100"></div>
           </div>
 
           <div class="sep"></div>
@@ -310,7 +310,7 @@
             </span>
           </div>
 
-          <div class="mini">INI will include only enabled modes. (5K is removed completely.)</div>
+          <div class="mini">*skin.ini will include only enabled modes.</div>
 
           <div class="sep"></div>
 
@@ -324,7 +324,7 @@
             <label>Colour (all keys)</label>
             <div class="inline">
               <input type="color" id="mKeyColourPick">
-              <input type="text" id="mKeyColour" placeholder="255,255,255">
+              <input type="text" id="mKeyColour" placeholder="0,0,0,200">
             </div>
           </div>
 
@@ -334,11 +334,11 @@
           </div>
           <div class="row">
             <label>ColourBreak</label>
-            <div class="inline"><input type="color" id="mBreakPick"><input type="text" id="mColourBreak" placeholder="255,80,80"></div>
+            <div class="inline"><input type="color" id="mBreakPick"><input type="text" id="mColourBreak" placeholder="0,0,0"></div>
           </div>
 
           <div class="sep"></div>
-          <div class="groupTitle">♦ Hit sprites (shared)</div>
+          <div class="groupTitle">♦ Judgements (shared)</div>
           <div class="grid2">
             <div class="row"><label>Hit0</label><input type="text" id="h0"></div>
             <div class="row"><label>Hit50</label><input type="text" id="h50"></div>
@@ -469,16 +469,16 @@ function defaultMode(keys){
     mCenterOffset: "0",
 
     mHitPos: "",
-    mScorePos: "2",
-    mComboPos: "",
+    mScorePos: "200",
+    mComboPos: "160",
 
     mJudgementLine: false,
     mUpsideDown: false,
     mKeysUnderNotes: false,
 
-    mBarlineHeight: "",
+    mBarlineHeight: value="0",
     mNoteHeightScale: "",
-    mLightPos: "",
+    mLightPos: value"0",
 
     mStageLeft: "",
     mStageRight: "",
@@ -631,9 +631,9 @@ function applyModeToUI(keys, mode){
   $(modeId("mARH",keys)).value = mode.mARH ?? "9";
   $(modeId("mCenterOffset",keys)).value = mode.mCenterOffset ?? "0";
 
-  $(modeId("mHitPos",keys)).value = mode.mHitPos ?? "402";
-  $(modeId("mScorePos",keys)).value = mode.mScorePos ?? "260";
-  $(modeId("mComboPos",keys)).value = mode.mComboPos ?? "240";
+  $(modeId("mHitPos",keys)).value = mode.mHitPos ?? "460";
+  $(modeId("mScorePos",keys)).value = mode.mScorePos ?? "200";
+  $(modeId("mComboPos",keys)).value = mode.mComboPos ?? "160";
 
   $(modeId("mJudgementLine",keys)).checked = (mode.mJudgementLine ?? true);
   $(modeId("mUpsideDown",keys)).checked = !!mode.mUpsideDown;
