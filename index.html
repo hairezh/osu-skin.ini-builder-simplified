@@ -66,6 +66,12 @@
     .pill{
       padding:6px 10px; border:1px solid var(--border); border-radius:var(--r);
       background:rgba(0,0,0,.18); color:rgba(232,232,232,.38); font-size:12px;
+      display:inline-flex; align-items:center; gap:10px;
+    }
+    .pill.on{
+      color:rgba(232,232,232,.80);
+      border-color:rgba(255,255,255,.16);
+      background:rgba(255,255,255,.04);
     }
 
     .main{
@@ -160,82 +166,84 @@
       color:rgba(232,232,232,.55);
       font-weight:600;
       user-select:none;
+      white-space:nowrap;
     }
 
-    /* compact toggle wrap */
+    /* Keymode toggle wrap */
     .kmWrap{ display:flex; flex-wrap:wrap; gap:10px; }
-
-    /* ---------
-       BOX (accordion)
-    --------- */
-    .aBox{
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.015);
-      border-radius: 10px;
-      overflow: hidden;
-      margin: 10px 0 14px;
+    .kmTools{
+      display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+      margin-bottom:8px;
     }
-    .aBoxHead{
+    .kmTools input[type="text"]{ max-width:260px; }
+
+    /* per-mode blocks -> accordion */
+    .modeBlock{
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.015);
+      border-radius:10px;
+      overflow:hidden;
+      margin:10px 0 12px;
+    }
+    .foldHead{
       width:100%;
       cursor:pointer;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
-
-      padding:10px 12px;
+      padding:10px;
       border:0;
-      background: rgba(0,0,0,.18);
-      color: rgba(232,232,232,.85);
-      font: inherit;
+      background:rgba(0,0,0,.16);
+      color:var(--fg);
       text-align:left;
     }
-    .aBoxHead:hover{ background: rgba(255,255,255,.04); }
-    .aBoxTitle{
-      font-weight: 800;
-      font-size: 12px;
-      color: rgba(232,232,232,.82);
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
+    .foldLeft{
+      display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
     }
-    .aBoxSubtitle{
-      font-weight: 600;
-      font-size: 12px;
-      color: rgba(232,232,232,.45);
+    .modeTag{
+      font-weight:800;
+      color:rgba(232,232,232,.92);
     }
-    .aBoxArrow{
-      display:inline-block;
-      transition: transform 160ms ease;
-      color: rgba(232,232,232,.65);
+    .foldMeta{
+      font-size:12px;
+      color:rgba(232,232,232,.45);
+    }
+    .caret{
+      font-size:12px;
+      color:rgba(232,232,232,.55);
+      transform:rotate(0deg);
+      transition:140ms linear;
       user-select:none;
     }
-    .aBoxBody{
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 200ms ease;
-      border-top: 1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.01);
-    }
-    .aBoxInner{ padding: 10px 12px; }
+    .modeBlock.open .caret{ transform:rotate(90deg); }
 
-    .aBox[data-open="true"] .aBoxArrow{ transform: rotate(90deg); }
-
-    /* keymode toggle boxes */
-    .kmBox{ margin:0; border-radius:10px; }
-    .kmBox .aBoxHead{ padding:8px 10px; }
-    .kmBox .aBoxInner{ padding:8px 10px; }
-    .kmBoxRow{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
+    .foldBody{
+      display:none;
+      padding:10px;
+      border-top:1px solid rgba(255,255,255,.06);
     }
+    .modeBlock.open .foldBody{ display:block; }
+
+    .jumpRow{
+      display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 0;
+    }
+    .jumpBtn{
+      cursor:pointer;
+      padding:4px 8px;
+      border-radius:6px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.18);
+      color:rgba(232,232,232,.60);
+      font-size:12px;
+      font-weight:700;
+    }
+    .jumpBtn:hover{ color:rgba(232,232,232,.92); border-color:rgba(255,255,255,.18); }
 
     @media (max-width: 980px){
       .main{ grid-template-columns: 1fr; }
       textarea{ min-height: 55vh; }
+      .kmTools input[type="text"]{ max-width:100%; }
     }
   </style>
 </head>
@@ -249,9 +257,9 @@
         <span class="pill" id="savePulse"></span>
       </div>
       <div class="controls">
-        <span class="pill">Version 1.9 [Beta]</span>
+        <span class="pill">Version 2.0 [Compact]</span>
 
-        <span class="pill" style="display:flex; align-items:center; gap:10px;">
+        <span class="pill">
           <span class="switchLabel">hairez-style</span>
           <label class="switch" title="Pretty formatting (aligned + spaced groups)">
             <input type="checkbox" id="prettyFormat" checked>
@@ -270,13 +278,13 @@
             <div class="tab" data-tab="standard">Standard</div>
             <div class="tab" data-tab="mania">Mania</div>
           </div>
-          <div class="mini">Standard adds gameplay options + colours. Mania supports 1K..18K (per-keymode patterns). Boxes collapse/expand.</div>
+          <div class="mini">Standard adds gameplay options + colours. Mania supports 1K..18K (per-keymode patterns). Edit blocks collapse/expand.</div>
         </div>
 
         <!-- GENERAL -->
         <div class="panelBody" id="tab-general">
           <div class="groupTitle">[General]</div>
-          <div class="row"><label>Name</label><input type="text" id="gName" placeholder="Exemple: My Skin"></div>
+          <div class="row"><label>Name</label><input type="text" id="gName" placeholder="Example: My Skin"></div>
           <div class="row"><label>Author</label><input type="text" id="gAuthor" placeholder="Your name"></div>
           <div class="row"><label>Version</label><input type="text" id="gVersion" value="latest" readonly></div>
 
@@ -448,14 +456,23 @@
         <div class="panelBody" id="tab-mania" style="display:none">
           <div class="groupTitle">♦ Active keymodes (1K..18K)</div>
 
-          <!-- each keymode toggle is now a box -->
+          <div class="kmTools">
+            <input type="text" id="kmSearch" placeholder="Search keymode (ex: 4, 7, 12)..." />
+            <button class="btn" id="kmAll" type="button">All</button>
+            <button class="btn" id="kmNone" type="button">None</button>
+            <button class="btn" id="kmInvert" type="button">Invert</button>
+            <button class="btn" id="kmCommon" type="button" title="Enable common modes (4K, 7K)">Common</button>
+          </div>
+
           <div class="kmWrap" id="kmToggles"></div>
 
-          <div class="mini" style="margin-top:6px;">*skin.ini will include only enabled modes. (Enabling many = many blocks.)</div>
+          <div class="mini" style="margin-top:6px;">*skin.ini will include only enabled modes.</div>
+
+          <div class="jumpRow" id="kmJump"></div>
 
           <div class="sep"></div>
 
-          <!-- per-mode boxes injected here -->
+          <!-- per-mode blocks injected here -->
           <div id="modesContainer"></div>
 
           <div class="sep"></div>
@@ -505,7 +522,7 @@
 
 <script>
 const $ = (id)=>document.getElementById(id);
-const STORAGE_KEY = "aeditor_skinini_builder_v10_boxes_everywhere";
+const STORAGE_KEY = "aeditor_skinini_builder_v10_compact_toggles_accordion_modes";
 
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 const bool01 = (b)=> (b ? "1" : "0");
@@ -527,7 +544,9 @@ function pushIfFmt(arr, key, value){
   const v = cleanLine(value);
   if(v !== "") arr.push(fmtKV(key, v));
 }
-function spacer(arr){ if(prettyFormat) arr.push(""); }
+function spacer(arr){
+  if(prettyFormat) arr.push("");
+}
 function header(arr, title){
   if(prettyFormat){
     arr.push(`// ${title} --`);
@@ -595,50 +614,6 @@ document.querySelectorAll(".tab").forEach(t=>{
   t.addEventListener("click", ()=> setTab(t.dataset.tab));
 });
 
-/* -------------
-   BOX behavior
--------------- */
-function boxSetOpen(box, open){
-  box.dataset.open = open ? "true" : "false";
-  const body = box.querySelector(".aBoxBody");
-  if(!body) return;
-
-  if(open){
-    body.style.maxHeight = body.scrollHeight + "px";
-  }else{
-    body.style.maxHeight = "0px";
-  }
-}
-
-function initBoxes(root){
-  const scope = root || document;
-
-  scope.querySelectorAll(".aBox").forEach(box=>{
-    if(box.dataset.boxInit === "1") return;
-    box.dataset.boxInit = "1";
-
-    const head = box.querySelector(".aBoxHead");
-    const body = box.querySelector(".aBoxBody");
-    if(!head || !body) return;
-
-    // start state (default closed unless data-open="true")
-    boxSetOpen(box, box.dataset.open === "true");
-
-    head.addEventListener("click", ()=>{
-      const openNow = box.dataset.open === "true";
-      boxSetOpen(box, !openNow);
-    });
-  });
-
-  // keep height correct when resizing (only for open boxes)
-  // (cheap + cheerful)
-  window.addEventListener("resize", ()=>{
-    document.querySelectorAll('.aBox[data-open="true"] .aBoxBody').forEach(body=>{
-      body.style.maxHeight = body.scrollHeight + "px";
-    });
-  }, {passive:true});
-}
-
 /* -------------------------
    Mania per-keymode state
 -------------------------- */
@@ -687,6 +662,7 @@ function defaultMode(keys){
 }
 
 const ALL_MANIA_KEYS = Array.from({length: 18}, (_,i)=>i+1);
+
 const maniaModes = {};
 for(const k of ALL_MANIA_KEYS) maniaModes[k] = defaultMode(k);
 
@@ -694,163 +670,122 @@ for(const k of ALL_MANIA_KEYS) maniaModes[k] = defaultMode(k);
 let enabledModes = {};
 for(const k of ALL_MANIA_KEYS) enabledModes[k] = (k===4); // default: only 4K enabled
 
+/* accordion open state for edit blocks */
+let openModes = {};
+for(const k of ALL_MANIA_KEYS) openModes[k] = (k===4); // default: open 4K
+
+let kmSearchText = "";
+
+/* ids */
 function modeId(base, keys){ return `${base}_${keys}`; }
 
-/* keymode toggle boxes (each keymode is a box) */
-function renderKeymodeToggles(){
-  const cont = $("kmToggles");
-  cont.innerHTML = ALL_MANIA_KEYS.map(k=>{
-    const open = (k===4) ? "true" : "false";
-    return `
-      <div class="aBox kmBox" data-open="${open}">
-        <button class="aBoxHead" type="button">
-          <span class="aBoxTitle">
-            <span>${k}K</span>
-            <span class="aBoxSubtitle">${enabledModes[k] ? "enabled" : "disabled"}</span>
-          </span>
-          <span class="aBoxArrow" aria-hidden="true">▸</span>
-        </button>
-        <div class="aBoxBody">
-          <div class="aBoxInner">
-            <div class="kmBoxRow">
-              <span class="switchLabel">Enable ${k}K block</span>
-              <label class="switch" title="Enable ${k}K block">
-                <input type="checkbox" class="kmToggle" data-k="${k}" ${enabledModes[k] ? "checked" : ""}>
-                <span class="sw"></span>
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join("");
-
-  // prevent head click when clicking inside inputs (so toggling doesn't also collapse)
-  cont.querySelectorAll("input, label").forEach(el=>{
-    el.addEventListener("click", (e)=> e.stopPropagation());
-  });
-
-  cont.querySelectorAll(".kmToggle").forEach(inp=>{
-    inp.addEventListener("change", onToggleModes);
-  });
-
-  initBoxes(cont);
-}
-
-function renderModeBox(keys){
-  // default: open only if enabled + (4K or first enabled)
-  const open = (keys===4) ? "true" : "false";
-
+function renderModeBlock(keys){
   return `
-    <div class="aBox modeBox" data-keys="${keys}" data-open="${open}">
-      <button class="aBoxHead" type="button">
-        <span class="aBoxTitle">
-          <span>${keys}K settings</span>
-          <span class="aBoxSubtitle">patterns + layout</span>
-        </span>
-        <span class="aBoxArrow" aria-hidden="true">▸</span>
+    <div class="modeBlock ${openModes[keys] ? "open" : ""}" data-keys="${keys}">
+      <button class="foldHead" type="button" data-fold="${keys}">
+        <div class="foldLeft">
+          <div class="modeTag">${keys}K</div>
+          <div class="foldMeta">edit settings • patterns per keymode</div>
+        </div>
+        <div class="caret">▸</div>
       </button>
 
-      <div class="aBoxBody">
-        <div class="aBoxInner">
+      <div class="foldBody">
+        <div class="groupTitle">♦ Essentials (${keys}K)</div>
+        <div class="row"><label>ColumnWidth (per col)</label><input type="number" id="${modeId("mColWidth",keys)}" value="0"></div>
+        <div class="row"><label>ColumnSpacing (between)</label><input type="number" id="${modeId("mColSpacing",keys)}" value="0"></div>
 
-          <div class="groupTitle">♦ Essentials (${keys}K)</div>
-          <div class="row"><label>ColumnWidth (per col)</label><input type="number" id="${modeId("mColWidth",keys)}" value="0"></div>
-          <div class="row"><label>ColumnSpacing (between)</label><input type="number" id="${modeId("mColSpacing",keys)}" value="0"></div>
-
-          <div class="row">
-            <label>Auto-center ColumnStart</label>
-            <div class="inline">
-              <label class="switch"><input type="checkbox" id="${modeId("mAutoCenter",keys)}" checked><span class="sw"></span></label>
-            </div>
+        <div class="row">
+          <label>Auto-center ColumnStart</label>
+          <div class="inline">
+            <label class="switch"><input type="checkbox" id="${modeId("mAutoCenter",keys)}" checked><span class="sw"></span></label>
           </div>
+        </div>
 
-          <div class="row">
-            <label>Aspect ratio</label>
-            <div class="inline">
-              <select id="${modeId("mARPreset",keys)}">
-                <option value="16:9" selected>16:9</option>
-                <option value="4:3">4:3</option>
-                <option value="21:9">21:9</option>
-                <option value="custom">Custom</option>
-              </select>
-              <input type="number" id="${modeId("mARW",keys)}" value="16" style="max-width:110px" title="Custom width">
-              <input type="number" id="${modeId("mARH",keys)}" value="9" style="max-width:110px" title="Custom height">
-              <span class="mini">AR = W/H</span>
-            </div>
+        <div class="row">
+          <label>Aspect ratio</label>
+          <div class="inline">
+            <select id="${modeId("mARPreset",keys)}">
+              <option value="16:9" selected>16:9</option>
+              <option value="4:3">4:3</option>
+              <option value="21:9">21:9</option>
+              <option value="custom">Custom</option>
+            </select>
+            <input type="number" id="${modeId("mARW",keys)}" value="16" style="max-width:110px" title="Custom width">
+            <input type="number" id="${modeId("mARH",keys)}" value="9" style="max-width:110px" title="Custom height">
+            <span class="mini">AR = W/H</span>
           </div>
+        </div>
 
-          <div class="row"><label>Fine adjust (px)</label><input type="number" id="${modeId("mCenterOffset",keys)}" value=""></div>
+        <div class="row"><label>Fine adjust (px)</label><input type="number" id="${modeId("mCenterOffset",keys)}" value=""></div>
 
-          <div class="row"><label>HitPosition</label><input type="number" id="${modeId("mHitPos",keys)}" value=""></div>
-          <div class="row"><label>ScorePosition</label><input type="number" id="${modeId("mScorePos",keys)}" value=""></div>
-          <div class="row"><label>ComboPosition</label><input type="number" id="${modeId("mComboPos",keys)}" value=""></div>
+        <div class="row"><label>HitPosition</label><input type="number" id="${modeId("mHitPos",keys)}" value=""></div>
+        <div class="row"><label>ScorePosition</label><input type="number" id="${modeId("mScorePos",keys)}" value=""></div>
+        <div class="row"><label>ComboPosition</label><input type="number" id="${modeId("mComboPos",keys)}" value=""></div>
 
-          <div class="row">
-            <label>JudgementLine</label>
-            <div class="inline"><label class="switch"><input type="checkbox" id="${modeId("mJudgementLine",keys)}" checked><span class="sw"></span></label></div>
+        <div class="row">
+          <label>JudgementLine</label>
+          <div class="inline"><label class="switch"><input type="checkbox" id="${modeId("mJudgementLine",keys)}" checked><span class="sw"></span></label></div>
+        </div>
+        <div class="row">
+          <label>UpsideDown</label>
+          <div class="inline"><label class="switch"><input type="checkbox" id="${modeId("mUpsideDown",keys)}"><span class="sw"></span></label></div>
+        </div>
+        <div class="row">
+          <label>KeysUnderNotes</label>
+          <div class="inline"><label class="switch"><input type="checkbox" id="${modeId("mKeysUnderNotes",keys)}"><span class="sw"></span></label></div>
+        </div>
+
+        <div class="sep"></div>
+        <div class="groupTitle">♦ Reading refinements (${keys}K)</div>
+        <div class="row"><label>BarlineHeight</label><input type="number" id="${modeId("mBarlineHeight",keys)}" value=""></div>
+        <div class="row"><label>WidthForNoteHeightScale</label><input type="number" id="${modeId("mNoteHeightScale",keys)}" value=""></div>
+        <div class="row"><label>LightPosition</label><input type="number" id="${modeId("mLightPos",keys)}" value=""></div>
+
+        <div class="sep"></div>
+        <div class="groupTitle">♦ Stage / Lighting (${keys}K)</div>
+        <div class="grid2">
+          <div>
+            <div class="row"><label>StageLeft</label><input type="text" id="${modeId("mStageLeft",keys)}"></div>
+            <div class="row"><label>StageRight</label><input type="text" id="${modeId("mStageRight",keys)}"></div>
+            <div class="row"><label>StageBottom</label><input type="text" id="${modeId("mStageBottom",keys)}"></div>
+            <div class="row"><label>StageHint</label><input type="text" id="${modeId("mStageHint",keys)}"></div>
+            <div class="row"><label>StageLight</label><input type="text" id="${modeId("mStageLight",keys)}"></div>
           </div>
-          <div class="row">
-            <label>UpsideDown</label>
-            <div class="inline"><label class="switch"><input type="checkbox" id="${modeId("mUpsideDown",keys)}"><span class="sw"></span></label></div>
+          <div>
+            <div class="row"><label>LightingNWidth</label><input type="number" id="${modeId("mLightNWidth",keys)}"></div>
+            <div class="row"><label>LightingLWidth</label><input type="number" id="${modeId("mLightLWidth",keys)}"></div>
+            <div class="row"><label>LightingN</label><input type="text" id="${modeId("mLightingN",keys)}"></div>
+            <div class="row"><label>LightingL</label><input type="text" id="${modeId("mLightingL",keys)}"></div>
           </div>
-          <div class="row">
-            <label>KeysUnderNotes</label>
-            <div class="inline"><label class="switch"><input type="checkbox" id="${modeId("mKeysUnderNotes",keys)}"><span class="sw"></span></label></div>
+        </div>
+
+        <div class="sep"></div>
+        <div class="groupTitle">♦ Images (patterns) (${keys}K)</div>
+        <div class="mini">
+          skin.ini indexes are <span class="kbd">0..Keys-1</span>, but <span class="kbd">{n}</span> stays <span class="kbd">1..Keys</span> for filenames.
+          Example: <span class="kbd">key{n}</span>.
+        </div>
+
+        <div class="grid2" style="margin-top:8px">
+          <div>
+            <div class="row"><label>KeyImage# pattern</label><input type="text" id="${modeId("pKey",keys)}" placeholder=""></div>
+            <div class="row"><label>KeyImage#D pattern</label><input type="text" id="${modeId("pKeyD",keys)}" placeholder=""></div>
           </div>
-
-          <div class="sep"></div>
-          <div class="groupTitle">♦ Reading refinements (${keys}K)</div>
-          <div class="row"><label>BarlineHeight</label><input type="number" id="${modeId("mBarlineHeight",keys)}" value=""></div>
-          <div class="row"><label>WidthForNoteHeightScale</label><input type="number" id="${modeId("mNoteHeightScale",keys)}" value=""></div>
-          <div class="row"><label>LightPosition</label><input type="number" id="${modeId("mLightPos",keys)}" value=""></div>
-
-          <div class="sep"></div>
-          <div class="groupTitle">♦ Stage / Lighting (${keys}K)</div>
-          <div class="grid2">
-            <div>
-              <div class="row"><label>StageLeft</label><input type="text" id="${modeId("mStageLeft",keys)}"></div>
-              <div class="row"><label>StageRight</label><input type="text" id="${modeId("mStageRight",keys)}"></div>
-              <div class="row"><label>StageBottom</label><input type="text" id="${modeId("mStageBottom",keys)}"></div>
-              <div class="row"><label>StageHint</label><input type="text" id="${modeId("mStageHint",keys)}"></div>
-              <div class="row"><label>StageLight</label><input type="text" id="${modeId("mStageLight",keys)}"></div>
-            </div>
-            <div>
-              <div class="row"><label>LightingNWidth</label><input type="number" id="${modeId("mLightNWidth",keys)}"></div>
-              <div class="row"><label>LightingLWidth</label><input type="number" id="${modeId("mLightLWidth",keys)}"></div>
-              <div class="row"><label>LightingN</label><input type="text" id="${modeId("mLightingN",keys)}"></div>
-              <div class="row"><label>LightingL</label><input type="text" id="${modeId("mLightingL",keys)}"></div>
-            </div>
+          <div>
+            <div class="row"><label>NoteImage# pattern</label><input type="text" id="${modeId("pNote",keys)}" placeholder=""></div>
+            <div class="row"><label>NoteImage#H pattern</label><input type="text" id="${modeId("pNoteH",keys)}" placeholder=""></div>
           </div>
+        </div>
 
-          <div class="sep"></div>
-          <div class="groupTitle">♦ Images (patterns) (${keys}K)</div>
-          <div class="mini">
-            skin.ini indexes are <span class="kbd">0..Keys-1</span>, but <span class="kbd">{n}</span> stays <span class="kbd">1..Keys</span> for filenames.
-            Example: <span class="kbd">key{n}</span>.
+        <div class="grid2">
+          <div>
+            <div class="row"><label>NoteImage#L pattern</label><input type="text" id="${modeId("pNoteL",keys)}" placeholder=""></div>
+            <div class="row"><label>NoteImage#T pattern</label><input type="text" id="${modeId("pNoteT",keys)}" placeholder=""></div>
           </div>
-
-          <div class="grid2" style="margin-top:8px">
-            <div>
-              <div class="row"><label>KeyImage# pattern</label><input type="text" id="${modeId("pKey",keys)}" placeholder=""></div>
-              <div class="row"><label>KeyImage#D pattern</label><input type="text" id="${modeId("pKeyD",keys)}" placeholder=""></div>
-            </div>
-            <div>
-              <div class="row"><label>NoteImage# pattern</label><input type="text" id="${modeId("pNote",keys)}" placeholder=""></div>
-              <div class="row"><label>NoteImage#H pattern</label><input type="text" id="${modeId("pNoteH",keys)}" placeholder=""></div>
-            </div>
+          <div class="row" style="grid-template-columns:190px 1fr;">
+            <label>WarningArrow</label><input type="text" id="${modeId("mWarningArrow",keys)}">
           </div>
-
-          <div class="grid2">
-            <div>
-              <div class="row"><label>NoteImage#L pattern</label><input type="text" id="${modeId("pNoteL",keys)}" placeholder=""></div>
-              <div class="row"><label>NoteImage#T pattern</label><input type="text" id="${modeId("pNoteT",keys)}" placeholder=""></div>
-            </div>
-            <div class="row" style="grid-template-columns:190px 1fr;">
-              <label>WarningArrow</label><input type="text" id="${modeId("mWarningArrow",keys)}">
-            </div>
-          </div>
-
         </div>
       </div>
     </div>
@@ -890,7 +825,6 @@ function applyModeToUI(keys, mode){
   $(modeId("mLightingN",keys)).value = mode.mLightingN ?? "";
   $(modeId("mLightingL",keys)).value = mode.mLightingL ?? "";
 
-  /* patterns */
   $(modeId("pKey",keys)).value = mode.pKey ?? "";
   $(modeId("pKeyD",keys)).value = mode.pKeyD ?? "";
   $(modeId("pNote",keys)).value = mode.pNote ?? "";
@@ -933,7 +867,6 @@ function readModeFromUI(keys){
     mLightingN: $(modeId("mLightingN",keys)).value,
     mLightingL: $(modeId("mLightingL",keys)).value,
 
-    /* patterns */
     pKey: $(modeId("pKey",keys)).value,
     pKeyD: $(modeId("pKeyD",keys)).value,
     pNote: $(modeId("pNote",keys)).value,
@@ -944,28 +877,83 @@ function readModeFromUI(keys){
   };
 }
 
+/* compact toggles (pills) */
+function renderKeymodeToggles(){
+  const cont = $("kmToggles");
+  const q = (kmSearchText || "").trim().toLowerCase();
+
+  cont.innerHTML = ALL_MANIA_KEYS
+    .filter(k => !q || String(k).includes(q) || (`${k}k`).includes(q))
+    .map(k=>{
+      const on = !!enabledModes[k];
+      return `
+        <span class="pill ${on ? "on" : ""}">
+          <span class="switchLabel">${k}K</span>
+          <label class="switch" title="Enable ${k}K block">
+            <input type="checkbox" class="kmToggle" data-k="${k}" ${on ? "checked" : ""}>
+            <span class="sw"></span>
+          </label>
+        </span>
+      `;
+    }).join("");
+
+  cont.querySelectorAll(".kmToggle").forEach(inp=>{
+    inp.addEventListener("change", onToggleModes);
+  });
+}
+
+function renderJump(){
+  const cont = $("kmJump");
+  const active = ALL_MANIA_KEYS.filter(k => enabledModes[k]);
+  if(active.length === 0){
+    cont.innerHTML = "";
+    return;
+  }
+  cont.innerHTML = active.map(k => `<button class="jumpBtn" type="button" data-jump="${k}">${k}K</button>`).join("");
+  cont.querySelectorAll("[data-jump]").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      const k = Number(b.dataset.jump);
+      openModes[k] = true;
+      rerenderModes();
+      // jump after render
+      setTimeout(()=>{
+        const el = document.querySelector(`.modeBlock[data-keys="${k}"]`);
+        if(el){
+          el.scrollIntoView({behavior:"smooth", block:"start"});
+        }
+      }, 0);
+      scheduleUpdate();
+    });
+  });
+}
+
+function wireAccordions(){
+  document.querySelectorAll("[data-fold]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const k = Number(btn.dataset.fold);
+      const block = document.querySelector(`.modeBlock[data-keys="${k}"]`);
+      if(!block) return;
+      const nowOpen = !block.classList.contains("open");
+      block.classList.toggle("open", nowOpen);
+      openModes[k] = nowOpen;
+      saveState(); // persist open state
+      scheduleUpdate();
+    });
+  });
+}
+
 function rerenderModes(){
   const cont = $("modesContainer");
   const active = ALL_MANIA_KEYS.filter(k => enabledModes[k]);
 
-  cont.innerHTML = active.map(k => renderModeBox(k)).join("");
+  cont.innerHTML = active.map(k => renderModeBlock(k)).join("");
 
   for(const k of active){
     applyModeToUI(k, maniaModes[k] || defaultMode(k));
   }
 
-  // stop head click when clicking inputs
-  cont.querySelectorAll("input, select, textarea, label").forEach(el=>{
-    el.addEventListener("click", (e)=> e.stopPropagation());
-  });
-
-  initBoxes(cont);
-  // ensure open boxes have correct heights after DOM fills
-  requestAnimationFrame(()=>{
-    document.querySelectorAll('.aBox[data-open="true"] .aBoxBody').forEach(body=>{
-      body.style.maxHeight = body.scrollHeight + "px";
-    });
-  });
+  wireAccordions();
+  renderJump();
 }
 
 function getAspectRatio(mode){
@@ -1053,7 +1041,6 @@ function maniaBlockForKeys(keys){
     spacer(lines);
   }
 
-  /* patterns per-mode */
   const pKey = mode.pKey || "";
   const pKeyD = mode.pKeyD || "";
   const pNote = mode.pNote || "";
@@ -1200,8 +1187,8 @@ let saveTimer = null;
 function saveAllActiveModesIntoState(){
   for(const keys of ALL_MANIA_KEYS){
     if(!enabledModes[keys]) continue;
-    const box = document.querySelector(`.modeBox[data-keys="${keys}"]`);
-    if(box){
+    const block = document.querySelector(`.modeBlock[data-keys="${keys}"]`);
+    if(block){
       maniaModes[keys] = readModeFromUI(keys);
     }
   }
@@ -1213,6 +1200,8 @@ function saveState(){
   const s = {
     prettyFormat: !!prettyFormat,
     enabledModes: { ...enabledModes },
+    openModes: { ...openModes },
+    kmSearchText: kmSearchText,
 
     gName: $("gName").value,
     gAuthor: $("gAuthor").value,
@@ -1291,14 +1280,22 @@ function loadState(){
     prettyFormat = (s.prettyFormat ?? true) ? true : false;
     $("prettyFormat").checked = prettyFormat;
 
-    // enabled modes
     if(s.enabledModes && typeof s.enabledModes === "object"){
       enabledModes = {};
-      for(const k of ALL_MANIA_KEYS){
-        enabledModes[k] = !!s.enabledModes[k];
-      }
+      for(const k of ALL_MANIA_KEYS) enabledModes[k] = !!s.enabledModes[k];
       if(!ALL_MANIA_KEYS.some(k=>enabledModes[k])) enabledModes[4] = true;
     }
+
+    if(s.openModes && typeof s.openModes === "object"){
+      openModes = {};
+      for(const k of ALL_MANIA_KEYS) openModes[k] = !!s.openModes[k];
+    }else{
+      openModes = {};
+      for(const k of ALL_MANIA_KEYS) openModes[k] = (k===4);
+    }
+
+    kmSearchText = s.kmSearchText ?? "";
+    $("kmSearch").value = kmSearchText;
 
     $("gName").value = s.gName ?? "";
     $("gAuthor").value = s.gAuthor ?? "";
@@ -1312,7 +1309,6 @@ function loadState(){
     $("cSongActive").value = s.cSongActive ?? "";
     $("cSongInactive").value = s.cSongInactive ?? "";
 
-    // standard options
     $("sAnimFPS").value = s.sAnimFPS ?? "";
     $("sAllowSliderBallTint").checked = (s.sAllowSliderBallTint ?? true) ? true : false;
     $("sSliderBallFlip").checked = !!s.sSliderBallFlip;
@@ -1321,7 +1317,6 @@ function loadState(){
     $("sSpinnerFadePlayfield").checked = (s.sSpinnerFadePlayfield ?? true) ? true : false;
     $("sSpinnerNoBlink").checked = !!s.sSpinnerNoBlink;
 
-    // standard colours
     $("sCombo1").value = s.sCombo1 ?? "";
     $("sCombo2").value = s.sCombo2 ?? "";
     $("sCombo3").value = s.sCombo3 ?? "";
@@ -1335,18 +1330,15 @@ function loadState(){
     $("sSpinnerApp").value = s.sSpinnerApp ?? "";
     $("sSpinnerBg").value = s.sSpinnerBg ?? "";
 
-    // fonts
     $("fScorePrefix").value = s.fScorePrefix ?? "";
     $("fScoreOverlap").value = s.fScoreOverlap ?? "0";
     $("fComboPrefix").value = s.fComboPrefix ?? "";
     $("fComboOverlap").value = s.fComboOverlap ?? "0";
 
-    // mania shared
     $("mKeyColour").value = s.mKeyColour ?? "";
     $("mColourHold").value = s.mColourHold ?? "";
     $("mColourBreak").value = s.mColourBreak ?? "";
 
-    // hits
     $("h0").value = s.h0 ?? "";
     $("h50").value = s.h50 ?? "";
     $("h100").value = s.h100 ?? "";
@@ -1406,34 +1398,58 @@ function onToggleModes(){
 
   document.querySelectorAll(".kmToggle").forEach(inp=>{
     const k = Number(inp.dataset.k);
-    enabledModes[k] = inp.checked;
+    const was = !!enabledModes[k];
+    const now = !!inp.checked;
+    enabledModes[k] = now;
 
-    // update subtitle text ("enabled/disabled")
-    const box = inp.closest(".aBox");
-    if(box){
-      const sub = box.querySelector(".aBoxSubtitle");
-      if(sub) sub.textContent = inp.checked ? "enabled" : "disabled";
-    }
+    // if just enabled, auto-open its edit block
+    if(!was && now) openModes[k] = true;
+    // if disabled, also close (keeps list cleaner)
+    if(was && !now) openModes[k] = false;
   });
 
+  renderKeymodeToggles();
   rerenderModes();
   scheduleUpdate();
 }
 
-/* input delegation for dynamic mode boxes */
-$("tab-mania").addEventListener("input", ()=>{
-  scheduleUpdate();
-  // keep open box heights correct while typing
-  document.querySelectorAll('.aBox[data-open="true"] .aBoxBody').forEach(body=>{
-    body.style.maxHeight = body.scrollHeight + "px";
-  });
+/* mania tools */
+$("kmSearch").addEventListener("input", ()=>{
+  kmSearchText = $("kmSearch").value || "";
+  renderKeymodeToggles();
+  saveState();
 });
-$("tab-mania").addEventListener("change", ()=>{
-  scheduleUpdate();
-  document.querySelectorAll('.aBox[data-open="true"] .aBoxBody').forEach(body=>{
-    body.style.maxHeight = body.scrollHeight + "px";
-  });
+
+$("kmAll").addEventListener("click", ()=>{
+  for(const k of ALL_MANIA_KEYS){ enabledModes[k] = true; openModes[k] = false; }
+  // open common ones for convenience
+  openModes[4] = true; openModes[7] = true;
+  renderKeymodeToggles(); rerenderModes(); scheduleUpdate();
 });
+$("kmNone").addEventListener("click", ()=>{
+  for(const k of ALL_MANIA_KEYS){ enabledModes[k] = false; openModes[k] = false; }
+  // keep at least 4K enabled so user never ends up with nothing by accident
+  enabledModes[4] = true; openModes[4] = true;
+  renderKeymodeToggles(); rerenderModes(); scheduleUpdate();
+});
+$("kmInvert").addEventListener("click", ()=>{
+  for(const k of ALL_MANIA_KEYS){
+    enabledModes[k] = !enabledModes[k];
+    if(!enabledModes[k]) openModes[k] = false;
+  }
+  if(!ALL_MANIA_KEYS.some(k=>enabledModes[k])){ enabledModes[4]=true; openModes[4]=true; }
+  renderKeymodeToggles(); rerenderModes(); scheduleUpdate();
+});
+$("kmCommon").addEventListener("click", ()=>{
+  for(const k of ALL_MANIA_KEYS){ enabledModes[k] = false; openModes[k] = false; }
+  enabledModes[4] = true; enabledModes[7] = true;
+  openModes[4] = true; openModes[7] = true;
+  renderKeymodeToggles(); rerenderModes(); scheduleUpdate();
+});
+
+/* input delegation for dynamic mode blocks */
+$("tab-mania").addEventListener("input", ()=> scheduleUpdate());
+$("tab-mania").addEventListener("change", ()=> scheduleUpdate());
 
 /* binds for general/static inputs */
 [
@@ -1442,13 +1458,11 @@ $("tab-mania").addEventListener("change", ()=>{
   "cMenuGlow","cSongActive","cSongInactive",
   "fScorePrefix","fScoreOverlap","fComboPrefix","fComboOverlap",
 
-  // standard
   "sAnimFPS",
   "sAllowSliderBallTint","sSliderBallFlip","sOverlayAboveNumber","sLayeredHitSounds","sSpinnerFadePlayfield","sSpinnerNoBlink",
   "sCombo1","sCombo2","sCombo3","sCombo4","sCombo5","sCombo6","sCombo7","sCombo8",
   "sSliderBorder","sSliderTrack","sSpinnerApp","sSpinnerBg",
 
-  // mania shared
   "mKeyColour","mColourHold","mColourBreak",
   "h0","h50","h100","h200","h300","h300g"
 ].forEach(id=>{
@@ -1479,19 +1493,16 @@ bindColourSync("mHoldPick","mColourHold");
 bindColourSync("mBreakPick","mColourBreak");
 
 function seedDefaultsIfEmpty(){
-  // menu/UI defaults
   if(!$("cMenuGlow").value) $("cMenuGlow").value = "255,255,255";
   if(!$("cSongActive").value) $("cSongActive").value = "255,255,255";
   if(!$("cSongInactive").value) $("cSongInactive").value = "160,160,160";
 
-  // standard defaults (safe-ish)
   if(!$("sCombo1").value) $("sCombo1").value = "255,128,128";
   if(!$("sCombo2").value) $("sCombo2").value = "128,255,128";
   if(!$("sCombo3").value) $("sCombo3").value = "128,192,255";
   if(!$("sCombo4").value) $("sCombo4").value = "255,255,128";
   if(!$("sSliderBorder").value) $("sSliderBorder").value = "255,255,255";
 
-  // mania defaults
   if(!$("mKeyColour").value) $("mKeyColour").value = "255,255,255";
   if(!$("mColourHold").value) $("mColourHold").value = "255,255,255";
   if(!$("mColourBreak").value) $("mColourBreak").value = "255,80,80";
@@ -1502,7 +1513,6 @@ loadState();
 seedDefaultsIfEmpty();
 renderKeymodeToggles();
 rerenderModes();
-initBoxes(document); // in case you add other boxes later
 updatePreview();
 </script>
 
