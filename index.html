@@ -183,6 +183,9 @@
       color:rgba(232,232,232,.85);
     }
 
+    /* compact toggle wrap */
+    .kmWrap{ display:flex; flex-wrap:wrap; gap:10px; }
+
     @media (max-width: 980px){
       .main{ grid-template-columns: 1fr; }
       textarea{ min-height: 55vh; }
@@ -199,7 +202,7 @@
         <span class="pill" id="savePulse"></span>
       </div>
       <div class="controls">
-        <span class="pill">Version 1.7 [Beta]</span>
+        <span class="pill">Version 1.8 [Beta]</span>
 
         <span class="pill" style="display:flex; align-items:center; gap:10px;">
           <span class="switchLabel">hairez-style</span>
@@ -217,9 +220,10 @@
         <div class="panelHead">
           <div class="tabs">
             <div class="tab active" data-tab="general">General</div>
+            <div class="tab" data-tab="standard">Standard</div>
             <div class="tab" data-tab="mania">Mania</div>
           </div>
-          <div class="mini">Mania uses toggles (4K/6K/7K only). Patterns are per keymode.</div>
+          <div class="mini">Standard adds gameplay options + colours. Mania supports 1K..18K (per-keymode patterns).</div>
         </div>
 
         <!-- GENERAL -->
@@ -280,37 +284,126 @@
           </div>
         </div>
 
-        <!-- MANIA -->
-        <div class="panelBody" id="tab-mania" style="display:none">
-          <div class="groupTitle">♦ Active keymodes</div>
+        <!-- STANDARD -->
+        <div class="panelBody" id="tab-standard" style="display:none">
+          <div class="groupTitle">osu!standard (gameplay)</div>
 
-          <div class="inline" style="gap:14px; margin-bottom:6px;">
-            <span class="pill" style="display:flex; align-items:center; gap:10px;">
-              <span class="switchLabel">4K</span>
-              <label class="switch" title="Enable 4K block">
-                <input type="checkbox" id="km4" checked>
-                <span class="sw"></span>
-              </label>
-            </span>
+          <div class="sep"></div>
+          <div class="groupTitle">[General] (standard-related)</div>
 
-            <span class="pill" style="display:flex; align-items:center; gap:10px;">
-              <span class="switchLabel">6K</span>
-              <label class="switch" title="Enable 6K block">
-                <input type="checkbox" id="km6">
-                <span class="sw"></span>
-              </label>
-            </span>
-
-            <span class="pill" style="display:flex; align-items:center; gap:10px;">
-              <span class="switchLabel">7K</span>
-              <label class="switch" title="Enable 7K block">
-                <input type="checkbox" id="km7">
-                <span class="sw"></span>
-              </label>
-            </span>
+          <div class="row">
+            <label>AnimationFramerate</label>
+            <input type="number" id="sAnimFPS" placeholder="(blank = omit)">
           </div>
 
-          <div class="mini">*skin.ini will include only enabled modes.</div>
+          <div class="grid2">
+            <div class="row" style="grid-template-columns:190px 1fr;">
+              <label>AllowSliderBallTint</label>
+              <div class="inline"><label class="switch"><input type="checkbox" id="sAllowSliderBallTint" checked><span class="sw"></span></label></div>
+            </div>
+            <div class="row" style="grid-template-columns:190px 1fr;">
+              <label>SliderBallFlip</label>
+              <div class="inline"><label class="switch"><input type="checkbox" id="sSliderBallFlip"><span class="sw"></span></label></div>
+            </div>
+          </div>
+
+          <div class="grid2">
+            <div class="row" style="grid-template-columns:190px 1fr;">
+              <label>HitCircleOverlayAboveNumber</label>
+              <div class="inline"><label class="switch"><input type="checkbox" id="sOverlayAboveNumber"><span class="sw"></span></label></div>
+            </div>
+            <div class="row" style="grid-template-columns:190px 1fr;">
+              <label>LayeredHitSounds</label>
+              <div class="inline"><label class="switch"><input type="checkbox" id="sLayeredHitSounds" checked><span class="sw"></span></label></div>
+            </div>
+          </div>
+
+          <div class="grid2">
+            <div class="row" style="grid-template-columns:190px 1fr;">
+              <label>SpinnerFadePlayfield</label>
+              <div class="inline"><label class="switch"><input type="checkbox" id="sSpinnerFadePlayfield" checked><span class="sw"></span></label></div>
+            </div>
+            <div class="row" style="grid-template-columns:190px 1fr;">
+              <label>SpinnerNoBlink</label>
+              <div class="inline"><label class="switch"><input type="checkbox" id="sSpinnerNoBlink"><span class="sw"></span></label></div>
+            </div>
+          </div>
+
+          <div class="sep"></div>
+          <div class="groupTitle">[Colours] (gameplay)</div>
+
+          <div class="mini">Combo colours (Combo1..Combo8) + slider/spinner colours are written into the same [Colours] section.</div>
+
+          <div class="sep"></div>
+          <div class="groupTitle">Combo colours</div>
+
+          <div class="grid2">
+            <div class="row">
+              <label>Combo1</label>
+              <div class="inline"><input type="color" id="sCombo1Pick"><input type="text" id="sCombo1" placeholder="255,255,255"></div>
+            </div>
+            <div class="row">
+              <label>Combo2</label>
+              <div class="inline"><input type="color" id="sCombo2Pick"><input type="text" id="sCombo2" placeholder="255,255,255"></div>
+            </div>
+            <div class="row">
+              <label>Combo3</label>
+              <div class="inline"><input type="color" id="sCombo3Pick"><input type="text" id="sCombo3" placeholder="255,255,255"></div>
+            </div>
+            <div class="row">
+              <label>Combo4</label>
+              <div class="inline"><input type="color" id="sCombo4Pick"><input type="text" id="sCombo4" placeholder="255,255,255"></div>
+            </div>
+            <div class="row">
+              <label>Combo5</label>
+              <div class="inline"><input type="color" id="sCombo5Pick"><input type="text" id="sCombo5" placeholder="(optional)"></div>
+            </div>
+            <div class="row">
+              <label>Combo6</label>
+              <div class="inline"><input type="color" id="sCombo6Pick"><input type="text" id="sCombo6" placeholder="(optional)"></div>
+            </div>
+            <div class="row">
+              <label>Combo7</label>
+              <div class="inline"><input type="color" id="sCombo7Pick"><input type="text" id="sCombo7" placeholder="(optional)"></div>
+            </div>
+            <div class="row">
+              <label>Combo8</label>
+              <div class="inline"><input type="color" id="sCombo8Pick"><input type="text" id="sCombo8" placeholder="(optional)"></div>
+            </div>
+          </div>
+
+          <div class="sep"></div>
+          <div class="groupTitle">Slider / Spinner colours</div>
+
+          <div class="grid2">
+            <div class="row">
+              <label>SliderBorder</label>
+              <div class="inline"><input type="color" id="sSliderBorderPick"><input type="text" id="sSliderBorder" placeholder="0,0,0"></div>
+            </div>
+            <div class="row">
+              <label>SliderTrackOverride</label>
+              <div class="inline"><input type="color" id="sSliderTrackPick"><input type="text" id="sSliderTrack" placeholder="(optional)"></div>
+            </div>
+            <div class="row">
+              <label>SpinnerApproachCircle</label>
+              <div class="inline"><input type="color" id="sSpinnerAppPick"><input type="text" id="sSpinnerApp" placeholder="(optional)"></div>
+            </div>
+            <div class="row">
+              <label>SpinnerBackground</label>
+              <div class="inline"><input type="color" id="sSpinnerBgPick"><input type="text" id="sSpinnerBg" placeholder="(optional)"></div>
+            </div>
+          </div>
+
+          <div class="hint">Tip: leave optional colours blank to omit them from the ini.</div>
+        </div>
+
+        <!-- MANIA -->
+        <div class="panelBody" id="tab-mania" style="display:none">
+          <div class="groupTitle">♦ Active keymodes (1K..18K)</div>
+
+          <div class="kmWrap" id="kmToggles"></div>
+
+          <div class="mini" style="margin-top:6px;">*skin.ini will include only enabled modes. (Careful: enabling many modes = many blocks.)</div>
 
           <div class="sep"></div>
 
@@ -364,7 +457,7 @@
 
 <script>
 const $ = (id)=>document.getElementById(id);
-const STORAGE_KEY = "aeditor_skinini_builder_v8_patterns_per_mode";
+const STORAGE_KEY = "aeditor_skinini_builder_v9_standard_mania_1to18";
 
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 const bool01 = (b)=> (b ? "1" : "0");
@@ -415,6 +508,8 @@ function hexToRgb(hex){
 function bindColourSync(pickId, textId){
   const pick = $(pickId);
   const txt = $(textId);
+  if(!pick || !txt) return;
+
   const hx = rgbToHex(txt.value);
   if(hx) pick.value = hx;
 
@@ -446,8 +541,9 @@ function setTab(name){
   document.querySelectorAll(".tab").forEach(t=>{
     t.classList.toggle("active", t.dataset.tab === name);
   });
-  $("tab-general").style.display = (name==="general") ? "block" : "none";
-  $("tab-mania").style.display   = (name==="mania") ? "block" : "none";
+  $("tab-general").style.display  = (name==="general")  ? "block" : "none";
+  $("tab-standard").style.display = (name==="standard") ? "block" : "none";
+  $("tab-mania").style.display    = (name==="mania")    ? "block" : "none";
 }
 document.querySelectorAll(".tab").forEach(t=>{
   t.addEventListener("click", ()=> setTab(t.dataset.tab));
@@ -500,14 +596,14 @@ function defaultMode(keys){
   };
 }
 
-const maniaModes = {
-  4: defaultMode(4),
-  6: defaultMode(6),
-  7: defaultMode(7),
-};
+const ALL_MANIA_KEYS = Array.from({length: 18}, (_,i)=>i+1);
 
-/* enabled keymodes (4/6/7 only) */
-let enabledModes = {4:true,6:false,7:false};
+const maniaModes = {};
+for(const k of ALL_MANIA_KEYS) maniaModes[k] = defaultMode(k);
+
+/* enabled keymodes (1..18) */
+let enabledModes = {};
+for(const k of ALL_MANIA_KEYS) enabledModes[k] = (k===4); // default: only 4K enabled
 
 function modeId(base, keys){ return `${base}_${keys}`; }
 
@@ -706,9 +802,28 @@ function readModeFromUI(keys){
   };
 }
 
+function renderKeymodeToggles(){
+  const cont = $("kmToggles");
+  cont.innerHTML = ALL_MANIA_KEYS.map(k=>{
+    return `
+      <span class="pill" style="display:flex; align-items:center; gap:10px;">
+        <span class="switchLabel">${k}K</span>
+        <label class="switch" title="Enable ${k}K block">
+          <input type="checkbox" class="kmToggle" data-k="${k}" ${enabledModes[k] ? "checked" : ""}>
+          <span class="sw"></span>
+        </label>
+      </span>
+    `;
+  }).join("");
+
+  cont.querySelectorAll(".kmToggle").forEach(inp=>{
+    inp.addEventListener("change", onToggleModes);
+  });
+}
+
 function rerenderModes(){
   const cont = $("modesContainer");
-  const active = [4,6,7].filter(k => enabledModes[k]);
+  const active = ALL_MANIA_KEYS.filter(k => enabledModes[k]);
 
   cont.innerHTML = active.map(k => renderModeBlock(k)).join("");
 
@@ -864,26 +979,64 @@ function maniaBlockForKeys(keys){
 function genIni(){
   const out = [];
 
+  // [General]
   out.push("[General]");
   pushIfFmt(out, "Name", $("gName").value);
   pushIfFmt(out, "Author", $("gAuthor").value);
   out.push(fmtKV("Version", "latest"));
+
+  // Cursor
   pushIfFmt(out, "CursorCentre", bool01($("gCursorCentre").checked));
   pushIfFmt(out, "CursorExpand", bool01($("gCursorExpand").checked));
   pushIfFmt(out, "CursorRotate", bool01($("gCursorRotate").checked));
   pushIfFmt(out, "CursorTrailRotate", bool01($("gCursorTrailRotate").checked));
+
+  // Standard-related [General] options
+  pushIfFmt(out, "AllowSliderBallTint", bool01($("sAllowSliderBallTint").checked));
+  pushIfFmt(out, "SliderBallFlip", bool01($("sSliderBallFlip").checked));
+  pushIfFmt(out, "HitCircleOverlayAboveNumber", bool01($("sOverlayAboveNumber").checked));
+  pushIfFmt(out, "LayeredHitSounds", bool01($("sLayeredHitSounds").checked));
+  pushIfFmt(out, "SpinnerFadePlayfield", bool01($("sSpinnerFadePlayfield").checked));
+  pushIfFmt(out, "SpinnerNoBlink", bool01($("sSpinnerNoBlink").checked));
+  pushIfFmt(out, "AnimationFramerate", cleanLine($("sAnimFPS").value));
+
   out.push("");
 
-  const hasColours = cleanLine($("cMenuGlow").value) || cleanLine($("cSongActive").value) || cleanLine($("cSongInactive").value);
+  // [Colours]
+  const colourKeys = [
+    ["MenuGlow", $("cMenuGlow").value],
+    ["SongSelectActiveText", $("cSongActive").value],
+    ["SongSelectInactiveText", $("cSongInactive").value],
+
+    ["Combo1", $("sCombo1").value],
+    ["Combo2", $("sCombo2").value],
+    ["Combo3", $("sCombo3").value],
+    ["Combo4", $("sCombo4").value],
+    ["Combo5", $("sCombo5").value],
+    ["Combo6", $("sCombo6").value],
+    ["Combo7", $("sCombo7").value],
+    ["Combo8", $("sCombo8").value],
+
+    ["SliderBorder", $("sSliderBorder").value],
+    ["SliderTrackOverride", $("sSliderTrack").value],
+    ["SpinnerApproachCircle", $("sSpinnerApp").value],
+    ["SpinnerBackground", $("sSpinnerBg").value],
+  ];
+
+  const hasColours = colourKeys.some(([,v]) => cleanLine(v));
   if(hasColours){
     out.push("[Colours]");
-    pushIfFmt(out, "MenuGlow", $("cMenuGlow").value);
-    pushIfFmt(out, "SongSelectActiveText", $("cSongActive").value);
-    pushIfFmt(out, "SongSelectInactiveText", $("cSongInactive").value);
+    for(const [k,v] of colourKeys) pushIfFmt(out, k, v);
     out.push("");
   }
 
-  const hasFonts = cleanLine($("fScorePrefix").value) || cleanLine($("fComboPrefix").value) || cleanLine($("fScoreOverlap").value) || cleanLine($("fComboOverlap").value);
+  // [Fonts]
+  const hasFonts =
+    cleanLine($("fScorePrefix").value) ||
+    cleanLine($("fComboPrefix").value) ||
+    cleanLine($("fScoreOverlap").value) ||
+    cleanLine($("fComboOverlap").value);
+
   if(hasFonts){
     out.push("[Fonts]");
     pushIfFmt(out, "ScorePrefix", $("fScorePrefix").value);
@@ -893,7 +1046,8 @@ function genIni(){
     out.push("");
   }
 
-  for(const keys of [4,6,7]){
+  // [Mania] blocks
+  for(const keys of ALL_MANIA_KEYS){
     if(!enabledModes[keys]) continue;
     out.push("[Mania]");
     out.push(...maniaBlockForKeys(keys));
@@ -908,7 +1062,7 @@ function genIni(){
 let saveTimer = null;
 
 function saveAllActiveModesIntoState(){
-  for(const keys of [4,6,7]){
+  for(const keys of ALL_MANIA_KEYS){
     if(!enabledModes[keys]) continue;
     const block = document.querySelector(`.modeBlock[data-keys="${keys}"]`);
     if(block){
@@ -932,19 +1086,46 @@ function saveState(){
     gCursorRotate: $("gCursorRotate").checked,
     gCursorTrailRotate: $("gCursorTrailRotate").checked,
 
+    // menu/UI colours
     cMenuGlow: $("cMenuGlow").value,
     cSongActive: $("cSongActive").value,
     cSongInactive: $("cSongInactive").value,
 
+    // standard options
+    sAnimFPS: $("sAnimFPS").value,
+    sAllowSliderBallTint: $("sAllowSliderBallTint").checked,
+    sSliderBallFlip: $("sSliderBallFlip").checked,
+    sOverlayAboveNumber: $("sOverlayAboveNumber").checked,
+    sLayeredHitSounds: $("sLayeredHitSounds").checked,
+    sSpinnerFadePlayfield: $("sSpinnerFadePlayfield").checked,
+    sSpinnerNoBlink: $("sSpinnerNoBlink").checked,
+
+    // standard colours
+    sCombo1: $("sCombo1").value,
+    sCombo2: $("sCombo2").value,
+    sCombo3: $("sCombo3").value,
+    sCombo4: $("sCombo4").value,
+    sCombo5: $("sCombo5").value,
+    sCombo6: $("sCombo6").value,
+    sCombo7: $("sCombo7").value,
+    sCombo8: $("sCombo8").value,
+    sSliderBorder: $("sSliderBorder").value,
+    sSliderTrack: $("sSliderTrack").value,
+    sSpinnerApp: $("sSpinnerApp").value,
+    sSpinnerBg: $("sSpinnerBg").value,
+
+    // fonts
     fScorePrefix: $("fScorePrefix").value,
     fScoreOverlap: $("fScoreOverlap").value,
     fComboPrefix: $("fComboPrefix").value,
     fComboOverlap: $("fComboOverlap").value,
 
+    // mania shared
     mKeyColour: $("mKeyColour").value,
     mColourHold: $("mColourHold").value,
     mColourBreak: $("mColourBreak").value,
 
+    // hits
     h0: $("h0").value,
     h50: $("h50").value,
     h100: $("h100").value,
@@ -974,17 +1155,15 @@ function loadState(){
     prettyFormat = (s.prettyFormat ?? true) ? true : false;
     $("prettyFormat").checked = prettyFormat;
 
+    // enabled modes
     if(s.enabledModes && typeof s.enabledModes === "object"){
-      enabledModes = {
-        4: (s.enabledModes[4] ?? true) ? true : false,
-        6: !!s.enabledModes[6],
-        7: !!s.enabledModes[7]
-      };
+      enabledModes = {};
+      for(const k of ALL_MANIA_KEYS){
+        enabledModes[k] = !!s.enabledModes[k];
+      }
+      // fallback safety: if none enabled, enable 4K
+      if(!ALL_MANIA_KEYS.some(k=>enabledModes[k])) enabledModes[4] = true;
     }
-
-    $("km4").checked = !!enabledModes[4];
-    $("km6").checked = !!enabledModes[6];
-    $("km7").checked = !!enabledModes[7];
 
     $("gName").value = s.gName ?? "";
     $("gAuthor").value = s.gAuthor ?? "";
@@ -998,15 +1177,41 @@ function loadState(){
     $("cSongActive").value = s.cSongActive ?? "";
     $("cSongInactive").value = s.cSongInactive ?? "";
 
+    // standard options
+    $("sAnimFPS").value = s.sAnimFPS ?? "";
+    $("sAllowSliderBallTint").checked = (s.sAllowSliderBallTint ?? true) ? true : false;
+    $("sSliderBallFlip").checked = !!s.sSliderBallFlip;
+    $("sOverlayAboveNumber").checked = !!s.sOverlayAboveNumber;
+    $("sLayeredHitSounds").checked = (s.sLayeredHitSounds ?? true) ? true : false;
+    $("sSpinnerFadePlayfield").checked = (s.sSpinnerFadePlayfield ?? true) ? true : false;
+    $("sSpinnerNoBlink").checked = !!s.sSpinnerNoBlink;
+
+    // standard colours
+    $("sCombo1").value = s.sCombo1 ?? "";
+    $("sCombo2").value = s.sCombo2 ?? "";
+    $("sCombo3").value = s.sCombo3 ?? "";
+    $("sCombo4").value = s.sCombo4 ?? "";
+    $("sCombo5").value = s.sCombo5 ?? "";
+    $("sCombo6").value = s.sCombo6 ?? "";
+    $("sCombo7").value = s.sCombo7 ?? "";
+    $("sCombo8").value = s.sCombo8 ?? "";
+    $("sSliderBorder").value = s.sSliderBorder ?? "";
+    $("sSliderTrack").value = s.sSliderTrack ?? "";
+    $("sSpinnerApp").value = s.sSpinnerApp ?? "";
+    $("sSpinnerBg").value = s.sSpinnerBg ?? "";
+
+    // fonts
     $("fScorePrefix").value = s.fScorePrefix ?? "";
     $("fScoreOverlap").value = s.fScoreOverlap ?? "0";
     $("fComboPrefix").value = s.fComboPrefix ?? "";
     $("fComboOverlap").value = s.fComboOverlap ?? "0";
 
+    // mania shared
     $("mKeyColour").value = s.mKeyColour ?? "";
     $("mColourHold").value = s.mColourHold ?? "";
     $("mColourBreak").value = s.mColourBreak ?? "";
 
+    // hits
     $("h0").value = s.h0 ?? "";
     $("h50").value = s.h50 ?? "";
     $("h100").value = s.h100 ?? "";
@@ -1015,8 +1220,8 @@ function loadState(){
     $("h300g").value = s.h300g ?? "";
 
     if(s.maniaModes && typeof s.maniaModes === "object"){
-      for(const k of ["4","6","7"]){
-        if(s.maniaModes[k]) maniaModes[Number(k)] = s.maniaModes[k];
+      for(const k of ALL_MANIA_KEYS){
+        if(s.maniaModes[k]) maniaModes[k] = s.maniaModes[k];
       }
     }
   }catch(e){}
@@ -1064,24 +1269,18 @@ $("prettyFormat").addEventListener("change", ()=>{
 function onToggleModes(){
   saveAllActiveModesIntoState();
 
-  enabledModes[4] = $("km4").checked;
-  enabledModes[6] = $("km6").checked;
-  enabledModes[7] = $("km7").checked;
+  document.querySelectorAll(".kmToggle").forEach(inp=>{
+    const k = Number(inp.dataset.k);
+    enabledModes[k] = inp.checked;
+  });
 
   rerenderModes();
   scheduleUpdate();
 }
-$("km4").addEventListener("change", onToggleModes);
-$("km6").addEventListener("change", onToggleModes);
-$("km7").addEventListener("change", onToggleModes);
 
 /* input delegation for dynamic mode blocks */
-$("tab-mania").addEventListener("input", ()=>{
-  scheduleUpdate();
-});
-$("tab-mania").addEventListener("change", ()=>{
-  scheduleUpdate();
-});
+$("tab-mania").addEventListener("input", ()=> scheduleUpdate());
+$("tab-mania").addEventListener("change", ()=> scheduleUpdate());
 
 /* binds for general/static inputs */
 [
@@ -1090,6 +1289,13 @@ $("tab-mania").addEventListener("change", ()=>{
   "cMenuGlow","cSongActive","cSongInactive",
   "fScorePrefix","fScoreOverlap","fComboPrefix","fComboOverlap",
 
+  // standard
+  "sAnimFPS",
+  "sAllowSliderBallTint","sSliderBallFlip","sOverlayAboveNumber","sLayeredHitSounds","sSpinnerFadePlayfield","sSpinnerNoBlink",
+  "sCombo1","sCombo2","sCombo3","sCombo4","sCombo5","sCombo6","sCombo7","sCombo8",
+  "sSliderBorder","sSliderTrack","sSpinnerApp","sSpinnerBg",
+
+  // mania shared
   "mKeyColour","mColourHold","mColourBreak",
   "h0","h50","h100","h200","h300","h300g"
 ].forEach(id=>{
@@ -1101,15 +1307,38 @@ $("tab-mania").addEventListener("change", ()=>{
 bindColourSync("cMenuGlowPick","cMenuGlow");
 bindColourSync("cSongActivePick","cSongActive");
 bindColourSync("cSongInactivePick","cSongInactive");
+
+bindColourSync("sCombo1Pick","sCombo1");
+bindColourSync("sCombo2Pick","sCombo2");
+bindColourSync("sCombo3Pick","sCombo3");
+bindColourSync("sCombo4Pick","sCombo4");
+bindColourSync("sCombo5Pick","sCombo5");
+bindColourSync("sCombo6Pick","sCombo6");
+bindColourSync("sCombo7Pick","sCombo7");
+bindColourSync("sCombo8Pick","sCombo8");
+bindColourSync("sSliderBorderPick","sSliderBorder");
+bindColourSync("sSliderTrackPick","sSliderTrack");
+bindColourSync("sSpinnerAppPick","sSpinnerApp");
+bindColourSync("sSpinnerBgPick","sSpinnerBg");
+
 bindColourSync("mKeyColourPick","mKeyColour");
 bindColourSync("mHoldPick","mColourHold");
 bindColourSync("mBreakPick","mColourBreak");
 
 function seedDefaultsIfEmpty(){
+  // menu/UI defaults
   if(!$("cMenuGlow").value) $("cMenuGlow").value = "255,255,255";
   if(!$("cSongActive").value) $("cSongActive").value = "255,255,255";
   if(!$("cSongInactive").value) $("cSongInactive").value = "160,160,160";
 
+  // standard defaults (safe-ish)
+  if(!$("sCombo1").value) $("sCombo1").value = "255,128,128";
+  if(!$("sCombo2").value) $("sCombo2").value = "128,255,128";
+  if(!$("sCombo3").value) $("sCombo3").value = "128,192,255";
+  if(!$("sCombo4").value) $("sCombo4").value = "255,255,128";
+  if(!$("sSliderBorder").value) $("sSliderBorder").value = "255,255,255";
+
+  // mania defaults
   if(!$("mKeyColour").value) $("mKeyColour").value = "255,255,255";
   if(!$("mColourHold").value) $("mColourHold").value = "255,255,255";
   if(!$("mColourBreak").value) $("mColourBreak").value = "255,80,80";
@@ -1118,6 +1347,7 @@ function seedDefaultsIfEmpty(){
 /* init */
 loadState();
 seedDefaultsIfEmpty();
+renderKeymodeToggles();
 rerenderModes();
 updatePreview();
 </script>
