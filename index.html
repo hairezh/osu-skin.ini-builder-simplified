@@ -12,6 +12,9 @@
       --border:rgba(255,255,255,.08); --panel:rgba(255,255,255,.03);
       --fs:14px; --lh:1.6; --r:6px;
 
+      /* sidebar */
+      --sideW: 240px;
+
       /* select */
       --selBg:#000;
       --selBorder:rgba(255,255,255,.12);
@@ -47,13 +50,80 @@
     }
     .app{ height:100vh; display:flex; flex-direction:column; }
 
-    .topbar{
-      position:sticky; top:0; z-index:10;
-      display:flex; align-items:center; justify-content:space-between;
-      padding:8px 10px; border-bottom:1px solid var(--border);
-      background:linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.15)), var(--panel);
-      gap:10px; flex-wrap:wrap;
+    /* ====== LAYOUT with sidebar ====== */
+    .layout{
+      flex:1; min-height:0;
+      display:grid;
+      grid-template-columns: var(--sideW) 1fr;
     }
+
+    .sidebar{
+      border-right:1px solid var(--border);
+      background:linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.12)), var(--panel);
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-height:0;
+    }
+
+    .sideGroup{
+      border:1px solid var(--border);
+      border-radius:10px;
+      background:rgba(255,255,255,.02);
+      overflow:hidden;
+    }
+    .sideHead{
+      padding:10px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      color:rgba(232,232,232,.70);
+      font-weight:800;
+      font-size:12px;
+      letter-spacing:.2px;
+      background:rgba(0,0,0,.14);
+    }
+    .sideBody{
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .sideTabs{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .sideTab{
+      cursor:pointer;
+      padding:9px 10px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(0,0,0,.18);
+      color:rgba(232,232,232,.60);
+      font-weight:800;
+      user-select:none;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .sideTab:hover{
+      color:rgba(232,232,232,.92);
+      border-color:rgba(255,255,255,.14);
+      background:rgba(255,255,255,.03);
+    }
+    .sideTab.active{
+      color:rgba(232,232,232,.92);
+      border-color:rgba(255,255,255,.16);
+      background:rgba(255,255,255,.05);
+    }
+    .sideMini{
+      font-size:12px;
+      color:rgba(232,232,232,.40);
+      margin-top:6px;
+    }
+
     .controls{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
     .btn{
       cursor:pointer; padding:6px 10px; border-radius:var(--r);
@@ -63,6 +133,7 @@
     .btn:hover{ color:var(--fg); border-color:rgba(255,255,255,.18); }
     .btn.primary{ color:var(--fg); background:rgba(255,255,255,.06); }
     .btn.danger:hover{ border-color:rgba(255,120,120,.35); color:rgba(255,210,210,.95); }
+
     .pill{
       padding:6px 10px; border:1px solid var(--border); border-radius:var(--r);
       background:rgba(0,0,0,.18); color:rgba(232,232,232,.38); font-size:12px;
@@ -75,10 +146,13 @@
     }
 
     .main{
-      flex:1; min-height:0;
-      display:grid; grid-template-columns: 1.1fr 0.9fr;
-      gap:10px; padding:10px;
+      min-height:0;
+      display:grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap:10px;
+      padding:10px;
     }
+
     .panel{
       border:1px solid var(--border); border-radius:var(--r);
       background:rgba(255,255,255,.02);
@@ -89,14 +163,6 @@
       padding:8px 10px; border-bottom:1px solid var(--border);
       display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
     }
-    .tabs{ display:flex; gap:6px; flex-wrap:wrap; }
-    .tab{
-      cursor:pointer; padding:6px 10px; border-radius:var(--r);
-      border:1px solid var(--border); background:rgba(0,0,0,.18);
-      color:var(--muted); font-weight:600; user-select:none;
-    }
-    .tab.active{ color:var(--fg); border-color:rgba(255,255,255,.18); background:rgba(255,255,255,.05); }
-
     .panelBody{
       padding:10px; overflow:auto;
       flex:1; min-height:0;
@@ -142,6 +208,7 @@
       border-radius:6px;
       position:relative;
       transition:140ms linear;
+      flex:0 0 auto;
     }
     .sw::after{
       content:"";
@@ -240,7 +307,24 @@
     }
     .jumpBtn:hover{ color:rgba(232,232,232,.92); border-color:rgba(255,255,255,.18); }
 
+    .ghost{
+      width:100%;
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px dashed rgba(255,255,255,.12);
+      background:rgba(0,0,0,.12);
+      color:rgba(232,232,232,.45);
+      font-size:12px;
+      line-height:1.4;
+    }
+
+    @media (max-width: 1100px){
+      :root{ --sideW: 220px; }
+    }
+
     @media (max-width: 980px){
+      .layout{ grid-template-columns: 1fr; }
+      .sidebar{ border-right:0; border-bottom:1px solid var(--border); }
       .main{ grid-template-columns: 1fr; }
       textarea{ min-height: 55vh; }
       .kmTools input[type="text"]{ max-width:100%; }
@@ -250,279 +334,325 @@
 
 <body>
   <div class="app">
-    <div class="topbar">
-      <div class="controls">
-        <button class="btn primary" id="downloadIni">Download skin.ini</button>
-        <button class="btn danger" id="clearWipe">Clear</button>
-        <span class="pill" id="savePulse"></span>
-      </div>
-      <div class="controls">
-        <span class="pill">Version 2.0 [Compact]</span>
+    <div class="layout">
 
-        <span class="pill">
-          <span class="switchLabel">hairez-style</span>
-          <label class="switch" title="Pretty formatting (aligned + spaced groups)">
-            <input type="checkbox" id="prettyFormat" checked>
-            <span class="sw"></span>
-          </label>
-        </span>
-      </div>
-    </div>
-
-    <div class="main">
-      <!-- LEFT -->
-      <div class="panel">
-        <div class="panelHead">
-          <div class="tabs">
-            <div class="tab active" data-tab="general">General</div>
-            <div class="tab" data-tab="standard">Standard</div>
-            <div class="tab" data-tab="mania">Mania</div>
-          </div>
-          <div class="mini">Standard adds gameplay options + colours. Mania supports 1K..18K (per-keymode patterns). Edit blocks collapse/expand.</div>
-        </div>
-
-        <!-- GENERAL -->
-        <div class="panelBody" id="tab-general">
-          <div class="groupTitle">[General]</div>
-          <div class="row"><label>Name</label><input type="text" id="gName" placeholder="Example: My Skin"></div>
-          <div class="row"><label>Author</label><input type="text" id="gAuthor" placeholder="Your name"></div>
-          <div class="row"><label>Version</label><input type="text" id="gVersion" value="latest" readonly></div>
-
-          <div class="sep"></div>
-          <div class="groupTitle">Cursor</div>
-
-          <div class="row">
-            <label>CursorCentre</label>
-            <div class="inline"><label class="switch"><input type="checkbox" id="gCursorCentre" checked><span class="sw"></span></label></div>
-          </div>
-          <div class="row">
-            <label>CursorExpand</label>
-            <div class="inline"><label class="switch"><input type="checkbox" id="gCursorExpand"><span class="sw"></span></label></div>
-          </div>
-          <div class="row">
-            <label>CursorRotate</label>
-            <div class="inline"><label class="switch"><input type="checkbox" id="gCursorRotate"><span class="sw"></span></label></div>
-          </div>
-          <div class="row">
-            <label>CursorTrailRotate</label>
-            <div class="inline"><label class="switch"><input type="checkbox" id="gCursorTrailRotate"><span class="sw"></span></label></div>
-          </div>
-
-          <div class="sep"></div>
-          <div class="groupTitle">[Colours] (menu/UI)</div>
-
-          <div class="row">
-            <label>MenuGlow</label>
-            <div class="inline"><input type="color" id="cMenuGlowPick"><input type="text" id="cMenuGlow" placeholder="0,0,0"></div>
-          </div>
-          <div class="row">
-            <label>SongSelectActiveText</label>
-            <div class="inline"><input type="color" id="cSongActivePick"><input type="text" id="cSongActive" placeholder="0,0,0"></div>
-          </div>
-          <div class="row">
-            <label>SongSelectInactiveText</label>
-            <div class="inline"><input type="color" id="cSongInactivePick"><input type="text" id="cSongInactive" placeholder="0,0,0"></div>
-          </div>
-
-          <div class="sep"></div>
-          <div class="groupTitle">[Fonts]</div>
-
-          <div class="grid2">
-            <div>
-              <div class="row"><label>ScorePrefix</label><input type="text" id="fScorePrefix" placeholder="score"></div>
-              <div class="row"><label>ScoreOverlap</label><input type="number" id="fScoreOverlap" value="0"></div>
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sideGroup">
+          <div class="sideHead">Sections</div>
+          <div class="sideBody">
+            <div class="sideTabs">
+              <div class="sideTab active" data-tab="general">
+                <span>General</span><span class="mini">[General]</span>
+              </div>
+              <div class="sideTab" data-tab="standard">
+                <span>Standard</span><span class="mini">options</span>
+              </div>
+              <div class="sideTab" data-tab="mania">
+                <span>Mania</span><span class="mini">1K..18K</span>
+              </div>
             </div>
-            <div>
-              <div class="row"><label>ComboPrefix</label><input type="text" id="fComboPrefix" placeholder="combo"></div>
-              <div class="row"><label>ComboOverlap</label><input type="number" id="fComboOverlap" value="0"></div>
-            </div>
+            <div class="sideMini">Quick switch between panels.</div>
           </div>
         </div>
 
-        <!-- STANDARD -->
-        <div class="panelBody" id="tab-standard" style="display:none">
-          <div class="groupTitle">osu!standard (gameplay)</div>
+        <div class="sideGroup">
+          <div class="sideHead">Export</div>
+          <div class="sideBody">
+            <button class="btn primary" id="downloadIni">Download skin.ini</button>
+            <button class="btn danger" id="clearWipe">Clear</button>
 
-          <div class="sep"></div>
-          <div class="groupTitle">[General] (standard-related)</div>
+            <div class="sep"></div>
 
-          <div class="row">
-            <label>AnimationFramerate</label>
-            <input type="number" id="sAnimFPS" placeholder="(blank = omit)">
-          </div>
-
-          <div class="grid2">
-            <div class="row" style="grid-template-columns:190px 1fr;">
-              <label>AllowSliderBallTint</label>
-              <div class="inline"><label class="switch"><input type="checkbox" id="sAllowSliderBallTint" checked><span class="sw"></span></label></div>
-            </div>
-            <div class="row" style="grid-template-columns:190px 1fr;">
-              <label>SliderBallFlip</label>
-              <div class="inline"><label class="switch"><input type="checkbox" id="sSliderBallFlip"><span class="sw"></span></label></div>
-            </div>
-          </div>
-
-          <div class="grid2">
-            <div class="row" style="grid-template-columns:190px 1fr;">
-              <label>HitCircleOverlayAboveNumber</label>
-              <div class="inline"><label class="switch"><input type="checkbox" id="sOverlayAboveNumber"><span class="sw"></span></label></div>
-            </div>
-            <div class="row" style="grid-template-columns:190px 1fr;">
-              <label>LayeredHitSounds</label>
-              <div class="inline"><label class="switch"><input type="checkbox" id="sLayeredHitSounds" checked><span class="sw"></span></label></div>
-            </div>
-          </div>
-
-          <div class="grid2">
-            <div class="row" style="grid-template-columns:190px 1fr;">
-              <label>SpinnerFadePlayfield</label>
-              <div class="inline"><label class="switch"><input type="checkbox" id="sSpinnerFadePlayfield" checked><span class="sw"></span></label></div>
-            </div>
-            <div class="row" style="grid-template-columns:190px 1fr;">
-              <label>SpinnerNoBlink</label>
-              <div class="inline"><label class="switch"><input type="checkbox" id="sSpinnerNoBlink"><span class="sw"></span></label></div>
-            </div>
-          </div>
-
-          <div class="sep"></div>
-          <div class="groupTitle">[Colours] (gameplay)</div>
-
-          <div class="mini">Combo colours (Combo1..Combo8) + slider/spinner colours are written into the same [Colours] section.</div>
-
-          <div class="sep"></div>
-          <div class="groupTitle">Combo colours</div>
-
-          <div class="grid2">
-            <div class="row">
-              <label>Combo1</label>
-              <div class="inline"><input type="color" id="sCombo1Pick"><input type="text" id="sCombo1" placeholder="255,255,255"></div>
-            </div>
-            <div class="row">
-              <label>Combo2</label>
-              <div class="inline"><input type="color" id="sCombo2Pick"><input type="text" id="sCombo2" placeholder="255,255,255"></div>
-            </div>
-            <div class="row">
-              <label>Combo3</label>
-              <div class="inline"><input type="color" id="sCombo3Pick"><input type="text" id="sCombo3" placeholder="255,255,255"></div>
-            </div>
-            <div class="row">
-              <label>Combo4</label>
-              <div class="inline"><input type="color" id="sCombo4Pick"><input type="text" id="sCombo4" placeholder="255,255,255"></div>
-            </div>
-            <div class="row">
-              <label>Combo5</label>
-              <div class="inline"><input type="color" id="sCombo5Pick"><input type="text" id="sCombo5" placeholder="(optional)"></div>
-            </div>
-            <div class="row">
-              <label>Combo6</label>
-              <div class="inline"><input type="color" id="sCombo6Pick"><input type="text" id="sCombo6" placeholder="(optional)"></div>
-            </div>
-            <div class="row">
-              <label>Combo7</label>
-              <div class="inline"><input type="color" id="sCombo7Pick"><input type="text" id="sCombo7" placeholder="(optional)"></div>
-            </div>
-            <div class="row">
-              <label>Combo8</label>
-              <div class="inline"><input type="color" id="sCombo8Pick"><input type="text" id="sCombo8" placeholder="(optional)"></div>
-            </div>
-          </div>
-
-          <div class="sep"></div>
-          <div class="groupTitle">Slider / Spinner colours</div>
-
-          <div class="grid2">
-            <div class="row">
-              <label>SliderBorder</label>
-              <div class="inline"><input type="color" id="sSliderBorderPick"><input type="text" id="sSliderBorder" placeholder="0,0,0"></div>
-            </div>
-            <div class="row">
-              <label>SliderTrackOverride</label>
-              <div class="inline"><input type="color" id="sSliderTrackPick"><input type="text" id="sSliderTrack" placeholder="(optional)"></div>
-            </div>
-            <div class="row">
-              <label>SpinnerApproachCircle</label>
-              <div class="inline"><input type="color" id="sSpinnerAppPick"><input type="text" id="sSpinnerApp" placeholder="(optional)"></div>
-            </div>
-            <div class="row">
-              <label>SpinnerBackground</label>
-              <div class="inline"><input type="color" id="sSpinnerBgPick"><input type="text" id="sSpinnerBg" placeholder="(optional)"></div>
-            </div>
-          </div>
-
-          <div class="hint">Tip: leave optional colours blank to omit them from the ini.</div>
-        </div>
-
-        <!-- MANIA -->
-        <div class="panelBody" id="tab-mania" style="display:none">
-          <div class="groupTitle">♦ Active keymodes (1K..18K)</div>
-
-          <div class="kmTools">
-            <input type="text" id="kmSearch" placeholder="Search keymode (ex: 4, 7, 12)..." />
-            <button class="btn" id="kmAll" type="button">All</button>
-            <button class="btn" id="kmNone" type="button">None</button>
-            <button class="btn" id="kmInvert" type="button">Invert</button>
-            <button class="btn" id="kmCommon" type="button" title="Enable common modes (4K, 7K)">Common</button>
-          </div>
-
-          <div class="kmWrap" id="kmToggles"></div>
-
-          <div class="mini" style="margin-top:6px;">*skin.ini will include only enabled modes.</div>
-
-          <div class="jumpRow" id="kmJump"></div>
-
-          <div class="sep"></div>
-
-          <!-- per-mode blocks injected here -->
-          <div id="modesContainer"></div>
-
-          <div class="sep"></div>
-          <div class="groupTitle">♦ Colours (shared)</div>
-
-          <div class="row">
-            <label>Colour (all keys)</label>
-            <div class="inline">
-              <input type="color" id="mKeyColourPick">
-              <input type="text" id="mKeyColour" placeholder="255,255,255">
-            </div>
-          </div>
-
-          <div class="row">
-            <label>ColourHold</label>
-            <div class="inline"><input type="color" id="mHoldPick"><input type="text" id="mColourHold" placeholder="0,0,0"></div>
-          </div>
-          <div class="row">
-            <label>ColourBreak</label>
-            <div class="inline"><input type="color" id="mBreakPick"><input type="text" id="mColourBreak" placeholder="0,0,0"></div>
-          </div>
-
-          <div class="sep"></div>
-          <div class="groupTitle">♦ Hit sprites (shared)</div>
-          <div class="grid2">
-            <div class="row"><label>Hit0</label><input type="text" id="h0"></div>
-            <div class="row"><label>Hit50</label><input type="text" id="h50"></div>
-            <div class="row"><label>Hit100</label><input type="text" id="h100"></div>
-            <div class="row"><label>Hit200</label><input type="text" id="h200"></div>
-            <div class="row"><label>Hit300</label><input type="text" id="h300"></div>
-            <div class="row"><label>Hit300g</label><input type="text" id="h300g"></div>
+            <span class="pill" id="savePulse" style="justify-content:center;"></span>
           </div>
         </div>
-      </div>
 
-      <!-- RIGHT PREVIEW -->
-      <div class="panel">
-        <div class="panelHead">
-          <div class="mini">skin.ini preview</div>
+        <div class="sideGroup">
+          <div class="sideHead">Options</div>
+          <div class="sideBody">
+            <div class="pill">
+              <span class="switchLabel">hairez-style</span>
+              <label class="switch" title="Pretty formatting (aligned + spaced groups)">
+                <input type="checkbox" id="prettyFormat" checked>
+                <span class="sw"></span>
+              </label>
+            </div>
+
+            <div class="pill" id="stdPill">
+              <span class="switchLabel">include standard</span>
+              <label class="switch" title="Include osu!standard settings in skin.ini">
+                <input type="checkbox" id="includeStandard" checked>
+                <span class="sw"></span>
+              </label>
+            </div>
+
+            <div class="pill" id="verPill">Version 2.0 [Compact]</div>
+
+            <div class="ghost">
+              Standard toggle only affects what is written to <b>skin.ini</b>.
+              UI fields remain available.
+            </div>
+          </div>
         </div>
-        <div class="panelBody">
-          <textarea id="preview" readonly></textarea>
+      </aside>
+
+      <!-- CONTENT -->
+      <main class="main">
+        <!-- LEFT -->
+        <div class="panel">
+          <div class="panelHead">
+            <div class="mini">Standard adds gameplay options + colours. Mania supports 1K..18K (per-keymode patterns). Edit blocks collapse/expand.</div>
+          </div>
+
+          <!-- GENERAL -->
+          <div class="panelBody" id="tab-general">
+            <div class="groupTitle">[General]</div>
+            <div class="row"><label>Name</label><input type="text" id="gName" placeholder="Example: My Skin"></div>
+            <div class="row"><label>Author</label><input type="text" id="gAuthor" placeholder="Your name"></div>
+            <div class="row"><label>Version</label><input type="text" id="gVersion" value="latest" readonly></div>
+
+            <div class="sep"></div>
+            <div class="groupTitle">Cursor</div>
+
+            <div class="row">
+              <label>CursorCentre</label>
+              <div class="inline"><label class="switch"><input type="checkbox" id="gCursorCentre" checked><span class="sw"></span></label></div>
+            </div>
+            <div class="row">
+              <label>CursorExpand</label>
+              <div class="inline"><label class="switch"><input type="checkbox" id="gCursorExpand"><span class="sw"></span></label></div>
+            </div>
+            <div class="row">
+              <label>CursorRotate</label>
+              <div class="inline"><label class="switch"><input type="checkbox" id="gCursorRotate"><span class="sw"></span></label></div>
+            </div>
+            <div class="row">
+              <label>CursorTrailRotate</label>
+              <div class="inline"><label class="switch"><input type="checkbox" id="gCursorTrailRotate"><span class="sw"></span></label></div>
+            </div>
+
+            <div class="sep"></div>
+            <div class="groupTitle">[Colours] (menu/UI)</div>
+
+            <div class="row">
+              <label>MenuGlow</label>
+              <div class="inline"><input type="color" id="cMenuGlowPick"><input type="text" id="cMenuGlow" placeholder="0,0,0"></div>
+            </div>
+            <div class="row">
+              <label>SongSelectActiveText</label>
+              <div class="inline"><input type="color" id="cSongActivePick"><input type="text" id="cSongActive" placeholder="0,0,0"></div>
+            </div>
+            <div class="row">
+              <label>SongSelectInactiveText</label>
+              <div class="inline"><input type="color" id="cSongInactivePick"><input type="text" id="cSongInactive" placeholder="0,0,0"></div>
+            </div>
+
+            <div class="sep"></div>
+            <div class="groupTitle">[Fonts]</div>
+
+            <div class="grid2">
+              <div>
+                <div class="row"><label>ScorePrefix</label><input type="text" id="fScorePrefix" placeholder="score"></div>
+                <div class="row"><label>ScoreOverlap</label><input type="number" id="fScoreOverlap" value="0"></div>
+              </div>
+              <div>
+                <div class="row"><label>ComboPrefix</label><input type="text" id="fComboPrefix" placeholder="combo"></div>
+                <div class="row"><label>ComboOverlap</label><input type="number" id="fComboOverlap" value="0"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STANDARD -->
+          <div class="panelBody" id="tab-standard" style="display:none">
+            <div class="groupTitle">osu!standard (gameplay)</div>
+            <div class="mini">Toggle “include standard” in the sidebar to control whether these keys are written to skin.ini.</div>
+
+            <div class="sep"></div>
+            <div class="groupTitle">[General] (standard-related)</div>
+
+            <div class="row">
+              <label>AnimationFramerate</label>
+              <input type="number" id="sAnimFPS" placeholder="(blank = omit)">
+            </div>
+
+            <div class="grid2">
+              <div class="row" style="grid-template-columns:190px 1fr;">
+                <label>AllowSliderBallTint</label>
+                <div class="inline"><label class="switch"><input type="checkbox" id="sAllowSliderBallTint" checked><span class="sw"></span></label></div>
+              </div>
+              <div class="row" style="grid-template-columns:190px 1fr;">
+                <label>SliderBallFlip</label>
+                <div class="inline"><label class="switch"><input type="checkbox" id="sSliderBallFlip"><span class="sw"></span></label></div>
+              </div>
+            </div>
+
+            <div class="grid2">
+              <div class="row" style="grid-template-columns:190px 1fr;">
+                <label>HitCircleOverlayAboveNumber</label>
+                <div class="inline"><label class="switch"><input type="checkbox" id="sOverlayAboveNumber"><span class="sw"></span></label></div>
+              </div>
+              <div class="row" style="grid-template-columns:190px 1fr;">
+                <label>LayeredHitSounds</label>
+                <div class="inline"><label class="switch"><input type="checkbox" id="sLayeredHitSounds" checked><span class="sw"></span></label></div>
+              </div>
+            </div>
+
+            <div class="grid2">
+              <div class="row" style="grid-template-columns:190px 1fr;">
+                <label>SpinnerFadePlayfield</label>
+                <div class="inline"><label class="switch"><input type="checkbox" id="sSpinnerFadePlayfield" checked><span class="sw"></span></label></div>
+              </div>
+              <div class="row" style="grid-template-columns:190px 1fr;">
+                <label>SpinnerNoBlink</label>
+                <div class="inline"><label class="switch"><input type="checkbox" id="sSpinnerNoBlink"><span class="sw"></span></label></div>
+              </div>
+            </div>
+
+            <div class="sep"></div>
+            <div class="groupTitle">[Colours] (gameplay)</div>
+
+            <div class="mini">Combo colours (Combo1..Combo8) + slider/spinner colours are written into the same [Colours] section.</div>
+
+            <div class="sep"></div>
+            <div class="groupTitle">Combo colours</div>
+
+            <div class="grid2">
+              <div class="row">
+                <label>Combo1</label>
+                <div class="inline"><input type="color" id="sCombo1Pick"><input type="text" id="sCombo1" placeholder="255,255,255"></div>
+              </div>
+              <div class="row">
+                <label>Combo2</label>
+                <div class="inline"><input type="color" id="sCombo2Pick"><input type="text" id="sCombo2" placeholder="255,255,255"></div>
+              </div>
+              <div class="row">
+                <label>Combo3</label>
+                <div class="inline"><input type="color" id="sCombo3Pick"><input type="text" id="sCombo3" placeholder="255,255,255"></div>
+              </div>
+              <div class="row">
+                <label>Combo4</label>
+                <div class="inline"><input type="color" id="sCombo4Pick"><input type="text" id="sCombo4" placeholder="255,255,255"></div>
+              </div>
+              <div class="row">
+                <label>Combo5</label>
+                <div class="inline"><input type="color" id="sCombo5Pick"><input type="text" id="sCombo5" placeholder="(optional)"></div>
+              </div>
+              <div class="row">
+                <label>Combo6</label>
+                <div class="inline"><input type="color" id="sCombo6Pick"><input type="text" id="sCombo6" placeholder="(optional)"></div>
+              </div>
+              <div class="row">
+                <label>Combo7</label>
+                <div class="inline"><input type="color" id="sCombo7Pick"><input type="text" id="sCombo7" placeholder="(optional)"></div>
+              </div>
+              <div class="row">
+                <label>Combo8</label>
+                <div class="inline"><input type="color" id="sCombo8Pick"><input type="text" id="sCombo8" placeholder="(optional)"></div>
+              </div>
+            </div>
+
+            <div class="sep"></div>
+            <div class="groupTitle">Slider / Spinner colours</div>
+
+            <div class="grid2">
+              <div class="row">
+                <label>SliderBorder</label>
+                <div class="inline"><input type="color" id="sSliderBorderPick"><input type="text" id="sSliderBorder" placeholder="0,0,0"></div>
+              </div>
+              <div class="row">
+                <label>SliderTrackOverride</label>
+                <div class="inline"><input type="color" id="sSliderTrackPick"><input type="text" id="sSliderTrack" placeholder="(optional)"></div>
+              </div>
+              <div class="row">
+                <label>SpinnerApproachCircle</label>
+                <div class="inline"><input type="color" id="sSpinnerAppPick"><input type="text" id="sSpinnerApp" placeholder="(optional)"></div>
+              </div>
+              <div class="row">
+                <label>SpinnerBackground</label>
+                <div class="inline"><input type="color" id="sSpinnerBgPick"><input type="text" id="sSpinnerBg" placeholder="(optional)"></div>
+              </div>
+            </div>
+
+            <div class="hint">Tip: leave optional colours blank to omit them from the ini.</div>
+          </div>
+
+          <!-- MANIA -->
+          <div class="panelBody" id="tab-mania" style="display:none">
+            <div class="groupTitle">♦ Active keymodes (1K..18K)</div>
+
+            <div class="kmTools">
+              <input type="text" id="kmSearch" placeholder="Search keymode (ex: 4, 7, 12)..." />
+              <button class="btn" id="kmAll" type="button">All</button>
+              <button class="btn" id="kmNone" type="button">None</button>
+              <button class="btn" id="kmInvert" type="button">Invert</button>
+              <button class="btn" id="kmCommon" type="button" title="Enable common modes (4K, 7K)">Common</button>
+            </div>
+
+            <div class="kmWrap" id="kmToggles"></div>
+
+            <div class="mini" style="margin-top:6px;">*skin.ini will include only enabled modes.</div>
+
+            <div class="jumpRow" id="kmJump"></div>
+
+            <div class="sep"></div>
+
+            <!-- per-mode blocks injected here -->
+            <div id="modesContainer"></div>
+
+            <div class="sep"></div>
+            <div class="groupTitle">♦ Colours (shared)</div>
+
+            <div class="row">
+              <label>Colour (all keys)</label>
+              <div class="inline">
+                <input type="color" id="mKeyColourPick">
+                <input type="text" id="mKeyColour" placeholder="255,255,255">
+              </div>
+            </div>
+
+            <div class="row">
+              <label>ColourHold</label>
+              <div class="inline"><input type="color" id="mHoldPick"><input type="text" id="mColourHold" placeholder="0,0,0"></div>
+            </div>
+            <div class="row">
+              <label>ColourBreak</label>
+              <div class="inline"><input type="color" id="mBreakPick"><input type="text" id="mColourBreak" placeholder="0,0,0"></div>
+            </div>
+
+            <div class="sep"></div>
+            <div class="groupTitle">♦ Hit sprites (shared)</div>
+            <div class="grid2">
+              <div class="row"><label>Hit0</label><input type="text" id="h0"></div>
+              <div class="row"><label>Hit50</label><input type="text" id="h50"></div>
+              <div class="row"><label>Hit100</label><input type="text" id="h100"></div>
+              <div class="row"><label>Hit200</label><input type="text" id="h200"></div>
+              <div class="row"><label>Hit300</label><input type="text" id="h300"></div>
+              <div class="row"><label>Hit300g</label><input type="text" id="h300g"></div>
+            </div>
+          </div>
         </div>
-      </div>
+
+        <!-- RIGHT PREVIEW -->
+        <div class="panel">
+          <div class="panelHead">
+            <div class="mini">skin.ini preview</div>
+          </div>
+          <div class="panelBody">
+            <textarea id="preview" readonly></textarea>
+          </div>
+        </div>
+      </main>
+
     </div>
   </div>
 
 <script>
 const $ = (id)=>document.getElementById(id);
 const STORAGE_KEY = "aeditor_skinini_builder_v10_compact_toggles_accordion_modes";
+
+/* NEW: standard include toggle */
+let includeStandard = true;
 
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 const bool01 = (b)=> (b ? "1" : "0");
@@ -601,16 +731,16 @@ function pat(pattern, n){
   return p.replaceAll("{n}", String(n));
 }
 
-/* tabs */
+/* tabs (NOW driven by sidebar) */
 function setTab(name){
-  document.querySelectorAll(".tab").forEach(t=>{
+  document.querySelectorAll(".sideTab").forEach(t=>{
     t.classList.toggle("active", t.dataset.tab === name);
   });
   $("tab-general").style.display  = (name==="general")  ? "block" : "none";
   $("tab-standard").style.display = (name==="standard") ? "block" : "none";
   $("tab-mania").style.display    = (name==="mania")    ? "block" : "none";
 }
-document.querySelectorAll(".tab").forEach(t=>{
+document.querySelectorAll(".sideTab").forEach(t=>{
   t.addEventListener("click", ()=> setTab(t.dataset.tab));
 });
 
@@ -915,9 +1045,8 @@ function renderJump(){
       const k = Number(b.dataset.jump);
       openModes[k] = true;
       rerenderModes();
-      // jump after render
       setTimeout(()=>{
-        const el = document.querySelector(`.modeBlock[data-keys="${k}"]`);
+        const el = document.querySelector(\`.modeBlock[data-keys="\${k}"]\`);
         if(el){
           el.scrollIntoView({behavior:"smooth", block:"start"});
         }
@@ -931,12 +1060,12 @@ function wireAccordions(){
   document.querySelectorAll("[data-fold]").forEach(btn=>{
     btn.addEventListener("click", ()=>{
       const k = Number(btn.dataset.fold);
-      const block = document.querySelector(`.modeBlock[data-keys="${k}"]`);
+      const block = document.querySelector(\`.modeBlock[data-keys="\${k}"]\`);
       if(!block) return;
       const nowOpen = !block.classList.contains("open");
       block.classList.toggle("open", nowOpen);
       openModes[k] = nowOpen;
-      saveState(); // persist open state
+      saveState();
       scheduleUpdate();
     });
   });
@@ -1114,14 +1243,16 @@ function genIni(){
   pushIfFmt(out, "CursorRotate", bool01($("gCursorRotate").checked));
   pushIfFmt(out, "CursorTrailRotate", bool01($("gCursorTrailRotate").checked));
 
-  // Standard-related [General] options
-  pushIfFmt(out, "AllowSliderBallTint", bool01($("sAllowSliderBallTint").checked));
-  pushIfFmt(out, "SliderBallFlip", bool01($("sSliderBallFlip").checked));
-  pushIfFmt(out, "HitCircleOverlayAboveNumber", bool01($("sOverlayAboveNumber").checked));
-  pushIfFmt(out, "LayeredHitSounds", bool01($("sLayeredHitSounds").checked));
-  pushIfFmt(out, "SpinnerFadePlayfield", bool01($("sSpinnerFadePlayfield").checked));
-  pushIfFmt(out, "SpinnerNoBlink", bool01($("sSpinnerNoBlink").checked));
-  pushIfFmt(out, "AnimationFramerate", cleanLine($("sAnimFPS").value));
+  // Standard-related [General] options (ONLY if enabled)
+  if(includeStandard){
+    pushIfFmt(out, "AllowSliderBallTint", bool01($("sAllowSliderBallTint").checked));
+    pushIfFmt(out, "SliderBallFlip", bool01($("sSliderBallFlip").checked));
+    pushIfFmt(out, "HitCircleOverlayAboveNumber", bool01($("sOverlayAboveNumber").checked));
+    pushIfFmt(out, "LayeredHitSounds", bool01($("sLayeredHitSounds").checked));
+    pushIfFmt(out, "SpinnerFadePlayfield", bool01($("sSpinnerFadePlayfield").checked));
+    pushIfFmt(out, "SpinnerNoBlink", bool01($("sSpinnerNoBlink").checked));
+    pushIfFmt(out, "AnimationFramerate", cleanLine($("sAnimFPS").value));
+  }
 
   out.push("");
 
@@ -1130,21 +1261,25 @@ function genIni(){
     ["MenuGlow", $("cMenuGlow").value],
     ["SongSelectActiveText", $("cSongActive").value],
     ["SongSelectInactiveText", $("cSongInactive").value],
-
-    ["Combo1", $("sCombo1").value],
-    ["Combo2", $("sCombo2").value],
-    ["Combo3", $("sCombo3").value],
-    ["Combo4", $("sCombo4").value],
-    ["Combo5", $("sCombo5").value],
-    ["Combo6", $("sCombo6").value],
-    ["Combo7", $("sCombo7").value],
-    ["Combo8", $("sCombo8").value],
-
-    ["SliderBorder", $("sSliderBorder").value],
-    ["SliderTrackOverride", $("sSliderTrack").value],
-    ["SpinnerApproachCircle", $("sSpinnerApp").value],
-    ["SpinnerBackground", $("sSpinnerBg").value],
   ];
+
+  // ONLY include gameplay colours if standard is enabled
+  if(includeStandard){
+    colourKeys.push(
+      ["Combo1", $("sCombo1").value],
+      ["Combo2", $("sCombo2").value],
+      ["Combo3", $("sCombo3").value],
+      ["Combo4", $("sCombo4").value],
+      ["Combo5", $("sCombo5").value],
+      ["Combo6", $("sCombo6").value],
+      ["Combo7", $("sCombo7").value],
+      ["Combo8", $("sCombo8").value],
+      ["SliderBorder", $("sSliderBorder").value],
+      ["SliderTrackOverride", $("sSliderTrack").value],
+      ["SpinnerApproachCircle", $("sSpinnerApp").value],
+      ["SpinnerBackground", $("sSpinnerBg").value],
+    );
+  }
 
   const hasColours = colourKeys.some(([,v]) => cleanLine(v));
   if(hasColours){
@@ -1199,6 +1334,7 @@ function saveState(){
 
   const s = {
     prettyFormat: !!prettyFormat,
+    includeStandard: !!includeStandard,
     enabledModes: { ...enabledModes },
     openModes: { ...openModes },
     kmSearchText: kmSearchText,
@@ -1279,6 +1415,9 @@ function loadState(){
 
     prettyFormat = (s.prettyFormat ?? true) ? true : false;
     $("prettyFormat").checked = prettyFormat;
+
+    includeStandard = (s.includeStandard ?? true) ? true : false;
+    $("includeStandard").checked = includeStandard;
 
     if(s.enabledModes && typeof s.enabledModes === "object"){
       enabledModes = {};
@@ -1392,6 +1531,12 @@ $("prettyFormat").addEventListener("change", ()=>{
   scheduleUpdate();
 });
 
+/* standard include toggle */
+$("includeStandard").addEventListener("change", ()=>{
+  includeStandard = $("includeStandard").checked;
+  scheduleUpdate();
+});
+
 /* keymode toggles */
 function onToggleModes(){
   saveAllActiveModesIntoState();
@@ -1402,9 +1547,7 @@ function onToggleModes(){
     const now = !!inp.checked;
     enabledModes[k] = now;
 
-    // if just enabled, auto-open its edit block
     if(!was && now) openModes[k] = true;
-    // if disabled, also close (keeps list cleaner)
     if(was && !now) openModes[k] = false;
   });
 
@@ -1422,13 +1565,11 @@ $("kmSearch").addEventListener("input", ()=>{
 
 $("kmAll").addEventListener("click", ()=>{
   for(const k of ALL_MANIA_KEYS){ enabledModes[k] = true; openModes[k] = false; }
-  // open common ones for convenience
   openModes[4] = true; openModes[7] = true;
   renderKeymodeToggles(); rerenderModes(); scheduleUpdate();
 });
 $("kmNone").addEventListener("click", ()=>{
   for(const k of ALL_MANIA_KEYS){ enabledModes[k] = false; openModes[k] = false; }
-  // keep at least 4K enabled so user never ends up with nothing by accident
   enabledModes[4] = true; openModes[4] = true;
   renderKeymodeToggles(); rerenderModes(); scheduleUpdate();
 });
@@ -1514,6 +1655,9 @@ seedDefaultsIfEmpty();
 renderKeymodeToggles();
 rerenderModes();
 updatePreview();
+
+/* default active tab */
+setTab("general");
 </script>
 
 <script src="snow.js?v=1"></script>
