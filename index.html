@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <link rel="icon" type="image/png" href="https://i.pinimg.com/1200x/d6/ca/e4/d6cae471e8471dec46c4304104adb4b1.jpg"/>
+  <link rel="icon" type="image/png" href="https://i.pinimg.com/1200x/d6/ca/e4/d6/cae471e8471dec46c4304104adb4b1.jpg"/>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>skin.ini</title>
@@ -19,6 +19,8 @@
     }
 
     *{ box-sizing:border-box; }
+
+    html{ scroll-behavior:smooth; }
 
     /* Scrollbars (Firefox) */
     *{
@@ -240,6 +242,44 @@
     }
     .jumpBtn:hover{ color:rgba(232,232,232,.92); border-color:rgba(255,255,255,.18); }
 
+    /* Mania mini-nav (sticky inside mania panel) */
+    .maniaNav{
+      position:sticky;
+      top:0;
+      z-index:5;
+      margin:-10px -10px 10px; /* align to panel edges */
+      padding:8px 10px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      background:linear-gradient(180deg, rgba(0,0,0,.30), rgba(0,0,0,.14));
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+      align-items:center;
+      backdrop-filter: blur(6px);
+    }
+    .navPill{
+      cursor:pointer;
+      padding:5px 9px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.16);
+      color:rgba(232,232,232,.60);
+      font-size:12px;
+      font-weight:700;
+      user-select:none;
+    }
+    .navPill:hover{ color:rgba(232,232,232,.92); border-color:rgba(255,255,255,.18); }
+    .navPill.active{
+      color:rgba(232,232,232,.95);
+      border-color:rgba(255,255,255,.22);
+      background:rgba(255,255,255,.06);
+    }
+
+    /* anchor spacing for sticky nav */
+    .anchor{
+      scroll-margin-top: 60px;
+    }
+
     @media (max-width: 980px){
       .main{ grid-template-columns: 1fr; }
       textarea{ min-height: 55vh; }
@@ -257,7 +297,7 @@
         <span class="pill" id="savePulse"></span>
       </div>
       <div class="controls">
-        <span class="pill">Version 2.0 [Compact]</span>
+        <span class="pill">Version 2.1 [Mania Nav]</span>
 
         <span class="pill">
           <span class="switchLabel">hairez-style</span>
@@ -278,7 +318,7 @@
             <div class="tab" data-tab="standard">Standard</div>
             <div class="tab" data-tab="mania">Mania</div>
           </div>
-          <div class="mini">Standard adds gameplay options + colours. Mania supports 1K..18K (per-keymode patterns). Edit blocks collapse/expand.</div>
+          <div class="mini">Standard adds gameplay options + colours. Mania supports 1K..18K (per-keymode patterns). Compact toggles + collapsible edits.</div>
         </div>
 
         <!-- GENERAL -->
@@ -393,60 +433,24 @@
           <div class="groupTitle">Combo colours</div>
 
           <div class="grid2">
-            <div class="row">
-              <label>Combo1</label>
-              <div class="inline"><input type="color" id="sCombo1Pick"><input type="text" id="sCombo1" placeholder="255,255,255"></div>
-            </div>
-            <div class="row">
-              <label>Combo2</label>
-              <div class="inline"><input type="color" id="sCombo2Pick"><input type="text" id="sCombo2" placeholder="255,255,255"></div>
-            </div>
-            <div class="row">
-              <label>Combo3</label>
-              <div class="inline"><input type="color" id="sCombo3Pick"><input type="text" id="sCombo3" placeholder="255,255,255"></div>
-            </div>
-            <div class="row">
-              <label>Combo4</label>
-              <div class="inline"><input type="color" id="sCombo4Pick"><input type="text" id="sCombo4" placeholder="255,255,255"></div>
-            </div>
-            <div class="row">
-              <label>Combo5</label>
-              <div class="inline"><input type="color" id="sCombo5Pick"><input type="text" id="sCombo5" placeholder="(optional)"></div>
-            </div>
-            <div class="row">
-              <label>Combo6</label>
-              <div class="inline"><input type="color" id="sCombo6Pick"><input type="text" id="sCombo6" placeholder="(optional)"></div>
-            </div>
-            <div class="row">
-              <label>Combo7</label>
-              <div class="inline"><input type="color" id="sCombo7Pick"><input type="text" id="sCombo7" placeholder="(optional)"></div>
-            </div>
-            <div class="row">
-              <label>Combo8</label>
-              <div class="inline"><input type="color" id="sCombo8Pick"><input type="text" id="sCombo8" placeholder="(optional)"></div>
-            </div>
+            <div class="row"><label>Combo1</label><div class="inline"><input type="color" id="sCombo1Pick"><input type="text" id="sCombo1"></div></div>
+            <div class="row"><label>Combo2</label><div class="inline"><input type="color" id="sCombo2Pick"><input type="text" id="sCombo2"></div></div>
+            <div class="row"><label>Combo3</label><div class="inline"><input type="color" id="sCombo3Pick"><input type="text" id="sCombo3"></div></div>
+            <div class="row"><label>Combo4</label><div class="inline"><input type="color" id="sCombo4Pick"><input type="text" id="sCombo4"></div></div>
+            <div class="row"><label>Combo5</label><div class="inline"><input type="color" id="sCombo5Pick"><input type="text" id="sCombo5"></div></div>
+            <div class="row"><label>Combo6</label><div class="inline"><input type="color" id="sCombo6Pick"><input type="text" id="sCombo6"></div></div>
+            <div class="row"><label>Combo7</label><div class="inline"><input type="color" id="sCombo7Pick"><input type="text" id="sCombo7"></div></div>
+            <div class="row"><label>Combo8</label><div class="inline"><input type="color" id="sCombo8Pick"><input type="text" id="sCombo8"></div></div>
           </div>
 
           <div class="sep"></div>
           <div class="groupTitle">Slider / Spinner colours</div>
 
           <div class="grid2">
-            <div class="row">
-              <label>SliderBorder</label>
-              <div class="inline"><input type="color" id="sSliderBorderPick"><input type="text" id="sSliderBorder" placeholder="0,0,0"></div>
-            </div>
-            <div class="row">
-              <label>SliderTrackOverride</label>
-              <div class="inline"><input type="color" id="sSliderTrackPick"><input type="text" id="sSliderTrack" placeholder="(optional)"></div>
-            </div>
-            <div class="row">
-              <label>SpinnerApproachCircle</label>
-              <div class="inline"><input type="color" id="sSpinnerAppPick"><input type="text" id="sSpinnerApp" placeholder="(optional)"></div>
-            </div>
-            <div class="row">
-              <label>SpinnerBackground</label>
-              <div class="inline"><input type="color" id="sSpinnerBgPick"><input type="text" id="sSpinnerBg" placeholder="(optional)"></div>
-            </div>
+            <div class="row"><label>SliderBorder</label><div class="inline"><input type="color" id="sSliderBorderPick"><input type="text" id="sSliderBorder"></div></div>
+            <div class="row"><label>SliderTrackOverride</label><div class="inline"><input type="color" id="sSliderTrackPick"><input type="text" id="sSliderTrack"></div></div>
+            <div class="row"><label>SpinnerApproachCircle</label><div class="inline"><input type="color" id="sSpinnerAppPick"><input type="text" id="sSpinnerApp"></div></div>
+            <div class="row"><label>SpinnerBackground</label><div class="inline"><input type="color" id="sSpinnerBgPick"><input type="text" id="sSpinnerBg"></div></div>
           </div>
 
           <div class="hint">Tip: leave optional colours blank to omit them from the ini.</div>
@@ -454,6 +458,18 @@
 
         <!-- MANIA -->
         <div class="panelBody" id="tab-mania" style="display:none">
+          <!-- sticky mini-nav -->
+          <div class="maniaNav" id="maniaNav">
+            <span class="navPill active" data-go="sec-active">Active</span>
+            <span class="navPill" data-go="sec-blocks">Blocks</span>
+            <span class="navPill" data-go="sec-colours">Colours</span>
+            <span class="navPill" data-go="sec-hits">Hits</span>
+            <span class="navPill" data-go="sec-top" title="Back to top">Top</span>
+          </div>
+
+          <div id="sec-top" class="anchor"></div>
+
+          <div id="sec-active" class="anchor"></div>
           <div class="groupTitle">♦ Active keymodes (1K..18K)</div>
 
           <div class="kmTools">
@@ -472,10 +488,13 @@
 
           <div class="sep"></div>
 
+          <div id="sec-blocks" class="anchor"></div>
           <!-- per-mode blocks injected here -->
           <div id="modesContainer"></div>
 
           <div class="sep"></div>
+
+          <div id="sec-colours" class="anchor"></div>
           <div class="groupTitle">♦ Colours (shared)</div>
 
           <div class="row">
@@ -496,6 +515,8 @@
           </div>
 
           <div class="sep"></div>
+
+          <div id="sec-hits" class="anchor"></div>
           <div class="groupTitle">♦ Hit sprites (shared)</div>
           <div class="grid2">
             <div class="row"><label>Hit0</label><input type="text" id="h0"></div>
@@ -522,7 +543,7 @@
 
 <script>
 const $ = (id)=>document.getElementById(id);
-const STORAGE_KEY = "aeditor_skinini_builder_v10_compact_toggles_accordion_modes";
+const STORAGE_KEY = "aeditor_skinini_builder_v11_compact_toggles_accordion_modes_mania_nav";
 
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 const bool01 = (b)=> (b ? "1" : "0");
@@ -609,6 +630,9 @@ function setTab(name){
   $("tab-general").style.display  = (name==="general")  ? "block" : "none";
   $("tab-standard").style.display = (name==="standard") ? "block" : "none";
   $("tab-mania").style.display    = (name==="mania")    ? "block" : "none";
+
+  // refresh active nav state when entering mania
+  if(name==="mania") setTimeout(updateManiaNavActive, 0);
 }
 document.querySelectorAll(".tab").forEach(t=>{
   t.addEventListener("click", ()=> setTab(t.dataset.tab));
@@ -650,7 +674,6 @@ function defaultMode(keys){
     mLightingN: "",
     mLightingL: "",
 
-    /* patterns per keymode */
     pKey: "",
     pKeyD: "",
     pNote: "",
@@ -668,11 +691,11 @@ for(const k of ALL_MANIA_KEYS) maniaModes[k] = defaultMode(k);
 
 /* enabled keymodes (1..18) */
 let enabledModes = {};
-for(const k of ALL_MANIA_KEYS) enabledModes[k] = (k===4); // default: only 4K enabled
+for(const k of ALL_MANIA_KEYS) enabledModes[k] = (k===4);
 
 /* accordion open state for edit blocks */
 let openModes = {};
-for(const k of ALL_MANIA_KEYS) openModes[k] = (k===4); // default: open 4K
+for(const k of ALL_MANIA_KEYS) openModes[k] = (k===4);
 
 let kmSearchText = "";
 
@@ -723,18 +746,9 @@ function renderModeBlock(keys){
         <div class="row"><label>ScorePosition</label><input type="number" id="${modeId("mScorePos",keys)}" value=""></div>
         <div class="row"><label>ComboPosition</label><input type="number" id="${modeId("mComboPos",keys)}" value=""></div>
 
-        <div class="row">
-          <label>JudgementLine</label>
-          <div class="inline"><label class="switch"><input type="checkbox" id="${modeId("mJudgementLine",keys)}" checked><span class="sw"></span></label></div>
-        </div>
-        <div class="row">
-          <label>UpsideDown</label>
-          <div class="inline"><label class="switch"><input type="checkbox" id="${modeId("mUpsideDown",keys)}"><span class="sw"></span></label></div>
-        </div>
-        <div class="row">
-          <label>KeysUnderNotes</label>
-          <div class="inline"><label class="switch"><input type="checkbox" id="${modeId("mKeysUnderNotes",keys)}"><span class="sw"></span></label></div>
-        </div>
+        <div class="row"><label>JudgementLine</label><div class="inline"><label class="switch"><input type="checkbox" id="${modeId("mJudgementLine",keys)}" checked><span class="sw"></span></label></div></div>
+        <div class="row"><label>UpsideDown</label><div class="inline"><label class="switch"><input type="checkbox" id="${modeId("mUpsideDown",keys)}"><span class="sw"></span></label></div></div>
+        <div class="row"><label>KeysUnderNotes</label><div class="inline"><label class="switch"><input type="checkbox" id="${modeId("mKeysUnderNotes",keys)}"><span class="sw"></span></label></div></div>
 
         <div class="sep"></div>
         <div class="groupTitle">♦ Reading refinements (${keys}K)</div>
@@ -769,19 +783,19 @@ function renderModeBlock(keys){
 
         <div class="grid2" style="margin-top:8px">
           <div>
-            <div class="row"><label>KeyImage# pattern</label><input type="text" id="${modeId("pKey",keys)}" placeholder=""></div>
-            <div class="row"><label>KeyImage#D pattern</label><input type="text" id="${modeId("pKeyD",keys)}" placeholder=""></div>
+            <div class="row"><label>KeyImage# pattern</label><input type="text" id="${modeId("pKey",keys)}"></div>
+            <div class="row"><label>KeyImage#D pattern</label><input type="text" id="${modeId("pKeyD",keys)}"></div>
           </div>
           <div>
-            <div class="row"><label>NoteImage# pattern</label><input type="text" id="${modeId("pNote",keys)}" placeholder=""></div>
-            <div class="row"><label>NoteImage#H pattern</label><input type="text" id="${modeId("pNoteH",keys)}" placeholder=""></div>
+            <div class="row"><label>NoteImage# pattern</label><input type="text" id="${modeId("pNote",keys)}"></div>
+            <div class="row"><label>NoteImage#H pattern</label><input type="text" id="${modeId("pNoteH",keys)}"></div>
           </div>
         </div>
 
         <div class="grid2">
           <div>
-            <div class="row"><label>NoteImage#L pattern</label><input type="text" id="${modeId("pNoteL",keys)}" placeholder=""></div>
-            <div class="row"><label>NoteImage#T pattern</label><input type="text" id="${modeId("pNoteT",keys)}" placeholder=""></div>
+            <div class="row"><label>NoteImage#L pattern</label><input type="text" id="${modeId("pNoteL",keys)}"></div>
+            <div class="row"><label>NoteImage#T pattern</label><input type="text" id="${modeId("pNoteT",keys)}"></div>
           </div>
           <div class="row" style="grid-template-columns:190px 1fr;">
             <label>WarningArrow</label><input type="text" id="${modeId("mWarningArrow",keys)}">
@@ -915,12 +929,9 @@ function renderJump(){
       const k = Number(b.dataset.jump);
       openModes[k] = true;
       rerenderModes();
-      // jump after render
       setTimeout(()=>{
-        const el = document.querySelector(`.modeBlock[data-keys="${k}"]`);
-        if(el){
-          el.scrollIntoView({behavior:"smooth", block:"start"});
-        }
+        const el = document.querySelector(\`.modeBlock[data-keys="\${k}"]\`);
+        if(el) el.scrollIntoView({behavior:"smooth", block:"start"});
       }, 0);
       scheduleUpdate();
     });
@@ -931,12 +942,12 @@ function wireAccordions(){
   document.querySelectorAll("[data-fold]").forEach(btn=>{
     btn.addEventListener("click", ()=>{
       const k = Number(btn.dataset.fold);
-      const block = document.querySelector(`.modeBlock[data-keys="${k}"]`);
+      const block = document.querySelector(\`.modeBlock[data-keys="\${k}"]\`);
       if(!block) return;
       const nowOpen = !block.classList.contains("open");
       block.classList.toggle("open", nowOpen);
       openModes[k] = nowOpen;
-      saveState(); // persist open state
+      saveState();
       scheduleUpdate();
     });
   });
@@ -1037,7 +1048,7 @@ function maniaBlockForKeys(keys){
 
   const keyColour = cleanLine($("mKeyColour").value);
   if(keyColour){
-    for(let idx=0; idx<keys; idx++) lines.push(fmtKV(`Colour${idx}`, keyColour));
+    for(let idx=0; idx<keys; idx++) lines.push(fmtKV(\`Colour\${idx}\`, keyColour));
     spacer(lines);
   }
 
@@ -1051,36 +1062,36 @@ function maniaBlockForKeys(keys){
   header(lines, "keys");
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
-    const a = pat(pKey, n); if(a) lines.push(fmtKV(`KeyImage${idx}`, a));
+    const a = pat(pKey, n); if(a) lines.push(fmtKV(\`KeyImage\${idx}\`, a));
   }
   spacer(lines);
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
-    const a = pat(pKeyD, n); if(a) lines.push(fmtKV(`KeyImage${idx}D`, a));
+    const a = pat(pKeyD, n); if(a) lines.push(fmtKV(\`KeyImage\${idx}D\`, a));
   }
   spacer(lines);
 
   header(lines, "notes");
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
-    const a = pat(pNote, n); if(a) lines.push(fmtKV(`NoteImage${idx}`, a));
+    const a = pat(pNote, n); if(a) lines.push(fmtKV(\`NoteImage\${idx}\`, a));
   }
   spacer(lines);
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
-    const a = pat(pNoteH, n); if(a) lines.push(fmtKV(`NoteImage${idx}H`, a));
+    const a = pat(pNoteH, n); if(a) lines.push(fmtKV(\`NoteImage\${idx}H\`, a));
   }
   spacer(lines);
 
   header(lines, "ln");
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
-    const a = pat(pNoteL, n); if(a) lines.push(fmtKV(`NoteImage${idx}L`, a));
+    const a = pat(pNoteL, n); if(a) lines.push(fmtKV(\`NoteImage\${idx}L\`, a));
   }
   spacer(lines);
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
-    const a = pat(pNoteT, n); if(a) lines.push(fmtKV(`NoteImage${idx}T`, a));
+    const a = pat(pNoteT, n); if(a) lines.push(fmtKV(\`NoteImage\${idx}T\`, a));
   }
   spacer(lines);
 
@@ -1102,19 +1113,16 @@ function maniaBlockForKeys(keys){
 function genIni(){
   const out = [];
 
-  // [General]
   out.push("[General]");
   pushIfFmt(out, "Name", $("gName").value);
   pushIfFmt(out, "Author", $("gAuthor").value);
   out.push(fmtKV("Version", "latest"));
 
-  // Cursor
   pushIfFmt(out, "CursorCentre", bool01($("gCursorCentre").checked));
   pushIfFmt(out, "CursorExpand", bool01($("gCursorExpand").checked));
   pushIfFmt(out, "CursorRotate", bool01($("gCursorRotate").checked));
   pushIfFmt(out, "CursorTrailRotate", bool01($("gCursorTrailRotate").checked));
 
-  // Standard-related [General] options
   pushIfFmt(out, "AllowSliderBallTint", bool01($("sAllowSliderBallTint").checked));
   pushIfFmt(out, "SliderBallFlip", bool01($("sSliderBallFlip").checked));
   pushIfFmt(out, "HitCircleOverlayAboveNumber", bool01($("sOverlayAboveNumber").checked));
@@ -1125,7 +1133,6 @@ function genIni(){
 
   out.push("");
 
-  // [Colours]
   const colourKeys = [
     ["MenuGlow", $("cMenuGlow").value],
     ["SongSelectActiveText", $("cSongActive").value],
@@ -1153,7 +1160,6 @@ function genIni(){
     out.push("");
   }
 
-  // [Fonts]
   const hasFonts =
     cleanLine($("fScorePrefix").value) ||
     cleanLine($("fComboPrefix").value) ||
@@ -1169,7 +1175,6 @@ function genIni(){
     out.push("");
   }
 
-  // [Mania] blocks
   for(const keys of ALL_MANIA_KEYS){
     if(!enabledModes[keys]) continue;
     out.push("[Mania]");
@@ -1188,15 +1193,12 @@ function saveAllActiveModesIntoState(){
   for(const keys of ALL_MANIA_KEYS){
     if(!enabledModes[keys]) continue;
     const block = document.querySelector(`.modeBlock[data-keys="${keys}"]`);
-    if(block){
-      maniaModes[keys] = readModeFromUI(keys);
-    }
+    if(block) maniaModes[keys] = readModeFromUI(keys);
   }
 }
 
 function saveState(){
   saveAllActiveModesIntoState();
-
   const s = {
     prettyFormat: !!prettyFormat,
     enabledModes: { ...enabledModes },
@@ -1211,12 +1213,10 @@ function saveState(){
     gCursorRotate: $("gCursorRotate").checked,
     gCursorTrailRotate: $("gCursorTrailRotate").checked,
 
-    // menu/UI colours
     cMenuGlow: $("cMenuGlow").value,
     cSongActive: $("cSongActive").value,
     cSongInactive: $("cSongInactive").value,
 
-    // standard options
     sAnimFPS: $("sAnimFPS").value,
     sAllowSliderBallTint: $("sAllowSliderBallTint").checked,
     sSliderBallFlip: $("sSliderBallFlip").checked,
@@ -1225,38 +1225,24 @@ function saveState(){
     sSpinnerFadePlayfield: $("sSpinnerFadePlayfield").checked,
     sSpinnerNoBlink: $("sSpinnerNoBlink").checked,
 
-    // standard colours
-    sCombo1: $("sCombo1").value,
-    sCombo2: $("sCombo2").value,
-    sCombo3: $("sCombo3").value,
-    sCombo4: $("sCombo4").value,
-    sCombo5: $("sCombo5").value,
-    sCombo6: $("sCombo6").value,
-    sCombo7: $("sCombo7").value,
-    sCombo8: $("sCombo8").value,
+    sCombo1: $("sCombo1").value, sCombo2: $("sCombo2").value, sCombo3: $("sCombo3").value, sCombo4: $("sCombo4").value,
+    sCombo5: $("sCombo5").value, sCombo6: $("sCombo6").value, sCombo7: $("sCombo7").value, sCombo8: $("sCombo8").value,
     sSliderBorder: $("sSliderBorder").value,
     sSliderTrack: $("sSliderTrack").value,
     sSpinnerApp: $("sSpinnerApp").value,
     sSpinnerBg: $("sSpinnerBg").value,
 
-    // fonts
     fScorePrefix: $("fScorePrefix").value,
     fScoreOverlap: $("fScoreOverlap").value,
     fComboPrefix: $("fComboPrefix").value,
     fComboOverlap: $("fComboOverlap").value,
 
-    // mania shared
     mKeyColour: $("mKeyColour").value,
     mColourHold: $("mColourHold").value,
     mColourBreak: $("mColourBreak").value,
 
-    // hits
-    h0: $("h0").value,
-    h50: $("h50").value,
-    h100: $("h100").value,
-    h200: $("h200").value,
-    h300: $("h300").value,
-    h300g: $("h300g").value,
+    h0: $("h0").value, h50: $("h50").value, h100: $("h100").value,
+    h200: $("h200").value, h300: $("h300").value, h300g: $("h300g").value,
 
     maniaModes: maniaModes
   };
@@ -1289,9 +1275,6 @@ function loadState(){
     if(s.openModes && typeof s.openModes === "object"){
       openModes = {};
       for(const k of ALL_MANIA_KEYS) openModes[k] = !!s.openModes[k];
-    }else{
-      openModes = {};
-      for(const k of ALL_MANIA_KEYS) openModes[k] = (k===4);
     }
 
     kmSearchText = s.kmSearchText ?? "";
@@ -1402,9 +1385,7 @@ function onToggleModes(){
     const now = !!inp.checked;
     enabledModes[k] = now;
 
-    // if just enabled, auto-open its edit block
     if(!was && now) openModes[k] = true;
-    // if disabled, also close (keeps list cleaner)
     if(was && !now) openModes[k] = false;
   });
 
@@ -1422,13 +1403,11 @@ $("kmSearch").addEventListener("input", ()=>{
 
 $("kmAll").addEventListener("click", ()=>{
   for(const k of ALL_MANIA_KEYS){ enabledModes[k] = true; openModes[k] = false; }
-  // open common ones for convenience
   openModes[4] = true; openModes[7] = true;
   renderKeymodeToggles(); rerenderModes(); scheduleUpdate();
 });
 $("kmNone").addEventListener("click", ()=>{
   for(const k of ALL_MANIA_KEYS){ enabledModes[k] = false; openModes[k] = false; }
-  // keep at least 4K enabled so user never ends up with nothing by accident
   enabledModes[4] = true; openModes[4] = true;
   renderKeymodeToggles(); rerenderModes(); scheduleUpdate();
 });
@@ -1445,6 +1424,49 @@ $("kmCommon").addEventListener("click", ()=>{
   enabledModes[4] = true; enabledModes[7] = true;
   openModes[4] = true; openModes[7] = true;
   renderKeymodeToggles(); rerenderModes(); scheduleUpdate();
+});
+
+/* mania mini-nav */
+function goToManiaSection(id){
+  const mania = $("tab-mania");
+  const el = document.getElementById(id);
+  if(!mania || !el) return;
+  el.scrollIntoView({behavior:"smooth", block:"start"});
+  setActiveNav(id);
+}
+function setActiveNav(id){
+  document.querySelectorAll(".navPill").forEach(p=>{
+    p.classList.toggle("active", p.dataset.go === id);
+  });
+}
+document.querySelectorAll(".navPill").forEach(p=>{
+  p.addEventListener("click", ()=> goToManiaSection(p.dataset.go));
+});
+
+function updateManiaNavActive(){
+  const mania = $("tab-mania");
+  if(!mania || mania.style.display === "none") return;
+
+  const ids = ["sec-active","sec-blocks","sec-colours","sec-hits"];
+  let best = "sec-active";
+  let bestTop = -Infinity;
+
+  for(const id of ids){
+    const el = document.getElementById(id);
+    if(!el) continue;
+    const r = el.getBoundingClientRect();
+    // within viewport-ish: choose the one closest to top but not too far below
+    if(r.top <= 80 && r.top > bestTop){
+      bestTop = r.top;
+      best = id;
+    }
+  }
+  setActiveNav(best);
+}
+
+$("tab-mania").addEventListener("scroll", ()=>{
+  // lightweight: no raf needed for this size
+  updateManiaNavActive();
 });
 
 /* input delegation for dynamic mode blocks */
@@ -1514,6 +1536,7 @@ seedDefaultsIfEmpty();
 renderKeymodeToggles();
 rerenderModes();
 updatePreview();
+setTimeout(updateManiaNavActive, 0);
 </script>
 
 <script src="snow.js?v=1"></script>
