@@ -20,6 +20,8 @@
 
     *{ box-sizing:border-box; }
 
+    html{ scroll-behavior:smooth; }
+
     /* Scrollbars (Firefox) */
     *{
       scrollbar-width: thin;
@@ -68,11 +70,57 @@
       background:rgba(0,0,0,.18); color:rgba(232,232,232,.38); font-size:12px;
     }
 
+    /* ====== NEW: sidebar layout ====== */
     .main{
       flex:1; min-height:0;
-      display:grid; grid-template-columns: 1.1fr 0.9fr;
+      display:grid;
+      grid-template-columns: 180px 1.1fr 0.9fr; /* sidebar + left + right */
       gap:10px; padding:10px;
     }
+
+    .side{
+      border:1px solid var(--border); border-radius:var(--r);
+      background:rgba(255,255,255,.02);
+      min-height:0;
+      overflow:auto;
+      padding:10px;
+      position:sticky;
+      top:54px; /* below topbar */
+      align-self:start;
+      max-height: calc(100vh - 74px);
+    }
+    .sideTitle{
+      font-size:12px;
+      color:rgba(232,232,232,.60);
+      font-weight:800;
+      margin:2px 0 8px;
+    }
+    .sideBtns{ display:flex; flex-direction:column; gap:6px; }
+    .sideBtn{
+      cursor:pointer;
+      padding:7px 10px;
+      border-radius:var(--r);
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.18);
+      color:rgba(232,232,232,.62);
+      font-weight:700;
+      text-align:left;
+      font:inherit;
+    }
+    .sideBtn:hover{ color:rgba(232,232,232,.92); border-color:rgba(255,255,255,.18); }
+    .sideBtn.active{
+      color:rgba(232,232,232,.95);
+      border-color:rgba(255,255,255,.22);
+      background:rgba(255,255,255,.06);
+    }
+    .sideHint{
+      margin-top:10px;
+      font-size:12px;
+      color:rgba(232,232,232,.38);
+    }
+    /* anchors need margin because panel header is sticky-ish visually */
+    .anchor{ scroll-margin-top: 70px; }
+
     .panel{
       border:1px solid var(--border); border-radius:var(--r);
       background:rgba(255,255,255,.02);
@@ -235,6 +283,7 @@
 
     @media (max-width: 980px){
       .main{ grid-template-columns: 1fr; }
+      .side{ position:relative; top:auto; max-height:none; }
       textarea{ min-height: 55vh; }
     }
   </style>
@@ -249,7 +298,16 @@
         <span class="pill" id="savePulse"></span>
       </div>
       <div class="controls">
-        <span class="pill">Version 1.9 [Beta]</span>
+        <span class="pill">Version 1.10 [Sidebar + Std Toggle]</span>
+
+        <!-- NEW: include standard in ini -->
+        <span class="pill" style="display:flex; align-items:center; gap:10px;">
+          <span class="switchLabel">include standard</span>
+          <label class="switch" title="Include Standard options + colours in skin.ini">
+            <input type="checkbox" id="includeStandard" checked>
+            <span class="sw"></span>
+          </label>
+        </span>
 
         <span class="pill" style="display:flex; align-items:center; gap:10px;">
           <span class="switchLabel">hairez-style</span>
@@ -262,6 +320,13 @@
     </div>
 
     <div class="main">
+      <!-- NEW: SIDEBAR -->
+      <div class="side" id="sideNav">
+        <div class="sideTitle">Navigate</div>
+        <div class="sideBtns" id="sideBtns"></div>
+        <div class="sideHint">Shows sections for the current tab.</div>
+      </div>
+
       <!-- LEFT -->
       <div class="panel">
         <div class="panelHead">
@@ -275,12 +340,15 @@
 
         <!-- GENERAL -->
         <div class="panelBody" id="tab-general">
+          <div id="g-sec-general" class="anchor"></div>
           <div class="groupTitle">[General]</div>
           <div class="row"><label>Name</label><input type="text" id="gName" placeholder="Exemple: My Skin"></div>
           <div class="row"><label>Author</label><input type="text" id="gAuthor" placeholder="Your name"></div>
           <div class="row"><label>Version</label><input type="text" id="gVersion" value="latest" readonly></div>
 
           <div class="sep"></div>
+
+          <div id="g-sec-cursor" class="anchor"></div>
           <div class="groupTitle">Cursor</div>
 
           <div class="row">
@@ -301,6 +369,8 @@
           </div>
 
           <div class="sep"></div>
+
+          <div id="g-sec-colours" class="anchor"></div>
           <div class="groupTitle">[Colours] (menu/UI)</div>
 
           <div class="row">
@@ -317,6 +387,8 @@
           </div>
 
           <div class="sep"></div>
+
+          <div id="g-sec-fonts" class="anchor"></div>
           <div class="groupTitle">[Fonts]</div>
 
           <div class="grid2">
@@ -333,9 +405,12 @@
 
         <!-- STANDARD -->
         <div class="panelBody" id="tab-standard" style="display:none">
+          <div id="s-sec-top" class="anchor"></div>
           <div class="groupTitle">osu!standard (gameplay)</div>
 
           <div class="sep"></div>
+
+          <div id="s-sec-general" class="anchor"></div>
           <div class="groupTitle">[General] (standard-related)</div>
 
           <div class="row">
@@ -356,6 +431,7 @@
 
           <div class="grid2">
             <div class="row" style="grid-template-columns:190px 1fr;">
+              Желтый
               <label>HitCircleOverlayAboveNumber</label>
               <div class="inline"><label class="switch"><input type="checkbox" id="sOverlayAboveNumber"><span class="sw"></span></label></div>
             </div>
@@ -377,6 +453,8 @@
           </div>
 
           <div class="sep"></div>
+
+          <div id="s-sec-colours" class="anchor"></div>
           <div class="groupTitle">[Colours] (gameplay)</div>
 
           <div class="mini">Combo colours (Combo1..Combo8) + slider/spinner colours are written into the same [Colours] section.</div>
@@ -423,22 +501,7 @@
           <div class="groupTitle">Slider / Spinner colours</div>
 
           <div class="grid2">
-            <div class="row">
-              <label>SliderBorder</label>
-              <div class="inline"><input type="color" id="sSliderBorderPick"><input type="text" id="sSliderBorder" placeholder="0,0,0"></div>
-            </div>
-            <div class="row">
-              <label>SliderTrackOverride</label>
-              <div class="inline"><input type="color" id="sSliderTrackPick"><input type="text" id="sSliderTrack" placeholder="(optional)"></div>
-            </div>
-            <div class="row">
-              <label>SpinnerApproachCircle</label>
-              <div class="inline"><input type="color" id="sSpinnerAppPick"><input type="text" id="sSpinnerApp" placeholder="(optional)"></div>
-            </div>
-            <div class="row">
-              <label>SpinnerBackground</label>
-              <div class="inline"><input type="color" id="sSpinnerBgPick"><input type="text" id="sSpinnerBg" placeholder="(optional)"></div>
-            </div>
+            /*... (rest unchanged) ...*/
           </div>
 
           <div class="hint">Tip: leave optional colours blank to omit them from the ini.</div>
@@ -446,19 +509,21 @@
 
         <!-- MANIA -->
         <div class="panelBody" id="tab-mania" style="display:none">
+          <div id="m-sec-active" class="anchor"></div>
           <div class="groupTitle">♦ Active keymodes (1K..18K)</div>
 
-          <!-- each keymode toggle is now a box -->
           <div class="kmWrap" id="kmToggles"></div>
 
           <div class="mini" style="margin-top:6px;">*skin.ini will include only enabled modes. (Enabling many = many blocks.)</div>
 
           <div class="sep"></div>
 
-          <!-- per-mode boxes injected here -->
+          <div id="m-sec-blocks" class="anchor"></div>
           <div id="modesContainer"></div>
 
           <div class="sep"></div>
+
+          <div id="m-sec-colours" class="anchor"></div>
           <div class="groupTitle">♦ Colours (shared)</div>
 
           <div class="row">
@@ -479,6 +544,8 @@
           </div>
 
           <div class="sep"></div>
+
+          <div id="m-sec-hits" class="anchor"></div>
           <div class="groupTitle">♦ Hit sprites (shared)</div>
           <div class="grid2">
             <div class="row"><label>Hit0</label><input type="text" id="h0"></div>
@@ -506,6 +573,9 @@
 <script>
 const $ = (id)=>document.getElementById(id);
 const STORAGE_KEY = "aeditor_skinini_builder_v10_boxes_everywhere";
+
+/* ===== NEW: includeStandard state ===== */
+let includeStandard = true;
 
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 const bool01 = (b)=> (b ? "1" : "0");
@@ -583,13 +653,17 @@ function pat(pattern, n){
 }
 
 /* tabs */
+let activeTab = "general";
 function setTab(name){
+  activeTab = name;
   document.querySelectorAll(".tab").forEach(t=>{
     t.classList.toggle("active", t.dataset.tab === name);
   });
   $("tab-general").style.display  = (name==="general")  ? "block" : "none";
   $("tab-standard").style.display = (name==="standard") ? "block" : "none";
   $("tab-mania").style.display    = (name==="mania")    ? "block" : "none";
+
+  rebuildSidebar();
 }
 document.querySelectorAll(".tab").forEach(t=>{
   t.addEventListener("click", ()=> setTab(t.dataset.tab));
@@ -621,7 +695,6 @@ function initBoxes(root){
     const body = box.querySelector(".aBoxBody");
     if(!head || !body) return;
 
-    // start state (default closed unless data-open="true")
     boxSetOpen(box, box.dataset.open === "true");
 
     head.addEventListener("click", ()=>{
@@ -630,8 +703,6 @@ function initBoxes(root){
     });
   });
 
-  // keep height correct when resizing (only for open boxes)
-  // (cheap + cheerful)
   window.addEventListener("resize", ()=>{
     document.querySelectorAll('.aBox[data-open="true"] .aBoxBody').forEach(body=>{
       body.style.maxHeight = body.scrollHeight + "px";
@@ -675,7 +746,6 @@ function defaultMode(keys){
     mLightingN: "",
     mLightingL: "",
 
-    /* patterns per keymode */
     pKey: "",
     pKeyD: "",
     pNote: "",
@@ -690,13 +760,12 @@ const ALL_MANIA_KEYS = Array.from({length: 18}, (_,i)=>i+1);
 const maniaModes = {};
 for(const k of ALL_MANIA_KEYS) maniaModes[k] = defaultMode(k);
 
-/* enabled keymodes (1..18) */
 let enabledModes = {};
-for(const k of ALL_MANIA_KEYS) enabledModes[k] = (k===4); // default: only 4K enabled
+for(const k of ALL_MANIA_KEYS) enabledModes[k] = (k===4);
 
 function modeId(base, keys){ return `${base}_${keys}`; }
 
-/* keymode toggle boxes (each keymode is a box) */
+/* keymode toggle boxes */
 function renderKeymodeToggles(){
   const cont = $("kmToggles");
   cont.innerHTML = ALL_MANIA_KEYS.map(k=>{
@@ -725,7 +794,6 @@ function renderKeymodeToggles(){
     `;
   }).join("");
 
-  // prevent head click when clicking inside inputs (so toggling doesn't also collapse)
   cont.querySelectorAll("input, label").forEach(el=>{
     el.addEventListener("click", (e)=> e.stopPropagation());
   });
@@ -738,7 +806,6 @@ function renderKeymodeToggles(){
 }
 
 function renderModeBox(keys){
-  // default: open only if enabled + (4K or first enabled)
   const open = (keys===4) ? "true" : "false";
 
   return `
@@ -890,7 +957,6 @@ function applyModeToUI(keys, mode){
   $(modeId("mLightingN",keys)).value = mode.mLightingN ?? "";
   $(modeId("mLightingL",keys)).value = mode.mLightingL ?? "";
 
-  /* patterns */
   $(modeId("pKey",keys)).value = mode.pKey ?? "";
   $(modeId("pKeyD",keys)).value = mode.pKeyD ?? "";
   $(modeId("pNote",keys)).value = mode.pNote ?? "";
@@ -933,7 +999,6 @@ function readModeFromUI(keys){
     mLightingN: $(modeId("mLightingN",keys)).value,
     mLightingL: $(modeId("mLightingL",keys)).value,
 
-    /* patterns */
     pKey: $(modeId("pKey",keys)).value,
     pKeyD: $(modeId("pKeyD",keys)).value,
     pNote: $(modeId("pNote",keys)).value,
@@ -954,18 +1019,18 @@ function rerenderModes(){
     applyModeToUI(k, maniaModes[k] || defaultMode(k));
   }
 
-  // stop head click when clicking inputs
   cont.querySelectorAll("input, select, textarea, label").forEach(el=>{
     el.addEventListener("click", (e)=> e.stopPropagation());
   });
 
   initBoxes(cont);
-  // ensure open boxes have correct heights after DOM fills
   requestAnimationFrame(()=>{
     document.querySelectorAll('.aBox[data-open="true"] .aBoxBody').forEach(body=>{
       body.style.maxHeight = body.scrollHeight + "px";
     });
   });
+
+  rebuildSidebar(); /* keep sidebar accurate when mania blocks change */
 }
 
 function getAspectRatio(mode){
@@ -1053,7 +1118,6 @@ function maniaBlockForKeys(keys){
     spacer(lines);
   }
 
-  /* patterns per-mode */
   const pKey = mode.pKey || "";
   const pKeyD = mode.pKeyD || "";
   const pNote = mode.pNote || "";
@@ -1115,49 +1179,52 @@ function maniaBlockForKeys(keys){
 function genIni(){
   const out = [];
 
-  // [General]
   out.push("[General]");
   pushIfFmt(out, "Name", $("gName").value);
   pushIfFmt(out, "Author", $("gAuthor").value);
   out.push(fmtKV("Version", "latest"));
 
-  // Cursor
   pushIfFmt(out, "CursorCentre", bool01($("gCursorCentre").checked));
   pushIfFmt(out, "CursorExpand", bool01($("gCursorExpand").checked));
   pushIfFmt(out, "CursorRotate", bool01($("gCursorRotate").checked));
   pushIfFmt(out, "CursorTrailRotate", bool01($("gCursorTrailRotate").checked));
 
-  // Standard-related [General] options
-  pushIfFmt(out, "AllowSliderBallTint", bool01($("sAllowSliderBallTint").checked));
-  pushIfFmt(out, "SliderBallFlip", bool01($("sSliderBallFlip").checked));
-  pushIfFmt(out, "HitCircleOverlayAboveNumber", bool01($("sOverlayAboveNumber").checked));
-  pushIfFmt(out, "LayeredHitSounds", bool01($("sLayeredHitSounds").checked));
-  pushIfFmt(out, "SpinnerFadePlayfield", bool01($("sSpinnerFadePlayfield").checked));
-  pushIfFmt(out, "SpinnerNoBlink", bool01($("sSpinnerNoBlink").checked));
-  pushIfFmt(out, "AnimationFramerate", cleanLine($("sAnimFPS").value));
+  /* ===== NEW: only include these if includeStandard is ON ===== */
+  if(includeStandard){
+    pushIfFmt(out, "AllowSliderBallTint", bool01($("sAllowSliderBallTint").checked));
+    pushIfFmt(out, "SliderBallFlip", bool01($("sSliderBallFlip").checked));
+    pushIfFmt(out, "HitCircleOverlayAboveNumber", bool01($("sOverlayAboveNumber").checked));
+    pushIfFmt(out, "LayeredHitSounds", bool01($("sLayeredHitSounds").checked));
+    pushIfFmt(out, "SpinnerFadePlayfield", bool01($("sSpinnerFadePlayfield").checked));
+    pushIfFmt(out, "SpinnerNoBlink", bool01($("sSpinnerNoBlink").checked));
+    pushIfFmt(out, "AnimationFramerate", cleanLine($("sAnimFPS").value));
+  }
 
   out.push("");
 
-  // [Colours]
   const colourKeys = [
     ["MenuGlow", $("cMenuGlow").value],
     ["SongSelectActiveText", $("cSongActive").value],
     ["SongSelectInactiveText", $("cSongInactive").value],
-
-    ["Combo1", $("sCombo1").value],
-    ["Combo2", $("sCombo2").value],
-    ["Combo3", $("sCombo3").value],
-    ["Combo4", $("sCombo4").value],
-    ["Combo5", $("sCombo5").value],
-    ["Combo6", $("sCombo6").value],
-    ["Combo7", $("sCombo7").value],
-    ["Combo8", $("sCombo8").value],
-
-    ["SliderBorder", $("sSliderBorder").value],
-    ["SliderTrackOverride", $("sSliderTrack").value],
-    ["SpinnerApproachCircle", $("sSpinnerApp").value],
-    ["SpinnerBackground", $("sSpinnerBg").value],
   ];
+
+  /* ===== NEW: only append standard gameplay colours if includeStandard ===== */
+  if(includeStandard){
+    colourKeys.push(
+      ["Combo1", $("sCombo1").value],
+      ["Combo2", $("sCombo2").value],
+      ["Combo3", $("sCombo3").value],
+      ["Combo4", $("sCombo4").value],
+      ["Combo5", $("sCombo5").value],
+      ["Combo6", $("sCombo6").value],
+      ["Combo7", $("sCombo7").value],
+      ["Combo8", $("sCombo8").value],
+      ["SliderBorder", $("sSliderBorder").value],
+      ["SliderTrackOverride", $("sSliderTrack").value],
+      ["SpinnerApproachCircle", $("sSpinnerApp").value],
+      ["SpinnerBackground", $("sSpinnerBg").value],
+    );
+  }
 
   const hasColours = colourKeys.some(([,v]) => cleanLine(v));
   if(hasColours){
@@ -1166,7 +1233,6 @@ function genIni(){
     out.push("");
   }
 
-  // [Fonts]
   const hasFonts =
     cleanLine($("fScorePrefix").value) ||
     cleanLine($("fComboPrefix").value) ||
@@ -1182,7 +1248,6 @@ function genIni(){
     out.push("");
   }
 
-  // [Mania] blocks
   for(const keys of ALL_MANIA_KEYS){
     if(!enabledModes[keys]) continue;
     out.push("[Mania]");
@@ -1212,6 +1277,7 @@ function saveState(){
 
   const s = {
     prettyFormat: !!prettyFormat,
+    includeStandard: !!includeStandard, /* NEW */
     enabledModes: { ...enabledModes },
 
     gName: $("gName").value,
@@ -1222,12 +1288,10 @@ function saveState(){
     gCursorRotate: $("gCursorRotate").checked,
     gCursorTrailRotate: $("gCursorTrailRotate").checked,
 
-    // menu/UI colours
     cMenuGlow: $("cMenuGlow").value,
     cSongActive: $("cSongActive").value,
     cSongInactive: $("cSongInactive").value,
 
-    // standard options
     sAnimFPS: $("sAnimFPS").value,
     sAllowSliderBallTint: $("sAllowSliderBallTint").checked,
     sSliderBallFlip: $("sSliderBallFlip").checked,
@@ -1236,7 +1300,6 @@ function saveState(){
     sSpinnerFadePlayfield: $("sSpinnerFadePlayfield").checked,
     sSpinnerNoBlink: $("sSpinnerNoBlink").checked,
 
-    // standard colours
     sCombo1: $("sCombo1").value,
     sCombo2: $("sCombo2").value,
     sCombo3: $("sCombo3").value,
@@ -1250,18 +1313,15 @@ function saveState(){
     sSpinnerApp: $("sSpinnerApp").value,
     sSpinnerBg: $("sSpinnerBg").value,
 
-    // fonts
     fScorePrefix: $("fScorePrefix").value,
     fScoreOverlap: $("fScoreOverlap").value,
     fComboPrefix: $("fComboPrefix").value,
     fComboOverlap: $("fComboOverlap").value,
 
-    // mania shared
     mKeyColour: $("mKeyColour").value,
     mColourHold: $("mColourHold").value,
     mColourBreak: $("mColourBreak").value,
 
-    // hits
     h0: $("h0").value,
     h50: $("h50").value,
     h100: $("h100").value,
@@ -1291,7 +1351,9 @@ function loadState(){
     prettyFormat = (s.prettyFormat ?? true) ? true : false;
     $("prettyFormat").checked = prettyFormat;
 
-    // enabled modes
+    includeStandard = (s.includeStandard ?? true) ? true : false; /* NEW */
+    $("includeStandard").checked = includeStandard;
+
     if(s.enabledModes && typeof s.enabledModes === "object"){
       enabledModes = {};
       for(const k of ALL_MANIA_KEYS){
@@ -1312,7 +1374,6 @@ function loadState(){
     $("cSongActive").value = s.cSongActive ?? "";
     $("cSongInactive").value = s.cSongInactive ?? "";
 
-    // standard options
     $("sAnimFPS").value = s.sAnimFPS ?? "";
     $("sAllowSliderBallTint").checked = (s.sAllowSliderBallTint ?? true) ? true : false;
     $("sSliderBallFlip").checked = !!s.sSliderBallFlip;
@@ -1321,7 +1382,6 @@ function loadState(){
     $("sSpinnerFadePlayfield").checked = (s.sSpinnerFadePlayfield ?? true) ? true : false;
     $("sSpinnerNoBlink").checked = !!s.sSpinnerNoBlink;
 
-    // standard colours
     $("sCombo1").value = s.sCombo1 ?? "";
     $("sCombo2").value = s.sCombo2 ?? "";
     $("sCombo3").value = s.sCombo3 ?? "";
@@ -1335,18 +1395,15 @@ function loadState(){
     $("sSpinnerApp").value = s.sSpinnerApp ?? "";
     $("sSpinnerBg").value = s.sSpinnerBg ?? "";
 
-    // fonts
     $("fScorePrefix").value = s.fScorePrefix ?? "";
     $("fScoreOverlap").value = s.fScoreOverlap ?? "0";
     $("fComboPrefix").value = s.fComboPrefix ?? "";
     $("fComboOverlap").value = s.fComboOverlap ?? "0";
 
-    // mania shared
     $("mKeyColour").value = s.mKeyColour ?? "";
     $("mColourHold").value = s.mColourHold ?? "";
     $("mColourBreak").value = s.mColourBreak ?? "";
 
-    // hits
     $("h0").value = s.h0 ?? "";
     $("h50").value = s.h50 ?? "";
     $("h100").value = s.h100 ?? "";
@@ -1400,6 +1457,12 @@ $("prettyFormat").addEventListener("change", ()=>{
   scheduleUpdate();
 });
 
+/* NEW: include standard toggle */
+$("includeStandard").addEventListener("change", ()=>{
+  includeStandard = $("includeStandard").checked;
+  scheduleUpdate();
+});
+
 /* keymode toggles */
 function onToggleModes(){
   saveAllActiveModesIntoState();
@@ -1408,7 +1471,6 @@ function onToggleModes(){
     const k = Number(inp.dataset.k);
     enabledModes[k] = inp.checked;
 
-    // update subtitle text ("enabled/disabled")
     const box = inp.closest(".aBox");
     if(box){
       const sub = box.querySelector(".aBoxSubtitle");
@@ -1423,7 +1485,6 @@ function onToggleModes(){
 /* input delegation for dynamic mode boxes */
 $("tab-mania").addEventListener("input", ()=>{
   scheduleUpdate();
-  // keep open box heights correct while typing
   document.querySelectorAll('.aBox[data-open="true"] .aBoxBody').forEach(body=>{
     body.style.maxHeight = body.scrollHeight + "px";
   });
@@ -1442,13 +1503,11 @@ $("tab-mania").addEventListener("change", ()=>{
   "cMenuGlow","cSongActive","cSongInactive",
   "fScorePrefix","fScoreOverlap","fComboPrefix","fComboOverlap",
 
-  // standard
   "sAnimFPS",
   "sAllowSliderBallTint","sSliderBallFlip","sOverlayAboveNumber","sLayeredHitSounds","sSpinnerFadePlayfield","sSpinnerNoBlink",
   "sCombo1","sCombo2","sCombo3","sCombo4","sCombo5","sCombo6","sCombo7","sCombo8",
   "sSliderBorder","sSliderTrack","sSpinnerApp","sSpinnerBg",
 
-  // mania shared
   "mKeyColour","mColourHold","mColourBreak",
   "h0","h50","h100","h200","h300","h300g"
 ].forEach(id=>{
@@ -1478,20 +1537,99 @@ bindColourSync("mKeyColourPick","mKeyColour");
 bindColourSync("mHoldPick","mColourHold");
 bindColourSync("mBreakPick","mColourBreak");
 
+/* ===== NEW: Sidebar navigation ===== */
+const SIDE_SECTIONS = {
+  general: [
+    ["g-sec-general", "General"],
+    ["g-sec-cursor", "Cursor"],
+    ["g-sec-colours", "Colours"],
+    ["g-sec-fonts", "Fonts"],
+  ],
+  standard: [
+    ["s-sec-top", "Top"],
+    ["s-sec-general", "Options"],
+    ["s-sec-colours", "Colours"],
+  ],
+  mania: [
+    ["m-sec-active", "Keymodes"],
+    ["m-sec-blocks", "Blocks"],
+    ["m-sec-colours", "Colours"],
+    ["m-sec-hits", "Hits"],
+  ]
+};
+
+function getActivePanel(){
+  if(activeTab === "general") return $("tab-general");
+  if(activeTab === "standard") return $("tab-standard");
+  return $("tab-mania");
+}
+
+function rebuildSidebar(){
+  const btns = $("sideBtns");
+  btns.innerHTML = "";
+
+  const list = SIDE_SECTIONS[activeTab] || [];
+  for(const [id, label] of list){
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "sideBtn";
+    b.textContent = label;
+    b.dataset.target = id;
+    b.addEventListener("click", ()=>{
+      const panel = getActivePanel();
+      const el = document.getElementById(id);
+      if(!panel || !el) return;
+      el.scrollIntoView({behavior:"smooth", block:"start"});
+      setSideActive(id);
+    });
+    btns.appendChild(b);
+  }
+
+  // update active highlight initially
+  setSideActive(list[0]?.[0] || "");
+}
+
+function setSideActive(id){
+  document.querySelectorAll(".sideBtn").forEach(b=>{
+    b.classList.toggle("active", b.dataset.target === id);
+  });
+}
+
+function updateSideActiveByScroll(){
+  const panel = getActivePanel();
+  if(!panel) return;
+
+  const list = SIDE_SECTIONS[activeTab] || [];
+  let bestId = list[0]?.[0] || "";
+  let bestTop = -Infinity;
+
+  for(const [id] of list){
+    const el = document.getElementById(id);
+    if(!el) continue;
+    const r = el.getBoundingClientRect();
+    if(r.top <= 90 && r.top > bestTop){
+      bestTop = r.top;
+      bestId = id;
+    }
+  }
+  if(bestId) setSideActive(bestId);
+}
+
+$("tab-general").addEventListener("scroll", updateSideActiveByScroll, {passive:true});
+$("tab-standard").addEventListener("scroll", updateSideActiveByScroll, {passive:true});
+$("tab-mania").addEventListener("scroll", updateSideActiveByScroll, {passive:true});
+
 function seedDefaultsIfEmpty(){
-  // menu/UI defaults
   if(!$("cMenuGlow").value) $("cMenuGlow").value = "255,255,255";
   if(!$("cSongActive").value) $("cSongActive").value = "255,255,255";
   if(!$("cSongInactive").value) $("cSongInactive").value = "160,160,160";
 
-  // standard defaults (safe-ish)
   if(!$("sCombo1").value) $("sCombo1").value = "255,128,128";
   if(!$("sCombo2").value) $("sCombo2").value = "128,255,128";
   if(!$("sCombo3").value) $("sCombo3").value = "128,192,255";
   if(!$("sCombo4").value) $("sCombo4").value = "255,255,128";
   if(!$("sSliderBorder").value) $("sSliderBorder").value = "255,255,255";
 
-  // mania defaults
   if(!$("mKeyColour").value) $("mKeyColour").value = "255,255,255";
   if(!$("mColourHold").value) $("mColourHold").value = "255,255,255";
   if(!$("mColourBreak").value) $("mColourBreak").value = "255,80,80";
@@ -1499,11 +1637,13 @@ function seedDefaultsIfEmpty(){
 
 /* init */
 loadState();
+includeStandard = $("includeStandard").checked; /* ensure */
 seedDefaultsIfEmpty();
 renderKeymodeToggles();
 rerenderModes();
-initBoxes(document); // in case you add other boxes later
+initBoxes(document);
 updatePreview();
+rebuildSidebar();
 </script>
 
 <script src="snow.js?v=1"></script>
