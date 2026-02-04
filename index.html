@@ -162,29 +162,76 @@
       user-select:none;
     }
 
-    /* per-mode blocks */
-    .modeBlock{
-      border:1px solid rgba(255,255,255,.08);
-      background:rgba(255,255,255,.015);
-      border-radius:8px;
-      padding:10px;
-      margin:10px 0 14px;
+    /* compact toggle wrap */
+    .kmWrap{ display:flex; flex-wrap:wrap; gap:10px; }
+
+    /* ---------
+       BOX (accordion)
+    --------- */
+    .aBox{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.015);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 10px 0 14px;
     }
-    .modeHead{
+    .aBoxHead{
+      width:100%;
+      cursor:pointer;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
-      margin-bottom:8px;
+
+      padding:10px 12px;
+      border:0;
+      background: rgba(0,0,0,.18);
+      color: rgba(232,232,232,.85);
+      font: inherit;
+      text-align:left;
+    }
+    .aBoxHead:hover{ background: rgba(255,255,255,.04); }
+    .aBoxTitle{
+      font-weight: 800;
+      font-size: 12px;
+      color: rgba(232,232,232,.82);
+      display:flex;
+      gap:10px;
+      align-items:center;
       flex-wrap:wrap;
     }
-    .modeTag{
-      font-weight:700;
-      color:rgba(232,232,232,.85);
+    .aBoxSubtitle{
+      font-weight: 600;
+      font-size: 12px;
+      color: rgba(232,232,232,.45);
     }
+    .aBoxArrow{
+      display:inline-block;
+      transition: transform 160ms ease;
+      color: rgba(232,232,232,.65);
+      user-select:none;
+    }
+    .aBoxBody{
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 200ms ease;
+      border-top: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.01);
+    }
+    .aBoxInner{ padding: 10px 12px; }
 
-    /* compact toggle wrap */
-    .kmWrap{ display:flex; flex-wrap:wrap; gap:10px; }
+    .aBox[data-open="true"] .aBoxArrow{ transform: rotate(90deg); }
+
+    /* keymode toggle boxes */
+    .kmBox{ margin:0; border-radius:10px; }
+    .kmBox .aBoxHead{ padding:8px 10px; }
+    .kmBox .aBoxInner{ padding:8px 10px; }
+    .kmBoxRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
 
     @media (max-width: 980px){
       .main{ grid-template-columns: 1fr; }
@@ -202,7 +249,7 @@
         <span class="pill" id="savePulse"></span>
       </div>
       <div class="controls">
-        <span class="pill">Version 1.8 [Beta]</span>
+        <span class="pill">Version 1.9 [Beta]</span>
 
         <span class="pill" style="display:flex; align-items:center; gap:10px;">
           <span class="switchLabel">hairez-style</span>
@@ -223,7 +270,7 @@
             <div class="tab" data-tab="standard">Standard</div>
             <div class="tab" data-tab="mania">Mania</div>
           </div>
-          <div class="mini">Standard adds gameplay options + colours. Mania supports 1K..18K (per-keymode patterns).</div>
+          <div class="mini">Standard adds gameplay options + colours. Mania supports 1K..18K (per-keymode patterns). Boxes collapse/expand.</div>
         </div>
 
         <!-- GENERAL -->
@@ -401,13 +448,14 @@
         <div class="panelBody" id="tab-mania" style="display:none">
           <div class="groupTitle">♦ Active keymodes (1K..18K)</div>
 
+          <!-- each keymode toggle is now a box -->
           <div class="kmWrap" id="kmToggles"></div>
 
-          <div class="mini" style="margin-top:6px;">*skin.ini will include only enabled modes. (Careful: enabling many modes = many blocks.)</div>
+          <div class="mini" style="margin-top:6px;">*skin.ini will include only enabled modes. (Enabling many = many blocks.)</div>
 
           <div class="sep"></div>
 
-          <!-- per-mode blocks injected here -->
+          <!-- per-mode boxes injected here -->
           <div id="modesContainer"></div>
 
           <div class="sep"></div>
@@ -457,7 +505,7 @@
 
 <script>
 const $ = (id)=>document.getElementById(id);
-const STORAGE_KEY = "aeditor_skinini_builder_v9_standard_mania_1to18";
+const STORAGE_KEY = "aeditor_skinini_builder_v10_boxes_everywhere";
 
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 const bool01 = (b)=> (b ? "1" : "0");
@@ -479,9 +527,7 @@ function pushIfFmt(arr, key, value){
   const v = cleanLine(value);
   if(v !== "") arr.push(fmtKV(key, v));
 }
-function spacer(arr){
-  if(prettyFormat) arr.push("");
-}
+function spacer(arr){ if(prettyFormat) arr.push(""); }
 function header(arr, title){
   if(prettyFormat){
     arr.push(`// ${title} --`);
@@ -549,6 +595,50 @@ document.querySelectorAll(".tab").forEach(t=>{
   t.addEventListener("click", ()=> setTab(t.dataset.tab));
 });
 
+/* -------------
+   BOX behavior
+-------------- */
+function boxSetOpen(box, open){
+  box.dataset.open = open ? "true" : "false";
+  const body = box.querySelector(".aBoxBody");
+  if(!body) return;
+
+  if(open){
+    body.style.maxHeight = body.scrollHeight + "px";
+  }else{
+    body.style.maxHeight = "0px";
+  }
+}
+
+function initBoxes(root){
+  const scope = root || document;
+
+  scope.querySelectorAll(".aBox").forEach(box=>{
+    if(box.dataset.boxInit === "1") return;
+    box.dataset.boxInit = "1";
+
+    const head = box.querySelector(".aBoxHead");
+    const body = box.querySelector(".aBoxBody");
+    if(!head || !body) return;
+
+    // start state (default closed unless data-open="true")
+    boxSetOpen(box, box.dataset.open === "true");
+
+    head.addEventListener("click", ()=>{
+      const openNow = box.dataset.open === "true";
+      boxSetOpen(box, !openNow);
+    });
+  });
+
+  // keep height correct when resizing (only for open boxes)
+  // (cheap + cheerful)
+  window.addEventListener("resize", ()=>{
+    document.querySelectorAll('.aBox[data-open="true"] .aBoxBody').forEach(body=>{
+      body.style.maxHeight = body.scrollHeight + "px";
+    });
+  }, {passive:true});
+}
+
 /* -------------------------
    Mania per-keymode state
 -------------------------- */
@@ -597,7 +687,6 @@ function defaultMode(keys){
 }
 
 const ALL_MANIA_KEYS = Array.from({length: 18}, (_,i)=>i+1);
-
 const maniaModes = {};
 for(const k of ALL_MANIA_KEYS) maniaModes[k] = defaultMode(k);
 
@@ -607,108 +696,161 @@ for(const k of ALL_MANIA_KEYS) enabledModes[k] = (k===4); // default: only 4K en
 
 function modeId(base, keys){ return `${base}_${keys}`; }
 
-function renderModeBlock(keys){
+/* keymode toggle boxes (each keymode is a box) */
+function renderKeymodeToggles(){
+  const cont = $("kmToggles");
+  cont.innerHTML = ALL_MANIA_KEYS.map(k=>{
+    const open = (k===4) ? "true" : "false";
+    return `
+      <div class="aBox kmBox" data-open="${open}">
+        <button class="aBoxHead" type="button">
+          <span class="aBoxTitle">
+            <span>${k}K</span>
+            <span class="aBoxSubtitle">${enabledModes[k] ? "enabled" : "disabled"}</span>
+          </span>
+          <span class="aBoxArrow" aria-hidden="true">▸</span>
+        </button>
+        <div class="aBoxBody">
+          <div class="aBoxInner">
+            <div class="kmBoxRow">
+              <span class="switchLabel">Enable ${k}K block</span>
+              <label class="switch" title="Enable ${k}K block">
+                <input type="checkbox" class="kmToggle" data-k="${k}" ${enabledModes[k] ? "checked" : ""}>
+                <span class="sw"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  // prevent head click when clicking inside inputs (so toggling doesn't also collapse)
+  cont.querySelectorAll("input, label").forEach(el=>{
+    el.addEventListener("click", (e)=> e.stopPropagation());
+  });
+
+  cont.querySelectorAll(".kmToggle").forEach(inp=>{
+    inp.addEventListener("change", onToggleModes);
+  });
+
+  initBoxes(cont);
+}
+
+function renderModeBox(keys){
+  // default: open only if enabled + (4K or first enabled)
+  const open = (keys===4) ? "true" : "false";
+
   return `
-    <div class="modeBlock" data-keys="${keys}">
-      <div class="modeHead">
-        <div class="modeTag">${keys}K settings</div>
-        <div class="mini">Only this block affects ${keys}K.</div>
-      </div>
+    <div class="aBox modeBox" data-keys="${keys}" data-open="${open}">
+      <button class="aBoxHead" type="button">
+        <span class="aBoxTitle">
+          <span>${keys}K settings</span>
+          <span class="aBoxSubtitle">patterns + layout</span>
+        </span>
+        <span class="aBoxArrow" aria-hidden="true">▸</span>
+      </button>
 
-      <div class="groupTitle">♦ Essentials (${keys}K)</div>
-      <div class="row"><label>ColumnWidth (per col)</label><input type="number" id="${modeId("mColWidth",keys)}" value="0"></div>
-      <div class="row"><label>ColumnSpacing (between)</label><input type="number" id="${modeId("mColSpacing",keys)}" value="0"></div>
+      <div class="aBoxBody">
+        <div class="aBoxInner">
 
-      <div class="row">
-        <label>Auto-center ColumnStart</label>
-        <div class="inline">
-          <label class="switch"><input type="checkbox" id="${modeId("mAutoCenter",keys)}" checked><span class="sw"></span></label>
-        </div>
-      </div>
+          <div class="groupTitle">♦ Essentials (${keys}K)</div>
+          <div class="row"><label>ColumnWidth (per col)</label><input type="number" id="${modeId("mColWidth",keys)}" value="0"></div>
+          <div class="row"><label>ColumnSpacing (between)</label><input type="number" id="${modeId("mColSpacing",keys)}" value="0"></div>
 
-      <div class="row">
-        <label>Aspect ratio</label>
-        <div class="inline">
-          <select id="${modeId("mARPreset",keys)}">
-            <option value="16:9" selected>16:9</option>
-            <option value="4:3">4:3</option>
-            <option value="21:9">21:9</option>
-            <option value="custom">Custom</option>
-          </select>
-          <input type="number" id="${modeId("mARW",keys)}" value="16" style="max-width:110px" title="Custom width">
-          <input type="number" id="${modeId("mARH",keys)}" value="9" style="max-width:110px" title="Custom height">
-          <span class="mini">AR = W/H</span>
-        </div>
-      </div>
+          <div class="row">
+            <label>Auto-center ColumnStart</label>
+            <div class="inline">
+              <label class="switch"><input type="checkbox" id="${modeId("mAutoCenter",keys)}" checked><span class="sw"></span></label>
+            </div>
+          </div>
 
-      <div class="row"><label>Fine adjust (px)</label><input type="number" id="${modeId("mCenterOffset",keys)}" value=""></div>
+          <div class="row">
+            <label>Aspect ratio</label>
+            <div class="inline">
+              <select id="${modeId("mARPreset",keys)}">
+                <option value="16:9" selected>16:9</option>
+                <option value="4:3">4:3</option>
+                <option value="21:9">21:9</option>
+                <option value="custom">Custom</option>
+              </select>
+              <input type="number" id="${modeId("mARW",keys)}" value="16" style="max-width:110px" title="Custom width">
+              <input type="number" id="${modeId("mARH",keys)}" value="9" style="max-width:110px" title="Custom height">
+              <span class="mini">AR = W/H</span>
+            </div>
+          </div>
 
-      <div class="row"><label>HitPosition</label><input type="number" id="${modeId("mHitPos",keys)}" value=""></div>
-      <div class="row"><label>ScorePosition</label><input type="number" id="${modeId("mScorePos",keys)}" value=""></div>
-      <div class="row"><label>ComboPosition</label><input type="number" id="${modeId("mComboPos",keys)}" value=""></div>
+          <div class="row"><label>Fine adjust (px)</label><input type="number" id="${modeId("mCenterOffset",keys)}" value=""></div>
 
-      <div class="row">
-        <label>JudgementLine</label>
-        <div class="inline"><label class="switch"><input type="checkbox" id="${modeId("mJudgementLine",keys)}" checked><span class="sw"></span></label></div>
-      </div>
-      <div class="row">
-        <label>UpsideDown</label>
-        <div class="inline"><label class="switch"><input type="checkbox" id="${modeId("mUpsideDown",keys)}"><span class="sw"></span></label></div>
-      </div>
-      <div class="row">
-        <label>KeysUnderNotes</label>
-        <div class="inline"><label class="switch"><input type="checkbox" id="${modeId("mKeysUnderNotes",keys)}"><span class="sw"></span></label></div>
-      </div>
+          <div class="row"><label>HitPosition</label><input type="number" id="${modeId("mHitPos",keys)}" value=""></div>
+          <div class="row"><label>ScorePosition</label><input type="number" id="${modeId("mScorePos",keys)}" value=""></div>
+          <div class="row"><label>ComboPosition</label><input type="number" id="${modeId("mComboPos",keys)}" value=""></div>
 
-      <div class="sep"></div>
-      <div class="groupTitle">♦ Reading refinements (${keys}K)</div>
-      <div class="row"><label>BarlineHeight</label><input type="number" id="${modeId("mBarlineHeight",keys)}" value=""></div>
-      <div class="row"><label>WidthForNoteHeightScale</label><input type="number" id="${modeId("mNoteHeightScale",keys)}" value=""></div>
-      <div class="row"><label>LightPosition</label><input type="number" id="${modeId("mLightPos",keys)}" value=""></div>
+          <div class="row">
+            <label>JudgementLine</label>
+            <div class="inline"><label class="switch"><input type="checkbox" id="${modeId("mJudgementLine",keys)}" checked><span class="sw"></span></label></div>
+          </div>
+          <div class="row">
+            <label>UpsideDown</label>
+            <div class="inline"><label class="switch"><input type="checkbox" id="${modeId("mUpsideDown",keys)}"><span class="sw"></span></label></div>
+          </div>
+          <div class="row">
+            <label>KeysUnderNotes</label>
+            <div class="inline"><label class="switch"><input type="checkbox" id="${modeId("mKeysUnderNotes",keys)}"><span class="sw"></span></label></div>
+          </div>
 
-      <div class="sep"></div>
-      <div class="groupTitle">♦ Stage / Lighting (${keys}K)</div>
-      <div class="grid2">
-        <div>
-          <div class="row"><label>StageLeft</label><input type="text" id="${modeId("mStageLeft",keys)}"></div>
-          <div class="row"><label>StageRight</label><input type="text" id="${modeId("mStageRight",keys)}"></div>
-          <div class="row"><label>StageBottom</label><input type="text" id="${modeId("mStageBottom",keys)}"></div>
-          <div class="row"><label>StageHint</label><input type="text" id="${modeId("mStageHint",keys)}"></div>
-          <div class="row"><label>StageLight</label><input type="text" id="${modeId("mStageLight",keys)}"></div>
-        </div>
-        <div>
-          <div class="row"><label>LightingNWidth</label><input type="number" id="${modeId("mLightNWidth",keys)}"></div>
-          <div class="row"><label>LightingLWidth</label><input type="number" id="${modeId("mLightLWidth",keys)}"></div>
-          <div class="row"><label>LightingN</label><input type="text" id="${modeId("mLightingN",keys)}"></div>
-          <div class="row"><label>LightingL</label><input type="text" id="${modeId("mLightingL",keys)}"></div>
-        </div>
-      </div>
+          <div class="sep"></div>
+          <div class="groupTitle">♦ Reading refinements (${keys}K)</div>
+          <div class="row"><label>BarlineHeight</label><input type="number" id="${modeId("mBarlineHeight",keys)}" value=""></div>
+          <div class="row"><label>WidthForNoteHeightScale</label><input type="number" id="${modeId("mNoteHeightScale",keys)}" value=""></div>
+          <div class="row"><label>LightPosition</label><input type="number" id="${modeId("mLightPos",keys)}" value=""></div>
 
-      <div class="sep"></div>
-      <div class="groupTitle">♦ Images (patterns) (${keys}K)</div>
-      <div class="mini">
-        skin.ini indexes are <span class="kbd">0..Keys-1</span>, but <span class="kbd">{n}</span> stays <span class="kbd">1..Keys</span> for filenames.
-        Example: <span class="kbd">key{n}</span>.
-      </div>
+          <div class="sep"></div>
+          <div class="groupTitle">♦ Stage / Lighting (${keys}K)</div>
+          <div class="grid2">
+            <div>
+              <div class="row"><label>StageLeft</label><input type="text" id="${modeId("mStageLeft",keys)}"></div>
+              <div class="row"><label>StageRight</label><input type="text" id="${modeId("mStageRight",keys)}"></div>
+              <div class="row"><label>StageBottom</label><input type="text" id="${modeId("mStageBottom",keys)}"></div>
+              <div class="row"><label>StageHint</label><input type="text" id="${modeId("mStageHint",keys)}"></div>
+              <div class="row"><label>StageLight</label><input type="text" id="${modeId("mStageLight",keys)}"></div>
+            </div>
+            <div>
+              <div class="row"><label>LightingNWidth</label><input type="number" id="${modeId("mLightNWidth",keys)}"></div>
+              <div class="row"><label>LightingLWidth</label><input type="number" id="${modeId("mLightLWidth",keys)}"></div>
+              <div class="row"><label>LightingN</label><input type="text" id="${modeId("mLightingN",keys)}"></div>
+              <div class="row"><label>LightingL</label><input type="text" id="${modeId("mLightingL",keys)}"></div>
+            </div>
+          </div>
 
-      <div class="grid2" style="margin-top:8px">
-        <div>
-          <div class="row"><label>KeyImage# pattern</label><input type="text" id="${modeId("pKey",keys)}" placeholder=""></div>
-          <div class="row"><label>KeyImage#D pattern</label><input type="text" id="${modeId("pKeyD",keys)}" placeholder=""></div>
-        </div>
-        <div>
-          <div class="row"><label>NoteImage# pattern</label><input type="text" id="${modeId("pNote",keys)}" placeholder=""></div>
-          <div class="row"><label>NoteImage#H pattern</label><input type="text" id="${modeId("pNoteH",keys)}" placeholder=""></div>
-        </div>
-      </div>
+          <div class="sep"></div>
+          <div class="groupTitle">♦ Images (patterns) (${keys}K)</div>
+          <div class="mini">
+            skin.ini indexes are <span class="kbd">0..Keys-1</span>, but <span class="kbd">{n}</span> stays <span class="kbd">1..Keys</span> for filenames.
+            Example: <span class="kbd">key{n}</span>.
+          </div>
 
-      <div class="grid2">
-        <div>
-          <div class="row"><label>NoteImage#L pattern</label><input type="text" id="${modeId("pNoteL",keys)}" placeholder=""></div>
-          <div class="row"><label>NoteImage#T pattern</label><input type="text" id="${modeId("pNoteT",keys)}" placeholder=""></div>
-        </div>
-        <div class="row" style="grid-template-columns:190px 1fr;">
-          <label>WarningArrow</label><input type="text" id="${modeId("mWarningArrow",keys)}">
+          <div class="grid2" style="margin-top:8px">
+            <div>
+              <div class="row"><label>KeyImage# pattern</label><input type="text" id="${modeId("pKey",keys)}" placeholder=""></div>
+              <div class="row"><label>KeyImage#D pattern</label><input type="text" id="${modeId("pKeyD",keys)}" placeholder=""></div>
+            </div>
+            <div>
+              <div class="row"><label>NoteImage# pattern</label><input type="text" id="${modeId("pNote",keys)}" placeholder=""></div>
+              <div class="row"><label>NoteImage#H pattern</label><input type="text" id="${modeId("pNoteH",keys)}" placeholder=""></div>
+            </div>
+          </div>
+
+          <div class="grid2">
+            <div>
+              <div class="row"><label>NoteImage#L pattern</label><input type="text" id="${modeId("pNoteL",keys)}" placeholder=""></div>
+              <div class="row"><label>NoteImage#T pattern</label><input type="text" id="${modeId("pNoteT",keys)}" placeholder=""></div>
+            </div>
+            <div class="row" style="grid-template-columns:190px 1fr;">
+              <label>WarningArrow</label><input type="text" id="${modeId("mWarningArrow",keys)}">
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -802,34 +944,28 @@ function readModeFromUI(keys){
   };
 }
 
-function renderKeymodeToggles(){
-  const cont = $("kmToggles");
-  cont.innerHTML = ALL_MANIA_KEYS.map(k=>{
-    return `
-      <span class="pill" style="display:flex; align-items:center; gap:10px;">
-        <span class="switchLabel">${k}K</span>
-        <label class="switch" title="Enable ${k}K block">
-          <input type="checkbox" class="kmToggle" data-k="${k}" ${enabledModes[k] ? "checked" : ""}>
-          <span class="sw"></span>
-        </label>
-      </span>
-    `;
-  }).join("");
-
-  cont.querySelectorAll(".kmToggle").forEach(inp=>{
-    inp.addEventListener("change", onToggleModes);
-  });
-}
-
 function rerenderModes(){
   const cont = $("modesContainer");
   const active = ALL_MANIA_KEYS.filter(k => enabledModes[k]);
 
-  cont.innerHTML = active.map(k => renderModeBlock(k)).join("");
+  cont.innerHTML = active.map(k => renderModeBox(k)).join("");
 
   for(const k of active){
     applyModeToUI(k, maniaModes[k] || defaultMode(k));
   }
+
+  // stop head click when clicking inputs
+  cont.querySelectorAll("input, select, textarea, label").forEach(el=>{
+    el.addEventListener("click", (e)=> e.stopPropagation());
+  });
+
+  initBoxes(cont);
+  // ensure open boxes have correct heights after DOM fills
+  requestAnimationFrame(()=>{
+    document.querySelectorAll('.aBox[data-open="true"] .aBoxBody').forEach(body=>{
+      body.style.maxHeight = body.scrollHeight + "px";
+    });
+  });
 }
 
 function getAspectRatio(mode){
@@ -1064,8 +1200,8 @@ let saveTimer = null;
 function saveAllActiveModesIntoState(){
   for(const keys of ALL_MANIA_KEYS){
     if(!enabledModes[keys]) continue;
-    const block = document.querySelector(`.modeBlock[data-keys="${keys}"]`);
-    if(block){
+    const box = document.querySelector(`.modeBox[data-keys="${keys}"]`);
+    if(box){
       maniaModes[keys] = readModeFromUI(keys);
     }
   }
@@ -1161,7 +1297,6 @@ function loadState(){
       for(const k of ALL_MANIA_KEYS){
         enabledModes[k] = !!s.enabledModes[k];
       }
-      // fallback safety: if none enabled, enable 4K
       if(!ALL_MANIA_KEYS.some(k=>enabledModes[k])) enabledModes[4] = true;
     }
 
@@ -1272,15 +1407,33 @@ function onToggleModes(){
   document.querySelectorAll(".kmToggle").forEach(inp=>{
     const k = Number(inp.dataset.k);
     enabledModes[k] = inp.checked;
+
+    // update subtitle text ("enabled/disabled")
+    const box = inp.closest(".aBox");
+    if(box){
+      const sub = box.querySelector(".aBoxSubtitle");
+      if(sub) sub.textContent = inp.checked ? "enabled" : "disabled";
+    }
   });
 
   rerenderModes();
   scheduleUpdate();
 }
 
-/* input delegation for dynamic mode blocks */
-$("tab-mania").addEventListener("input", ()=> scheduleUpdate());
-$("tab-mania").addEventListener("change", ()=> scheduleUpdate());
+/* input delegation for dynamic mode boxes */
+$("tab-mania").addEventListener("input", ()=>{
+  scheduleUpdate();
+  // keep open box heights correct while typing
+  document.querySelectorAll('.aBox[data-open="true"] .aBoxBody').forEach(body=>{
+    body.style.maxHeight = body.scrollHeight + "px";
+  });
+});
+$("tab-mania").addEventListener("change", ()=>{
+  scheduleUpdate();
+  document.querySelectorAll('.aBox[data-open="true"] .aBoxBody').forEach(body=>{
+    body.style.maxHeight = body.scrollHeight + "px";
+  });
+});
 
 /* binds for general/static inputs */
 [
@@ -1349,6 +1502,7 @@ loadState();
 seedDefaultsIfEmpty();
 renderKeymodeToggles();
 rerenderModes();
+initBoxes(document); // in case you add other boxes later
 updatePreview();
 </script>
 
