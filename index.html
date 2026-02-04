@@ -195,11 +195,11 @@
     <div class="topbar">
       <div class="controls">
         <button class="btn primary" id="downloadIni">Download skin.ini</button>
-        <button class="btn danger" id="clearWipe">Clear (wipe)</button>
+        <button class="btn danger" id="clearWipe">Clear</button>
         <span class="pill" id="savePulse"></span>
       </div>
       <div class="controls">
-        <span class="pill">Version 1.6 [Beta]</span>
+        <span class="pill">Version 1.7 [Beta]</span>
 
         <span class="pill" style="display:flex; align-items:center; gap:10px;">
           <span class="switchLabel">hairez-style</span>
@@ -225,7 +225,7 @@
         <!-- GENERAL -->
         <div class="panelBody" id="tab-general">
           <div class="groupTitle">[General]</div>
-          <div class="row"><label>Name</label><input type="text" id="gName" placeholder="My Skin"></div>
+          <div class="row"><label>Name</label><input type="text" id="gName" placeholder="Exemple: My Skin"></div>
           <div class="row"><label>Author</label><input type="text" id="gAuthor" placeholder="Your name"></div>
           <div class="row"><label>Version</label><input type="text" id="gVersion" value="latest" readonly></div>
 
@@ -254,15 +254,15 @@
 
           <div class="row">
             <label>MenuGlow</label>
-            <div class="inline"><input type="color" id="cMenuGlowPick"><input type="text" id="cMenuGlow" placeholder="255,255,255"></div>
+            <div class="inline"><input type="color" id="cMenuGlowPick"><input type="text" id="cMenuGlow" placeholder="0,0,0"></div>
           </div>
           <div class="row">
             <label>SongSelectActiveText</label>
-            <div class="inline"><input type="color" id="cSongActivePick"><input type="text" id="cSongActive" placeholder="255,255,255"></div>
+            <div class="inline"><input type="color" id="cSongActivePick"><input type="text" id="cSongActive" placeholder="0,0,0"></div>
           </div>
           <div class="row">
             <label>SongSelectInactiveText</label>
-            <div class="inline"><input type="color" id="cSongInactivePick"><input type="text" id="cSongInactive" placeholder="160,160,160"></div>
+            <div class="inline"><input type="color" id="cSongInactivePick"><input type="text" id="cSongInactive" placeholder="0,0,0"></div>
           </div>
 
           <div class="sep"></div>
@@ -310,7 +310,7 @@
             </span>
           </div>
 
-          <div class="mini">INI will include only enabled modes. (5K is removed completely.)</div>
+          <div class="mini">*skin.ini will include only enabled modes.</div>
 
           <div class="sep"></div>
 
@@ -330,11 +330,11 @@
 
           <div class="row">
             <label>ColourHold</label>
-            <div class="inline"><input type="color" id="mHoldPick"><input type="text" id="mColourHold" placeholder="255,255,255"></div>
+            <div class="inline"><input type="color" id="mHoldPick"><input type="text" id="mColourHold" placeholder="0,0,0"></div>
           </div>
           <div class="row">
             <label>ColourBreak</label>
-            <div class="inline"><input type="color" id="mBreakPick"><input type="text" id="mColourBreak" placeholder="255,80,80"></div>
+            <div class="inline"><input type="color" id="mBreakPick"><input type="text" id="mColourBreak" placeholder="0,0,0"></div>
           </div>
 
           <div class="sep"></div>
@@ -354,11 +354,9 @@
       <div class="panel">
         <div class="panelHead">
           <div class="mini">skin.ini preview</div>
-          <div class="mini">Mania: Enabled 4K/6K/7K only</div>
         </div>
         <div class="panelBody">
           <textarea id="preview" readonly></textarea>
-          <p class="hint">This is exactly what will be downloaded as skin.ini.</p>
         </div>
       </div>
     </div>
@@ -468,9 +466,9 @@ function defaultMode(keys){
     mARH: "9",
     mCenterOffset: "0",
 
-    mHitPos: "435",
-    mScorePos: "260",
-    mComboPos: "240",
+    mHitPos: "",
+    mScorePos: "",
+    mComboPos: "",
 
     mJudgementLine: false,
     mUpsideDown: false,
@@ -492,12 +490,12 @@ function defaultMode(keys){
     mLightingL: "",
 
     /* patterns per keymode */
-    pKey: "key{n}",
-    pKeyD: "key{n}D",
-    pNote: "note{n}",
-    pNoteH: "note{n}H",
-    pNoteL: "note{n}L",
-    pNoteT: "note{n}T",
+    pKey: "",
+    pKeyD: "",
+    pNote: "",
+    pNoteH: "",
+    pNoteL: "",
+    pNoteT: "",
     mWarningArrow: ""
   };
 }
@@ -522,7 +520,7 @@ function renderModeBlock(keys){
       </div>
 
       <div class="groupTitle">♦ Essentials (${keys}K)</div>
-      <div class="row"><label>ColumnWidth (per col)</label><input type="number" id="${modeId("mColWidth",keys)}" value="70"></div>
+      <div class="row"><label>ColumnWidth (per col)</label><input type="number" id="${modeId("mColWidth",keys)}" value="0"></div>
       <div class="row"><label>ColumnSpacing (between)</label><input type="number" id="${modeId("mColSpacing",keys)}" value="0"></div>
 
       <div class="row">
@@ -547,11 +545,11 @@ function renderModeBlock(keys){
         </div>
       </div>
 
-      <div class="row"><label>Fine adjust (px)</label><input type="number" id="${modeId("mCenterOffset",keys)}" value="0"></div>
+      <div class="row"><label>Fine adjust (px)</label><input type="number" id="${modeId("mCenterOffset",keys)}" value=""></div>
 
-      <div class="row"><label>HitPosition</label><input type="number" id="${modeId("mHitPos",keys)}" value="402"></div>
-      <div class="row"><label>ScorePosition</label><input type="number" id="${modeId("mScorePos",keys)}" value="260"></div>
-      <div class="row"><label>ComboPosition</label><input type="number" id="${modeId("mComboPos",keys)}" value="240"></div>
+      <div class="row"><label>HitPosition</label><input type="number" id="${modeId("mHitPos",keys)}" value=""></div>
+      <div class="row"><label>ScorePosition</label><input type="number" id="${modeId("mScorePos",keys)}" value=""></div>
+      <div class="row"><label>ComboPosition</label><input type="number" id="${modeId("mComboPos",keys)}" value=""></div>
 
       <div class="row">
         <label>JudgementLine</label>
@@ -655,12 +653,12 @@ function applyModeToUI(keys, mode){
   $(modeId("mLightingL",keys)).value = mode.mLightingL ?? "";
 
   /* patterns */
-  $(modeId("pKey",keys)).value = mode.pKey ?? "key{n}";
-  $(modeId("pKeyD",keys)).value = mode.pKeyD ?? "key{n}D";
-  $(modeId("pNote",keys)).value = mode.pNote ?? "note{n}";
-  $(modeId("pNoteH",keys)).value = mode.pNoteH ?? "note{n}H";
-  $(modeId("pNoteL",keys)).value = mode.pNoteL ?? "note{n}L";
-  $(modeId("pNoteT",keys)).value = mode.pNoteT ?? "note{n}T";
+  $(modeId("pKey",keys)).value = mode.pKey ?? "";
+  $(modeId("pKeyD",keys)).value = mode.pKeyD ?? "";
+  $(modeId("pNote",keys)).value = mode.pNote ?? "";
+  $(modeId("pNoteH",keys)).value = mode.pNoteH ?? "";
+  $(modeId("pNoteL",keys)).value = mode.pNoteL ?? "";
+  $(modeId("pNoteT",keys)).value = mode.pNoteT ?? "";
   $(modeId("mWarningArrow",keys)).value = mode.mWarningArrow ?? "";
 }
 
