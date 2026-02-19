@@ -1,912 +1,1958 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Osu! Skin.ini Architect | Ultimate Edition</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --bg-app: #050505;
-            --bg-sidebar: #0a0a0a;
-            --bg-panel: #0f0f0f;
-            --bg-input: #141414;
-            --bg-input-focus: #1a1a1a;
-            
-            --border: #222;
-            --border-hover: #333;
-            
-            --primary: #ff0077; /* Osu Pink */
-            --primary-dim: rgba(255, 0, 119, 0.1);
-            --primary-glow: rgba(255, 0, 119, 0.4);
-            
-            --text-main: #ececec;
-            --text-muted: #777;
-            --text-desc: #555;
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>skin.ini studio (v3)</title>
+  <link rel="icon" type="image/png" href="https://i.pinimg.com/1200x/d6/ca/e4/d6cae471e8471dec46c4304104adb4b1.jpg"/>
 
-            --font-ui: 'Inter', system-ui, sans-serif;
-            --font-code: 'JetBrains Mono', monospace;
-            
-            --ease: cubic-bezier(0.23, 1, 0.32, 1);
-        }
+  <style>
+    :root{
+      --bg0:#06070a;
+      --bg1:#0b0c10;
+      --fg:#e9e9ee;
+      --muted:rgba(233,233,238,.55);
+      --muted2:rgba(233,233,238,.40);
+      --border:rgba(255,255,255,.10);
+      --panel:rgba(255,255,255,.04);
+      --panel2:rgba(0,0,0,.25);
+      --accent:rgba(166, 255, 233, .9);
+      --danger:rgba(255,120,120,.9);
 
-        * { box-sizing: border-box; outline: none; }
-        
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-app); }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+      --r:12px;
+      --fs:14px;
+      --lh:1.55;
 
-        body {
-            margin: 0;
-            background: var(--bg-app);
-            color: var(--text-main);
-            font-family: var(--font-ui);
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-        }
+      --sideW: 260px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
 
-        /* --- LAYOUT --- */
-        .app-container {
-            display: grid;
-            grid-template-columns: 280px 1fr 350px;
-            width: 100%;
-            height: 100%;
-        }
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
 
-        /* --- SIDEBAR --- */
-        .sidebar {
-            background: var(--bg-sidebar);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            padding: 0;
-            user-select: none;
-        }
+    /* ===== Background bonitinho ===== */
+    body{
+      margin:0;
+      color:var(--fg);
+      font:var(--fs)/var(--lh) ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background:
+        radial-gradient(1000px 600px at 10% 10%, rgba(140,120,255,.18), transparent 60%),
+        radial-gradient(900px 650px at 90% 20%, rgba(120,255,214,.14), transparent 55%),
+        radial-gradient(900px 700px at 55% 95%, rgba(255,160,120,.10), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow:hidden;
+    }
 
-        .brand {
-            padding: 20px;
-            font-size: 18px;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .brand span { color: var(--primary); }
-        .brand-ver { font-size: 10px; background: #222; padding: 2px 6px; border-radius: 4px; color: #888; margin-left: auto; }
+    /* textura sutil */
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      pointer-events:none;
+      background-image:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,.035) 0 1px, transparent 2px),
+        radial-gradient(circle at 80% 70%, rgba(255,255,255,.030) 0 1px, transparent 2px),
+        radial-gradient(circle at 40% 80%, rgba(255,255,255,.025) 0 1px, transparent 2px);
+      background-size: 260px 260px, 320px 320px, 420px 420px;
+      filter: blur(.2px);
+      opacity:.9;
+      animation: drift 18s linear infinite;
+    }
+    @keyframes drift{
+      0%{ transform: translate3d(0,0,0); }
+      100%{ transform: translate3d(-60px, -40px, 0); }
+    }
 
-        .nav-scroll {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-        }
+    /* Scrollbar */
+    *{
+      scrollbar-width: thin;
+      scrollbar-color: rgba(220,220,230,.30) rgba(0,0,0,.18);
+    }
+    *::-webkit-scrollbar{ width:10px; height:10px; }
+    *::-webkit-scrollbar-track{ background: rgba(0,0,0,.18); border-radius: 10px; }
+    *::-webkit-scrollbar-thumb{
+      background: rgba(220,220,230,.28);
+      border: 2px solid rgba(0,0,0,.18);
+      border-radius: 10px;
+    }
+    *::-webkit-scrollbar-thumb:hover{ background: rgba(220,220,230,.42); }
 
-        .nav-category {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-desc);
-            margin: 15px 10px 5px;
-            font-weight: 600;
-        }
+    /* ===== App layout ===== */
+    .app{
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      position:relative;
+      z-index:1;
+    }
 
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 12px;
-            margin-bottom: 2px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s var(--ease);
-            color: var(--text-muted);
-            font-size: 13px;
-            font-weight: 500;
-        }
-        .nav-item:hover { background: var(--bg-input); color: var(--text-main); }
-        .nav-item.active { background: var(--primary-dim); color: var(--primary); }
-        .nav-item svg { width: 16px; height: 16px; opacity: 0.7; }
-        .nav-item.active svg { opacity: 1; }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:10px 12px;
+      border-bottom:1px solid var(--border);
+      background:linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.20));
+      backdrop-filter: blur(10px);
+    }
 
-        .sidebar-footer {
-            padding: 15px;
-            border-top: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+    .brand{
+      display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
+    }
+    .brand h1{
+      margin:0;
+      font-size:14px;
+      letter-spacing:.2px;
+      font-weight:900;
+    }
+    .brand .tag{
+      font-size:12px;
+      color:var(--muted2);
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.22);
+      border-radius:999px;
+      padding:2px 10px;
+    }
 
-        /* --- MAIN EDITOR --- */
-        .editor-area {
-            background: var(--bg-panel);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
+    .layout{
+      flex:1; min-height:0;
+      display:grid;
+      grid-template-columns: var(--sideW) 1fr;
+      overflow:hidden;
+    }
 
-        .editor-header {
-            padding: 20px 30px;
-            border-bottom: 1px solid var(--border);
-            background: rgba(15,15,15,0.9);
-            backdrop-filter: blur(10px);
-            position: sticky; top: 0; z-index: 10;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .section-title h1 { margin: 0; font-size: 24px; font-weight: 700; }
-        .section-title p { margin: 5px 0 0; color: var(--text-muted); font-size: 13px; }
+    .sidebar{
+      min-height:0;
+      border-right:1px solid var(--border);
+      background:linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.10));
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      overflow:auto;
+    }
 
-        .editor-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 30px;
-            scroll-behavior: smooth;
-        }
+    .main{
+      min-height:0;
+      padding:10px;
+      display:grid;
+      grid-template-columns: 1.12fr .88fr;
+      gap:10px;
+      overflow:hidden;
+    }
 
-        /* --- FORM ELEMENTS --- */
-        .form-group {
-            margin-bottom: 25px;
-            animation: slideIn 0.3s var(--ease);
-        }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: 0; } }
+    .card{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      border-radius:var(--r);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      min-height:0;
+      display:flex;
+      flex-direction:column;
+    }
+    .cardHead{
+      padding:10px 10px 8px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      border-bottom:1px solid var(--border);
+      background:rgba(0,0,0,.18);
+      flex-wrap:wrap;
+    }
+    .cardBody{
+      padding:10px;
+      overflow:auto;
+      min-height:0;
+      flex:1;
+    }
 
-        .group-header {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 15px;
-            display: flex; align-items: center; gap: 10px;
-        }
-        .group-header::after { content:""; flex:1; height:1px; background: var(--border); }
+    .group{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.14);
+      border-radius:14px;
+      overflow:hidden;
+    }
+    .groupHead{
+      padding:10px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      color:rgba(233,233,238,.78);
+      font-weight:900;
+      font-size:12px;
+      letter-spacing:.2px;
+      background:rgba(0,0,0,.18);
+    }
+    .groupBody{
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
 
-        .control-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 15px;
-        }
+    .tabs{ display:flex; flex-direction:column; gap:8px; }
+    .tab{
+      cursor:pointer;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.18);
+      color:rgba(233,233,238,.62);
+      font-weight:900;
+      user-select:none;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      transition:140ms linear;
+    }
+    .tab:hover{
+      color:rgba(233,233,238,.95);
+      border-color:rgba(255,255,255,.16);
+      background:rgba(255,255,255,.04);
+    }
+    .tab.active{
+      color:rgba(233,233,238,.95);
+      border-color:rgba(255,255,255,.18);
+      background:rgba(255,255,255,.06);
+    }
+    .mini{ font-size:12px; color:var(--muted2); }
 
-        .control-item {
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 12px;
-            transition: 0.2s;
-            position: relative;
-        }
-        .control-item:focus-within {
-            border-color: var(--primary);
-            background: var(--bg-input-focus);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        }
+    .btn{
+      cursor:pointer;
+      padding:8px 10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.22);
+      color:rgba(233,233,238,.70);
+      font-weight:800;
+      transition:140ms linear;
+      user-select:none;
+    }
+    .btn:hover{
+      color:rgba(233,233,238,.95);
+      border-color:rgba(255,255,255,.18);
+      background:rgba(255,255,255,.05);
+    }
+    .btn.primary{
+      background:rgba(255,255,255,.08);
+      color:rgba(233,233,238,.95);
+      border-color:rgba(255,255,255,.16);
+    }
+    .btn.danger:hover{
+      border-color:rgba(255,140,140,.35);
+      color:rgba(255,210,210,.95);
+    }
 
-        .label-row {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 8px;
-        }
-        .control-label {
-            font-size: 12px; font-weight: 600; color: var(--text-main);
-        }
-        .tooltip-trigger {
-            color: var(--text-desc); cursor: help; font-size: 11px;
-            border-bottom: 1px dotted var(--text-desc);
-        }
+    .pill{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:8px 10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.16);
+      color:rgba(233,233,238,.60);
+      font-size:12px;
+      font-weight:800;
+    }
+    .sep{ height:1px; background:rgba(255,255,255,.10); margin:10px 0; }
 
-        /* Inputs */
-        input[type="text"], input[type="number"] {
-            width: 100%;
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid var(--border);
-            color: #fff;
-            padding: 6px 0;
-            font-family: var(--font-code);
-            font-size: 13px;
-            transition: 0.2s;
-        }
-        input:focus { border-bottom-color: var(--primary); }
+    .row{
+      display:grid;
+      grid-template-columns: 210px 1fr;
+      gap:10px;
+      align-items:center;
+      margin-bottom:8px;
+    }
+    .row label{
+      font-size:12px;
+      color:rgba(233,233,238,.76);
+      font-weight:800;
+    }
+    input[type="text"], input[type="number"], select, textarea{
+      width:100%;
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:12px;
+      background:rgba(0,0,0,.22);
+      color:rgba(233,233,238,.95);
+      padding:8px 10px;
+      outline:none;
+      font:inherit;
+    }
+    textarea{ min-height: calc(100vh - 220px); resize:none; }
 
-        /* Color Picker */
-        .color-widget {
-            display: flex; gap: 8px; align-items: center;
-        }
-        .color-preview {
-            width: 32px; height: 32px; border-radius: 6px;
-            border: 1px solid var(--border);
-            overflow: hidden; position: relative;
-            cursor: pointer;
-        }
-        input[type="color"] {
-            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            cursor: pointer; padding: 0; margin: 0;
-        }
+    input[type="color"]{
+      width:46px; height:36px;
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:12px;
+      background:transparent;
+      padding:0;
+    }
+    .inline{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .grid2{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
 
-        /* Switch */
-        .switch-wrap {
-            display: flex; justify-content: space-between; align-items: center;
-            height: 100%;
-        }
-        .toggle-switch {
-            position: relative; width: 40px; height: 20px;
-        }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute; cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #333; border-radius: 20px; transition: .3s;
-        }
-        .slider:before {
-            position: absolute; content: "";
-            height: 14px; width: 14px; left: 3px; bottom: 3px;
-            background-color: white; border-radius: 50%; transition: .3s;
-        }
-        input:checked + .slider { background-color: var(--primary); }
-        input:checked + .slider:before { transform: translateX(20px); }
+    /* Switch */
+    .switch{ display:inline-flex; align-items:center; gap:8px; }
+    .switch input{ display:none; }
+    .sw{
+      width:46px; height:26px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.22);
+      border-radius:10px;
+      position:relative;
+      transition:140ms linear;
+      flex:0 0 auto;
+    }
+    .sw::after{
+      content:"";
+      width:20px; height:20px;
+      position:absolute; top:50%; left:3px;
+      transform:translateY(-50%);
+      border-radius:8px;
+      background:rgba(255,255,255,.25);
+      transition:140ms linear;
+    }
+    .switch input:checked + .sw{
+      border-color:rgba(255,255,255,.18);
+      background:rgba(255,255,255,.06);
+    }
+    .switch input:checked + .sw::after{
+      left:23px;
+      background:rgba(166,255,233,.75);
+      box-shadow: 0 0 0 2px rgba(166,255,233,.14);
+    }
 
-        /* --- PREVIEW PANE --- */
-        .preview-pane {
-            background: #080808;
-            border-left: 1px solid var(--border);
-            display: flex; flex-direction: column;
-        }
-        .preview-header {
-            padding: 15px; border-bottom: 1px solid var(--border);
-            font-size: 11px; font-weight: 700; color: var(--text-muted);
-            text-transform: uppercase; letter-spacing: 1px;
-            display: flex; justify-content: space-between;
-        }
-        #previewCode {
-            flex: 1; width: 100%; height: 100%;
-            background: transparent; border: none;
-            color: #a9b7c6;
-            padding: 20px;
-            font-family: var(--font-code);
-            font-size: 12px; line-height: 1.5;
-            resize: none;
-        }
+    /* Accordion blocks */
+    .block{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.015);
+      border-radius:14px;
+      overflow:hidden;
+      margin:10px 0;
+    }
+    .blockHead{
+      width:100%;
+      border:0;
+      cursor:pointer;
+      padding:10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      background:rgba(0,0,0,.18);
+      color:rgba(233,233,238,.95);
+      text-align:left;
+      font:inherit;
+      font-weight:900;
+    }
+    .caret{ color:rgba(233,233,238,.55); transition:140ms linear; }
+    .block.open .caret{ transform: rotate(90deg); }
+    .blockBody{
+      display:none;
+      padding:10px;
+      border-top:1px solid rgba(255,255,255,.08);
+    }
+    .block.open .blockBody{ display:block; }
 
-        /* Buttons */
-        .btn {
-            width: 100%; padding: 12px; border: none; border-radius: 6px;
-            font-weight: 600; cursor: pointer; transition: 0.2s;
-            display: flex; justify-content: center; align-items: center; gap: 8px;
-        }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: #d90065; box-shadow: 0 4px 15px var(--primary-glow); }
-        .btn-sec { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
-        .btn-sec:hover { border-color: #555; color: #fff; background: rgba(255,255,255,0.05); }
+    /* Keymode toggles */
+    .kmTools{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:8px; }
+    .kmWrap{ display:flex; flex-wrap:wrap; gap:10px; }
+    .kmPill{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.16);
+      font-size:12px;
+      font-weight:900;
+      color:rgba(233,233,238,.65);
+    }
+    .kmPill.on{
+      color:rgba(233,233,238,.95);
+      border-color:rgba(255,255,255,.18);
+      background:rgba(255,255,255,.06);
+    }
 
-        /* MANIA MATRIX */
-        .mania-matrix {
-            display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 20px;
-        }
-        .key-btn {
-            background: var(--bg-input); border: 1px solid var(--border);
-            padding: 8px; text-align: center; border-radius: 4px;
-            font-size: 12px; cursor: pointer; transition: 0.2s;
-        }
-        .key-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
-        .key-btn:hover:not(.active) { border-color: #666; }
+    /* Preview area */
+    .previewTools{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .badge{
+      font-size:12px;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.18);
+      color:rgba(233,233,238,.65);
+      font-weight:900;
+    }
 
-        .mania-block {
-            border: 1px solid var(--border); background: rgba(255,255,255,0.02);
-            margin-bottom: 10px; border-radius: 8px; overflow: hidden;
-        }
-        .mania-head {
-            padding: 10px 15px; background: rgba(0,0,0,0.3);
-            cursor: pointer; display: flex; justify-content: space-between;
-            font-size: 12px; font-weight: 700;
-        }
-        .mania-head:hover { background: rgba(255,255,255,0.05); }
-        .mania-body { padding: 15px; display: none; border-top: 1px solid var(--border); }
-        .mania-block.open .mania-body { display: block; }
-        
-        /* Tooltip (Custom) */
-        .desc-box {
-            font-size: 11px; color: var(--text-desc); margin-top: 6px; line-height: 1.4;
-            display: none;
-        }
-        .control-item:focus-within .desc-box { display: block; animation: fadeIn 0.2s; }
-        @keyframes fadeIn { from {opacity:0} to {opacity:1}}
+    /* Music controls */
+    .music{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .slider{
+      display:flex; align-items:center; gap:8px;
+      font-size:12px; color:var(--muted);
+      font-weight:800;
+    }
+    .slider input[type="range"]{ width:120px; }
 
-        @media (max-width: 1200px) { .app-container { grid-template-columns: 240px 1fr 0; } .preview-pane { display:none; } }
-    </style>
+    @media (max-width: 980px){
+      .layout{ grid-template-columns: 1fr; }
+      .sidebar{ border-right:0; border-bottom:1px solid var(--border); }
+      .main{ grid-template-columns: 1fr; }
+      textarea{ min-height: 50vh; }
+    }
+  </style>
 </head>
+
 <body>
+  <div class="app">
 
-<div class="app-container">
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="brand">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--primary)"><circle cx="12" cy="12" r="10"/></svg>
-            Skin<span>Arch</span> <span class="brand-ver">v3.0</span>
+    <div class="topbar">
+      <div class="brand">
+        <h1>skin.ini studio</h1>
+        <span class="tag">v3 • import/export • catch + mania • taiko info</span>
+      </div>
+
+      <div class="music">
+        <button class="btn" id="musicToggle">▶ ambient</button>
+        <div class="slider">
+          <span>vol</span>
+          <input type="range" id="musicVol" min="0" max="1" step="0.01" value="0.18">
         </div>
-        
-        <div class="nav-scroll">
-            <div class="nav-category">Core</div>
-            <div class="nav-item active" onclick="renderSection('General')">
-                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                General
-            </div>
-            <div class="nav-item" onclick="renderSection('Colours')">
-                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-                Colours
-            </div>
-            <div class="nav-item" onclick="renderSection('Fonts')">
-                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
-                Fonts
-            </div>
+      </div>
+    </div>
 
-            <div class="nav-category">Modes</div>
-            <div class="nav-item" onclick="renderSection('Catch')">
-                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                Catch the Beat
-            </div>
-            <div class="nav-item" onclick="renderSection('Taiko')">
-                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                Taiko
-            </div>
-            <div class="nav-item" onclick="renderSection('Mania')">
-                <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 2v20"/><path d="M17 2v20"/><path d="M2 12h20"/></svg>
-                Mania (All Keys)
-            </div>
+    <div class="layout">
+      <aside class="sidebar">
+
+        <div class="group">
+          <div class="groupHead">Seções</div>
+          <div class="groupBody">
+            <div class="tabs" id="tabs"></div>
+            <div class="mini">Troca rápida entre painéis. Importa/Exporta no preview.</div>
+          </div>
         </div>
 
-        <div class="sidebar-footer">
-            <button class="btn btn-primary" onclick="downloadIni()">Download .INI</button>
-            <button class="btn btn-sec" onclick="resetAll()">Reset Data</button>
+        <div class="group">
+          <div class="groupHead">Export / Import</div>
+          <div class="groupBody">
+            <button class="btn primary" id="downloadIni">Download skin.ini</button>
+            <button class="btn" id="copyIni">Copiar preview</button>
+            <button class="btn" id="importOpen">Importar (colar)</button>
+            <button class="btn danger" id="wipeAll">Reset total</button>
+            <div class="sep"></div>
+            <div class="pill"><span>auto-save</span><span id="savePulse">—</span></div>
+          </div>
         </div>
-    </aside>
 
-    <!-- EDITOR -->
-    <main class="editor-area">
-        <div class="editor-header">
-            <div class="section-title">
-                <h1 id="pageTitle">General</h1>
-                <p id="pageDesc">Basic metadata and cursor behaviour.</p>
+        <div class="group">
+          <div class="groupHead">Opções de geração</div>
+          <div class="groupBody">
+            <div class="pill">
+              <span>formatação alinhada</span>
+              <label class="switch" title="Alinha chaves e espaça grupos">
+                <input type="checkbox" id="pretty" checked>
+                <span class="sw"></span>
+              </label>
             </div>
-        </div>
-        <div id="editorContent" class="editor-content">
-            <!-- Dynamic Content Injected Here -->
-        </div>
-    </main>
 
-    <!-- PREVIEW -->
-    <aside class="preview-pane">
-        <div class="preview-header">
-            <span>Live Preview</span>
-            <span id="saveStatus" style="color:var(--primary)">Saved</span>
+            <div class="pill">
+              <span>comentar vazios</span>
+              <label class="switch" title="Se ligado, linhas vazias viram //Key:">
+                <input type="checkbox" id="commentEmpty">
+                <span class="sw"></span>
+              </label>
+            </div>
+
+            <div class="pill">
+              <span>versão do skin.ini</span>
+              <select id="versionPick" style="max-width:140px">
+                <option value="2.0">2.0</option>
+                <option value="2.1">2.1</option>
+                <option value="2.2">2.2</option>
+                <option value="2.3">2.3</option>
+                <option value="2.4">2.4</option>
+                <option value="2.5">2.5</option>
+                <option value="2.6">2.6</option>
+                <option value="2.7">2.7</option>
+                <option value="latest" selected>latest</option>
+              </select>
+            </div>
+
+            <div class="mini">
+              Dica: “Taiko” não tem seção no skin.ini (é por arquivos). :contentReference[oaicite:3]{index=3}
+            </div>
+          </div>
         </div>
-        <textarea id="previewCode" readonly spellcheck="false"></textarea>
-    </aside>
-</div>
+
+      </aside>
+
+      <main class="main">
+        <div class="card">
+          <div class="cardHead">
+            <div class="mini" id="panelHint">Editor</div>
+            <span class="badge" id="statusBadge">ok</span>
+          </div>
+          <div class="cardBody" id="panel"></div>
+        </div>
+
+        <div class="card">
+          <div class="cardHead">
+            <div class="mini">Preview do skin.ini</div>
+            <div class="previewTools">
+              <button class="btn" id="refresh">Atualizar</button>
+            </div>
+          </div>
+          <div class="cardBody">
+            <textarea id="preview" readonly></textarea>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal de import -->
+  <dialog id="importDlg" style="max-width:900px;width:calc(100% - 24px);border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(0,0,0,.88);color:rgba(233,233,238,.95);box-shadow:0 20px 60px rgba(0,0,0,.55);">
+    <form method="dialog" style="margin:0;padding:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+        <div style="font-weight:900;">Importar skin.ini (colar texto)</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn" value="cancel">Fechar</button>
+          <button class="btn primary" id="importApply" value="default" type="button">Aplicar import</button>
+        </div>
+      </div>
+      <div style="height:10px"></div>
+      <textarea id="importArea" style="min-height:45vh;"></textarea>
+      <div style="height:8px"></div>
+      <div class="mini">
+        Import tenta ler chaves conhecidas do skin.ini e preencher os campos. Linhas desconhecidas são ignoradas.
+      </div>
+    </form>
+  </dialog>
 
 <script>
-/**
- * OSU! SKIN ARCHITECT - ULTIMATE SCHEMA
- * Defines structure, defaults, types, and wiki tooltips for the entire interface.
- */
-const SCHEMA = {
-    General: {
-        _desc: "Metadata, cursor settings, and global behavior.",
-        Meta: [
-            { id: "Name", type: "string", def: "My Skin", tip: "The name of the skin." },
-            { id: "Author", type: "string", def: "Unknown", tip: "The creator of the skin." },
-            { id: "Version", type: "string", def: "latest", tip: "Skin version. Use 'latest' for best compatibility." },
-        ],
-        Cursor: [
-            { id: "CursorCentre", type: "bool", def: true, tip: "If set to 1, the cursor's active point is the center of the image." },
-            { id: "CursorExpand", type: "bool", def: true, tip: "If 1, cursor expands when clicked." },
-            { id: "CursorRotate", type: "bool", def: true, tip: "If 1, cursor rotates constantly." },
-            { id: "CursorTrailRotate", type: "bool", def: true, tip: "If 1, the trail rotates with the cursor." },
-        ],
-        Gameplay: [
-            { id: "AnimationFramerate", type: "int", def: -1, tip: "Frame rate for animated elements. -1 ignores frame limiting." },
-            { id: "AllowSliderBallTint", type: "bool", def: true, tip: "Tint the slider ball with the combo color." },
-            { id: "ComboBurstRandom", type: "bool", def: false, tip: "Show combo bursts in random order." },
-            { id: "HitCircleOverlayAboveNumber", type: "bool", def: true, tip: "Draws the overlay image above the hit number." },
-            { id: "LayeredHitSounds", type: "bool", def: true, tip: "Allows multiple hitsounds to play at once." },
-            { id: "SliderBallFlip", type: "bool", def: true, tip: "Flips the slider ball image when reversing." },
-            { id: "SpinnerFadePlayfield", type: "bool", def: false, tip: "Darkens the playfield when spinning." },
-            { id: "SpinnerNoBlink", type: "bool", def: false, tip: "Disables the blinking gauge on spinners." },
-        ]
-    },
-    Colours: {
-        _desc: "Defines the color palette for gameplay and interface.",
-        Combos: [
-            { id: "Combo1", type: "color", def: "255,192,0", tip: "First combo color." },
-            { id: "Combo2", type: "color", def: "0,202,0", tip: "Second combo color." },
-            { id: "Combo3", type: "color", def: "18,124,255", tip: "Third combo color." },
-            { id: "Combo4", type: "color", def: "242,24,57", tip: "Fourth combo color." },
-            { id: "Combo5", type: "color", def: "", tip: "Optional 5th color." },
-            { id: "Combo6", type: "color", def: "", tip: "Optional 6th color." },
-            { id: "Combo7", type: "color", def: "", tip: "Optional 7th color." },
-            { id: "Combo8", type: "color", def: "", tip: "Optional 8th color." },
-        ],
-        Sliders: [
-            { id: "SliderBorder", type: "color", def: "255,255,255", tip: "Color of the slider's white border." },
-            { id: "SliderTrackOverride", type: "color", def: "0,0,0", tip: "Overrides the inner track color. If black, uses combo color." },
-        ],
-        Spinner: [
-            { id: "SpinnerApproachCircle", type: "color", def: "77,139,217", tip: "Color of the approach circle closing in on spinner." },
-            { id: "SpinnerBackground", type: "color", def: "100,100,100", tip: "Tint for the spinner background element." },
-        ],
-        Interface: [
-            { id: "MenuGlow", type: "color", def: "0,78,155", tip: "Glow color in the main menu." },
-            { id: "SongSelectActiveText", type: "color", def: "0,0,0", tip: "Text color for the selected song." },
-            { id: "SongSelectInactiveText", type: "color", def: "255,255,255", tip: "Text color for unselected songs." },
-            { id: "InputOverlayText", type: "color", def: "0,0,0", tip: "Color of the key usage overlay text." },
-        ]
-    },
-    Fonts: {
-        _desc: "Prefixes and spacing for numbers.",
-        HitCircle: [
-            { id: "HitCirclePrefix", type: "string", def: "default", tip: "Prefix for hit circle number images." },
-            { id: "HitCircleOverlap", type: "int", def: -2, tip: "How many pixels numbers overlap on hit circles." },
-        ],
-        Score: [
-            { id: "ScorePrefix", type: "string", def: "score", tip: "Prefix for the main score numbers." },
-            { id: "ScoreOverlap", type: "int", def: 0, tip: "Overlap for score numbers." },
-        ],
-        Combo: [
-            { id: "ComboPrefix", type: "string", def: "score", tip: "Prefix for combo counter numbers." },
-            { id: "ComboOverlap", type: "int", def: 0, tip: "Overlap for combo numbers." },
-        ]
-    },
-    Catch: {
-        _desc: "Configuration for Catch the Beat (Fruits).",
-        Catcher: [
-            { id: "HyperDash", type: "color", def: "255,0,0", tip: "Color of the catcher when hyperdashing." },
-            { id: "HyperDashAfterImage", type: "color", def: "255,0,0", tip: "Color of the trail left during hyperdash." },
-            { id: "HyperDashFruit", type: "color", def: "255,0,0", tip: "Outline color of a hyperdash fruit." },
-        ],
-        Fruits: [
-            { id: "FruitApple", type: "string", def: "fruit-apple", tip: "Image prefix for apple." },
-            { id: "FruitBananas", type: "string", def: "fruit-bananas", tip: "Image prefix for bananas." },
-            { id: "FruitGrapes", type: "string", def: "fruit-grapes", tip: "Image prefix for grapes." },
-            { id: "FruitPear", type: "string", def: "fruit-pear", tip: "Image prefix for pear." },
-            { id: "FruitOrange", type: "string", def: "fruit-orange", tip: "Image prefix for orange." },
-        ]
-    },
-    Taiko: {
-        _desc: "Configuration for Taiko mode.",
-        DrumRoll: [
-            { id: "DrumRollMain", type: "color", def: "255,255,255", tip: "Main color of the drum roll slider." },
-            { id: "DrumRollGong", type: "color", def: "255,255,255", tip: "Color of the drum roll ticks." },
-            { id: "DrumRollLight", type: "color", def: "255,255,255", tip: "Color of the border/highlight." },
-        ],
-        Assets: [
-            { id: "TaikoHitCircle", type: "string", def: "taikohitcircle", tip: "Filename for Don/Kat." },
-            { id: "TaikoHitCircleOverlay", type: "string", def: "taikohitcircleoverlay", tip: "Overlay for Don/Kat." },
-            { id: "TaikoBigHitCircle", type: "string", def: "taikobighitcircle", tip: "Filename for Big Don/Kat." },
-            { id: "TaikoBigHitCircleOverlay", type: "string", def: "taikobighitcircleoverlay", tip: "Overlay for Big Don/Kat." },
-        ]
+/* ===========================
+   skin.ini studio v3
+   - UI gerada por “schema” (mais escalável)
+   - Import/export
+   - Catch + Mania mais completa
+   - Música: WebAudio (sem copyright), play/pause + volume
+   - Taiko: aba informativa (não existe [Taiko] no skin.ini)
+=========================== */
+
+const $ = (id)=>document.getElementById(id);
+
+const STORAGE_KEY = "skinini_studio_v3_state";
+
+/* ---------- util ---------- */
+const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+const bool01 = (b)=> (b ? "1" : "0");
+
+function cleanLine(s){ return String(s ?? "").replace(/\r/g,"").trimEnd(); }
+function isBlank(v){ return cleanLine(v) === ""; }
+
+function debounce(fn, wait){
+  let t=null;
+  return (...args)=>{
+    clearTimeout(t);
+    t=setTimeout(()=>fn(...args), wait);
+  };
+}
+
+function rgbToHex(rgb){
+  const m = String(rgb||"").match(/^\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*$/);
+  if(!m) return null;
+  const r = clamp(parseInt(m[1],10),0,255);
+  const g = clamp(parseInt(m[2],10),0,255);
+  const b = clamp(parseInt(m[3],10),0,255);
+  return "#" + [r,g,b].map(x=>x.toString(16).padStart(2,"0")).join("");
+}
+function hexToRgb(hex){
+  const h = String(hex||"").replace("#","").trim();
+  if(!/^[0-9a-fA-F]{6}$/.test(h)) return "";
+  const r = parseInt(h.slice(0,2),16);
+  const g = parseInt(h.slice(2,4),16);
+  const b = parseInt(h.slice(4,6),16);
+  return `${r},${g},${b}`;
+}
+
+function numOr(v, fallback){
+  const n = Number(String(v ?? "").trim());
+  return Number.isFinite(n) ? n : fallback;
+}
+function intOr(v, fallback){
+  const n = parseInt(String(v ?? "").trim(), 10);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function fmtKV(key, value){
+  const v = cleanLine(value);
+  if(state.pretty){
+    const k = String(key).padEnd(32, " ");
+    return `${k} : ${v}`;
+  }
+  return `${key}: ${v}`;
+}
+
+function pushKV(lines, key, value){
+  const v = cleanLine(value);
+  if(v !== ""){
+    lines.push(fmtKV(key, v));
+    return;
+  }
+  if(state.commentEmpty){
+    if(state.pretty){
+      const k = String(key).padEnd(32, " ");
+      lines.push(`// ${k} :`);
+    }else{
+      lines.push(`//${key}:`);
     }
-    /* Mania is handled specially due to dynamic keys */
+  }
+}
+
+function spacer(lines){ if(state.pretty) lines.push(""); }
+function header(lines, title){
+  if(state.pretty){
+    lines.push(`// ${title} --`);
+    lines.push("");
+  }
+}
+
+/* ---------- state ---------- */
+const ALL_MANIA_KEYS = Array.from({length: 18}, (_,i)=>i+1);
+
+function defaultManiaMode(keys){
+  return {
+    // layout
+    ColumnStart: "",
+    ColumnRight: "",
+    ColumnSpacing: "0",
+    ColumnWidth: "70",
+    ColumnLineWidth: "",
+
+    // gameplay
+    BarlineHeight: "",
+    LightingNWidth: "",
+    LightingLWidth: "",
+    WidthForNoteHeightScale: "",
+    HitPosition: "",
+    LightPosition: "",
+    ComboPosition: "",
+    ScorePosition: "",
+    JudgementLine: true,
+
+    // misc
+    LightFramePerSecond: "",
+    SpecialStyle: "",
+    ComboBurstStyle: "",
+    SplitStages: "",
+    StageSeparation: "",
+    SeparateScore: "",
+    KeysUnderNotes: false,
+    UpsideDown: false,
+    KeyFlipWhenUpsideDown: "",
+    NoteFlipWhenUpsideDown: "",
+    NoteBodyStyle: "",
+
+    // stage/lighting (numeric/string)
+    StageLeft: "",
+    StageRight: "",
+    StageBottom: "",
+    StageHint: "",
+    StageLight: "",
+    LightingN: "",
+    LightingL: "",
+
+    // colours per keymode
+    ColourColumnLine: "",
+    ColourBarline: "",
+    ColourJudgementLine: "",
+    ColourKeyWarning: "",
+    ColourHold: "",
+    ColourBreak: "",
+    ColourLight: {}, // ColourLight0..n
+    Colour: {},      // Colour0..n
+
+    // patterns (filenames)
+    KeyImage: "",
+    KeyImageD: "",
+    NoteImage: "",
+    NoteImageH: "",
+    NoteImageL: "",
+    NoteImageT: "",
+    WarningArrow: "",
+
+    // hitbursts
+    Hit0: "",
+    Hit50: "",
+    Hit100: "",
+    Hit200: "",
+    Hit300: "",
+    Hit300g: "",
+  };
+}
+
+const state = {
+  pretty: true,
+  commentEmpty: false,
+  version: "latest",
+
+  activeTab: "general",
+
+  // [General]
+  general: {
+    Name: "",
+    Author: "",
+    AnimationFramerate: "",
+    AllowSliderBallTint: true,
+    ComboBurstRandom: "",
+    CursorCentre: true,
+    CursorExpand: false,
+    CursorRotate: false,
+    CursorTrailRotate: false,
+    CustomComboBurstSounds: "",
+    HitCircleOverlayAboveNumber: false,
+    LayeredHitSounds: true,
+    SliderBallFlip: false,
+    SpinnerFadePlayfield: true,
+    SpinnerFrequencyModulate: "",
+    SpinnerNoBlink: false,
+  },
+
+  // [Colours]
+  colours: {
+    Combo1: "",
+    Combo2: "",
+    Combo3: "",
+    Combo4: "",
+    Combo5: "",
+    Combo6: "",
+    Combo7: "",
+    Combo8: "",
+    InputOverlayText: "",
+    MenuGlow: "",
+    SliderBall: "",
+    SliderBorder: "",
+    SliderTrackOverride: "",
+    SongSelectActiveText: "",
+    SongSelectInactiveText: "",
+    SpinnerBackground: "",
+    StarBreakAdditive: "",
+  },
+
+  // [Fonts]
+  fonts: {
+    HitCirclePrefix: "",
+    HitCircleOverlap: "",
+    ScorePrefix: "",
+    ScoreOverlap: "",
+    ComboPrefix: "",
+    ComboOverlap: "",
+  },
+
+  // [CatchTheBeat]
+  catch: {
+    HyperDash: "",
+    HyperDashFruit: "",
+    HyperDashAfterImage: "",
+  },
+
+  // [Mania] shared
+  maniaShared: {
+    enabled: Object.fromEntries(ALL_MANIA_KEYS.map(k => [k, k===4])),
+    open: Object.fromEntries(ALL_MANIA_KEYS.map(k => [k, k===4])),
+    search: "",
+  },
+
+  mania: Object.fromEntries(ALL_MANIA_KEYS.map(k => [k, defaultManiaMode(k)])),
 };
 
-// Global State
-let STATE = {};
-let MANIA_KEYS = new Set([4, 7]); // Default active
-let CURRENT_TAB = 'General';
+/* ---------- schema UI (gera campos) ---------- */
 
-// --- UTILS ---
-
-const $ = (id) => document.getElementById(id);
-
-function rgbToHex(rgb) {
-    if(!rgb) return "#000000";
-    const parts = rgb.split(',').map(Number);
-    if(parts.length < 3) return "#000000";
-    return "#" + parts.map(c => Math.max(0, Math.min(255, c)).toString(16).padStart(2, "0")).join("");
+function uiRowText(label, path, placeholder=""){
+  const id = pathToId(path);
+  return `
+    <div class="row">
+      <label for="${id}">${label}</label>
+      <input type="text" id="${id}" data-path="${path}" placeholder="${escapeHtml(placeholder)}">
+    </div>
+  `;
+}
+function uiRowNum(label, path, placeholder=""){
+  const id = pathToId(path);
+  return `
+    <div class="row">
+      <label for="${id}">${label}</label>
+      <input type="number" id="${id}" data-path="${path}" placeholder="${escapeHtml(placeholder)}">
+    </div>
+  `;
+}
+function uiRowBool(label, path){
+  const id = pathToId(path);
+  return `
+    <div class="row">
+      <label>${label}</label>
+      <div class="inline">
+        <label class="switch">
+          <input type="checkbox" id="${id}" data-path="${path}">
+          <span class="sw"></span>
+        </label>
+      </div>
+    </div>
+  `;
+}
+function uiRowColor(label, path){
+  const id = pathToId(path);
+  const pickId = id + "_pick";
+  return `
+    <div class="row">
+      <label>${label}</label>
+      <div class="inline">
+        <input type="color" id="${pickId}" data-pick-for="${id}">
+        <input type="text" id="${id}" data-path="${path}" placeholder="255,255,255">
+      </div>
+    </div>
+  `;
+}
+function uiNote(text){
+  return `<div class="mini">${text}</div>`;
 }
 
-function hexToRgb(hex) {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `${r},${g},${b}`;
+const TABS = [
+  { key:"general", title:"General", hint:"Config geral do skin.ini (inclui opções usadas também por standard/taiko/catch).", render: renderGeneral },
+  { key:"colours", title:"Colours", hint:"Cores do UI e gameplay (Combo1..8, SliderBorder, etc).", render: renderColours },
+  { key:"fonts", title:"Fonts", hint:"Prefixos/overlap (HitCircle/Score/Combo).", render: renderFonts },
+  { key:"catch", title:"Catch", hint:"A seção [CatchTheBeat] tem só 3 chaves oficiais.", render: renderCatch },
+  { key:"taiko", title:"Taiko (info)", hint:"Taiko é por arquivos/pasta taiko/ — não existe [Taiko] no skin.ini.", render: renderTaikoInfo },
+  { key:"mania", title:"Mania", hint:"Editor avançado por keymode (1K..18K).", render: renderMania },
+];
+
+/* ---------- helpers state <-> UI ---------- */
+function pathToId(path){
+  return "p_" + path.replaceAll(".", "__").replaceAll("[","_").replaceAll("]","_");
+}
+function getByPath(obj, path){
+  const parts = path.split(".");
+  let cur = obj;
+  for(const p of parts){
+    if(cur == null) return undefined;
+    cur = cur[p];
+  }
+  return cur;
+}
+function setByPath(obj, path, value){
+  const parts = path.split(".");
+  let cur = obj;
+  for(let i=0;i<parts.length-1;i++){
+    const p = parts[i];
+    if(!(p in cur)) cur[p] = {};
+    cur = cur[p];
+  }
+  cur[parts[parts.length-1]] = value;
 }
 
-// --- BUILDER ENGINE ---
-
-function init() {
-    // 1. Load state from local storage or defaults
-    const saved = localStorage.getItem('osu_skin_architect_v3');
-    if (saved) {
-        try {
-            const data = JSON.parse(saved);
-            STATE = data.state;
-            if(data.mania) MANIA_KEYS = new Set(data.mania);
-        } catch(e) { console.error("Save corrupted"); }
-    }
-    
-    // 2. Hydrate missing state from SCHEMA
-    for(let section in SCHEMA) {
-        for(let group in SCHEMA[section]) {
-            if(group === '_desc') continue;
-            SCHEMA[section][group].forEach(item => {
-                if(STATE[item.id] === undefined) STATE[item.id] = item.def;
-            });
-        }
-    }
-    
-    // 3. Render
-    renderSection('General');
-    updatePreview();
+function escapeHtml(s){
+  return String(s ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#39;");
 }
 
-function renderSection(sectionName) {
-    CURRENT_TAB = sectionName;
-    const container = $('editorContent');
-    const title = $('pageTitle');
-    const desc = $('pageDesc');
-    
-    // UI Update
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    // Approximate active class logic for simplicity
-    const navItems = document.querySelectorAll('.nav-item');
-    if(sectionName === 'General') navItems[0].classList.add('active');
-    else if(sectionName === 'Colours') navItems[1].classList.add('active');
-    else if(sectionName === 'Fonts') navItems[2].classList.add('active');
-    else if(sectionName === 'Catch') navItems[3].classList.add('active');
-    else if(sectionName === 'Taiko') navItems[4].classList.add('active');
-    else if(sectionName === 'Mania') navItems[5].classList.add('active');
+/* ---------- render tabs ---------- */
+function renderTabs(){
+  const el = $("tabs");
+  el.innerHTML = TABS.map(t => `
+    <div class="tab ${state.activeTab===t.key?"active":""}" data-tab="${t.key}">
+      <span>${t.title}</span>
+      <span class="mini">${t.key==="mania"?"1K..18K":(t.key==="taiko"?"files":"")}</span>
+    </div>
+  `).join("");
 
-    container.innerHTML = '';
-    title.textContent = sectionName;
-
-    // MANIA SPECIAL RENDERING
-    if(sectionName === 'Mania') {
-        desc.textContent = "Configure per-keymode settings (1K - 18K).";
-        renderManiaTools(container);
-        renderManiaBlocks(container);
-        return;
-    }
-
-    // STANDARD SCHEMA RENDERING
-    const schemaData = SCHEMA[sectionName];
-    desc.textContent = schemaData._desc;
-
-    for(let groupName in schemaData) {
-        if(groupName === '_desc') continue;
-        
-        const groupEl = document.createElement('div');
-        groupEl.className = 'form-group';
-        
-        const head = document.createElement('div');
-        head.className = 'group-header';
-        head.textContent = groupName;
-        groupEl.appendChild(head);
-
-        const grid = document.createElement('div');
-        grid.className = 'control-grid';
-
-        schemaData[groupName].forEach(field => {
-            grid.appendChild(createControl(field));
-        });
-
-        groupEl.appendChild(grid);
-        container.appendChild(groupEl);
-    }
-}
-
-function createControl(field) {
-    const wrap = document.createElement('div');
-    wrap.className = 'control-item';
-
-    // Label Row
-    const labelRow = document.createElement('div');
-    labelRow.className = 'label-row';
-    
-    const label = document.createElement('div');
-    label.className = 'control-label';
-    label.textContent = field.id;
-    labelRow.appendChild(label);
-    
-    // Tooltip trigger (icon)
-    const tip = document.createElement('span');
-    tip.className = 'tooltip-trigger';
-    tip.textContent = '?';
-    tip.title = field.tip; // Native title for fallback
-    labelRow.appendChild(tip);
-
-    wrap.appendChild(labelRow);
-
-    // Input Element
-    let inputEl;
-
-    if (field.type === 'bool') {
-        const switchWrap = document.createElement('div');
-        switchWrap.className = 'switch-wrap';
-        
-        const toggle = document.createElement('label');
-        toggle.className = 'toggle-switch';
-        
-        const chk = document.createElement('input');
-        chk.type = 'checkbox';
-        chk.checked = !!STATE[field.id];
-        chk.onchange = (e) => {
-            STATE[field.id] = e.target.checked;
-            updatePreview();
-        };
-        
-        const slider = document.createElement('span');
-        slider.className = 'slider';
-        
-        toggle.appendChild(chk);
-        toggle.appendChild(slider);
-        switchWrap.appendChild(toggle);
-        wrap.appendChild(switchWrap);
-
-    } else if (field.type === 'color') {
-        const cWidget = document.createElement('div');
-        cWidget.className = 'color-widget';
-        
-        const cPreview = document.createElement('div');
-        cPreview.className = 'color-preview';
-        cPreview.style.backgroundColor = rgbToHex(STATE[field.id] || field.def);
-        
-        const cInput = document.createElement('input');
-        cInput.type = 'color';
-        cInput.value = rgbToHex(STATE[field.id] || field.def);
-        
-        // Text Input
-        const tInput = document.createElement('input');
-        tInput.type = 'text';
-        tInput.value = STATE[field.id] || field.def;
-        
-        // Sync Logic
-        cInput.oninput = (e) => {
-            const rgb = hexToRgb(e.target.value);
-            tInput.value = rgb;
-            cPreview.style.backgroundColor = e.target.value;
-            STATE[field.id] = rgb;
-            updatePreview();
-        };
-        
-        tInput.oninput = (e) => {
-            STATE[field.id] = e.target.value;
-            const hex = rgbToHex(e.target.value);
-            cInput.value = hex;
-            cPreview.style.backgroundColor = hex;
-            updatePreview();
-        };
-
-        cPreview.appendChild(cInput);
-        cWidget.appendChild(cPreview);
-        cWidget.appendChild(tInput);
-        wrap.appendChild(cWidget);
-
-    } else {
-        // String or Int
-        inputEl = document.createElement('input');
-        inputEl.type = field.type === 'int' ? 'number' : 'text';
-        inputEl.value = STATE[field.id] !== undefined ? STATE[field.id] : field.def;
-        inputEl.oninput = (e) => {
-            STATE[field.id] = e.target.value;
-            updatePreview();
-        };
-        wrap.appendChild(inputEl);
-    }
-
-    // Tooltip Description Box
-    const descBox = document.createElement('div');
-    descBox.className = 'desc-box';
-    descBox.textContent = field.tip;
-    wrap.appendChild(descBox);
-
-    return wrap;
-}
-
-// --- MANIA SPECIAL HANDLING ---
-
-function renderManiaTools(container) {
-    const box = document.createElement('div');
-    box.className = 'form-group';
-    box.innerHTML = `<div class="group-header">Active Key Modes</div>`;
-    
-    const grid = document.createElement('div');
-    grid.className = 'mania-matrix';
-    
-    for(let i=1; i<=18; i++) {
-        const btn = document.createElement('div');
-        btn.className = `key-btn ${MANIA_KEYS.has(i) ? 'active' : ''}`;
-        btn.textContent = i + 'K';
-        btn.onclick = () => {
-            if(MANIA_KEYS.has(i)) MANIA_KEYS.delete(i);
-            else MANIA_KEYS.add(i);
-            renderSection('Mania'); // Re-render to show/hide blocks
-            updatePreview();
-        };
-        grid.appendChild(btn);
-    }
-    box.appendChild(grid);
-    container.appendChild(box);
-}
-
-function renderManiaBlocks(container) {
-    const sortedKeys = Array.from(MANIA_KEYS).sort((a,b)=>a-b);
-    
-    if(sortedKeys.length === 0) {
-        container.innerHTML += `<div style="text-align:center; color:#555; padding:20px;">No keymodes active. Select some above.</div>`;
-        return;
-    }
-
-    sortedKeys.forEach(k => {
-        const block = document.createElement('div');
-        block.className = 'mania-block';
-        
-        // Header
-        const head = document.createElement('div');
-        head.className = 'mania-head';
-        head.innerHTML = `<span>${k}K Settings</span><span>▼</span>`;
-        head.onclick = () => block.classList.toggle('open');
-        
-        // Body
-        const body = document.createElement('div');
-        body.className = 'mania-body control-grid';
-        
-        // Define Mania Fields dynamically per key
-        const fields = [
-            { id: `ColumnStart_${k}`, label: "ColumnStart", def: "136", type: "int" },
-            { id: `ColumnWidth_${k}`, label: "ColumnWidth", def: "30,30,30...", type: "string" },
-            { id: `HitPosition_${k}`, label: "HitPosition", def: "402", type: "int" },
-            { id: `SpecialStyle_${k}`, label: "SpecialStyle", def: false, type: "bool" },
-            { id: `UpsideDown_${k}`, label: "UpsideDown", def: false, type: "bool" },
-            { id: `JudgementLine_${k}`, label: "JudgementLine", def: true, type: "bool" },
-            { id: `StageHint_${k}`, label: "StageHint", def: "", type: "string" },
-            { id: `StageLeft_${k}`, label: "StageLeft", def: "", type: "string" },
-        ];
-
-        fields.forEach(f => {
-            // Simplified createControl for mania dynamic keys
-            // In a full 5k line version, this would be more abstracted
-            // Creating a mock field object to reuse createControl logic? No, easier to manual here for dynamic ID
-            
-            const fieldKey = f.id; 
-            
-            const wrap = document.createElement('div');
-            wrap.className = 'control-item';
-            
-            // Label
-            const lRow = document.createElement('div');
-            lRow.className = 'label-row';
-            lRow.innerHTML = `<div class="control-label">${f.label}</div>`;
-            wrap.appendChild(lRow);
-
-            if(f.type === 'bool') {
-                 const sw = document.createElement('div'); sw.className='switch-wrap';
-                 const tg = document.createElement('label'); tg.className='toggle-switch';
-                 const inp = document.createElement('input'); inp.type='checkbox';
-                 inp.checked = STATE[fieldKey] !== undefined ? STATE[fieldKey] : f.def;
-                 inp.onchange = (e) => { STATE[fieldKey] = e.target.checked; updatePreview(); };
-                 const sl = document.createElement('span'); sl.className='slider';
-                 tg.appendChild(inp); tg.appendChild(sl); sw.appendChild(tg); wrap.appendChild(sw);
-            } else {
-                 const inp = document.createElement('input'); 
-                 inp.type = f.type==='int'?'number':'text';
-                 inp.value = STATE[fieldKey] !== undefined ? STATE[fieldKey] : f.def;
-                 inp.oninput = (e) => { STATE[fieldKey] = e.target.value; updatePreview(); };
-                 wrap.appendChild(inp);
-            }
-            body.appendChild(wrap);
-        });
-
-        block.appendChild(head);
-        block.appendChild(body);
-        container.appendChild(block);
+  el.querySelectorAll("[data-tab]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      state.activeTab = btn.dataset.tab;
+      saveSoon();
+      renderActiveTab();
     });
+  });
 }
 
-// --- GENERATOR CORE ---
-
-function updatePreview() {
-    const lines = [];
-    
-    // [General]
-    lines.push("[General]");
-    SCHEMA.General.Meta.forEach(f => lines.push(`${f.id}: ${STATE[f.id]||f.def}`));
-    SCHEMA.General.Cursor.forEach(f => lines.push(`${f.id}: ${STATE[f.id] ? 1 : 0}`));
-    SCHEMA.General.Gameplay.forEach(f => {
-        let val = STATE[f.id];
-        if(val === undefined) val = f.def;
-        if(typeof val === 'boolean') val = val ? 1 : 0;
-        if(val !== "") lines.push(`${f.id}: ${val}`);
-    });
-    lines.push("");
-
-    // [Colours]
-    lines.push("[Colours]");
-    const colList = [...SCHEMA.Colours.Combos, ...SCHEMA.Colours.Sliders, ...SCHEMA.Colours.Spinner, ...SCHEMA.Colours.Interface];
-    colList.forEach(f => {
-        const val = STATE[f.id];
-        if(val && val !== "") lines.push(`${f.id}: ${val}`);
-    });
-    lines.push("");
-
-    // [Fonts]
-    lines.push("[Fonts]");
-    const fontList = [...SCHEMA.Fonts.HitCircle, ...SCHEMA.Fonts.Score, ...SCHEMA.Fonts.Combo];
-    fontList.forEach(f => {
-        const val = STATE[f.id];
-        if(val !== undefined && val !== "") lines.push(`${f.id}: ${val}`);
-    });
-    lines.push("");
-
-    // [CatchTheBeat]
-    lines.push("[CatchTheBeat]");
-    const ctbList = [...SCHEMA.Catch.Catcher, ...SCHEMA.Catch.Fruits];
-    ctbList.forEach(f => {
-        const val = STATE[f.id];
-        if(val !== undefined && val !== "") lines.push(`${f.id}: ${val}`);
-    });
-    lines.push("");
-
-    // [Taiko]
-    lines.push("[Taiko]");
-    const taikoList = [...SCHEMA.Taiko.DrumRoll, ...SCHEMA.Taiko.Assets];
-    taikoList.forEach(f => {
-        const val = STATE[f.id];
-        if(val !== undefined && val !== "") lines.push(`${f.id}: ${val}`);
-    });
-    lines.push("");
-
-    // [Mania]
-    Array.from(MANIA_KEYS).sort((a,b)=>a-b).forEach(k => {
-        lines.push("[Mania]");
-        lines.push(`Keys: ${k}`);
-        // Extract basic mania keys
-        const mFields = ["ColumnStart", "ColumnWidth", "HitPosition", "SpecialStyle", "UpsideDown", "JudgementLine", "StageHint", "StageLeft"];
-        mFields.forEach(mf => {
-            let val = STATE[`${mf}_${k}`];
-            if(val !== undefined) {
-                if(typeof val === 'boolean') val = val ? 1 : 0;
-                if(val !== "") lines.push(`${mf}: ${val}`);
-            }
-        });
-        lines.push("");
-    });
-
-    const code = lines.join("\n");
-    $('previewCode').value = code;
-    
-    // Autosave
-    localStorage.setItem('osu_skin_architect_v3', JSON.stringify({
-        state: STATE,
-        mania: Array.from(MANIA_KEYS)
-    }));
-    
-    const saveStat = $('saveStatus');
-    saveStat.style.opacity = 1;
-    setTimeout(() => saveStat.style.opacity = 0.5, 500);
+function renderActiveTab(){
+  const tab = TABS.find(t => t.key === state.activeTab) || TABS[0];
+  $("panelHint").textContent = tab.hint;
+  $("statusBadge").textContent = "ok";
+  $("panel").innerHTML = tab.render();
+  hydrateInputsFromState($("panel"));
+  wirePanelListeners($("panel"));
+  renderTabs();
 }
 
-function downloadIni() {
-    const element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent($('previewCode').value));
-    element.setAttribute('download', 'skin.ini');
-    element.style.display = 'none';
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+/* ---------- panel renderers ---------- */
+function renderGeneral(){
+  return `
+    <div class="block open">
+      <button class="blockHead" type="button"><span>[General]</span><span class="caret">▸</span></button>
+      <div class="blockBody">
+        ${uiRowText("Name", "general.Name", "Ex: Minha Skin")}
+        ${uiRowText("Author", "general.Author", "Seu nome")}
+        <div class="row"><label>Version</label>
+          <div class="inline">
+            <input type="text" value="${escapeHtml(state.version)}" readonly>
+            <span class="mini">usa o seletor na sidebar</span>
+          </div>
+        </div>
+
+        <div class="sep"></div>
+        <div class="mini">Essas chaves aparecem no “Blank skin.ini” oficial. :contentReference[oaicite:4]{index=4}</div>
+        ${uiRowNum("AnimationFramerate", "general.AnimationFramerate", "-1 ou fps")}
+        ${uiRowBool("AllowSliderBallTint", "general.AllowSliderBallTint")}
+        ${uiRowText("ComboBurstRandom", "general.ComboBurstRandom", "0/1")}
+        ${uiRowBool("CursorCentre", "general.CursorCentre")}
+        ${uiRowBool("CursorExpand", "general.CursorExpand")}
+        ${uiRowBool("CursorRotate", "general.CursorRotate")}
+        ${uiRowBool("CursorTrailRotate", "general.CursorTrailRotate")}
+        ${uiRowText("CustomComboBurstSounds", "general.CustomComboBurstSounds", "ex: 50,75,100")}
+        ${uiRowBool("HitCircleOverlayAboveNumber", "general.HitCircleOverlayAboveNumber")}
+        ${uiRowBool("LayeredHitSounds", "general.LayeredHitSounds")}
+        ${uiRowBool("SliderBallFlip", "general.SliderBallFlip")}
+        ${uiRowBool("SpinnerFadePlayfield", "general.SpinnerFadePlayfield")}
+        ${uiRowText("SpinnerFrequencyModulate", "general.SpinnerFrequencyModulate", "0/1")}
+        ${uiRowBool("SpinnerNoBlink", "general.SpinnerNoBlink")}
+      </div>
+    </div>
+  `;
 }
 
-function resetAll() {
-    if(confirm("Reset all data to defaults?")) {
-        localStorage.removeItem('osu_skin_architect_v3');
-        STATE = {};
-        MANIA_KEYS = new Set([4, 7]);
-        init();
+function renderColours(){
+  return `
+    <div class="block open">
+      <button class="blockHead" type="button"><span>[Colours]</span><span class="caret">▸</span></button>
+      <div class="blockBody">
+        <div class="mini">RGB no formato: <b>r,g,b</b>. (Ex: 255,255,255) :contentReference[oaicite:5]{index=5}</div>
+
+        <div class="sep"></div>
+        <div class="mini"><b>Combo colours</b></div>
+        <div class="grid2">
+          ${uiRowColor("Combo1", "colours.Combo1")}
+          ${uiRowColor("Combo2", "colours.Combo2")}
+          ${uiRowColor("Combo3", "colours.Combo3")}
+          ${uiRowColor("Combo4", "colours.Combo4")}
+          ${uiRowColor("Combo5", "colours.Combo5")}
+          ${uiRowColor("Combo6", "colours.Combo6")}
+          ${uiRowColor("Combo7", "colours.Combo7")}
+          ${uiRowColor("Combo8", "colours.Combo8")}
+        </div>
+
+        <div class="sep"></div>
+        <div class="mini"><b>UI / gameplay</b></div>
+        ${uiRowColor("InputOverlayText", "colours.InputOverlayText")}
+        ${uiRowColor("MenuGlow", "colours.MenuGlow")}
+        ${uiRowColor("SongSelectActiveText", "colours.SongSelectActiveText")}
+        ${uiRowColor("SongSelectInactiveText", "colours.SongSelectInactiveText")}
+        ${uiRowColor("SliderBall", "colours.SliderBall")}
+        ${uiRowColor("SliderBorder", "colours.SliderBorder")}
+        ${uiRowColor("SliderTrackOverride", "colours.SliderTrackOverride")}
+        ${uiRowColor("SpinnerBackground", "colours.SpinnerBackground")}
+        ${uiRowColor("StarBreakAdditive", "colours.StarBreakAdditive")}
+      </div>
+    </div>
+  `;
+}
+
+function renderFonts(){
+  return `
+    <div class="block open">
+      <button class="blockHead" type="button"><span>[Fonts]</span><span class="caret">▸</span></button>
+      <div class="blockBody">
+        <div class="mini">Essas chaves também estão no “Blank skin.ini” oficial. :contentReference[oaicite:6]{index=6}</div>
+        <div class="sep"></div>
+        <div class="grid2">
+          <div>
+            ${uiRowText("HitCirclePrefix", "fonts.HitCirclePrefix", "default: default")}
+            ${uiRowNum("HitCircleOverlap", "fonts.HitCircleOverlap", "0")}
+          </div>
+          <div>
+            ${uiRowText("ScorePrefix", "fonts.ScorePrefix", "score")}
+            ${uiRowNum("ScoreOverlap", "fonts.ScoreOverlap", "0")}
+          </div>
+        </div>
+        <div class="grid2">
+          <div>
+            ${uiRowText("ComboPrefix", "fonts.ComboPrefix", "combo")}
+            ${uiRowNum("ComboOverlap", "fonts.ComboOverlap", "0")}
+          </div>
+          <div>${uiNote("Dica: overlaps negativos às vezes ajudam com fontes grandes.")}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderCatch(){
+  return `
+    <div class="block open">
+      <button class="blockHead" type="button"><span>[CatchTheBeat]</span><span class="caret">▸</span></button>
+      <div class="blockBody">
+        <div class="mini">Oficialmente, Catch tem só estas 3 chaves no skin.ini. :contentReference[oaicite:7]{index=7}</div>
+        <div class="sep"></div>
+        ${uiRowText("HyperDash", "catch.HyperDash", "0/1")}
+        ${uiRowText("HyperDashFruit", "catch.HyperDashFruit", "0/1")}
+        ${uiRowText("HyperDashAfterImage", "catch.HyperDashAfterImage", "0/1")}
+      </div>
+    </div>
+  `;
+}
+
+function renderTaikoInfo(){
+  return `
+    <div class="block open">
+      <button class="blockHead" type="button"><span>Taiko (por arquivos)</span><span class="caret">▸</span></button>
+      <div class="blockBody">
+        <div class="mini">
+          Não existe seção <b>[Taiko]</b> no <b>skin.ini</b>. O Taiko é skinnado por arquivos (e opcionalmente pela pasta <b>taiko/</b>),
+          e o jogador precisa ativar <i>Use Taiko skin for Taiko mode</i> nas opções. :contentReference[oaicite:8]{index=8}
+        </div>
+
+        <div class="sep"></div>
+        <div class="mini"><b>Checklist (exemplos comuns)</b></div>
+        <div class="mini">
+          • taiko-bar-left / taiko-bar-right / taiko-bar-middle<br/>
+          • taiko-drum-inner / taiko-drum-outer<br/>
+          • taiko-hitcircle / taiko-hitcircleoverlay<br/>
+          • taiko-slider / taiko-slider-fail<br/>
+          • taiko-flower / taiko-flower-group<br/>
+          • taiko-scorebar-bg / taiko-scorebar-colour<br/>
+        </div>
+
+        <div class="sep"></div>
+        <div class="mini">
+          Se você quiser, eu também posso te gerar uma aba “biblioteca de assets” (com nomes e pastas) pro teu fluxo de skinning.
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ----- mania UI ----- */
+function renderMania(){
+  const q = (state.maniaShared.search || "").trim().toLowerCase();
+  const keysList = ALL_MANIA_KEYS.filter(k => !q || String(k).includes(q) || (`${k}k`).includes(q));
+
+  const toggles = keysList.map(k=>{
+    const on = !!state.maniaShared.enabled[k];
+    return `
+      <span class="kmPill ${on?"on":""}">
+        <span>${k}K</span>
+        <label class="switch" title="Incluir ${k}K no export">
+          <input type="checkbox" class="kmToggle" data-k="${k}" ${on?"checked":""}>
+          <span class="sw"></span>
+        </label>
+      </span>
+    `;
+  }).join("");
+
+  const blocks = ALL_MANIA_KEYS
+    .filter(k => state.maniaShared.enabled[k])
+    .map(k => renderManiaBlock(k))
+    .join("");
+
+  return `
+    <div class="block open">
+      <button class="blockHead" type="button"><span>Mania • keymodes</span><span class="caret">▸</span></button>
+      <div class="blockBody">
+        <div class="kmTools">
+          <input type="text" id="kmSearch" placeholder="Buscar (ex: 4, 7, 12)..." value="${escapeHtml(state.maniaShared.search)}" style="max-width:260px">
+          <button class="btn" type="button" id="kmAll">All</button>
+          <button class="btn" type="button" id="kmNone">None</button>
+          <button class="btn" type="button" id="kmInvert">Invert</button>
+          <button class="btn" type="button" id="kmCommon" title="4K + 7K">Common</button>
+        </div>
+
+        <div class="kmWrap">${toggles}</div>
+        <div class="sep"></div>
+
+        <div class="mini">
+          Mania é a parte mais “insana” do skin.ini — e a lista completa aparece no Blank oficial. :contentReference[oaicite:9]{index=9}
+        </div>
+
+        <div id="maniaBlocks">${blocks || `<div class="mini">Nenhum modo ativo (pelo menos 1 precisa ficar ligado).</div>`}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderManiaBlock(keys){
+  const mode = state.mania[keys] || defaultManiaMode(keys);
+  const open = !!state.maniaShared.open[keys];
+
+  // cria inputs Colour0..Colour{keys-1}
+  const colourCols = Array.from({length: keys}, (_,i)=>{
+    const path = `mania.${keys}.Colour.${i}`;
+    return `
+      <div class="row">
+        <label>Colour${i}</label>
+        <div class="inline">
+          <input type="color" id="${pathToId(path)}_pick" data-pick-for="${pathToId(path)}">
+          <input type="text" id="${pathToId(path)}" data-path="${path}" placeholder="255,255,255">
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  const colourLights = Array.from({length: keys}, (_,i)=>{
+    const path = `mania.${keys}.ColourLight.${i}`;
+    return `
+      <div class="row">
+        <label>ColourLight${i}</label>
+        <div class="inline">
+          <input type="color" id="${pathToId(path)}_pick" data-pick-for="${pathToId(path)}">
+          <input type="text" id="${pathToId(path)}" data-path="${path}" placeholder="(opcional)">
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  return `
+    <div class="block ${open?"open":""}" data-keys="${keys}">
+      <button class="blockHead" type="button" data-fold="${keys}">
+        <span>${keys}K</span>
+        <span class="caret">▸</span>
+      </button>
+
+      <div class="blockBody">
+        <div class="mini"><b>[Mania]</b> • Keys: ${keys}</div>
+        <div class="sep"></div>
+
+        <div class="mini"><b>Layout</b></div>
+        ${uiRowNum("ColumnStart", `mania.${keys}.ColumnStart`, "(auto/manual)")}
+        ${uiRowNum("ColumnRight", `mania.${keys}.ColumnRight`, "(opcional)")}
+        ${uiRowText("ColumnSpacing", `mania.${keys}.ColumnSpacing`, "0,0,0...")}
+        ${uiRowText("ColumnWidth", `mania.${keys}.ColumnWidth`, "70,70,70...")}
+        ${uiRowText("ColumnLineWidth", `mania.${keys}.ColumnLineWidth`, "0,0,0...")}
+
+        <div class="sep"></div>
+        <div class="mini"><b>Positions</b></div>
+        ${uiRowNum("HitPosition", `mania.${keys}.HitPosition`, "")}
+        ${uiRowNum("LightPosition", `mania.${keys}.LightPosition`, "")}
+        ${uiRowNum("ScorePosition", `mania.${keys}.ScorePosition`, "")}
+        ${uiRowNum("ComboPosition", `mania.${keys}.ComboPosition`, "")}
+
+        <div class="sep"></div>
+        <div class="mini"><b>Gameplay toggles</b></div>
+        ${uiRowBool("JudgementLine", `mania.${keys}.JudgementLine`)}
+        ${uiRowBool("KeysUnderNotes", `mania.${keys}.KeysUnderNotes`)}
+        ${uiRowBool("UpsideDown", `mania.${keys}.UpsideDown`)}
+
+        ${uiRowText("KeyFlipWhenUpsideDown", `mania.${keys}.KeyFlipWhenUpsideDown`, "0/1 (ou por coluna)")}
+        ${uiRowText("NoteFlipWhenUpsideDown", `mania.${keys}.NoteFlipWhenUpsideDown`, "0/1 (ou por coluna)")}
+        ${uiRowText("NoteBodyStyle", `mania.${keys}.NoteBodyStyle`, "stretch / cascadeTop / cascadeBottom")}
+
+        <div class="sep"></div>
+        <div class="mini"><b>Stage / Lighting</b></div>
+        <div class="grid2">
+          <div>
+            ${uiRowText("StageLeft", `mania.${keys}.StageLeft`, "")}
+            ${uiRowText("StageRight", `mania.${keys}.StageRight`, "")}
+            ${uiRowText("StageBottom", `mania.${keys}.StageBottom`, "")}
+            ${uiRowText("StageHint", `mania.${keys}.StageHint`, "")}
+            ${uiRowText("StageLight", `mania.${keys}.StageLight`, "")}
+          </div>
+          <div>
+            ${uiRowNum("LightingNWidth", `mania.${keys}.LightingNWidth`, "")}
+            ${uiRowNum("LightingLWidth", `mania.${keys}.LightingLWidth`, "")}
+            ${uiRowText("LightingN", `mania.${keys}.LightingN`, "")}
+            ${uiRowText("LightingL", `mania.${keys}.LightingL`, "")}
+          </div>
+        </div>
+
+        ${uiRowNum("BarlineHeight", `mania.${keys}.BarlineHeight`, "")}
+        ${uiRowNum("WidthForNoteHeightScale", `mania.${keys}.WidthForNoteHeightScale`, "")}
+        ${uiRowNum("LightFramePerSecond", `mania.${keys}.LightFramePerSecond`, "")}
+
+        ${uiRowText("SpecialStyle", `mania.${keys}.SpecialStyle`, "")}
+        ${uiRowText("ComboBurstStyle", `mania.${keys}.ComboBurstStyle`, "")}
+        ${uiRowText("SplitStages", `mania.${keys}.SplitStages`, "")}
+        ${uiRowText("StageSeparation", `mania.${keys}.StageSeparation`, "")}
+        ${uiRowText("SeparateScore", `mania.${keys}.SeparateScore`, "")}
+
+        <div class="sep"></div>
+        <div class="mini"><b>Colours (por coluna)</b></div>
+        <div class="grid2">
+          <div>${colourCols}</div>
+          <div>${colourLights}</div>
+        </div>
+
+        <div class="sep"></div>
+        <div class="mini"><b>Colours (extras)</b></div>
+        ${uiRowColor("ColourColumnLine", `mania.${keys}.ColourColumnLine`)}
+        ${uiRowColor("ColourBarline", `mania.${keys}.ColourBarline`)}
+        ${uiRowColor("ColourJudgementLine", `mania.${keys}.ColourJudgementLine`)}
+        ${uiRowColor("ColourKeyWarning", `mania.${keys}.ColourKeyWarning`)}
+        ${uiRowColor("ColourHold", `mania.${keys}.ColourHold`)}
+        ${uiRowColor("ColourBreak", `mania.${keys}.ColourBreak`)}
+
+        <div class="sep"></div>
+        <div class="mini"><b>Patterns de imagem</b> (usa {n} = 1..Keys)</div>
+        ${uiRowText("KeyImage# pattern", `mania.${keys}.KeyImage`, "key{n}")}
+        ${uiRowText("KeyImage#D pattern", `mania.${keys}.KeyImageD`, "key{n}D")}
+        ${uiRowText("NoteImage# pattern", `mania.${keys}.NoteImage`, "note{n}")}
+        ${uiRowText("NoteImage#H pattern", `mania.${keys}.NoteImageH`, "note{n}H")}
+        ${uiRowText("NoteImage#L pattern", `mania.${keys}.NoteImageL`, "note{n}L")}
+        ${uiRowText("NoteImage#T pattern", `mania.${keys}.NoteImageT`, "note{n}T")}
+        ${uiRowText("WarningArrow", `mania.${keys}.WarningArrow`, "")}
+
+        <div class="sep"></div>
+        <div class="mini"><b>Hit sprites</b></div>
+        <div class="grid2">
+          ${uiRowText("Hit0", `mania.${keys}.Hit0`)}
+          ${uiRowText("Hit50", `mania.${keys}.Hit50`)}
+          ${uiRowText("Hit100", `mania.${keys}.Hit100`)}
+          ${uiRowText("Hit200", `mania.${keys}.Hit200`)}
+          ${uiRowText("Hit300", `mania.${keys}.Hit300`)}
+          ${uiRowText("Hit300g", `mania.${keys}.Hit300g`)}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------- wiring ---------- */
+function wireAccordions(root){
+  root.querySelectorAll(".blockHead").forEach(head=>{
+    const parent = head.closest(".block");
+    if(!parent) return;
+
+    // mania fold
+    if(head.dataset.fold){
+      head.addEventListener("click", ()=>{
+        const k = Number(head.dataset.fold);
+        const block = root.querySelector(`.block[data-keys="${k}"]`);
+        if(!block) return;
+        const nowOpen = !block.classList.contains("open");
+        block.classList.toggle("open", nowOpen);
+        state.maniaShared.open[k] = nowOpen;
+        saveSoon();
+      });
+      return;
     }
+
+    // generic accordion
+    head.addEventListener("click", ()=>{
+      const nowOpen = !parent.classList.contains("open");
+      parent.classList.toggle("open", nowOpen);
+    });
+  });
 }
 
-// Start
-init();
+function bindColorPickers(root){
+  root.querySelectorAll("[data-pick-for]").forEach(pick=>{
+    const txtId = pick.getAttribute("data-pick-for");
+    const txt = document.getElementById(txtId);
+    if(!txt) return;
 
+    const hx = rgbToHex(txt.value);
+    if(hx) pick.value = hx;
+
+    pick.addEventListener("input", ()=>{
+      txt.value = hexToRgb(pick.value);
+      onAnyChange();
+    });
+    txt.addEventListener("input", ()=>{
+      const hx2 = rgbToHex(txt.value);
+      if(hx2) pick.value = hx2;
+    });
+  });
+}
+
+function hydrateInputsFromState(root){
+  // inputs text/number
+  root.querySelectorAll("[data-path]").forEach(inp=>{
+    const path = inp.getAttribute("data-path");
+    const v = getByPath(state, path);
+
+    if(inp.type === "checkbox"){
+      inp.checked = !!v;
+    }else{
+      inp.value = (v ?? "");
+    }
+  });
+
+  bindColorPickers(root);
+  wireAccordions(root);
+}
+
+function wirePanelListeners(root){
+  // generic input -> state
+  root.querySelectorAll("[data-path]").forEach(inp=>{
+    const path = inp.getAttribute("data-path");
+    const handler = ()=>{
+      if(inp.type === "checkbox"){
+        setByPath(state, path, !!inp.checked);
+      }else{
+        setByPath(state, path, inp.value);
+      }
+      onAnyChange();
+    };
+    inp.addEventListener("input", handler);
+    inp.addEventListener("change", handler);
+  });
+
+  // mania tools
+  const kmSearch = root.querySelector("#kmSearch");
+  if(kmSearch){
+    kmSearch.addEventListener("input", ()=>{
+      state.maniaShared.search = kmSearch.value || "";
+      saveSoon();
+      renderActiveTab();
+    });
+  }
+
+  const btnAll = root.querySelector("#kmAll");
+  const btnNone = root.querySelector("#kmNone");
+  const btnInv = root.querySelector("#kmInvert");
+  const btnCom = root.querySelector("#kmCommon");
+
+  if(btnAll) btnAll.addEventListener("click", ()=>{
+    for(const k of ALL_MANIA_KEYS){ state.maniaShared.enabled[k] = true; state.maniaShared.open[k]=false; }
+    state.maniaShared.open[4]=true; state.maniaShared.open[7]=true;
+    onAnyChange(true);
+  });
+  if(btnNone) btnNone.addEventListener("click", ()=>{
+    for(const k of ALL_MANIA_KEYS){ state.maniaShared.enabled[k] = false; state.maniaShared.open[k]=false; }
+    state.maniaShared.enabled[4]=true; state.maniaShared.open[4]=true;
+    onAnyChange(true);
+  });
+  if(btnInv) btnInv.addEventListener("click", ()=>{
+    for(const k of ALL_MANIA_KEYS){
+      state.maniaShared.enabled[k] = !state.maniaShared.enabled[k];
+      if(!state.maniaShared.enabled[k]) state.maniaShared.open[k]=false;
+    }
+    if(!ALL_MANIA_KEYS.some(k=>state.maniaShared.enabled[k])){
+      state.maniaShared.enabled[4]=true; state.maniaShared.open[4]=true;
+    }
+    onAnyChange(true);
+  });
+  if(btnCom) btnCom.addEventListener("click", ()=>{
+    for(const k of ALL_MANIA_KEYS){ state.maniaShared.enabled[k]=false; state.maniaShared.open[k]=false; }
+    state.maniaShared.enabled[4]=true; state.maniaShared.enabled[7]=true;
+    state.maniaShared.open[4]=true; state.maniaShared.open[7]=true;
+    onAnyChange(true);
+  });
+
+  root.querySelectorAll(".kmToggle").forEach(t=>{
+    t.addEventListener("change", ()=>{
+      const k = Number(t.dataset.k);
+      const was = !!state.maniaShared.enabled[k];
+      const now = !!t.checked;
+      state.maniaShared.enabled[k] = now;
+      state.maniaShared.open[k] = now ? true : false;
+
+      if(!ALL_MANIA_KEYS.some(x=>state.maniaShared.enabled[x])){
+        state.maniaShared.enabled[4]=true;
+        state.maniaShared.open[4]=true;
+      }
+      onAnyChange(true);
+    });
+  });
+}
+
+/* ---------- ini generation ---------- */
+function genIni(){
+  const out = [];
+
+  // [General]
+  out.push("[General]");
+  pushKV(out, "Name", state.general.Name);
+  pushKV(out, "Author", state.general.Author);
+  out.push(fmtKV("Version", state.version));
+
+  const g = state.general;
+  pushKV(out, "AnimationFramerate", g.AnimationFramerate);
+  pushKV(out, "AllowSliderBallTint", bool01(!!g.AllowSliderBallTint));
+  pushKV(out, "ComboBurstRandom", g.ComboBurstRandom);
+  pushKV(out, "CursorCentre", bool01(!!g.CursorCentre));
+  pushKV(out, "CursorExpand", bool01(!!g.CursorExpand));
+  pushKV(out, "CursorRotate", bool01(!!g.CursorRotate));
+  pushKV(out, "CursorTrailRotate", bool01(!!g.CursorTrailRotate));
+  pushKV(out, "CustomComboBurstSounds", g.CustomComboBurstSounds);
+  pushKV(out, "HitCircleOverlayAboveNumber", bool01(!!g.HitCircleOverlayAboveNumber));
+  pushKV(out, "LayeredHitSounds", bool01(!!g.LayeredHitSounds));
+  pushKV(out, "SliderBallFlip", bool01(!!g.SliderBallFlip));
+  pushKV(out, "SpinnerFadePlayfield", bool01(!!g.SpinnerFadePlayfield));
+  pushKV(out, "SpinnerFrequencyModulate", g.SpinnerFrequencyModulate);
+  pushKV(out, "SpinnerNoBlink", bool01(!!g.SpinnerNoBlink));
+
+  out.push("");
+
+  // [Colours]
+  const c = state.colours;
+  const colourKeys = [
+    "Combo1","Combo2","Combo3","Combo4","Combo5","Combo6","Combo7","Combo8",
+    "InputOverlayText","MenuGlow","SliderBall","SliderBorder","SliderTrackOverride",
+    "SongSelectActiveText","SongSelectInactiveText","SpinnerBackground","StarBreakAdditive"
+  ];
+  const hasColours = colourKeys.some(k => !isBlank(c[k]));
+  if(hasColours){
+    out.push("[Colours]");
+    for(const k of colourKeys) pushKV(out, k, c[k]);
+    out.push("");
+  }
+
+  // [Fonts]
+  const f = state.fonts;
+  const fontKeys = ["HitCirclePrefix","HitCircleOverlap","ScorePrefix","ScoreOverlap","ComboPrefix","ComboOverlap"];
+  const hasFonts = fontKeys.some(k => !isBlank(f[k]));
+  if(hasFonts){
+    out.push("[Fonts]");
+    for(const k of fontKeys) pushKV(out, k, f[k]);
+    out.push("");
+  }
+
+  // [CatchTheBeat]
+  const ca = state.catch;
+  const catchKeys = ["HyperDash","HyperDashFruit","HyperDashAfterImage"];
+  const hasCatch = catchKeys.some(k => !isBlank(ca[k]));
+  if(hasCatch){
+    out.push("[CatchTheBeat]");
+    for(const k of catchKeys) pushKV(out, k, ca[k]);
+    out.push("");
+  }
+
+  // [Mania]
+  for(const keys of ALL_MANIA_KEYS){
+    if(!state.maniaShared.enabled[keys]) continue;
+    out.push("[Mania]");
+    out.push(...genManiaBlock(keys));
+    out.push("");
+  }
+
+  while(out.length && out[out.length-1]==="") out.pop();
+  return out.join("\n");
+}
+
+function pat(pattern, n){
+  const p = String(pattern||"").trim();
+  if(!p) return "";
+  return p.replaceAll("{n}", String(n));
+}
+
+function genManiaBlock(keys){
+  const m = state.mania[keys] || defaultManiaMode(keys);
+  const lines = [];
+
+  lines.push(fmtKV("Keys", keys));
+  spacer(lines);
+
+  // layout lines: ColumnWidth/Spacing etc são CSV; se usuário botar só "70", replicamos
+  const cwRaw = cleanLine(m.ColumnWidth);
+  const csRaw = cleanLine(m.ColumnSpacing);
+
+  function normalizeCsv(raw, count, fallback){
+    const r = cleanLine(raw);
+    if(!r) return fallback;
+    if(r.includes(",")) return r;
+    return Array.from({length: count}, ()=>r).join(",");
+  }
+  lines.push(fmtKV("ColumnWidth", normalizeCsv(cwRaw, keys, Array.from({length:keys}, ()=>"70").join(","))));
+  lines.push(fmtKV("ColumnSpacing", normalizeCsv(csRaw, Math.max(0,keys-1), Array.from({length:Math.max(0,keys-1)}, ()=>"0").join(","))));
+  pushKV(lines, "ColumnStart", m.ColumnStart);
+  pushKV(lines, "ColumnRight", m.ColumnRight);
+  pushKV(lines, "ColumnLineWidth", normalizeCsv(cleanLine(m.ColumnLineWidth), keys+1, Array.from({length:keys+1}, ()=>"0").join(",")));
+  spacer(lines);
+
+  // positions + toggles
+  pushKV(lines, "HitPosition", m.HitPosition);
+  pushKV(lines, "LightPosition", m.LightPosition);
+  pushKV(lines, "ScorePosition", m.ScorePosition);
+  pushKV(lines, "ComboPosition", m.ComboPosition);
+  spacer(lines);
+
+  lines.push(fmtKV("JudgementLine", bool01(!!m.JudgementLine)));
+  lines.push(fmtKV("KeysUnderNotes", bool01(!!m.KeysUnderNotes)));
+  lines.push(fmtKV("UpsideDown", bool01(!!m.UpsideDown)));
+  spacer(lines);
+
+  pushKV(lines, "KeyFlipWhenUpsideDown", m.KeyFlipWhenUpsideDown);
+  pushKV(lines, "NoteFlipWhenUpsideDown", m.NoteFlipWhenUpsideDown);
+  pushKV(lines, "NoteBodyStyle", m.NoteBodyStyle);
+  spacer(lines);
+
+  // stage/lighting
+  header(lines, "stage");
+  pushKV(lines, "StageLeft", m.StageLeft);
+  pushKV(lines, "StageRight", m.StageRight);
+  pushKV(lines, "StageBottom", m.StageBottom);
+  pushKV(lines, "StageHint", m.StageHint);
+  pushKV(lines, "StageLight", m.StageLight);
+  pushKV(lines, "LightingNWidth", m.LightingNWidth);
+  pushKV(lines, "LightingLWidth", m.LightingLWidth);
+  pushKV(lines, "LightingN", m.LightingN);
+  pushKV(lines, "LightingL", m.LightingL);
+  spacer(lines);
+
+  pushKV(lines, "BarlineHeight", m.BarlineHeight);
+  pushKV(lines, "WidthForNoteHeightScale", m.WidthForNoteHeightScale);
+  pushKV(lines, "LightFramePerSecond", m.LightFramePerSecond);
+  pushKV(lines, "SpecialStyle", m.SpecialStyle);
+  pushKV(lines, "ComboBurstStyle", m.ComboBurstStyle);
+  pushKV(lines, "SplitStages", m.SplitStages);
+  pushKV(lines, "StageSeparation", m.StageSeparation);
+  pushKV(lines, "SeparateScore", m.SeparateScore);
+  spacer(lines);
+
+  // colours
+  header(lines, "colours");
+  for(let i=0;i<keys;i++){
+    const v = cleanLine(m.Colour?.[i]);
+    if(v) lines.push(fmtKV(`Colour${i}`, v));
+  }
+  spacer(lines);
+  for(let i=0;i<keys;i++){
+    const v = cleanLine(m.ColourLight?.[i]);
+    if(v) lines.push(fmtKV(`ColourLight${i}`, v));
+  }
+  pushKV(lines, "ColourColumnLine", m.ColourColumnLine);
+  pushKV(lines, "ColourBarline", m.ColourBarline);
+  pushKV(lines, "ColourJudgementLine", m.ColourJudgementLine);
+  pushKV(lines, "ColourKeyWarning", m.ColourKeyWarning);
+  pushKV(lines, "ColourHold", m.ColourHold);
+  pushKV(lines, "ColourBreak", m.ColourBreak);
+  spacer(lines);
+
+  // patterns -> expand to KeyImage0.., NoteImage0.. etc
+  header(lines, "images");
+  for(let idx=0; idx<keys; idx++){
+    const n = idx+1;
+    const a = pat(m.KeyImage, n); if(a) lines.push(fmtKV(`KeyImage${idx}`, a));
+  }
+  spacer(lines);
+  for(let idx=0; idx<keys; idx++){
+    const n = idx+1;
+    const a = pat(m.KeyImageD, n); if(a) lines.push(fmtKV(`KeyImage${idx}D`, a));
+  }
+  spacer(lines);
+
+  for(let idx=0; idx<keys; idx++){
+    const n = idx+1;
+    const a = pat(m.NoteImage, n); if(a) lines.push(fmtKV(`NoteImage${idx}`, a));
+  }
+  spacer(lines);
+  for(let idx=0; idx<keys; idx++){
+    const n = idx+1;
+    const a = pat(m.NoteImageH, n); if(a) lines.push(fmtKV(`NoteImage${idx}H`, a));
+  }
+  spacer(lines);
+  for(let idx=0; idx<keys; idx++){
+    const n = idx+1;
+    const a = pat(m.NoteImageL, n); if(a) lines.push(fmtKV(`NoteImage${idx}L`, a));
+  }
+  spacer(lines);
+  for(let idx=0; idx<keys; idx++){
+    const n = idx+1;
+    const a = pat(m.NoteImageT, n); if(a) lines.push(fmtKV(`NoteImage${idx}T`, a));
+  }
+  spacer(lines);
+
+  pushKV(lines, "WarningArrow", m.WarningArrow);
+  spacer(lines);
+
+  // hits
+  header(lines, "hits");
+  pushKV(lines, "Hit0", m.Hit0);
+  pushKV(lines, "Hit50", m.Hit50);
+  pushKV(lines, "Hit100", m.Hit100);
+  pushKV(lines, "Hit200", m.Hit200);
+  pushKV(lines, "Hit300", m.Hit300);
+  pushKV(lines, "Hit300g", m.Hit300g);
+
+  while(lines.length && lines[lines.length-1]==="") lines.pop();
+  return lines;
+}
+
+/* ---------- import parser ---------- */
+function parseIni(text){
+  const lines = String(text||"").split("\n");
+  let section = "";
+  const parsed = {
+    General:{}, Colours:{}, Fonts:{}, CatchTheBeat:{},
+    Mania: [] // array of {Keys, kv}
+  };
+
+  let curMania = null;
+
+  for(const raw of lines){
+    const line = raw.trim();
+    if(!line || line.startsWith("//")) continue;
+
+    const sec = line.match(/^\[(.+?)\]$/);
+    if(sec){
+      section = sec[1];
+      if(section === "Mania"){
+        curMania = { Keys:null, kv:{} };
+        parsed.Mania.push(curMania);
+      }else{
+        curMania = null;
+      }
+      continue;
+    }
+
+    const m = line.match(/^([A-Za-z0-9]+)\s*:\s*(.*)$/);
+    if(!m) continue;
+    const key = m[1];
+    const val = m[2];
+
+    if(section === "General") parsed.General[key]=val;
+    else if(section === "Colours") parsed.Colours[key]=val;
+    else if(section === "Fonts") parsed.Fonts[key]=val;
+    else if(section === "CatchTheBeat") parsed.CatchTheBeat[key]=val;
+    else if(section === "Mania" && curMania){
+      if(key === "Keys"){
+        curMania.Keys = intOr(val, null);
+        curMania.kv[key]=val;
+      }else{
+        curMania.kv[key]=val;
+      }
+    }
+  }
+  return parsed;
+}
+
+function applyParsed(parsed){
+  // version
+  if(parsed.General.Version) state.version = parsed.General.Version;
+
+  // General known
+  for(const k in state.general){
+    if(k in parsed.General){
+      if(typeof state.general[k] === "boolean"){
+        state.general[k] = parsed.General[k].trim() === "1";
+      }else{
+        state.general[k] = parsed.General[k];
+      }
+    }
+  }
+
+  // Colours
+  for(const k in state.colours){
+    if(k in parsed.Colours) state.colours[k] = parsed.Colours[k];
+  }
+
+  // Fonts
+  for(const k in state.fonts){
+    if(k in parsed.Fonts) state.fonts[k] = parsed.Fonts[k];
+  }
+
+  // Catch
+  for(const k in state.catch){
+    if(k in parsed.CatchTheBeat) state.catch[k] = parsed.CatchTheBeat[k];
+  }
+
+  // Mania blocks
+  for(const blk of parsed.Mania){
+    const keys = blk.Keys;
+    if(!keys || keys<1 || keys>18) continue;
+    state.maniaShared.enabled[keys] = true;
+
+    const m = state.mania[keys] || defaultManiaMode(keys);
+
+    // direct keys we support
+    const direct = [
+      "ColumnStart","ColumnRight","ColumnSpacing","ColumnWidth","ColumnLineWidth",
+      "BarlineHeight","LightingNWidth","LightingLWidth","WidthForNoteHeightScale",
+      "HitPosition","LightPosition","ComboPosition","ScorePosition",
+      "JudgementLine","LightFramePerSecond","SpecialStyle","ComboBurstStyle","SplitStages",
+      "StageSeparation","SeparateScore","KeysUnderNotes","UpsideDown",
+      "KeyFlipWhenUpsideDown","NoteFlipWhenUpsideDown","NoteBodyStyle",
+      "StageLeft","StageRight","StageBottom","StageHint","StageLight","LightingN","LightingL",
+      "WarningArrow",
+      "Hit0","Hit50","Hit100","Hit200","Hit300","Hit300g"
+    ];
+    for(const k of direct){
+      if(k in blk.kv){
+        if(typeof m[k] === "boolean") m[k] = blk.kv[k].trim() === "1";
+        else m[k] = blk.kv[k];
+      }
+    }
+
+    // Colour / ColourLight per idx
+    for(let i=0;i<keys;i++){
+      const ck = `Colour${i}`;
+      const lk = `ColourLight${i}`;
+      if(ck in blk.kv){ m.Colour[i] = blk.kv[ck]; }
+      if(lk in blk.kv){ m.ColourLight[i] = blk.kv[lk]; }
+    }
+
+    // patterns: tenta inferir “pattern” a partir do idx0 e idx1 se houver
+    // (bem heurístico, mas ajuda em import real)
+    function guessPattern(prefix){
+      const a = blk.kv[`${prefix}0`];
+      const b = blk.kv[`${prefix}1`];
+      if(!a || !b) return "";
+      // se diferem só em "1"/"2", converte pra {n}
+      const a2 = a.replaceAll("1","{n}");
+      const b2 = b.replaceAll("2","{n}");
+      if(a2 === b2) return a2;
+      return "";
+    }
+    const gKey = guessPattern("KeyImage");
+    const gKeyD = guessPattern("KeyImage") && guessPattern("KeyImageD");
+    const gNote = guessPattern("NoteImage");
+    const gNoteH = guessPattern("NoteImageH");
+    const gNoteL = guessPattern("NoteImageL");
+    const gNoteT = guessPattern("NoteImageT");
+
+    if(gKey) m.KeyImage = gKey;
+    if(gKeyD) m.KeyImageD = gKeyD;
+    if(gNote) m.NoteImage = gNote;
+    if(gNoteH) m.NoteImageH = gNoteH;
+    if(gNoteL) m.NoteImageL = gNoteL;
+    if(gNoteT) m.NoteImageT = gNoteT;
+
+    state.mania[keys] = m;
+  }
+
+  saveSoon(true);
+  renderActiveTab();
+}
+
+/* ---------- save/load ---------- */
+function saveState(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    $("savePulse").textContent = "Saved";
+    setTimeout(()=>{ $("savePulse").textContent="—"; }, 700);
+  }catch(e){
+    $("savePulse").textContent = "ERR";
+  }
+}
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const s = JSON.parse(raw);
+    if(!s) return;
+
+    // shallow merge de segurança
+    state.pretty = !!s.pretty;
+    state.commentEmpty = !!s.commentEmpty;
+    state.version = s.version ?? "latest";
+    state.activeTab = s.activeTab ?? "general";
+
+    Object.assign(state.general, s.general || {});
+    Object.assign(state.colours, s.colours || {});
+    Object.assign(state.fonts, s.fonts || {});
+    Object.assign(state.catch, s.catch || {});
+
+    if(s.maniaShared){
+      state.maniaShared.search = s.maniaShared.search ?? "";
+      for(const k of ALL_MANIA_KEYS){
+        state.maniaShared.enabled[k] = !!s.maniaShared.enabled?.[k];
+        state.maniaShared.open[k] = !!s.maniaShared.open?.[k];
+      }
+      if(!ALL_MANIA_KEYS.some(k=>state.maniaShared.enabled[k])){
+        state.maniaShared.enabled[4]=true; state.maniaShared.open[4]=true;
+      }
+    }
+
+    if(s.mania){
+      for(const k of ALL_MANIA_KEYS){
+        if(s.mania[k]) state.mania[k] = { ...defaultManiaMode(k), ...s.mania[k] };
+      }
+    }
+  }catch(e){}
+}
+
+const saveSoon = debounce((force=false)=>{
+  saveState();
+  if(force) updatePreview();
+}, 350);
+
+const previewSoon = debounce(()=>{
+  updatePreview();
+}, 90);
+
+function onAnyChange(rerender=false){
+  if(rerender) renderActiveTab();
+  previewSoon();
+  saveSoon();
+}
+
+/* ---------- preview & actions ---------- */
+function updatePreview(){
+  $("preview").value = genIni();
+}
+
+function downloadIni(){
+  const text = $("preview").value || genIni();
+  const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "skin.ini";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+async function copyIni(){
+  try{
+    await navigator.clipboard.writeText($("preview").value || genIni());
+    $("statusBadge").textContent = "copiado!";
+    setTimeout(()=>$("statusBadge").textContent="ok", 900);
+  }catch(e){
+    $("statusBadge").textContent = "falhou";
+    setTimeout(()=>$("statusBadge").textContent="ok", 900);
+  }
+}
+
+function wipeAll(){
+  if(!confirm("Reset total + apagar autosave?")) return;
+  try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+  location.reload();
+}
+
+/* ---------- top-level wiring ---------- */
+$("downloadIni").addEventListener("click", downloadIni);
+$("copyIni").addEventListener("click", copyIni);
+$("wipeAll").addEventListener("click", wipeAll);
+$("refresh").addEventListener("click", updatePreview);
+
+$("pretty").addEventListener("change", ()=>{
+  state.pretty = $("pretty").checked;
+  onAnyChange(true);
+});
+$("commentEmpty").addEventListener("change", ()=>{
+  state.commentEmpty = $("commentEmpty").checked;
+  onAnyChange(true);
+});
+$("versionPick").addEventListener("change", ()=>{
+  state.version = $("versionPick").value;
+  onAnyChange();
+});
+
+/* import modal */
+$("importOpen").addEventListener("click", ()=>{
+  $("importArea").value = $("preview").value || "";
+  $("importDlg").showModal();
+});
+$("importApply").addEventListener("click", ()=>{
+  const parsed = parseIni($("importArea").value || "");
+  applyParsed(parsed);
+  $("importDlg").close();
+});
+
+/* ---------- music (WebAudio ambient) ---------- */
+let audio = {
+  ctx:null,
+  master:null,
+  playing:false,
+  nodes:[]
+};
+
+function buildAmbient(){
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const master = ctx.createGain();
+  master.gain.value = Number($("musicVol").value || 0.18);
+  master.connect(ctx.destination);
+
+  // “pad” com 3 osciladores + filtro
+  const filter = ctx.createBiquadFilter();
+  filter.type = "lowpass";
+  filter.frequency.value = 800;
+  filter.Q.value = 0.7;
+  filter.connect(master);
+
+  const base = 110; // A2
+  const detunes = [-7, 0, +7]; // cents
+  const osc = detunes.map((d,i)=>{
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+
+    o.type = i===1 ? "sine" : "triangle";
+    o.frequency.value = base * (i===0 ? 1 : (i===1 ? 1.5 : 2.0));
+    o.detune.value = d;
+
+    g.gain.value = 0.0;
+    o.connect(g);
+    g.connect(filter);
+    o.start();
+
+    return {o,g};
+  });
+
+  // LFO suave pra respirar
+  const lfo = ctx.createOscillator();
+  lfo.type = "sine";
+  lfo.frequency.value = 0.05;
+  const lfoGain = ctx.createGain();
+  lfoGain.gain.value = 0.06;
+  lfo.connect(lfoGain);
+  lfoGain.connect(master.gain);
+  lfo.start();
+
+  // fade-in
+  const now = ctx.currentTime;
+  for(const n of osc){
+    n.g.gain.cancelScheduledValues(now);
+    n.g.gain.setValueAtTime(0.0001, now);
+    n.g.gain.linearRampToValueAtTime(0.12, now + 1.2);
+  }
+
+  audio.ctx = ctx;
+  audio.master = master;
+  audio.nodes = [...osc, {lfo,lfoGain,filter}];
+}
+
+async function toggleMusic(){
+  try{
+    if(!audio.ctx){
+      buildAmbient();
+      audio.playing = true;
+      $("musicToggle").textContent = "⏸ ambient";
+      return;
+    }
+    if(audio.ctx.state === "suspended"){
+      await audio.ctx.resume();
+      audio.playing = true;
+      $("musicToggle").textContent = "⏸ ambient";
+      return;
+    }
+    if(audio.ctx.state === "running"){
+      await audio.ctx.suspend();
+      audio.playing = false;
+      $("musicToggle").textContent = "▶ ambient";
+      return;
+    }
+  }catch(e){}
+}
+
+$("musicToggle").addEventListener("click", toggleMusic);
+$("musicVol").addEventListener("input", ()=>{
+  if(audio.master) audio.master.gain.value = Number($("musicVol").value || 0.18);
+});
+
+/* ---------- init ---------- */
+loadState();
+$("pretty").checked = state.pretty;
+$("commentEmpty").checked = state.commentEmpty;
+$("versionPick").value = state.version;
+
+renderTabs();
+renderActiveTab();
+updatePreview();
 </script>
 </body>
 </html>
