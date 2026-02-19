@@ -26,7 +26,7 @@
       --inputPadY: 9px;
       --inputPadX: 10px;
 
-      color-scheme: dark;
+      color-scheme: dark; /* ajuda selects ficarem escuros */
     }
 
     *{ box-sizing:border-box; }
@@ -45,6 +45,7 @@
       overflow:hidden;
     }
 
+    /* overlay + blur bem leve */
     body::before{
       content:"";
       position:fixed; inset:0;
@@ -106,18 +107,13 @@
       box-shadow: 0 8px 20px rgba(0,0,0,.35);
       object-fit: cover;
     }
-
-    /* ===== NOVO: "texto com gif" (logo animado) ===== */
     .brand .title{
       display:flex;
       flex-direction:column;
       gap:2px;
       min-width:0;
     }
-    .logoGifText{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
+    .brand .title b{
       font-weight:900;
       font-size:13px;
       letter-spacing:.2px;
@@ -125,19 +121,6 @@
       overflow:hidden;
       text-overflow:ellipsis;
     }
-    .logoGifText::before{
-      content:"";
-      width:18px;
-      height:18px;
-      border-radius:6px;
-      border:1px solid rgba(255,255,255,.14);
-      box-shadow: 0 8px 18px rgba(0,0,0,.35);
-      background-image:url("https://i.pinimg.com/originals/da/b4/cb/dab4cbf31e4e8d7688b0e830d5d640f1.gif");
-      background-size:cover;
-      background-position:center;
-      flex:0 0 auto;
-    }
-
     .brand .title span{
       font-size:12px;
       color:var(--muted2);
@@ -240,10 +223,9 @@
       min-height:0;
       padding:10px;
       display:grid;
-      grid-template-columns: 1.20fr .80fr;
+      grid-template-columns: 1.12fr .88fr;
       gap:10px;
       overflow:hidden;
-      align-items:stretch;
     }
 
     .card{
@@ -259,7 +241,6 @@
       will-change: transform;
       transform: translateZ(0);
     }
-
     .cardHead{
       padding:10px 10px 8px;
       display:flex;
@@ -268,17 +249,12 @@
       gap:10px;
       border-bottom:1px solid rgba(255,255,255,.10);
       background: rgba(0,0,0,.25);
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      backdrop-filter: blur(4px);
     }
     .cardHead .left{
       display:flex;
       gap:10px;
       align-items:center;
       flex-wrap:wrap;
-      min-width:0;
     }
     .badge{
       font-size:12px;
@@ -288,10 +264,6 @@
       background: rgba(0,0,0,.22);
       color: rgba(233,233,238,.75);
       font-weight:900;
-      max-width: 100%;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
     }
     .tools{
       display:flex;
@@ -333,18 +305,9 @@
       color: rgba(255,220,220,.95);
     }
 
-    /* ===== NOVO: botão idioma (um tiquinho mais compacto) ===== */
-    .btn.lang{
-      padding:8px 10px;
-      min-width: 76px;
-      text-transform: uppercase;
-      letter-spacing: .4px;
-    }
-
     textarea{
       width:100%;
-      height: calc(100% - 2px);
-      min-height: 100%;
+      min-height: calc(100vh - 220px);
       resize:none;
       border:1px solid rgba(255,255,255,.12);
       border-radius: 14px;
@@ -416,6 +379,7 @@
       font:inherit;
     }
 
+    /* make select dropdown black */
     select{
       color-scheme: dark;
       background: rgba(0,0,0,.72);
@@ -532,8 +496,8 @@
       }
       .icoBtn .tip{ display:none; }
       .main{ grid-template-columns: 1fr; }
+      textarea{ min-height: 50vh; }
       .row{ grid-template-columns: 1fr; }
-      textarea{ height: 55vh; min-height: 55vh; }
     }
   </style>
 </head>
@@ -546,18 +510,13 @@
       <!-- icon -->
       <img alt="icon" src="https://i.pinimg.com/originals/da/b4/cb/dab4cbf31e4e8d7688b0e830d5d640f1.gif">
       <div class="title">
-        <!-- NOVO: texto com gif -->
-        <b class="logoGifText" id="brandTitle">skin.ini studio</b>
+        <b>skin.ini studio</b>
         <span id="topSub">—</span>
       </div>
     </div>
 
     <div class="tools">
       <span class="badge" id="savePulse">—</span>
-
-      <!-- NOVO: botão idioma -->
-      <button class="btn lang" id="langToggle" type="button" title="PT-BR / EN">EN</button>
-
       <button class="btn primary" id="downloadIni">Download</button>
       <button class="btn" id="copyIni">Copiar</button>
       <button class="btn" id="importOpen">Importar</button>
@@ -568,49 +527,64 @@
   <div class="layout">
     <aside class="dock">
 
-      <!-- Tabs (só Mania + Preview) -->
+      <!-- Tabs -->
       <div class="dockGroup">
+        <button class="icoBtn" data-tab="general" title="General">
+          <span aria-hidden="true">⚙️</span>
+          <span class="tip">General</span>
+        </button>
+
+        <button class="icoBtn" data-tab="colours" title="Colours">
+          <span aria-hidden="true">🎨</span>
+          <span class="tip">Colours</span>
+        </button>
+
+        <button class="icoBtn" data-tab="fonts" title="Fonts">
+          <span aria-hidden="true">🔤</span>
+          <span class="tip">Fonts</span>
+        </button>
+
         <button class="icoBtn" data-tab="mania" title="Mania">
           <span aria-hidden="true">🎹</span>
-          <span class="tip" data-i18n="tip_mania">Mania</span>
+          <span class="tip">Mania</span>
         </button>
 
         <button class="icoBtn" data-tab="preview" title="Preview">
           <span aria-hidden="true">👁️</span>
-          <span class="tip" data-i18n="tip_preview">Preview</span>
+          <span class="tip">Preview</span>
         </button>
       </div>
 
       <!-- Export -->
       <div class="dockGroup">
-        <div class="miniLabel" data-i18n="lbl_export">export</div>
+        <div class="miniLabel">export</div>
 
         <button class="icoBtn" id="togMania" title="Mania on/off" type="button">
           <span aria-hidden="true">🎹</span>
-          <span class="tip" data-i18n="tip_maniaExport">Mania</span>
+          <span class="tip">Mania</span>
         </button>
       </div>
 
       <!-- Style -->
       <div class="dockGroup">
-        <div class="miniLabel" data-i18n="lbl_style">style</div>
+        <div class="miniLabel">style</div>
 
         <button class="icoBtn" id="togPretty" title="h style" type="button">
           <span aria-hidden="true">H</span>
-          <span class="tip" data-i18n="tip_hStyle">h style</span>
+          <span class="tip">h style</span>
         </button>
 
         <button class="icoBtn" id="togCommentEmpty" title="comentar vazios" type="button">
           <span aria-hidden="true">//</span>
-          <span class="tip" data-i18n="tip_commentEmpty">comentar vazios</span>
+          <span class="tip">comentar vazios</span>
         </button>
-        <div class="noteUnder" style="text-align:center; padding:0 6px;" data-i18n="note_notExported">
+        <div class="noteUnder" style="text-align:center; padding:0 6px;">
           *não exportado no skin.ini
         </div>
 
         <button class="icoBtn" id="verBtn" title="Version" type="button">
           <span aria-hidden="true">v</span>
-          <span class="tip" data-i18n="tip_version">Version</span>
+          <span class="tip">Version</span>
         </button>
       </div>
 
@@ -621,11 +595,11 @@
       <div class="card">
         <div class="cardHead">
           <div class="left">
-            <span class="badge" id="panelTitle">Mania</span>
-            <span class="badge" id="modeBadge">export: GENERAL+MANIA</span>
+            <span class="badge" id="panelTitle">General</span>
+            <span class="badge" id="modeBadge">export: GENERAL+COLOURS+FONTS+MANIA</span>
           </div>
           <div class="tools">
-            <button class="btn" id="refresh" data-i18n="btn_refresh">Atualizar</button>
+            <button class="btn" id="refresh">Atualizar</button>
           </div>
         </div>
         <div class="cardBody" id="panel"></div>
@@ -637,7 +611,7 @@
             <span class="badge">skin.ini</span>
           </div>
           <div class="tools">
-            <button class="btn" id="selectAll" data-i18n="btn_selectAll">Selecionar</button>
+            <button class="btn" id="selectAll">Selecionar</button>
           </div>
         </div>
         <div class="cardBody">
@@ -653,8 +627,8 @@
 <dialog id="verDlg" style="max-width:420px;width:calc(100% - 24px);border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(0,0,0,.86);color:rgba(233,233,238,.95);box-shadow:0 20px 60px rgba(0,0,0,.55);">
   <form method="dialog" style="margin:0;padding:12px;">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
-      <b data-i18n="dlg_version_title">Version</b>
-      <button class="btn" value="cancel" data-i18n="btn_close">Fechar</button>
+      <b>Version</b>
+      <button class="btn" value="cancel">Fechar</button>
     </div>
     <div style="height:10px"></div>
     <select id="versionPick" style="width:100%;">
@@ -675,10 +649,10 @@
 <dialog id="importDlg" style="max-width:900px;width:calc(100% - 24px);border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(0,0,0,.88);color:rgba(233,233,238,.95);box-shadow:0 20px 60px rgba(0,0,0,.55);">
   <form method="dialog" style="margin:0;padding:12px;">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
-      <b data-i18n="dlg_import_title">Importar skin.ini</b>
+      <b>Importar skin.ini</b>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn" value="cancel" data-i18n="btn_close">Fechar</button>
-        <button class="btn primary" id="importApply" value="default" type="button" data-i18n="btn_apply">Aplicar</button>
+        <button class="btn" value="cancel">Fechar</button>
+        <button class="btn primary" id="importApply" value="default" type="button">Aplicar</button>
       </div>
     </div>
     <div style="height:10px"></div>
@@ -688,131 +662,7 @@
 
 <script>
 const $ = (id)=>document.getElementById(id);
-const STORAGE_KEY = "skinini_studio_v7_mania_only";
-
-/* ---------- i18n (PT-BR / EN) ---------- */
-const LANG_KEY = "skinini_lang_v1";
-const i18n = {
-  "pt-BR": {
-    topSub: { mania: "Mania", preview: "Preview" },
-    ui: {
-      btn_download: "Download",
-      btn_copy: "Copiar",
-      btn_import: "Importar",
-      btn_reset: "Reset",
-      btn_refresh: "Atualizar",
-      btn_selectAll: "Selecionar",
-      dlg_version_title: "Version",
-      dlg_import_title: "Importar skin.ini",
-      btn_close: "Fechar",
-      btn_apply: "Aplicar",
-      tip_mania: "Mania",
-      tip_preview: "Preview",
-      lbl_export: "export",
-      lbl_style: "style",
-      tip_maniaExport: "Mania",
-      tip_hStyle: "h style",
-      tip_commentEmpty: "comentar vazios",
-      note_notExported: "*não exportado no skin.ini",
-      tip_version: "Version"
-    },
-    confirm_reset: "Reset total + apagar autosave?",
-    saved: "Saved",
-    copied: "Copied",
-    noCopy: "NoCopy",
-    err: "ERR",
-    maniaExportOff: "Mania export desligado",
-    noneActive: "nenhum modo ativo",
-    generalMeta: "[General] meta",
-    keymodes: "keymodes",
-    layout: "layout",
-    positions: "positions",
-    toggles: "toggles",
-    colours: "colours",
-    paths: "paths",
-    images: "images",
-    useRightPanel: "use o painel da direita",
-    modePrefix: "export: "
-  },
-  "en": {
-    topSub: { mania: "Mania", preview: "Preview" },
-    ui: {
-      btn_download: "Download",
-      btn_copy: "Copy",
-      btn_import: "Import",
-      btn_reset: "Reset",
-      btn_refresh: "Refresh",
-      btn_selectAll: "Select all",
-      dlg_version_title: "Version",
-      dlg_import_title: "Import skin.ini",
-      btn_close: "Close",
-      btn_apply: "Apply",
-      tip_mania: "Mania",
-      tip_preview: "Preview",
-      lbl_export: "export",
-      lbl_style: "style",
-      tip_maniaExport: "Mania",
-      tip_hStyle: "h style",
-      tip_commentEmpty: "comment empties",
-      note_notExported: "*not exported to skin.ini",
-      tip_version: "Version"
-    },
-    confirm_reset: "Full reset + delete autosave?",
-    saved: "Saved",
-    copied: "Copied",
-    noCopy: "NoCopy",
-    err: "ERR",
-    maniaExportOff: "Mania export is off",
-    noneActive: "no active modes",
-    generalMeta: "[General] meta",
-    keymodes: "keymodes",
-    layout: "layout",
-    positions: "positions",
-    toggles: "toggles",
-    colours: "colours",
-    paths: "paths",
-    images: "images",
-    useRightPanel: "use the right panel",
-    modePrefix: "export: "
-  }
-};
-
-let lang = (localStorage.getItem(LANG_KEY) || "pt-BR");
-function t(key){
-  const pack = i18n[lang] || i18n["pt-BR"];
-  // suporte pra "ui.xxx"
-  if(key.startsWith("ui.")){
-    const k = key.slice(3);
-    return pack.ui[k] ?? key;
-  }
-  return pack[key] ?? key;
-}
-
-function applyLanguage(){
-  document.documentElement.lang = (lang === "en") ? "en" : "pt-BR";
-
-  // botão mostra o "próximo" idioma (clicar troca)
-  $("langToggle").textContent = (lang === "en") ? "PT" : "EN";
-
-  // top buttons (IDs existentes)
-  // (download já é "Download" nos dois, mas deixei pronto)
-  $("downloadIni").textContent = t("ui.btn_download");
-  $("copyIni").textContent = t("ui.btn_copy");
-  $("importOpen").textContent = t("ui.btn_import");
-  $("wipeAll").textContent = t("ui.btn_reset");
-  $("refresh").textContent = t("ui.btn_refresh");
-  $("selectAll").textContent = t("ui.btn_selectAll");
-
-  // elementos marcados com data-i18n
-  document.querySelectorAll("[data-i18n]").forEach(el=>{
-    const k = el.getAttribute("data-i18n");
-    el.textContent = t("ui."+k);
-  });
-
-  // re-render pra aplicar traduções que estão dentro do HTML gerado via JS (blocks)
-  renderActiveTab();
-  updateModeBadge();
-}
+const STORAGE_KEY = "skinini_studio_v7_paths";
 
 /* ---------- util ---------- */
 function cleanLine(s){ return String(s ?? "").replace(/\r/g,"").trimEnd(); }
@@ -928,7 +778,7 @@ function defaultManiaMode(keys){
 }
 
 const state = {
-  activeTab: "mania",
+  activeTab: "general",
   exportMania: true,
 
   pretty: true,        // "h style"
@@ -939,6 +789,39 @@ const state = {
   general: {
     Name: "",
     Author: "",
+    CursorCentre: true,
+    CursorExpand: false,
+    CursorRotate: false,
+    CursorTrailRotate: false,
+  },
+
+  colours: {
+    Combo1: "",
+    Combo2: "",
+    Combo3: "",
+    Combo4: "",
+    Combo5: "",
+    Combo6: "",
+    Combo7: "",
+    Combo8: "",
+    InputOverlayText: "",
+    MenuGlow: "",
+    SliderBall: "",
+    SliderBorder: "",
+    SliderTrackOverride: "",
+    SongSelectActiveText: "",
+    SongSelectInactiveText: "",
+    SpinnerBackground: "",
+    StarBreakAdditive: "",
+  },
+
+  fonts: {
+    HitCirclePrefix: "",
+    HitCircleOverlap: "",
+    ScorePrefix: "",
+    ScoreOverlap: "",
+    ComboPrefix: "",
+    ComboOverlap: "",
   },
 
   maniaShared: {
@@ -1028,8 +911,11 @@ function uiRowColor(label, path){
   `;
 }
 
-/* ---------- Tabs (só mania/preview) ---------- */
+/* ---------- Tabs ---------- */
 const TABS = [
+  { key:"general", title:"General", render: renderGeneral },
+  { key:"colours", title:"Colours", render: renderColours },
+  { key:"fonts", title:"Fonts", render: renderFonts },
   { key:"mania", title:"Mania", render: renderMania },
   { key:"preview", title:"Preview", render: renderPreviewOnly },
 ];
@@ -1048,12 +934,9 @@ function renderDockActive(){
 }
 
 function updateTopSub(){
-  const tTitle = TABS.find(x=>x.key===state.activeTab)?.title ?? "—";
-  const label = (state.activeTab === "mania") ? (i18n[lang]?.topSub?.mania ?? tTitle)
-              : (state.activeTab === "preview") ? (i18n[lang]?.topSub?.preview ?? tTitle)
-              : tTitle;
-  $("topSub").textContent = label;
-  $("panelTitle").textContent = label;
+  const t = TABS.find(x=>x.key===state.activeTab)?.title ?? "—";
+  $("topSub").textContent = t;
+  $("panelTitle").textContent = t;
 }
 
 /* ---------- Panels ---------- */
@@ -1063,6 +946,101 @@ function renderActiveTab(){
   $("panel").innerHTML = tab.render();
   hydrateInputsFromState($("panel"));
   wirePanelListeners($("panel"));
+}
+
+function renderGeneral(){
+  return `
+    <div class="block open">
+      <button class="blockHead" type="button"><span>[General] meta</span><span class="caret">▸</span></button>
+      <div class="blockBody">
+        ${uiRowText("Name", "general.Name")}
+        ${uiRowText("Author", "general.Author")}
+        <div class="row">
+          <label>Version</label>
+          <input type="text" value="${escapeHtml(state.version)}" readonly>
+        </div>
+      </div>
+    </div>
+
+    <div class="block open">
+      <button class="blockHead" type="button"><span>[General] cursor</span><span class="caret">▸</span></button>
+      <div class="blockBody">
+        ${uiRowBool("CursorCentre", "general.CursorCentre")}
+        ${uiRowBool("CursorExpand", "general.CursorExpand")}
+        ${uiRowBool("CursorRotate", "general.CursorRotate")}
+        ${uiRowBool("CursorTrailRotate", "general.CursorTrailRotate")}
+      </div>
+    </div>
+  `;
+}
+
+function renderColours(){
+  return `
+    <div class="block open">
+      <button class="blockHead" type="button"><span>[Colours] ui</span><span class="caret">▸</span></button>
+      <div class="blockBody">
+        ${uiRowColor("MenuGlow", "colours.MenuGlow")}
+        ${uiRowColor("InputOverlayText", "colours.InputOverlayText")}
+        ${uiRowColor("SongSelectActiveText", "colours.SongSelectActiveText")}
+        ${uiRowColor("SongSelectInactiveText", "colours.SongSelectInactiveText")}
+      </div>
+    </div>
+
+    <div class="block open">
+      <button class="blockHead" type="button"><span>[Colours] combo</span><span class="caret">▸</span></button>
+      <div class="blockBody">
+        <div class="grid2">
+          ${uiRowColor("Combo1", "colours.Combo1")}
+          ${uiRowColor("Combo2", "colours.Combo2")}
+          ${uiRowColor("Combo3", "colours.Combo3")}
+          ${uiRowColor("Combo4", "colours.Combo4")}
+          ${uiRowColor("Combo5", "colours.Combo5")}
+          ${uiRowColor("Combo6", "colours.Combo6")}
+          ${uiRowColor("Combo7", "colours.Combo7")}
+          ${uiRowColor("Combo8", "colours.Combo8")}
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <button class="blockHead" type="button"><span>[Colours] slider/spinner</span><span class="caret">▸</span></button>
+      <div class="blockBody">
+        ${uiRowColor("SliderBall", "colours.SliderBall")}
+        ${uiRowColor("SliderBorder", "colours.SliderBorder")}
+        ${uiRowColor("SliderTrackOverride", "colours.SliderTrackOverride")}
+        ${uiRowColor("SpinnerBackground", "colours.SpinnerBackground")}
+        ${uiRowColor("StarBreakAdditive", "colours.StarBreakAdditive")}
+      </div>
+    </div>
+  `;
+}
+
+function renderFonts(){
+  return `
+    <div class="block open">
+      <button class="blockHead" type="button"><span>[Fonts] hitcircle</span><span class="caret">▸</span></button>
+      <div class="blockBody">
+        ${uiRowText("HitCirclePrefix", "fonts.HitCirclePrefix")}
+        ${uiRowNum("HitCircleOverlap", "fonts.HitCircleOverlap", "0")}
+      </div>
+    </div>
+
+    <div class="block open">
+      <button class="blockHead" type="button"><span>[Fonts] score</span><span class="caret">▸</span></button>
+      <div class="blockBody">
+        ${uiRowText("ScorePrefix", "fonts.ScorePrefix")}
+        ${uiRowNum("ScoreOverlap", "fonts.ScoreOverlap", "0")}
+      </div>
+    </div>
+
+    <div class="block open">
+      <button class="blockHead" type="button"><span>[Fonts] combo</span><span class="caret">▸</span></button>
+      <div class="blockBody">
+        ${uiRowText("ComboPrefix", "fonts.ComboPrefix")}
+        ${uiRowNum("ComboOverlap", "fonts.ComboOverlap", "0")}
+      </div>
+    </div>
+  `;
 }
 
 function renderMania(){
@@ -1085,29 +1063,17 @@ function renderMania(){
     .join("");
 
   return `
-    <div class="block open">
-      <button class="blockHead" type="button"><span>${t("generalMeta")}</span><span class="caret">▸</span></button>
-      <div class="blockBody">
-        ${uiRowText("Name", "general.Name")}
-        ${uiRowText("Author", "general.Author")}
-        <div class="row">
-          <label>Version</label>
-          <input type="text" value="${escapeHtml(state.version)}" readonly>
-        </div>
-      </div>
-    </div>
-
-    ${!state.exportMania ? `<div class="disabledHint">${t("maniaExportOff")}</div>` : ``}
+    ${!state.exportMania ? `<div class="disabledHint">Mania export desligado</div>` : ``}
 
     <div class="block open">
-      <button class="blockHead" type="button"><span>${t("keymodes")}</span><span class="caret">▸</span></button>
+      <button class="blockHead" type="button"><span>keymodes</span><span class="caret">▸</span></button>
       <div class="blockBody">
         <div class="kmRow">${pills}</div>
       </div>
     </div>
 
     <div id="maniaBlocks">
-      ${blocks || `<div class="disabledHint">${t("noneActive")}</div>`}
+      ${blocks || `<div class="disabledHint">nenhum modo ativo</div>`}
     </div>
   `;
 }
@@ -1116,7 +1082,7 @@ function renderManiaBlock(keys){
   const open = !!state.maniaShared.open[keys];
 
   const colourCols = Array.from({length: keys}, (_,i)=>{
-    const uiIndex = i + 1;
+    const uiIndex = i + 1; // UI 1..Keys
     const path = `mania.${keys}.Colour.${uiIndex}`;
     return `
       <div class="row">
@@ -1152,19 +1118,19 @@ function renderManiaBlock(keys){
 
       <div class="blockBody">
         <div class="block open">
-          <button class="blockHead" type="button"><span>${t("layout")}</span><span class="caret">▸</span></button>
+          <button class="blockHead" type="button"><span>layout</span><span class="caret">▸</span></button>
           <div class="blockBody">
             ${uiRowBool("Auto ColumnStart", `mania.${keys}.AutoColumnStart`)}
             ${uiRowNum("ColumnStart", `mania.${keys}.ColumnStart`)}
             ${uiRowNum("ColumnRight", `mania.${keys}.ColumnRight`)}
-            ${uiRowText("ColumnWidth", `mania.${keys}.ColumnWidth`, "70 or 70,70,70")}
-            ${uiRowText("ColumnSpacing", `mania.${keys}.ColumnSpacing`, "0 or 0,0,0")}
+            ${uiRowText("ColumnWidth", `mania.${keys}.ColumnWidth`, "70 ou 70,70,70")}
+            ${uiRowText("ColumnSpacing", `mania.${keys}.ColumnSpacing`, "0 ou 0,0,0")}
             ${uiRowText("ColumnLineWidth", `mania.${keys}.ColumnLineWidth`, "")}
           </div>
         </div>
 
         <div class="block open">
-          <button class="blockHead" type="button"><span>${t("positions")}</span><span class="caret">▸</span></button>
+          <button class="blockHead" type="button"><span>positions</span><span class="caret">▸</span></button>
           <div class="blockBody">
             ${uiRowNum("HitPosition", `mania.${keys}.HitPosition`)}
             ${uiRowNum("LightPosition", `mania.${keys}.LightPosition`)}
@@ -1174,7 +1140,7 @@ function renderManiaBlock(keys){
         </div>
 
         <div class="block">
-          <button class="blockHead" type="button"><span>${t("toggles")}</span><span class="caret">▸</span></button>
+          <button class="blockHead" type="button"><span>toggles</span><span class="caret">▸</span></button>
           <div class="blockBody">
             ${uiRowBool("JudgementLine", `mania.${keys}.JudgementLine`)}
             ${uiRowBool("KeysUnderNotes", `mania.${keys}.KeysUnderNotes`)}
@@ -1183,7 +1149,7 @@ function renderManiaBlock(keys){
         </div>
 
         <div class="block open">
-          <button class="blockHead" type="button"><span>${t("colours")}</span><span class="caret">▸</span></button>
+          <button class="blockHead" type="button"><span>colours</span><span class="caret">▸</span></button>
           <div class="blockBody">
             <div class="grid2">
               <div>${colourCols}</div>
@@ -1200,7 +1166,7 @@ function renderManiaBlock(keys){
         </div>
 
         <div class="block open">
-          <button class="blockHead" type="button"><span>${t("paths")}</span><span class="caret">▸</span></button>
+          <button class="blockHead" type="button"><span>paths</span><span class="caret">▸</span></button>
           <div class="blockBody">
             ${uiRowText("KeyImage# pattern", `mania.${keys}.pKey`, "ex: mania/key{n}")}
             ${uiRowText("KeyImage#D pattern", `mania.${keys}.pKeyD`, "ex: mania/key{n}d")}
@@ -1217,7 +1183,7 @@ function renderManiaBlock(keys){
 }
 
 function renderPreviewOnly(){
-  return `<div class="disabledHint">${t("useRightPanel")}</div>`;
+  return `<div class="disabledHint">use o painel da direita</div>`;
 }
 
 /* ---------- hydration + accordions ---------- */
@@ -1229,7 +1195,7 @@ function wireAccordions(root){
     if(head.dataset.fold){
       head.addEventListener("click", ()=>{
         const k = Number(head.dataset.fold);
-        const block = root.querySelector(\`.block[data-keys="\${k}"]\`);
+        const block = root.querySelector(`.block[data-keys="${k}"]`);
         if(!block) return;
         const nowOpen = !block.classList.contains("open");
         block.classList.toggle("open", nowOpen);
@@ -1276,10 +1242,11 @@ function hydrateInputsFromState(root){
     else inp.value = (v ?? "");
   });
 
+  // ColumnStart auto: se AutoColumnStart ligado, trava input + placeholder "auto"
   root.querySelectorAll('[data-path$=".AutoColumnStart"]').forEach(chk=>{
     const path = chk.getAttribute("data-path");
     const mPath = path.replace(".AutoColumnStart", ".ColumnStart");
-    const col = root.querySelector(\`[data-path="\${mPath}"]\`);
+    const col = root.querySelector(`[data-path="${mPath}"]`);
     if(col){
       col.disabled = !!chk.checked;
       col.placeholder = chk.checked ? "auto" : "";
@@ -1301,7 +1268,7 @@ function wirePanelListeners(root){
 
       if(path.endsWith(".AutoColumnStart")){
         const mPath = path.replace(".AutoColumnStart", ".ColumnStart");
-        const col = root.querySelector(\`[data-path="\${mPath}"]\`);
+        const col = root.querySelector(`[data-path="${mPath}"]`);
         if(col){
           col.disabled = !!inp.checked;
           col.placeholder = inp.checked ? "auto" : "";
@@ -1318,11 +1285,11 @@ function wirePanelListeners(root){
     inp.addEventListener("change", handler);
   });
 
-  root.querySelectorAll(".kmToggle").forEach(tg=>{
-    tg.addEventListener("change", ()=>{
-      const k = Number(tg.dataset.k);
-      state.maniaShared.enabled[k] = !!tg.checked;
-      state.maniaShared.open[k] = !!tg.checked;
+  root.querySelectorAll(".kmToggle").forEach(t=>{
+    t.addEventListener("change", ()=>{
+      const k = Number(t.dataset.k);
+      state.maniaShared.enabled[k] = !!t.checked;
+      state.maniaShared.open[k] = !!t.checked;
 
       if(!ALL_MANIA_KEYS.some(x=>state.maniaShared.enabled[x])){
         state.maniaShared.enabled[4]=true;
@@ -1342,8 +1309,43 @@ function genIni(){
   pushKV(out, "Name", state.general.Name);
   pushKV(out, "Author", state.general.Author);
   out.push(fmtKV("Version", state.version));
+
+  pushKV(out, "CursorCentre", bool01(!!state.general.CursorCentre));
+  pushKV(out, "CursorExpand", bool01(!!state.general.CursorExpand));
+  pushKV(out, "CursorRotate", bool01(!!state.general.CursorRotate));
+  pushKV(out, "CursorTrailRotate", bool01(!!state.general.CursorTrailRotate));
+
   out.push("");
 
+  // COLOURS
+  {
+    const c = state.colours;
+    const colourKeys = [
+      "Combo1","Combo2","Combo3","Combo4","Combo5","Combo6","Combo7","Combo8",
+      "InputOverlayText","MenuGlow","SliderBall","SliderBorder","SliderTrackOverride",
+      "SongSelectActiveText","SongSelectInactiveText","SpinnerBackground","StarBreakAdditive"
+    ];
+    const hasColours = colourKeys.some(k => !isBlank(c[k]));
+    if(hasColours || state.commentEmpty){
+      out.push("[Colours]");
+      for(const k of colourKeys) pushKV(out, k, c[k]);
+      out.push("");
+    }
+  }
+
+  // FONTS
+  {
+    const f = state.fonts;
+    const fontKeys = ["HitCirclePrefix","HitCircleOverlap","ScorePrefix","ScoreOverlap","ComboPrefix","ComboOverlap"];
+    const hasFonts = fontKeys.some(k => !isBlank(f[k]));
+    if(hasFonts || state.commentEmpty){
+      out.push("[Fonts]");
+      for(const k of fontKeys) pushKV(out, k, f[k]);
+      out.push("");
+    }
+  }
+
+  // MANIA
   if(state.exportMania){
     for(const keys of ALL_MANIA_KEYS){
       if(!state.maniaShared.enabled[keys]) continue;
@@ -1354,6 +1356,8 @@ function genIni(){
   }
 
   while(out.length && out[out.length-1]==="") out.pop();
+
+  /* ✅ FIX: usar quebra de linha real */
   return out.join("\n");
 }
 
@@ -1374,6 +1378,7 @@ function genManiaBlock(keys){
   lines.push(fmtKV("ColumnWidth", normalizeCsv(m.ColumnWidth, keys, Array.from({length:keys}, ()=>"70").join(","))));
   lines.push(fmtKV("ColumnSpacing", normalizeCsv(m.ColumnSpacing, Math.max(0,keys-1), Array.from({length:Math.max(0,keys-1)}, ()=>"0").join(","))));
 
+  // regra: se ColumnStart vazio ou AutoColumnStart => auto (não exporta ColumnStart)
   if(!m.AutoColumnStart){
     pushKV(lines, "ColumnStart", m.ColumnStart);
   }
@@ -1398,17 +1403,18 @@ function genManiaBlock(keys){
 
   header(lines, "colours");
 
+  // UI é 1-based; export de skin.ini é 0-based
   for(let ui=1; ui<=keys; ui++){
     const v = cleanLine(m.Colour?.[ui]);
-    if(v) lines.push(fmtKV(\`Colour\${ui-1}\`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? \`// \${String(\`Colour\${ui-1}\`).padEnd(32," ")} :\` : \`//Colour\${ui-1}:\`);
+    if(v) lines.push(fmtKV(`Colour${ui-1}`, v));
+    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`Colour${ui-1}`).padEnd(32," ")} :` : `//Colour${ui-1}:`);
   }
   spacer(lines);
 
   for(let ui=1; ui<=keys; ui++){
     const v = cleanLine(m.ColourLight?.[ui]);
-    if(v) lines.push(fmtKV(\`ColourLight\${ui-1}\`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? \`// \${String(\`ColourLight\${ui-1}\`).padEnd(32," ")} :\` : \`//ColourLight\${ui-1}:\`);
+    if(v) lines.push(fmtKV(`ColourLight${ui-1}`, v));
+    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`ColourLight${ui-1}`).padEnd(32," ")} :` : `//ColourLight${ui-1}:`);
   }
 
   pushKV(lines, "ColourColumnLine", m.ColourColumnLine);
@@ -1419,6 +1425,7 @@ function genManiaBlock(keys){
   pushKV(lines, "ColourBreak", m.ColourBreak);
 
   spacer(lines);
+
   header(lines, "images");
 
   const pKey  = m.pKey  || "";
@@ -1431,48 +1438,48 @@ function genManiaBlock(keys){
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
     const v = pat(pKey, n);
-    if(v) lines.push(fmtKV(\`KeyImage\${idx}\`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? \`// \${String(\`KeyImage\${idx}\`).padEnd(32," ")} :\` : \`//KeyImage\${idx}:\`);
+    if(v) lines.push(fmtKV(`KeyImage${idx}`, v));
+    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`KeyImage${idx}`).padEnd(32," ")} :` : `//KeyImage${idx}:`);
   }
   spacer(lines);
 
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
     const v = pat(pKeyD, n);
-    if(v) lines.push(fmtKV(\`KeyImage\${idx}D\`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? \`// \${String(\`KeyImage\${idx}D\`).padEnd(32," ")} :\` : \`//KeyImage\${idx}D:\`);
+    if(v) lines.push(fmtKV(`KeyImage${idx}D`, v));
+    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`KeyImage${idx}D`).padEnd(32," ")} :` : `//KeyImage${idx}D:`);
   }
   spacer(lines);
 
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
     const v = pat(pNote, n);
-    if(v) lines.push(fmtKV(\`NoteImage\${idx}\`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? \`// \${String(\`NoteImage\${idx}\`).padEnd(32," ")} :\` : \`//NoteImage\${idx}:\`);
+    if(v) lines.push(fmtKV(`NoteImage${idx}`, v));
+    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`NoteImage${idx}`).padEnd(32," ")} :` : `//NoteImage${idx}:`);
   }
   spacer(lines);
 
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
     const v = pat(pNoteH, n);
-    if(v) lines.push(fmtKV(\`NoteImage\${idx}H\`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? \`// \${String(\`NoteImage\${idx}H\`).padEnd(32," ")} :\` : \`//NoteImage\${idx}H:\`);
+    if(v) lines.push(fmtKV(`NoteImage${idx}H`, v));
+    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`NoteImage${idx}H`).padEnd(32," ")} :` : `//NoteImage${idx}H:`);
   }
   spacer(lines);
 
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
     const v = pat(pNoteL, n);
-    if(v) lines.push(fmtKV(\`NoteImage\${idx}L\`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? \`// \${String(\`NoteImage\${idx}L\`).padEnd(32," ")} :\` : \`//NoteImage\${idx}L:\`);
+    if(v) lines.push(fmtKV(`NoteImage${idx}L`, v));
+    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`NoteImage${idx}L`).padEnd(32," ")} :` : `//NoteImage${idx}L:`);
   }
   spacer(lines);
 
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
     const v = pat(pNoteT, n);
-    if(v) lines.push(fmtKV(\`NoteImage\${idx}T\`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? \`// \${String(\`NoteImage\${idx}T\`).padEnd(32," ")} :\` : \`//NoteImage\${idx}T:\`);
+    if(v) lines.push(fmtKV(`NoteImage${idx}T`, v));
+    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`NoteImage${idx}T`).padEnd(32," ")} :` : `//NoteImage${idx}T:`);
   }
   spacer(lines);
 
@@ -1484,8 +1491,9 @@ function genManiaBlock(keys){
 
 /* ---------- import ---------- */
 function parseIni(text){
+  /* ✅ FIX: split por quebra de linha real */
   const lines = String(text||"").split("\n");
-  const parsed = { General:{}, Mania: [] };
+  const parsed = { General:{}, Colours:{}, Fonts:{}, Mania: [] };
 
   let section = "";
   let curMania = null;
@@ -1517,6 +1525,8 @@ function parseIni(text){
 
     const secName = section.toLowerCase();
     if(secName === "general") parsed.General[key] = val;
+    else if(secName === "colours") parsed.Colours[key] = val;
+    else if(secName === "fonts") parsed.Fonts[key] = val;
     else if(secName === "mania" && curMania){
       curMania.kv[key] = val;
       if(key === "Keys"){
@@ -1530,8 +1540,19 @@ function parseIni(text){
 
 function applyParsed(parsed){
   if(parsed.General.Version) state.version = parsed.General.Version;
-  if("Name" in parsed.General) state.general.Name = parsed.General.Name;
-  if("Author" in parsed.General) state.general.Author = parsed.General.Author;
+
+  for(const k in state.general){
+    if(k in parsed.General){
+      if(typeof state.general[k] === "boolean"){
+        state.general[k] = parsed.General[k].trim() === "1";
+      }else{
+        state.general[k] = parsed.General[k];
+      }
+    }
+  }
+
+  Object.assign(state.colours, parsed.Colours || {});
+  Object.assign(state.fonts, parsed.Fonts || {});
 
   for(const blk of parsed.Mania){
     const keys = blk.Keys;
@@ -1567,6 +1588,7 @@ function applyParsed(parsed){
       if(lk in blk.kv) m.ColourLight[i+1] = blk.kv[lk];
     }
 
+    // (não dá pra inferir patterns automaticamente sem heurística)
     state.mania[keys] = m;
   }
 
@@ -1578,10 +1600,10 @@ function applyParsed(parsed){
 function saveState(){
   try{
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    $("savePulse").textContent = t("saved");
+    $("savePulse").textContent = "Saved";
     setTimeout(()=>{ $("savePulse").textContent="—"; }, 700);
   }catch(e){
-    $("savePulse").textContent = t("err");
+    $("savePulse").textContent = "ERR";
   }
 }
 function loadState(){
@@ -1599,6 +1621,8 @@ function loadState(){
     state.version = s.version ?? "latest";
 
     Object.assign(state.general, s.general || {});
+    Object.assign(state.colours, s.colours || {});
+    Object.assign(state.fonts, s.fonts || {});
 
     if(s.maniaShared){
       for(const k of ALL_MANIA_KEYS){
@@ -1652,24 +1676,24 @@ function downloadIni(){
 async function copyIni(){
   try{
     await navigator.clipboard.writeText($("preview").value || genIni());
-    $("savePulse").textContent = t("copied");
+    $("savePulse").textContent = "Copied";
     setTimeout(()=>{ $("savePulse").textContent="—"; }, 800);
   }catch(e){
-    $("savePulse").textContent = t("noCopy");
+    $("savePulse").textContent = "NoCopy";
     setTimeout(()=>{ $("savePulse").textContent="—"; }, 800);
   }
 }
 
 function wipeAll(){
-  if(!confirm(t("confirm_reset"))) return;
+  if(!confirm("Reset total + apagar autosave?")) return;
   try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
   location.reload();
 }
 
 function updateModeBadge(){
-  const parts = ["GENERAL"];
+  const parts = ["GENERAL","COLOURS","FONTS"];
   if(state.exportMania) parts.push("MANIA");
-  $("modeBadge").textContent = t("modePrefix") + parts.join("+");
+  $("modeBadge").textContent = "export: " + parts.join("+");
 }
 
 /* ---------- dock toggles ---------- */
@@ -1731,13 +1755,6 @@ $("importApply").addEventListener("click", ()=>{
   $("importDlg").close();
 });
 
-/* ---------- NOVO: toggle idioma ---------- */
-$("langToggle").addEventListener("click", ()=>{
-  lang = (lang === "en") ? "pt-BR" : "en";
-  localStorage.setItem(LANG_KEY, lang);
-  applyLanguage();
-});
-
 /* ---------- init ---------- */
 loadState();
 syncDockToggles();
@@ -1745,9 +1762,6 @@ renderDockActive();
 updateModeBadge();
 renderActiveTab();
 updatePreview();
-
-// aplica idioma por último (pra refletir nos botões e nos textos gerados)
-applyLanguage();
 </script>
 </body>
 </html>
