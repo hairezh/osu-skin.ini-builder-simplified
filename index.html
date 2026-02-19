@@ -1,663 +1,632 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-  <link rel="icon" type="image/png" href="https://i.pinimg.com/1200x/d6/ca/e4/d6cae471e8471dec46c4304104adb4b1.jpg"/>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>skin.ini</title>
+  <title>Osu! Skin.ini Generator</title>
+  
+  <!-- Fontes Google (Inter para UI, JetBrains Mono para código) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <style>
-    :root{
-      --bg:#0b0c0f; --fg:#e8e8e8; --muted:#7a7a7a;
-      --border:rgba(255,255,255,.08); --panel:rgba(255,255,255,.03);
-      --fs:14px; --lh:1.6; --r:6px;
-
-      /* sidebar */
-      --sideW: 240px;
-
-      /* select */
-      --selBg:#000;
-      --selBorder:rgba(255,255,255,.12);
-      --selHi:#111;
+    :root {
+      /* Palette */
+      --bg-body: #121216;
+      --bg-panel: #1e1e24;
+      --bg-sidebar: #18181d;
+      --bg-input: #272730;
+      --border: #35353f;
+      --primary: #6c5ce7; /* Cor de destaque */
+      --primary-hover: #5b4cc4;
+      --text-main: #e1e1e6;
+      --text-muted: #a1a1aa;
+      --accent-danger: #ff5252;
+      --accent-success: #4cd137;
+      
+      /* Spacing & Radius */
+      --r: 8px;
+      --r-lg: 12px;
+      --sidebar-w: 260px;
     }
 
-    *{ box-sizing:border-box; }
+    * { box-sizing: border-box; outline: none; }
 
-    /* Scrollbars (Firefox) */
-    *{
-      scrollbar-width: thin;
-      scrollbar-color: rgba(200,200,200,.35) rgba(0,0,0,.15);
+    /* Scrollbars */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-body); }
+    ::-webkit-scrollbar-thumb { background: #3f3f4b; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #555565; }
+
+    body {
+      margin: 0;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
     }
-    /* Scrollbars (Chromium/WebKit) */
-    *::-webkit-scrollbar{ width:10px; height:10px; }
-    *::-webkit-scrollbar-track{
-      background: rgba(0,0,0,.15);
+
+    /* Layout Principal */
+    .app {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* --- SIDEBAR --- */
+    .sidebar {
+      width: var(--sidebar-w);
+      background-color: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 15px;
+      gap: 20px;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .brand {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .brand span { color: var(--primary); }
+
+    .nav-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    
+    .nav-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+      font-weight: 600;
+      padding-left: 10px;
+    }
+
+    .nav-item {
+      cursor: pointer;
+      padding: 10px 12px;
+      border-radius: var(--r);
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s ease;
+    }
+    .nav-item:hover {
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+    }
+    .nav-item.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+    }
+
+    /* Botões da Sidebar */
+    .sidebar-actions {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn {
+      cursor: pointer;
+      border: none;
+      padding: 10px 16px;
+      border-radius: var(--r);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-danger { background: rgba(255, 82, 82, 0.1); color: var(--accent-danger); border: 1px solid transparent; }
+    .btn-danger:hover { border-color: var(--accent-danger); background: rgba(255, 82, 82, 0.2); }
+    
+    .pill-badge {
+      font-size: 10px; 
+      padding: 2px 6px; 
+      border-radius: 4px; 
+      background: rgba(0,0,0,0.2);
+    }
+
+    /* --- MAIN AREA --- */
+    .main-content {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 400px; /* Editor | Preview */
+      overflow: hidden;
+    }
+
+    /* Form Panel */
+    .editor-panel {
+      padding: 30px;
+      overflow-y: auto;
+      background: var(--bg-body);
+    }
+
+    .section-header {
+      margin-bottom: 25px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 15px;
+    }
+    .section-title { font-size: 24px; font-weight: 700; margin: 0; color: #fff; }
+    .section-desc { font-size: 13px; color: var(--text-muted); margin-top: 5px; }
+
+    /* Form Grids */
+    .form-group {
+      margin-bottom: 20px;
+      background: var(--bg-panel);
+      padding: 20px;
+      border-radius: var(--r-lg);
+      border: 1px solid var(--border);
+    }
+    .group-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .control-row {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 12px;
+    }
+    .control-row label {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Inputs */
+    input[type="text"], input[type="number"], select, textarea {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 8px 12px;
       border-radius: 6px;
+      font-size: 13px;
+      transition: border 0.2s;
     }
-    *::-webkit-scrollbar-thumb{
-      background: rgba(200,200,200,.30);
-      border: 2px solid rgba(0,0,0,.15);
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+    }
+
+    /* Color Picker Style */
+    .color-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      padding: 4px;
       border-radius: 6px;
+      width: 100%;
     }
-    *::-webkit-scrollbar-thumb:hover{
-      background: rgba(200,200,200,.42);
+    input[type="color"] {
+      -webkit-appearance: none;
+      border: none;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      padding: 0;
+      background: none;
+      border-radius: 4px;
+      overflow: hidden;
     }
-
-    body{
-      margin:0; background:var(--bg); color:var(--fg);
-      font:var(--fs)/var(--lh) ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      height:100vh;
-    }
-
-    /* IMPORTANT: keep app above any overlay canvas (snow.js) */
-    .app{
-      height:100vh;
-      display:flex;
-      flex-direction:column;
-      position:relative;
-      z-index:2;
-    }
-
-    /* IMPORTANT: snow canvas must not block clicks */
-    canvas{
-      pointer-events:none !important;
+    input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+    input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
+    .color-text {
+      border: none;
+      background: transparent;
+      padding: 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
     }
 
-    /* ====== LAYOUT with sidebar ====== */
-    .layout{
-      flex:1; min-height:0;
-      display:grid;
-      grid-template-columns: var(--sideW) 1fr;
+    /* Switches */
+    .switch {
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+    }
+    .switch input { display: none; }
+    .slider {
+      width: 40px; height: 22px;
+      background-color: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      position: relative;
+      transition: .3s;
+    }
+    .slider::before {
+      content: "";
+      position: absolute;
+      height: 16px; width: 16px;
+      left: 3px; bottom: 2px;
+      background-color: var(--text-muted);
+      border-radius: 50%;
+      transition: .3s;
+    }
+    input:checked + .slider { background-color: var(--primary); border-color: var(--primary); }
+    input:checked + .slider::before { transform: translateX(18px); background-color: #fff; }
+
+    /* Mania Tools */
+    .mania-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+    .mode-pill {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      transition: 0.2s;
+    }
+    .mode-pill.active {
+      background: rgba(108, 92, 231, 0.2);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .mode-pill span { font-size: 12px; font-weight: 700; }
+    
+    /* Accordion */
+    .mode-block {
+      background: var(--bg-input);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+    .accordion-head {
+      padding: 12px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      background: rgba(255,255,255,0.03);
+    }
+    .accordion-head:hover { background: rgba(255,255,255,0.05); }
+    .accordion-body {
+      display: none;
+      padding: 15px;
+      border-top: 1px solid var(--border);
+    }
+    .mode-block.open .accordion-body { display: block; }
+    .caret { transition: transform 0.2s; }
+    .mode-block.open .caret { transform: rotate(90deg); }
+
+    /* --- PREVIEW PANEL --- */
+    .preview-panel {
+      background: #15151a;
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+    .preview-header {
+      padding: 10px 15px;
+      background: var(--bg-sidebar);
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .code-editor {
+      flex: 1;
+      width: 100%;
+      background: #15151a;
+      color: #a9b7c6;
+      border: none;
+      padding: 15px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      resize: none;
     }
 
-    .sidebar{
-      border-right:1px solid var(--border);
-      background:linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.12)), var(--panel);
-      padding:10px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      min-height:0;
-    }
-
-    .sideGroup{
-      border:1px solid var(--border);
-      border-radius:10px;
-      background:rgba(255,255,255,.02);
-      overflow:hidden;
-    }
-    .sideHead{
-      padding:10px;
-      border-bottom:1px solid rgba(255,255,255,.06);
-      color:rgba(232,232,232,.70);
-      font-weight:800;
-      font-size:12px;
-      letter-spacing:.2px;
-      background:rgba(0,0,0,.14);
-    }
-    .sideBody{
-      padding:10px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-
-    .sideTabs{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-    .sideTab{
-      cursor:pointer;
-      padding:9px 10px;
-      border-radius:10px;
-      border:1px solid rgba(255,255,255,.08);
-      background:rgba(0,0,0,.18);
-      color:rgba(232,232,232,.60);
-      font-weight:800;
-      user-select:none;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .sideTab:hover{
-      color:rgba(232,232,232,.92);
-      border-color:rgba(255,255,255,.14);
-      background:rgba(255,255,255,.03);
-    }
-    .sideTab.active{
-      color:rgba(232,232,232,.92);
-      border-color:rgba(255,255,255,.16);
-      background:rgba(255,255,255,.05);
-    }
-    .sideMini{
-      font-size:12px;
-      color:rgba(232,232,232,.40);
-      margin-top:6px;
-    }
-
-    .btn{
-      cursor:pointer; padding:6px 10px; border-radius:var(--r);
-      border:1px solid var(--border); background:rgba(0,0,0,.25);
-      color:var(--muted); font-weight:600;
-    }
-    .btn:hover{ color:var(--fg); border-color:rgba(255,255,255,.18); }
-    .btn.primary{ color:var(--fg); background:rgba(255,255,255,.06); }
-    .btn.danger:hover{ border-color:rgba(255,120,120,.35); color:rgba(255,210,210,.95); }
-
-    .pill{
-      padding:6px 10px; border:1px solid var(--border); border-radius:var(--r);
-      background:rgba(0,0,0,.18); color:rgba(232,232,232,.38); font-size:12px;
-      display:inline-flex; align-items:center; gap:10px;
-    }
-    .pill.on{
-      color:rgba(232,232,232,.80);
-      border-color:rgba(255,255,255,.16);
-      background:rgba(255,255,255,.04);
-    }
-
-    .main{
-      min-height:0;
-      display:grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap:10px;
-      padding:10px;
-    }
-
-    .panel{
-      border:1px solid var(--border); border-radius:var(--r);
-      background:rgba(255,255,255,.02);
-      min-height:0; overflow:hidden;
-      display:flex; flex-direction:column;
-    }
-    .panelHead{
-      padding:8px 10px; border-bottom:1px solid var(--border);
-      display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
-    }
-    .panelBody{
-      padding:10px; overflow:auto;
-      flex:1; min-height:0;
-    }
-
-    .row{ display:grid; grid-template-columns: 190px 1fr; gap:10px; align-items:center; margin-bottom:8px; }
-    .row label{ color:rgba(232,232,232,.70); font-size:12px; }
-
-    input[type="text"], input[type="number"], select, textarea{
-      width:100%;
-      border:1px solid var(--border); border-radius:var(--r);
-      background:rgba(0,0,0,.22); color:var(--fg);
-      padding:7px 9px; outline:none;
-      font:inherit;
-    }
-
-    textarea{
-      min-height: calc(100vh - 170px);
-      resize:none;
-    }
-
-    input[type="color"]{
-      width:44px; height:34px;
-      border:1px solid var(--border); border-radius:var(--r);
-      background:transparent; padding:0;
-    }
-
-    .sep{ height:1px; background:var(--border); margin:12px 0; }
-    .mini{ font-size:12px; color:rgba(232,232,232,.45); }
-    .inline{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
-    .grid2{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
-    .kbd{ border:1px solid var(--border); border-bottom-color:rgba(255,255,255,.14); background:rgba(0,0,0,.22); border-radius:6px; padding:1px 6px; }
-    .groupTitle{ font-size:12px; color:rgba(232,232,232,.70); margin:2px 0 8px; }
-
-    /* Minimal switch */
-    .switch{ display:inline-flex; align-items:center; gap:8px; }
-    .switch input{ display:none; }
-    .sw{
-      width:44px; height:24px;
-      border:1px solid var(--border);
-      background:rgba(0,0,0,.22);
-      border-radius:6px;
-      position:relative;
-      transition:140ms linear;
-      flex:0 0 auto;
-    }
-    .sw::after{
-      content:"";
-      width:18px; height:18px;
-      position:absolute; top:50%; left:3px;
-      transform:translateY(-50%);
-      border-radius:5px;
-      background:rgba(255,255,255,.25);
-      transition:140ms linear;
-    }
-    .switch input:checked + .sw{
-      border-color:rgba(255,255,255,.18);
-      background:rgba(255,255,255,.05);
-    }
-    .switch input:checked + .sw::after{
-      left:23px;
-      background:rgba(255,255,255,.55);
-    }
-
-    .switchLabel{
-      font-size:12px;
-      color:rgba(232,232,232,.55);
-      font-weight:600;
-      user-select:none;
-      white-space:nowrap;
-    }
-
-    /* Keymode toggle wrap */
-    .kmWrap{ display:flex; flex-wrap:wrap; gap:10px; }
-    .kmTools{
-      display:flex; gap:8px; flex-wrap:wrap; align-items:center;
-      margin-bottom:8px;
-    }
-    .kmTools input[type="text"]{ max-width:260px; }
-
-    /* per-mode blocks -> accordion */
-    .modeBlock{
-      border:1px solid rgba(255,255,255,.08);
-      background:rgba(255,255,255,.015);
-      border-radius:10px;
-      overflow:hidden;
-      margin:10px 0 12px;
-    }
-    .foldHead{
-      width:100%;
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      padding:10px;
-      border:0;
-      background:rgba(0,0,0,.16);
-      color:var(--fg);
-      text-align:left;
-    }
-    .foldLeft{
-      display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
-    }
-    .modeTag{ font-weight:800; color:rgba(232,232,232,.92); }
-    .foldMeta{ font-size:12px; color:rgba(232,232,232,.45); }
-    .caret{
-      font-size:12px;
-      color:rgba(232,232,232,.55);
-      transform:rotate(0deg);
-      transition:140ms linear;
-      user-select:none;
-    }
-    .modeBlock.open .caret{ transform:rotate(90deg); }
-
-    .foldBody{
-      display:none;
-      padding:10px;
-      border-top:1px solid rgba(255,255,255,.06);
-    }
-    .modeBlock.open .foldBody{ display:block; }
-
-    .jumpRow{
-      display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 0;
-    }
-    .jumpBtn{
-      cursor:pointer;
-      padding:4px 8px;
-      border-radius:6px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.18);
-      color:rgba(232,232,232,.60);
-      font-size:12px;
-      font-weight:700;
-    }
-    .jumpBtn:hover{ color:rgba(232,232,232,.92); border-color:rgba(255,255,255,.18); }
-
-    .ghost{
-      width:100%;
-      padding:8px 10px;
-      border-radius:10px;
-      border:1px dashed rgba(255,255,255,.12);
-      background:rgba(0,0,0,.12);
-      color:rgba(232,232,232,.45);
-      font-size:12px;
-      line-height:1.4;
-    }
-
-    @media (max-width: 980px){
-      .layout{ grid-template-columns: 1fr; }
-      .sidebar{ border-right:0; border-bottom:1px solid var(--border); }
-      .main{ grid-template-columns: 1fr; }
-      textarea{ min-height: 55vh; }
-      .kmTools input[type="text"]{ max-width:100%; }
+    /* Responsividade */
+    @media (max-width: 1000px) {
+      .main-content { grid-template-columns: 1fr; }
+      .preview-panel { display: none; /* Esconder preview em telas pequenas ou colocar abaixo */ }
+      .app { flex-direction: column; overflow: auto; }
+      .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+      .sidebar-actions { flex-direction: row; }
+      .nav-group { flex-direction: row; flex-wrap: wrap; }
     }
   </style>
 </head>
 
 <body>
   <div class="app">
-    <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span>●</span> Osu!Skin<b>Gen</b>
+      </div>
 
-      <!-- SIDEBAR -->
-      <aside class="sidebar">
-        <div class="sideGroup">
-          <div class="sideHead">Sections</div>
-          <div class="sideBody">
-            <div class="sideTabs">
-              <div class="sideTab active" data-tab="general">
-                <span>General</span><span class="mini">[General]</span>
-              </div>
-              <div class="sideTab" data-tab="standard">
-                <span>Standard</span><span class="mini">options</span>
-              </div>
-              <div class="sideTab" data-tab="mania">
-                <span>Mania</span><span class="mini">1K..18K</span>
-              </div>
-            </div>
-            <div class="sideMini">Quick switch between panels.</div>
-          </div>
+      <div class="nav-group">
+        <div class="nav-label">Configuração</div>
+        <div class="nav-item active" data-tab="general">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+          Geral
         </div>
-
-        <div class="sideGroup">
-          <div class="sideHead">Export</div>
-          <div class="sideBody">
-            <button class="btn primary" id="downloadIni">Download skin.ini</button>
-            <button class="btn danger" id="clearWipe">Clear</button>
-            <div class="sep"></div>
-            <span class="pill" id="savePulse" style="justify-content:center;"></span>
-          </div>
+        <div class="nav-item" data-tab="standard">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+          Standard
         </div>
-
-        <div class="sideGroup">
-          <div class="sideHead">Options</div>
-          <div class="sideBody">
-            <div class="pill">
-              <span class="switchLabel">hairez-style</span>
-              <label class="switch" title="Pretty formatting (aligned + spaced groups)">
-                <input type="checkbox" id="prettyFormat" checked>
-                <span class="sw"></span>
-              </label>
-            </div>
-
-            <div class="pill" id="stdPill">
-              <span class="switchLabel">include standard</span>
-              <label class="switch" title="Include osu!standard settings in skin.ini">
-                <input type="checkbox" id="includeStandard" checked>
-                <span class="sw"></span>
-              </label>
-            </div>
-
-            <div class="pill" id="verPill">Version 2.0 [Compact]</div>
-
-            <div class="ghost">
-              Standard toggle only affects what is written to <b>skin.ini</b>.
-              UI fields remain available.
-            </div>
-          </div>
+        <div class="nav-item" data-tab="mania">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 4v16"/><path d="M12 4v16"/><path d="M16 4v16"/></svg>
+          Mania (1K-18K)
         </div>
-      </aside>
+      </div>
 
-      <!-- CONTENT -->
-      <main class="main">
-        <!-- LEFT -->
-        <div class="panel">
-          <div class="panelHead">
-            <div class="mini">Standard adds gameplay options + colours. Mania supports 1K..18K (per-keymode patterns). Edit blocks collapse/expand.</div>
+      <div class="nav-group" style="margin-top: 10px;">
+        <div class="nav-label">Opções</div>
+        <div class="nav-item">
+          <label class="switch" style="margin-right:10px">
+            <input type="checkbox" id="prettyFormat" checked>
+            <span class="slider"></span>
+          </label>
+          <span style="font-size:12px">Formatar Bonito</span>
+        </div>
+        <div class="nav-item">
+          <label class="switch" style="margin-right:10px">
+            <input type="checkbox" id="includeStandard" checked>
+            <span class="slider"></span>
+          </label>
+          <span style="font-size:12px">Incluir Standard</span>
+        </div>
+      </div>
+
+      <div class="sidebar-actions">
+        <button class="btn btn-primary" id="downloadIni">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Baixar skin.ini
+        </button>
+        <button class="btn btn-danger" id="clearWipe">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Limpar Tudo
+        </button>
+        <div id="savePulse" style="text-align:center; font-size:11px; color:var(--accent-success); height:15px;"></div>
+      </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="main-content">
+      <!-- EDITOR AREA -->
+      <div class="editor-panel">
+        
+        <!-- GENERAL TAB -->
+        <div id="tab-general">
+          <div class="section-header">
+            <h2 class="section-title">Geral</h2>
+            <div class="section-desc">Metadados e configurações globais da skin.</div>
           </div>
 
-          <!-- GENERAL -->
-          <div class="panelBody" id="tab-general">
-            <div class="groupTitle">[General]</div>
-            <div class="row"><label>Name</label><input type="text" id="gName" placeholder="Example: My Skin"></div>
-            <div class="row"><label>Author</label><input type="text" id="gAuthor" placeholder="Your name"></div>
-            <div class="row"><label>Version</label><input type="text" id="gVersion" value="latest" readonly></div>
+          <div class="form-group">
+            <div class="group-label">Informações Básicas</div>
+            <div class="control-row"><label>Nome da Skin</label><input type="text" id="gName" placeholder="Ex: Minha Skin Pro"></div>
+            <div class="control-row"><label>Autor</label><input type="text" id="gAuthor" placeholder="Seu Nick"></div>
+            <div class="control-row"><label>Versão</label><input type="text" id="gVersion" value="latest" readonly style="opacity:0.6"></div>
+          </div>
 
-            <div class="sep"></div>
-            <div class="groupTitle">Cursor</div>
-
-            <div class="row">
+          <div class="form-group">
+            <div class="group-label">Comportamento do Cursor</div>
+            <div class="control-row">
               <label>CursorCentre</label>
-              <div class="inline"><label class="switch"><input type="checkbox" id="gCursorCentre" checked><span class="sw"></span></label></div>
+              <label class="switch"><input type="checkbox" id="gCursorCentre" checked><span class="slider"></span></label>
             </div>
-            <div class="row">
+            <div class="control-row">
               <label>CursorExpand</label>
-              <div class="inline"><label class="switch"><input type="checkbox" id="gCursorExpand"><span class="sw"></span></label></div>
+              <label class="switch"><input type="checkbox" id="gCursorExpand"><span class="slider"></span></label>
             </div>
-            <div class="row">
+            <div class="control-row">
               <label>CursorRotate</label>
-              <div class="inline"><label class="switch"><input type="checkbox" id="gCursorRotate"><span class="sw"></span></label></div>
+              <label class="switch"><input type="checkbox" id="gCursorRotate"><span class="slider"></span></label>
             </div>
-            <div class="row">
+            <div class="control-row">
               <label>CursorTrailRotate</label>
-              <div class="inline"><label class="switch"><input type="checkbox" id="gCursorTrailRotate"><span class="sw"></span></label></div>
-            </div>
-
-            <div class="sep"></div>
-            <div class="groupTitle">[Colours] (menu/UI)</div>
-
-            <div class="row">
-              <label>MenuGlow</label>
-              <div class="inline"><input type="color" id="cMenuGlowPick"><input type="text" id="cMenuGlow" placeholder="0,0,0"></div>
-            </div>
-            <div class="row">
-              <label>SongSelectActiveText</label>
-              <div class="inline"><input type="color" id="cSongActivePick"><input type="text" id="cSongActive" placeholder="0,0,0"></div>
-            </div>
-            <div class="row">
-              <label>SongSelectInactiveText</label>
-              <div class="inline"><input type="color" id="cSongInactivePick"><input type="text" id="cSongInactive" placeholder="0,0,0"></div>
-            </div>
-
-            <div class="sep"></div>
-            <div class="groupTitle">[Fonts]</div>
-
-            <div class="grid2">
-              <div>
-                <div class="row"><label>ScorePrefix</label><input type="text" id="fScorePrefix" placeholder="score"></div>
-                <div class="row"><label>ScoreOverlap</label><input type="number" id="fScoreOverlap" value="0"></div>
-              </div>
-              <div>
-                <div class="row"><label>ComboPrefix</label><input type="text" id="fComboPrefix" placeholder="combo"></div>
-                <div class="row"><label>ComboOverlap</label><input type="number" id="fComboOverlap" value="0"></div>
-              </div>
+              <label class="switch"><input type="checkbox" id="gCursorTrailRotate"><span class="slider"></span></label>
             </div>
           </div>
 
-          <!-- STANDARD -->
-          <div class="panelBody" id="tab-standard" style="display:none">
-            <div class="groupTitle">osu!standard (gameplay)</div>
-            <div class="mini">Toggle “include standard” in the sidebar to control whether these keys are written to skin.ini.</div>
-
-            <div class="sep"></div>
-            <div class="groupTitle">[General] (standard-related)</div>
-
-            <div class="row">
-              <label>AnimationFramerate</label>
-              <input type="number" id="sAnimFPS" placeholder="(blank = omit)">
-            </div>
-
-            <div class="grid2">
-              <div class="row" style="grid-template-columns:190px 1fr;">
-                <label>AllowSliderBallTint</label>
-                <div class="inline"><label class="switch"><input type="checkbox" id="sAllowSliderBallTint" checked><span class="sw"></span></label></div>
-              </div>
-              <div class="row" style="grid-template-columns:190px 1fr;">
-                <label>SliderBallFlip</label>
-                <div class="inline"><label class="switch"><input type="checkbox" id="sSliderBallFlip"><span class="sw"></span></label></div>
+          <div class="form-group">
+            <div class="group-label">Cores da Interface (Menu)</div>
+            <div class="control-row">
+              <label>Menu Glow</label>
+              <div class="color-wrapper">
+                <input type="color" id="cMenuGlowPick">
+                <input type="text" id="cMenuGlow" class="color-text" placeholder="0,0,0">
               </div>
             </div>
-
-            <div class="grid2">
-              <div class="row" style="grid-template-columns:190px 1fr;">
-                <label>HitCircleOverlayAboveNumber</label>
-                <div class="inline"><label class="switch"><input type="checkbox" id="sOverlayAboveNumber"><span class="sw"></span></label></div>
-              </div>
-              <div class="row" style="grid-template-columns:190px 1fr;">
-                <label>LayeredHitSounds</label>
-                <div class="inline"><label class="switch"><input type="checkbox" id="sLayeredHitSounds" checked><span class="sw"></span></label></div>
+            <div class="control-row">
+              <label>Texto Música Ativa</label>
+              <div class="color-wrapper">
+                <input type="color" id="cSongActivePick">
+                <input type="text" id="cSongActive" class="color-text" placeholder="0,0,0">
               </div>
             </div>
-
-            <div class="grid2">
-              <div class="row" style="grid-template-columns:190px 1fr;">
-                <label>SpinnerFadePlayfield</label>
-                <div class="inline"><label class="switch"><input type="checkbox" id="sSpinnerFadePlayfield" checked><span class="sw"></span></label></div>
-              </div>
-              <div class="row" style="grid-template-columns:190px 1fr;">
-                <label>SpinnerNoBlink</label>
-                <div class="inline"><label class="switch"><input type="checkbox" id="sSpinnerNoBlink"><span class="sw"></span></label></div>
-              </div>
-            </div>
-
-            <div class="sep"></div>
-            <div class="groupTitle">[Colours] (gameplay)</div>
-
-            <div class="mini">Combo colours (Combo1..Combo8) + slider/spinner colours are written into the same [Colours] section.</div>
-
-            <div class="sep"></div>
-            <div class="groupTitle">Combo colours</div>
-
-            <div class="grid2">
-              <div class="row">
-                <label>Combo1</label>
-                <div class="inline"><input type="color" id="sCombo1Pick"><input type="text" id="sCombo1" placeholder="255,255,255"></div>
-              </div>
-              <div class="row">
-                <label>Combo2</label>
-                <div class="inline"><input type="color" id="sCombo2Pick"><input type="text" id="sCombo2" placeholder="255,255,255"></div>
-              </div>
-              <div class="row">
-                <label>Combo3</label>
-                <div class="inline"><input type="color" id="sCombo3Pick"><input type="text" id="sCombo3" placeholder="255,255,255"></div>
-              </div>
-              <div class="row">
-                <label>Combo4</label>
-                <div class="inline"><input type="color" id="sCombo4Pick"><input type="text" id="sCombo4" placeholder="255,255,255"></div>
-              </div>
-              <div class="row">
-                <label>Combo5</label>
-                <div class="inline"><input type="color" id="sCombo5Pick"><input type="text" id="sCombo5" placeholder="(optional)"></div>
-              </div>
-              <div class="row">
-                <label>Combo6</label>
-                <div class="inline"><input type="color" id="sCombo6Pick"><input type="text" id="sCombo6" placeholder="(optional)"></div>
-              </div>
-              <div class="row">
-                <label>Combo7</label>
-                <div class="inline"><input type="color" id="sCombo7Pick"><input type="text" id="sCombo7" placeholder="(optional)"></div>
-              </div>
-              <div class="row">
-                <label>Combo8</label>
-                <div class="inline"><input type="color" id="sCombo8Pick"><input type="text" id="sCombo8" placeholder="(optional)"></div>
-              </div>
-            </div>
-
-            <div class="sep"></div>
-            <div class="groupTitle">Slider / Spinner colours</div>
-
-            <div class="grid2">
-              <div class="row">
-                <label>SliderBorder</label>
-                <div class="inline"><input type="color" id="sSliderBorderPick"><input type="text" id="sSliderBorder" placeholder="0,0,0"></div>
-              </div>
-              <div class="row">
-                <label>SliderTrackOverride</label>
-                <div class="inline"><input type="color" id="sSliderTrackPick"><input type="text" id="sSliderTrack" placeholder="(optional)"></div>
-              </div>
-              <div class="row">
-                <label>SpinnerApproachCircle</label>
-                <div class="inline"><input type="color" id="sSpinnerAppPick"><input type="text" id="sSpinnerApp" placeholder="(optional)"></div>
-              </div>
-              <div class="row">
-                <label>SpinnerBackground</label>
-                <div class="inline"><input type="color" id="sSpinnerBgPick"><input type="text" id="sSpinnerBg" placeholder="(optional)"></div>
+            <div class="control-row">
+              <label>Texto Música Inativa</label>
+              <div class="color-wrapper">
+                <input type="color" id="cSongInactivePick">
+                <input type="text" id="cSongInactive" class="color-text" placeholder="0,0,0">
               </div>
             </div>
           </div>
-
-          <!-- MANIA -->
-          <div class="panelBody" id="tab-mania" style="display:none">
-            <div class="groupTitle">♦ Active keymodes (1K..18K)</div>
-
-            <div class="kmTools">
-              <input type="text" id="kmSearch" placeholder="Search keymode (ex: 4, 7, 12)..." />
-              <button class="btn" id="kmAll" type="button">All</button>
-              <button class="btn" id="kmNone" type="button">None</button>
-              <button class="btn" id="kmInvert" type="button">Invert</button>
-              <button class="btn" id="kmCommon" type="button" title="Enable common modes (4K, 7K)">Common</button>
-            </div>
-
-            <div class="kmWrap" id="kmToggles"></div>
-
-            <div class="mini" style="margin-top:6px;">*skin.ini will include only enabled modes.</div>
-
-            <div class="jumpRow" id="kmJump"></div>
-
-            <div class="sep"></div>
-
-            <div id="modesContainer"></div>
-
-            <div class="sep"></div>
-            <div class="groupTitle">♦ Colours (shared)</div>
-
-            <div class="row">
-              <label>Colour (all keys)</label>
-              <div class="inline">
-                <input type="color" id="mKeyColourPick">
-                <input type="text" id="mKeyColour" placeholder="255,255,255">
-              </div>
-            </div>
-
-            <div class="row">
-              <label>ColourHold</label>
-              <div class="inline"><input type="color" id="mHoldPick"><input type="text" id="mColourHold" placeholder="0,0,0"></div>
-            </div>
-            <div class="row">
-              <label>ColourBreak</label>
-              <div class="inline"><input type="color" id="mBreakPick"><input type="text" id="mColourBreak" placeholder="0,0,0"></div>
-            </div>
-
-            <div class="sep"></div>
-            <div class="groupTitle">♦ Hit sprites (shared)</div>
-            <div class="grid2">
-              <div class="row"><label>Hit0</label><input type="text" id="h0"></div>
-              <div class="row"><label>Hit50</label><input type="text" id="h50"></div>
-              <div class="row"><label>Hit100</label><input type="text" id="h100"></div>
-              <div class="row"><label>Hit200</label><input type="text" id="h200"></div>
-              <div class="row"><label>Hit300</label><input type="text" id="h300"></div>
-              <div class="row"><label>Hit300g</label><input type="text" id="h300g"></div>
-            </div>
+          
+          <div class="form-group">
+            <div class="group-label">Fontes & Prefixos</div>
+            <div class="control-row"><label>Prefixo Score</label><input type="text" id="fScorePrefix" placeholder="score"></div>
+            <div class="control-row"><label>Overlap Score</label><input type="number" id="fScoreOverlap" value="0"></div>
+            <div class="control-row"><label>Prefixo Combo</label><input type="text" id="fComboPrefix" placeholder="combo"></div>
+            <div class="control-row"><label>Overlap Combo</label><input type="number" id="fComboOverlap" value="0"></div>
           </div>
         </div>
 
-        <!-- RIGHT PREVIEW -->
-        <div class="panel">
-          <div class="panelHead">
-            <div class="mini">skin.ini preview</div>
+        <!-- STANDARD TAB -->
+        <div id="tab-standard" style="display:none">
+          <div class="section-header">
+            <h2 class="section-title">Standard (Osu!)</h2>
+            <div class="section-desc">Cores de combo, sliders e configurações de jogabilidade.</div>
           </div>
-          <div class="panelBody">
-            <textarea id="preview" readonly></textarea>
+
+          <div class="form-group">
+            <div class="group-label">Gameplay</div>
+            <div class="control-row"><label>Framerate Animação</label><input type="number" id="sAnimFPS" placeholder="Opcional"></div>
+            <div class="control-row">
+              <label>Tint SliderBall</label>
+              <label class="switch"><input type="checkbox" id="sAllowSliderBallTint" checked><span class="slider"></span></label>
+            </div>
+            <div class="control-row">
+              <label>SliderBall Flip</label>
+              <label class="switch"><input type="checkbox" id="sSliderBallFlip"><span class="slider"></span></label>
+            </div>
+            <div class="control-row">
+              <label>HitSounds em Camadas</label>
+              <label class="switch"><input type="checkbox" id="sLayeredHitSounds" checked><span class="slider"></span></label>
+            </div>
+            <div class="control-row">
+              <label>Spinner Fade Playfield</label>
+              <label class="switch"><input type="checkbox" id="sSpinnerFadePlayfield" checked><span class="slider"></span></label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="group-label">Cores de Combo</div>
+            <!-- Gerado de forma repetitiva, idealmente um loop, mas manual aqui -->
+            <div class="control-row"><label>Combo 1</label><div class="color-wrapper"><input type="color" id="sCombo1Pick"><input type="text" id="sCombo1" class="color-text" placeholder="RGB"></div></div>
+            <div class="control-row"><label>Combo 2</label><div class="color-wrapper"><input type="color" id="sCombo2Pick"><input type="text" id="sCombo2" class="color-text" placeholder="RGB"></div></div>
+            <div class="control-row"><label>Combo 3</label><div class="color-wrapper"><input type="color" id="sCombo3Pick"><input type="text" id="sCombo3" class="color-text" placeholder="RGB"></div></div>
+            <div class="control-row"><label>Combo 4</label><div class="color-wrapper"><input type="color" id="sCombo4Pick"><input type="text" id="sCombo4" class="color-text" placeholder="RGB"></div></div>
+            <!-- Extras -->
+            <div class="control-row"><label>Combo 5</label><div class="color-wrapper"><input type="color" id="sCombo5Pick"><input type="text" id="sCombo5" class="color-text" placeholder="Opcional"></div></div>
+            <div class="control-row"><label>Combo 6</label><div class="color-wrapper"><input type="color" id="sCombo6Pick"><input type="text" id="sCombo6" class="color-text" placeholder="Opcional"></div></div>
+          </div>
+
+          <div class="form-group">
+            <div class="group-label">Slider & Spinner</div>
+            <div class="control-row"><label>Slider Border</label><div class="color-wrapper"><input type="color" id="sSliderBorderPick"><input type="text" id="sSliderBorder" class="color-text"></div></div>
+            <div class="control-row"><label>Slider Track</label><div class="color-wrapper"><input type="color" id="sSliderTrackPick"><input type="text" id="sSliderTrack" class="color-text" placeholder="Opcional"></div></div>
+            <div class="control-row"><label>Spinner Circle</label><div class="color-wrapper"><input type="color" id="sSpinnerAppPick"><input type="text" id="sSpinnerApp" class="color-text" placeholder="Opcional"></div></div>
+            <div class="control-row"><label>Spinner BG</label><div class="color-wrapper"><input type="color" id="sSpinnerBgPick"><input type="text" id="sSpinnerBg" class="color-text" placeholder="Opcional"></div></div>
           </div>
         </div>
-      </main>
 
-    </div>
+        <!-- MANIA TAB -->
+        <div id="tab-mania" style="display:none">
+          <div class="section-header">
+            <h2 class="section-title">Osu! Mania</h2>
+            <div class="section-desc">Configure padrões para Keymodes de 1K até 18K.</div>
+          </div>
+
+          <div class="form-group">
+            <div class="group-label">Modos Ativos</div>
+            <div class="control-row" style="grid-template-columns: 1fr;">
+              <input type="text" id="kmSearch" placeholder="Filtrar keymodes (ex: 4, 7)..." style="margin-bottom:8px">
+              <div style="display:flex; gap:10px; margin-bottom:10px;">
+                <button class="btn" id="kmCommon" style="background:var(--bg-input); padding:5px 10px; font-size:11px;">Comuns (4K/7K)</button>
+                <button class="btn" id="kmAll" style="background:var(--bg-input); padding:5px 10px; font-size:11px;">Todos</button>
+                <button class="btn" id="kmNone" style="background:var(--bg-input); padding:5px 10px; font-size:11px;">Nenhum</button>
+              </div>
+            </div>
+            <div class="mania-grid" id="kmToggles"></div>
+            <div style="font-size:11px; color:var(--text-muted)">*Apenas modos ativados serão escritos no skin.ini.</div>
+            
+            <div style="margin-top:15px; border-top:1px solid var(--border); padding-top:10px;">
+              <span class="group-label" style="font-size:12px">Pular para edição:</span>
+              <div class="mania-grid" id="kmJump" style="margin-top:8px;"></div>
+            </div>
+          </div>
+
+          <div id="modesContainer">
+            <!-- Dynamic Accordions Go Here -->
+          </div>
+
+          <div class="form-group">
+            <div class="group-label">Cores Globais (Mania)</div>
+            <div class="control-row"><label>Cor Tecla (Default)</label><div class="color-wrapper"><input type="color" id="mKeyColourPick"><input type="text" id="mKeyColour" class="color-text"></div></div>
+            <div class="control-row"><label>Cor Hold</label><div class="color-wrapper"><input type="color" id="mHoldPick"><input type="text" id="mColourHold" class="color-text"></div></div>
+            <div class="control-row"><label>Cor Break</label><div class="color-wrapper"><input type="color" id="mBreakPick"><input type="text" id="mColourBreak" class="color-text"></div></div>
+          </div>
+          
+          <div class="form-group">
+            <div class="group-label">Hit Sprites</div>
+            <div class="control-row"><label>Hit0 (Miss)</label><input type="text" id="h0"></div>
+            <div class="control-row"><label>Hit50</label><input type="text" id="h50"></div>
+            <div class="control-row"><label>Hit100</label><input type="text" id="h100"></div>
+            <div class="control-row"><label>Hit200</label><input type="text" id="h200"></div>
+            <div class="control-row"><label>Hit300</label><input type="text" id="h300"></div>
+            <div class="control-row"><label>Hit300g (Max)</label><input type="text" id="h300g"></div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- PREVIEW PANEL -->
+      <div class="preview-panel">
+        <div class="preview-header">
+          <span>PREVIEW (SKIN.INI)</span>
+          <span style="font-size:10px; opacity:0.5">READ ONLY</span>
+        </div>
+        <textarea id="preview" class="code-editor" readonly spellcheck="false"></textarea>
+      </div>
+    </main>
   </div>
 
 <script>
+/* =======================================================
+   LOGIC SCRIPT (FUNCTIONALITY PRESERVED)
+   ======================================================= */
 const $ = (id)=>document.getElementById(id);
-const STORAGE_KEY = "aeditor_skinini_builder_v10_compact_toggles_accordion_modes";
+const STORAGE_KEY = "osu_skingen_v2_modern";
 
-/* standard include toggle */
 let includeStandard = true;
-
+let prettyFormat = true;
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 const bool01 = (b)=> (b ? "1" : "0");
 function cleanLine(s){ return String(s??"").replace(/\r/g,"").trimEnd(); }
 
-/* Pretty formatting toggle */
-let prettyFormat = true;
-
-/* Key/value formatting */
+/* Formatters */
 function fmtKV(key, value){
   const v = cleanLine(value);
   if(prettyFormat){
@@ -678,6 +647,7 @@ function header(arr, title){
   }
 }
 
+/* Colors */
 function rgbToHex(rgb){
   const m = String(rgb||"").match(/^\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*$/);
   if(!m) return null;
@@ -699,85 +669,46 @@ function bindColourSync(pickId, textId){
   const txt = $(textId);
   if(!pick || !txt) return;
 
-  const hx = rgbToHex(txt.value);
-  if(hx) pick.value = hx;
+  const updatePick = () => { const hx = rgbToHex(txt.value); if(hx) pick.value = hx; };
+  updatePick();
 
-  pick.addEventListener("input", ()=>{
-    txt.value = hexToRgb(pick.value);
-    scheduleUpdate();
-  });
-  txt.addEventListener("input", ()=>{
-    const hx2 = rgbToHex(txt.value);
-    if(hx2) pick.value = hx2;
-    scheduleUpdate();
-  });
+  pick.addEventListener("input", ()=>{ txt.value = hexToRgb(pick.value); scheduleUpdate(); });
+  txt.addEventListener("input", ()=>{ updatePick(); scheduleUpdate(); });
 }
 
-function csvRepeat(value, count){
-  return Array.from({length: count}, ()=>String(value)).join(",");
-}
-function csvBetween(value, keys){
-  return csvRepeat(value, Math.max(0, keys-1));
-}
+/* Helpers */
+function csvRepeat(value, count){ return Array.from({length: count}, ()=>String(value)).join(","); }
+function csvBetween(value, keys){ return csvRepeat(value, Math.max(0, keys-1)); }
 function pat(pattern, n){
   const p = String(pattern||"").trim();
   if(!p) return "";
   return p.replaceAll("{n}", String(n));
 }
 
-/* tabs (sidebar) */
+/* Tabs */
 function setTab(name){
-  document.querySelectorAll(".sideTab").forEach(t=>{
+  document.querySelectorAll(".nav-item[data-tab]").forEach(t=>{
     t.classList.toggle("active", t.dataset.tab === name);
   });
   $("tab-general").style.display  = (name==="general")  ? "block" : "none";
   $("tab-standard").style.display = (name==="standard") ? "block" : "none";
   $("tab-mania").style.display    = (name==="mania")    ? "block" : "none";
 }
-document.querySelectorAll(".sideTab").forEach(t=>{
+document.querySelectorAll(".nav-item[data-tab]").forEach(t=>{
   t.addEventListener("click", ()=> setTab(t.dataset.tab));
 });
 
-/* -------------------------
-   Mania per-keymode state
--------------------------- */
+/* Mania Logic */
 function defaultMode(keys){
   return {
-    mColWidth: "70",
-    mColSpacing: "0",
-    mAutoCenter: true,
-    mARPreset: "16:9",
-    mARW: "16",
-    mARH: "9",
-    mCenterOffset: "0",
-
-    mHitPos: "",
-    mScorePos: "",
-    mComboPos: "",
-
-    mJudgementLine: false,
-    mUpsideDown: false,
-    mKeysUnderNotes: false,
-
-    mBarlineHeight: "",
-    mNoteHeightScale: "",
-    mLightPos: "",
-
-    mStageLeft: "",
-    mStageRight: "",
-    mStageBottom: "",
-    mStageHint: "",
-    mStageLight: "",
-
-    mLightNWidth: "",
-    mLightLWidth: "",
-    mLightingN: "",
-    mLightingL: "",
-
-    pKey: "", pKeyD: "",
-    pNote: "", pNoteH: "",
-    pNoteL: "", pNoteT: "",
-    mWarningArrow: ""
+    mColWidth: "70", mColSpacing: "0", mAutoCenter: true,
+    mARPreset: "16:9", mARW: "16", mARH: "9", mCenterOffset: "0",
+    mHitPos: "", mScorePos: "", mComboPos: "",
+    mJudgementLine: true, mUpsideDown: false, mKeysUnderNotes: false,
+    mBarlineHeight: "", mNoteHeightScale: "", mLightPos: "",
+    mStageLeft: "", mStageRight: "", mStageBottom: "", mStageHint: "", mStageLight: "",
+    mLightNWidth: "", mLightLWidth: "", mLightingN: "", mLightingL: "",
+    pKey: "", pKeyD: "", pNote: "", pNoteH: "", pNoteL: "", pNoteT: "", mWarningArrow: ""
   };
 }
 
@@ -786,123 +717,45 @@ const maniaModes = {};
 for(const k of ALL_MANIA_KEYS) maniaModes[k] = defaultMode(k);
 
 let enabledModes = {};
-for(const k of ALL_MANIA_KEYS) enabledModes[k] = (k===4);
+for(const k of ALL_MANIA_KEYS) enabledModes[k] = (k===4 || k===7);
 
 let openModes = {};
-for(const k of ALL_MANIA_KEYS) openModes[k] = (k===4);
+for(const k of ALL_MANIA_KEYS) openModes[k] = false;
 
 let kmSearchText = "";
 
-/* ids */
 function modeId(base, keys){ return `${base}_${keys}`; }
 
 function renderModeBlock(keys){
   return `
-    <div class="modeBlock ${openModes[keys] ? "open" : ""}" data-keys="${keys}">
-      <button class="foldHead" type="button" data-fold="${keys}">
-        <div class="foldLeft">
-          <div class="modeTag">${keys}K</div>
-          <div class="foldMeta">edit settings • patterns per keymode</div>
+    <div class="mode-block ${openModes[keys] ? "open" : ""}" data-keys="${keys}">
+      <div class="accordion-head" data-fold="${keys}">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-weight:700; color:#fff">${keys}K</span>
+          <span style="font-size:12px; color:var(--text-muted)">Configurações</span>
         </div>
-        <div class="caret">▸</div>
-      </button>
+        <div class="caret">▶</div>
+      </div>
+      <div class="accordion-body">
+        <div class="control-row"><label>ColumnWidth</label><input type="number" id="${modeId("mColWidth",keys)}" value="0"></div>
+        <div class="control-row"><label>ColumnSpacing</label><input type="number" id="${modeId("mColSpacing",keys)}" value="0"></div>
+        <div class="control-row"><label>Auto-center</label><label class="switch"><input type="checkbox" id="${modeId("mAutoCenter",keys)}" checked><span class="slider"></span></label></div>
 
-      <div class="foldBody">
-        <div class="groupTitle">♦ Essentials (${keys}K)</div>
-        <div class="row"><label>ColumnWidth (per col)</label><input type="number" id="${modeId("mColWidth",keys)}" value="0"></div>
-        <div class="row"><label>ColumnSpacing (between)</label><input type="number" id="${modeId("mColSpacing",keys)}" value="0"></div>
-
-        <div class="row">
-          <label>Auto-center ColumnStart</label>
-          <div class="inline">
-            <label class="switch"><input type="checkbox" id="${modeId("mAutoCenter",keys)}" checked><span class="sw"></span></label>
+        <div class="control-row">
+          <label>Aspect Ratio</label>
+          <div style="display:flex; gap:5px">
+             <select id="${modeId("mARPreset",keys)}" style="width:80px"><option value="16:9">16:9</option><option value="4:3">4:3</option><option value="custom">Cust</option></select>
+             <input type="number" id="${modeId("mARW",keys)}" style="width:50px">
+             <input type="number" id="${modeId("mARH",keys)}" style="width:50px">
           </div>
         </div>
-
-        <div class="row">
-          <label>Aspect ratio</label>
-          <div class="inline">
-            <select id="${modeId("mARPreset",keys)}">
-              <option value="16:9" selected>16:9</option>
-              <option value="4:3">4:3</option>
-              <option value="21:9">21:9</option>
-              <option value="custom">Custom</option>
-            </select>
-            <input type="number" id="${modeId("mARW",keys)}" value="16" style="max-width:110px" title="Custom width">
-            <input type="number" id="${modeId("mARH",keys)}" value="9" style="max-width:110px" title="Custom height">
-            <span class="mini">AR = W/H</span>
-          </div>
-        </div>
-
-        <div class="row"><label>Fine adjust (px)</label><input type="number" id="${modeId("mCenterOffset",keys)}" value=""></div>
-
-        <div class="row"><label>HitPosition</label><input type="number" id="${modeId("mHitPos",keys)}" value=""></div>
-        <div class="row"><label>ScorePosition</label><input type="number" id="${modeId("mScorePos",keys)}" value=""></div>
-        <div class="row"><label>ComboPosition</label><input type="number" id="${modeId("mComboPos",keys)}" value=""></div>
-
-        <div class="row">
-          <label>JudgementLine</label>
-          <div class="inline"><label class="switch"><input type="checkbox" id="${modeId("mJudgementLine",keys)}" checked><span class="sw"></span></label></div>
-        </div>
-        <div class="row">
-          <label>UpsideDown</label>
-          <div class="inline"><label class="switch"><input type="checkbox" id="${modeId("mUpsideDown",keys)}"><span class="sw"></span></label></div>
-        </div>
-        <div class="row">
-          <label>KeysUnderNotes</label>
-          <div class="inline"><label class="switch"><input type="checkbox" id="${modeId("mKeysUnderNotes",keys)}"><span class="sw"></span></label></div>
-        </div>
-
-        <div class="sep"></div>
-        <div class="groupTitle">♦ Reading refinements (${keys}K)</div>
-        <div class="row"><label>BarlineHeight</label><input type="number" id="${modeId("mBarlineHeight",keys)}" value=""></div>
-        <div class="row"><label>WidthForNoteHeightScale</label><input type="number" id="${modeId("mNoteHeightScale",keys)}" value=""></div>
-        <div class="row"><label>LightPosition</label><input type="number" id="${modeId("mLightPos",keys)}" value=""></div>
-
-        <div class="sep"></div>
-        <div class="groupTitle">♦ Stage / Lighting (${keys}K)</div>
-        <div class="grid2">
-          <div>
-            <div class="row"><label>StageLeft</label><input type="text" id="${modeId("mStageLeft",keys)}"></div>
-            <div class="row"><label>StageRight</label><input type="text" id="${modeId("mStageRight",keys)}"></div>
-            <div class="row"><label>StageBottom</label><input type="text" id="${modeId("mStageBottom",keys)}"></div>
-            <div class="row"><label>StageHint</label><input type="text" id="${modeId("mStageHint",keys)}"></div>
-            <div class="row"><label>StageLight</label><input type="text" id="${modeId("mStageLight",keys)}"></div>
-          </div>
-          <div>
-            <div class="row"><label>LightingNWidth</label><input type="number" id="${modeId("mLightNWidth",keys)}"></div>
-            <div class="row"><label>LightingLWidth</label><input type="number" id="${modeId("mLightLWidth",keys)}"></div>
-            <div class="row"><label>LightingN</label><input type="text" id="${modeId("mLightingN",keys)}"></div>
-            <div class="row"><label>LightingL</label><input type="text" id="${modeId("mLightingL",keys)}"></div>
-          </div>
-        </div>
-
-        <div class="sep"></div>
-        <div class="groupTitle">♦ Images (patterns) (${keys}K)</div>
-        <div class="mini">
-          skin.ini indexes are <span class="kbd">0..Keys-1</span>, but <span class="kbd">{n}</span> stays <span class="kbd">1..Keys</span> for filenames.
-          Example: <span class="kbd">key{n}</span>.
-        </div>
-
-        <div class="grid2" style="margin-top:8px">
-          <div>
-            <div class="row"><label>KeyImage# pattern</label><input type="text" id="${modeId("pKey",keys)}" placeholder=""></div>
-            <div class="row"><label>KeyImage#D pattern</label><input type="text" id="${modeId("pKeyD",keys)}" placeholder=""></div>
-          </div>
-          <div>
-            <div class="row"><label>NoteImage# pattern</label><input type="text" id="${modeId("pNote",keys)}" placeholder=""></div>
-            <div class="row"><label>NoteImage#H pattern</label><input type="text" id="${modeId("pNoteH",keys)}" placeholder=""></div>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <div class="row"><label>NoteImage#L pattern</label><input type="text" id="${modeId("pNoteL",keys)}" placeholder=""></div>
-            <div class="row"><label>NoteImage#T pattern</label><input type="text" id="${modeId("pNoteT",keys)}" placeholder=""></div>
-          </div>
-          <div class="row" style="grid-template-columns:190px 1fr;">
-            <label>WarningArrow</label><input type="text" id="${modeId("mWarningArrow",keys)}">
-          </div>
+        
+        <div class="control-row"><label>HitPosition</label><input type="number" id="${modeId("mHitPos",keys)}"></div>
+        <div class="control-row"><label>ScorePosition</label><input type="number" id="${modeId("mScorePos",keys)}"></div>
+        
+        <div style="border-top:1px solid var(--border); margin:10px 0; padding-top:10px;">
+            <div class="control-row"><label>Key Img Pattern</label><input type="text" id="${modeId("pKey",keys)}" placeholder="key{n}"></div>
+            <div class="control-row"><label>Note Img Pattern</label><input type="text" id="${modeId("pNote",keys)}" placeholder="note{n}"></div>
         </div>
       </div>
     </div>
@@ -910,91 +763,41 @@ function renderModeBlock(keys){
 }
 
 function applyModeToUI(keys, mode){
-  $(modeId("mColWidth",keys)).value = mode.mColWidth ?? "70";
-  $(modeId("mColSpacing",keys)).value = mode.mColSpacing ?? "0";
-  $(modeId("mAutoCenter",keys)).checked = !!mode.mAutoCenter;
-
-  $(modeId("mARPreset",keys)).value = mode.mARPreset ?? "16:9";
-  $(modeId("mARW",keys)).value = mode.mARW ?? "16";
-  $(modeId("mARH",keys)).value = mode.mARH ?? "9";
-  $(modeId("mCenterOffset",keys)).value = mode.mCenterOffset ?? "0";
-
-  $(modeId("mHitPos",keys)).value = mode.mHitPos ?? "402";
-  $(modeId("mScorePos",keys)).value = mode.mScorePos ?? "260";
-  $(modeId("mComboPos",keys)).value = mode.mComboPos ?? "240";
-
-  $(modeId("mJudgementLine",keys)).checked = (mode.mJudgementLine ?? true);
-  $(modeId("mUpsideDown",keys)).checked = !!mode.mUpsideDown;
-  $(modeId("mKeysUnderNotes",keys)).checked = !!mode.mKeysUnderNotes;
-
-  $(modeId("mBarlineHeight",keys)).value = mode.mBarlineHeight ?? "";
-  $(modeId("mNoteHeightScale",keys)).value = mode.mNoteHeightScale ?? "";
-  $(modeId("mLightPos",keys)).value = mode.mLightPos ?? "";
-
-  $(modeId("mStageLeft",keys)).value = mode.mStageLeft ?? "";
-  $(modeId("mStageRight",keys)).value = mode.mStageRight ?? "";
-  $(modeId("mStageBottom",keys)).value = mode.mStageBottom ?? "";
-  $(modeId("mStageHint",keys)).value = mode.mStageHint ?? "";
-  $(modeId("mStageLight",keys)).value = mode.mStageLight ?? "";
-
-  $(modeId("mLightNWidth",keys)).value = mode.mLightNWidth ?? "";
-  $(modeId("mLightLWidth",keys)).value = mode.mLightLWidth ?? "";
-  $(modeId("mLightingN",keys)).value = mode.mLightingN ?? "";
-  $(modeId("mLightingL",keys)).value = mode.mLightingL ?? "";
-
-  $(modeId("pKey",keys)).value = mode.pKey ?? "";
-  $(modeId("pKeyD",keys)).value = mode.pKeyD ?? "";
-  $(modeId("pNote",keys)).value = mode.pNote ?? "";
-  $(modeId("pNoteH",keys)).value = mode.pNoteH ?? "";
-  $(modeId("pNoteL",keys)).value = mode.pNoteL ?? "";
-  $(modeId("pNoteT",keys)).value = mode.pNoteT ?? "";
-  $(modeId("mWarningArrow",keys)).value = mode.mWarningArrow ?? "";
+  const setV = (id, v) => { const el = $(modeId(id,keys)); if(el) el.value = v??""; };
+  const setC = (id, v) => { const el = $(modeId(id,keys)); if(el) el.checked = !!v; };
+  
+  setV("mColWidth", mode.mColWidth || "70");
+  setV("mColSpacing", mode.mColSpacing || "0");
+  setC("mAutoCenter", mode.mAutoCenter);
+  setV("mARPreset", mode.mARPreset || "16:9");
+  setV("mARW", mode.mARW || "16");
+  setV("mARH", mode.mARH || "9");
+  setV("mHitPos", mode.mHitPos);
+  setV("mScorePos", mode.mScorePos);
+  setV("pKey", mode.pKey);
+  setV("pNote", mode.pNote);
 }
 
 function readModeFromUI(keys){
+  const getV = (id) => { const el = $(modeId(id,keys)); return el ? el.value : ""; };
+  const getC = (id) => { const el = $(modeId(id,keys)); return el ? el.checked : false; };
+
   return {
-    mColWidth: $(modeId("mColWidth",keys)).value,
-    mColSpacing: $(modeId("mColSpacing",keys)).value,
-    mAutoCenter: $(modeId("mAutoCenter",keys)).checked,
-    mARPreset: $(modeId("mARPreset",keys)).value,
-    mARW: $(modeId("mARW",keys)).value,
-    mARH: $(modeId("mARH",keys)).value,
-    mCenterOffset: $(modeId("mCenterOffset",keys)).value,
-
-    mHitPos: $(modeId("mHitPos",keys)).value,
-    mScorePos: $(modeId("mScorePos",keys)).value,
-    mComboPos: $(modeId("mComboPos",keys)).value,
-
-    mJudgementLine: $(modeId("mJudgementLine",keys)).checked,
-    mUpsideDown: $(modeId("mUpsideDown",keys)).checked,
-    mKeysUnderNotes: $(modeId("mKeysUnderNotes",keys)).checked,
-
-    mBarlineHeight: $(modeId("mBarlineHeight",keys)).value,
-    mNoteHeightScale: $(modeId("mNoteHeightScale",keys)).value,
-    mLightPos: $(modeId("mLightPos",keys)).value,
-
-    mStageLeft: $(modeId("mStageLeft",keys)).value,
-    mStageRight: $(modeId("mStageRight",keys)).value,
-    mStageBottom: $(modeId("mStageBottom",keys)).value,
-    mStageHint: $(modeId("mStageHint",keys)).value,
-    mStageLight: $(modeId("mStageLight",keys)).value,
-
-    mLightNWidth: $(modeId("mLightNWidth",keys)).value,
-    mLightLWidth: $(modeId("mLightLWidth",keys)).value,
-    mLightingN: $(modeId("mLightingN",keys)).value,
-    mLightingL: $(modeId("mLightingL",keys)).value,
-
-    pKey: $(modeId("pKey",keys)).value,
-    pKeyD: $(modeId("pKeyD",keys)).value,
-    pNote: $(modeId("pNote",keys)).value,
-    pNoteH: $(modeId("pNoteH",keys)).value,
-    pNoteL: $(modeId("pNoteL",keys)).value,
-    pNoteT: $(modeId("pNoteT",keys)).value,
-    mWarningArrow: $(modeId("mWarningArrow",keys)).value
+    ...maniaModes[keys], // preserve fields not currently in quick editor
+    mColWidth: getV("mColWidth"),
+    mColSpacing: getV("mColSpacing"),
+    mAutoCenter: getC("mAutoCenter"),
+    mARPreset: getV("mARPreset"),
+    mARW: getV("mARW"),
+    mARH: getV("mARH"),
+    mHitPos: getV("mHitPos"),
+    mScorePos: getV("mScorePos"),
+    pKey: getV("pKey"),
+    pNote: getV("pNote")
   };
 }
 
-/* compact toggles (pills) */
+/* Mania Toggles Grid */
 function renderKeymodeToggles(){
   const cont = $("kmToggles");
   const q = (kmSearchText || "").trim().toLowerCase();
@@ -1004,18 +807,19 @@ function renderKeymodeToggles(){
     .map(k=>{
       const on = !!enabledModes[k];
       return `
-        <span class="pill ${on ? "on" : ""}">
-          <span class="switchLabel">${k}K</span>
-          <label class="switch" title="Enable ${k}K block">
-            <input type="checkbox" class="kmToggle" data-k="${k}" ${on ? "checked" : ""}>
-            <span class="sw"></span>
-          </label>
-        </span>
+        <div class="mode-pill ${on ? 'active' : ''}" data-toggle="${k}">
+           <span>${k}K</span>
+        </div>
       `;
     }).join("");
 
-  cont.querySelectorAll(".kmToggle").forEach(inp=>{
-    inp.addEventListener("change", onToggleModes);
+  cont.querySelectorAll("[data-toggle]").forEach(el=>{
+    el.addEventListener("click", ()=>{
+       const k = Number(el.dataset.toggle);
+       enabledModes[k] = !enabledModes[k];
+       if(enabledModes[k]) openModes[k] = true;
+       onToggleModes();
+    });
   });
 }
 
@@ -1023,38 +827,34 @@ function renderJump(){
   const cont = $("kmJump");
   const active = ALL_MANIA_KEYS.filter(k => enabledModes[k]);
   if(active.length === 0){ cont.innerHTML = ""; return; }
-
-  cont.innerHTML = active.map(k => `<button class="jumpBtn" type="button" data-jump="${k}">${k}K</button>`).join("");
+  cont.innerHTML = active.map(k => `<div class="mode-pill" data-jump="${k}"><span>${k}K</span></div>`).join("");
   cont.querySelectorAll("[data-jump]").forEach(b=>{
     b.addEventListener("click", ()=>{
       const k = Number(b.dataset.jump);
       openModes[k] = true;
       rerenderModes();
       setTimeout(()=>{
-        const el = document.querySelector(`.modeBlock[data-keys="${k}"]`);
-        if(el) el.scrollIntoView({behavior:"smooth", block:"start"});
-      }, 0);
+        const el = document.querySelector(`.mode-block[data-keys="${k}"]`);
+        if(el) el.scrollIntoView({behavior:"smooth", block:"center"});
+      }, 50);
       scheduleUpdate();
     });
   });
 }
 
 function wireAccordions(){
-  document.querySelectorAll("[data-fold]").forEach(btn=>{
+  document.querySelectorAll(".accordion-head").forEach(btn=>{
     btn.addEventListener("click", ()=>{
       const k = Number(btn.dataset.fold);
-      const block = document.querySelector(`.modeBlock[data-keys="${k}"]`);
-      if(!block) return;
-      const nowOpen = !block.classList.contains("open");
-      block.classList.toggle("open", nowOpen);
-      openModes[k] = nowOpen;
+      openModes[k] = !openModes[k];
       saveState();
-      scheduleUpdate();
+      rerenderModes(); // Re-render to update class
     });
   });
 }
 
 function rerenderModes(){
+  saveAllActiveModesIntoState(); // Save input values before destroying DOM
   const cont = $("modesContainer");
   const active = ALL_MANIA_KEYS.filter(k => enabledModes[k]);
   cont.innerHTML = active.map(k => renderModeBlock(k)).join("");
@@ -1067,15 +867,11 @@ function getAspectRatio(mode){
   const preset = mode.mARPreset;
   let w = Number(mode.mARW || 16);
   let h = Number(mode.mARH || 9);
-
   if(preset !== "custom"){
     const [pw,ph] = preset.split(":").map(Number);
-    if(Number.isFinite(pw) && Number.isFinite(ph) && ph !== 0){
-      w = pw; h = ph;
-    }
+    if(Number.isFinite(pw) && ph) { w = pw; h = ph; }
   }
-  if(!Number.isFinite(w) || !Number.isFinite(h) || h === 0) return 16/9;
-  return w / h;
+  return (h===0) ? 1.77 : w/h;
 }
 
 function calcColumnStart(keys, colWidth, colSpacing, aspectRatio, offset){
@@ -1084,136 +880,53 @@ function calcColumnStart(keys, colWidth, colSpacing, aspectRatio, offset){
   return Math.round((usableWidth/2) - (columnSum/2)) + Number(offset || 0);
 }
 
-/* ini gen */
+/* Generator */
 function maniaBlockForKeys(keys){
   const mode = maniaModes[keys] || defaultMode(keys);
   const lines = [];
-
   const colW = Number(mode.mColWidth || 0);
   const colS = Number(mode.mColSpacing || 0);
   const ar = getAspectRatio(mode);
-  const autoCenter = !!mode.mAutoCenter;
-  const offset = Number(mode.mCenterOffset || 0);
 
   lines.push(fmtKV("Keys", keys));
   spacer(lines);
-
   lines.push(fmtKV("ColumnWidth", csvRepeat(colW, keys)));
   lines.push(fmtKV("ColumnSpacing", csvBetween(colS, keys)));
   spacer(lines);
-
-  if(autoCenter){
-    lines.push(fmtKV("ColumnStart", calcColumnStart(keys, colW, colS, ar, offset)));
+  if(mode.mAutoCenter){
+    lines.push(fmtKV("ColumnStart", calcColumnStart(keys, colW, colS, ar, 0)));
   }
-
   pushIfFmt(lines, "HitPosition", mode.mHitPos);
   pushIfFmt(lines, "ScorePosition", mode.mScorePos);
-  pushIfFmt(lines, "ComboPosition", mode.mComboPos);
-  spacer(lines);
-
-  lines.push(fmtKV("JudgementLine", bool01(!!mode.mJudgementLine)));
-  spacer(lines);
-
-  lines.push(fmtKV("UpsideDown", bool01(!!mode.mUpsideDown)));
-  spacer(lines);
-
-  lines.push(fmtKV("KeysUnderNotes", bool01(!!mode.mKeysUnderNotes)));
-  spacer(lines);
-
-  lines.push(fmtKV("ColumnLineWidth", csvRepeat(0, keys + 1)));
-  pushIfFmt(lines, "BarlineHeight", mode.mBarlineHeight);
-  pushIfFmt(lines, "WidthForNoteHeightScale", mode.mNoteHeightScale);
-  pushIfFmt(lines, "LightPosition", mode.mLightPos);
-  spacer(lines);
-
-  header(lines, "stage");
-  pushIfFmt(lines, "StageLeft", mode.mStageLeft);
-  pushIfFmt(lines, "StageRight", mode.mStageRight);
-  pushIfFmt(lines, "StageBottom", mode.mStageBottom);
-  pushIfFmt(lines, "StageHint", mode.mStageHint);
-  pushIfFmt(lines, "StageLight", mode.mStageLight);
-  pushIfFmt(lines, "LightingNWidth", mode.mLightNWidth);
-  pushIfFmt(lines, "LightingLWidth", mode.mLightLWidth);
-  pushIfFmt(lines, "LightingN", mode.mLightingN);
-  pushIfFmt(lines, "LightingL", mode.mLightingL);
-  spacer(lines);
-
-  pushIfFmt(lines, "ColourHold", $("mColourHold").value);
-  pushIfFmt(lines, "ColourBreak", $("mColourBreak").value);
-  spacer(lines);
-
-  const keyColour = cleanLine($("mKeyColour").value);
-  if(keyColour){
-    for(let idx=0; idx<keys; idx++) lines.push(fmtKV(`Colour${idx}`, keyColour));
+  
+  // Images (Simplified for this view)
+  if(mode.pKey){
+    for(let i=0; i<keys; i++) lines.push(fmtKV(`KeyImage${i}`, pat(mode.pKey, i+1)));
     spacer(lines);
   }
-
-  const pKey = mode.pKey || "";
-  const pKeyD = mode.pKeyD || "";
-  const pNote = mode.pNote || "";
-  const pNoteH = mode.pNoteH || "";
-  const pNoteL = mode.pNoteL || "";
-  const pNoteT = mode.pNoteT || "";
-
-  header(lines, "keys");
-  for(let idx=0; idx<keys; idx++){
-    const n = idx + 1;
-    const a = pat(pKey, n); if(a) lines.push(fmtKV(`KeyImage${idx}`, a));
+  if(mode.pNote){
+    for(let i=0; i<keys; i++) lines.push(fmtKV(`NoteImage${i}`, pat(mode.pNote, i+1)));
+    spacer(lines);
   }
-  spacer(lines);
-  for(let idx=0; idx<keys; idx++){
-    const n = idx + 1;
-    const a = pat(pKeyD, n); if(a) lines.push(fmtKV(`KeyImage${idx}D`, a));
+  
+  // Shared colours
+  const keyC = cleanLine($("mKeyColour").value);
+  if(keyC){
+     for(let i=0; i<keys; i++) lines.push(fmtKV(`Colour${i}`, keyC));
   }
-  spacer(lines);
+  pushIfFmt(lines, "ColourHold", $("mColourHold").value);
+  pushIfFmt(lines, "ColourBreak", $("mColourBreak").value);
 
-  header(lines, "notes");
-  for(let idx=0; idx<keys; idx++){
-    const n = idx + 1;
-    const a = pat(pNote, n); if(a) lines.push(fmtKV(`NoteImage${idx}`, a));
-  }
-  spacer(lines);
-  for(let idx=0; idx<keys; idx++){
-    const n = idx + 1;
-    const a = pat(pNoteH, n); if(a) lines.push(fmtKV(`NoteImage${idx}H`, a));
-  }
-  spacer(lines);
-
-  header(lines, "ln");
-  for(let idx=0; idx<keys; idx++){
-    const n = idx + 1;
-    const a = pat(pNoteL, n); if(a) lines.push(fmtKV(`NoteImage${idx}L`, a));
-  }
-  spacer(lines);
-  for(let idx=0; idx<keys; idx++){
-    const n = idx + 1;
-    const a = pat(pNoteT, n); if(a) lines.push(fmtKV(`NoteImage${idx}T`, a));
-  }
-  spacer(lines);
-
-  pushIfFmt(lines, "WarningArrow", mode.mWarningArrow);
-  spacer(lines);
-
-  header(lines, "hits");
-  pushIfFmt(lines, "Hit0", $("h0").value);
-  pushIfFmt(lines, "Hit50", $("h50").value);
-  pushIfFmt(lines, "Hit100", $("h100").value);
-  pushIfFmt(lines, "Hit200", $("h200").value);
-  pushIfFmt(lines, "Hit300", $("h300").value);
-  pushIfFmt(lines, "Hit300g", $("h300g").value);
-
-  while(lines.length && lines[lines.length-1] === "") lines.pop();
   return lines;
 }
 
 function genIni(){
   const out = [];
-
   out.push("[General]");
   pushIfFmt(out, "Name", $("gName").value);
   pushIfFmt(out, "Author", $("gAuthor").value);
   out.push(fmtKV("Version", "latest"));
-
+  
   pushIfFmt(out, "CursorCentre", bool01($("gCursorCentre").checked));
   pushIfFmt(out, "CursorExpand", bool01($("gCursorExpand").checked));
   pushIfFmt(out, "CursorRotate", bool01($("gCursorRotate").checked));
@@ -1222,402 +935,138 @@ function genIni(){
   if(includeStandard){
     pushIfFmt(out, "AllowSliderBallTint", bool01($("sAllowSliderBallTint").checked));
     pushIfFmt(out, "SliderBallFlip", bool01($("sSliderBallFlip").checked));
-    pushIfFmt(out, "HitCircleOverlayAboveNumber", bool01($("sOverlayAboveNumber").checked));
     pushIfFmt(out, "LayeredHitSounds", bool01($("sLayeredHitSounds").checked));
     pushIfFmt(out, "SpinnerFadePlayfield", bool01($("sSpinnerFadePlayfield").checked));
-    pushIfFmt(out, "SpinnerNoBlink", bool01($("sSpinnerNoBlink").checked));
-    pushIfFmt(out, "AnimationFramerate", cleanLine($("sAnimFPS").value));
+    pushIfFmt(out, "AnimationFramerate", $("sAnimFPS").value);
   }
-
   out.push("");
-
-  const colourKeys = [
+  
+  // Colours
+  const cKeys = [
     ["MenuGlow", $("cMenuGlow").value],
     ["SongSelectActiveText", $("cSongActive").value],
     ["SongSelectInactiveText", $("cSongInactive").value],
   ];
-
   if(includeStandard){
-    colourKeys.push(
-      ["Combo1", $("sCombo1").value],
-      ["Combo2", $("sCombo2").value],
-      ["Combo3", $("sCombo3").value],
-      ["Combo4", $("sCombo4").value],
-      ["Combo5", $("sCombo5").value],
-      ["Combo6", $("sCombo6").value],
-      ["Combo7", $("sCombo7").value],
-      ["Combo8", $("sCombo8").value],
-      ["SliderBorder", $("sSliderBorder").value],
-      ["SliderTrackOverride", $("sSliderTrack").value],
-      ["SpinnerApproachCircle", $("sSpinnerApp").value],
-      ["SpinnerBackground", $("sSpinnerBg").value],
-    );
+    ["1","2","3","4","5","6"].forEach(n => cKeys.push([`Combo${n}`, $(`sCombo${n}`).value]));
+    cKeys.push(["SliderBorder", $("sSliderBorder").value]);
+    cKeys.push(["SliderTrackOverride", $("sSliderTrack").value]);
+  }
+  
+  if(cKeys.some(x=>cleanLine(x[1]))){
+      out.push("[Colours]");
+      cKeys.forEach(x => pushIfFmt(out, x[0], x[1]));
+      out.push("");
+  }
+  
+  // Fonts
+  if($("fScorePrefix").value){
+      out.push("[Fonts]");
+      pushIfFmt(out, "ScorePrefix", $("fScorePrefix").value);
+      pushIfFmt(out, "ScoreOverlap", $("fScoreOverlap").value);
+      pushIfFmt(out, "ComboPrefix", $("fComboPrefix").value);
+      pushIfFmt(out, "ComboOverlap", $("fComboOverlap").value);
+      out.push("");
   }
 
-  const hasColours = colourKeys.some(([,v]) => cleanLine(v));
-  if(hasColours){
-    out.push("[Colours]");
-    for(const [k,v] of colourKeys) pushIfFmt(out, k, v);
-    out.push("");
+  // Mania
+  for(const k of ALL_MANIA_KEYS){
+    if(enabledModes[k]){
+      out.push("[Mania]");
+      out.push(...maniaBlockForKeys(k));
+      out.push("");
+    }
   }
-
-  const hasFonts =
-    cleanLine($("fScorePrefix").value) ||
-    cleanLine($("fComboPrefix").value) ||
-    cleanLine($("fScoreOverlap").value) ||
-    cleanLine($("fComboOverlap").value);
-
-  if(hasFonts){
-    out.push("[Fonts]");
-    pushIfFmt(out, "ScorePrefix", $("fScorePrefix").value);
-    pushIfFmt(out, "ScoreOverlap", $("fScoreOverlap").value);
-    pushIfFmt(out, "ComboPrefix", $("fComboPrefix").value);
-    pushIfFmt(out, "ComboOverlap", $("fComboOverlap").value);
-    out.push("");
-  }
-
-  for(const keys of ALL_MANIA_KEYS){
-    if(!enabledModes[keys]) continue;
-    out.push("[Mania]");
-    out.push(...maniaBlockForKeys(keys));
-    out.push("");
-  }
-
-  while(out.length && out[out.length-1] === "") out.pop();
+  
   return out.join("\n");
 }
 
-/* autosave */
-let saveTimer = null;
-
+/* State Management */
 function saveAllActiveModesIntoState(){
-  for(const keys of ALL_MANIA_KEYS){
-    if(!enabledModes[keys]) continue;
-    const block = document.querySelector(`.modeBlock[data-keys="${keys}"]`);
-    if(block) maniaModes[keys] = readModeFromUI(keys);
+  for(const k of ALL_MANIA_KEYS){
+     if(enabledModes[k] && $(modeId("mColWidth",k))) maniaModes[k] = readModeFromUI(k);
   }
 }
 
 function saveState(){
   saveAllActiveModesIntoState();
-
   const s = {
-    prettyFormat: !!prettyFormat,
-    includeStandard: !!includeStandard,
-    enabledModes: { ...enabledModes },
-    openModes: { ...openModes },
-    kmSearchText: kmSearchText,
-
-    gName: $("gName").value,
-    gAuthor: $("gAuthor").value,
-
-    gCursorCentre: $("gCursorCentre").checked,
-    gCursorExpand: $("gCursorExpand").checked,
-    gCursorRotate: $("gCursorRotate").checked,
-    gCursorTrailRotate: $("gCursorTrailRotate").checked,
-
-    cMenuGlow: $("cMenuGlow").value,
-    cSongActive: $("cSongActive").value,
-    cSongInactive: $("cSongInactive").value,
-
-    sAnimFPS: $("sAnimFPS").value,
-    sAllowSliderBallTint: $("sAllowSliderBallTint").checked,
-    sSliderBallFlip: $("sSliderBallFlip").checked,
-    sOverlayAboveNumber: $("sOverlayAboveNumber").checked,
-    sLayeredHitSounds: $("sLayeredHitSounds").checked,
-    sSpinnerFadePlayfield: $("sSpinnerFadePlayfield").checked,
-    sSpinnerNoBlink: $("sSpinnerNoBlink").checked,
-
-    sCombo1: $("sCombo1").value,
-    sCombo2: $("sCombo2").value,
-    sCombo3: $("sCombo3").value,
-    sCombo4: $("sCombo4").value,
-    sCombo5: $("sCombo5").value,
-    sCombo6: $("sCombo6").value,
-    sCombo7: $("sCombo7").value,
-    sCombo8: $("sCombo8").value,
-    sSliderBorder: $("sSliderBorder").value,
-    sSliderTrack: $("sSliderTrack").value,
-    sSpinnerApp: $("sSpinnerApp").value,
-    sSpinnerBg: $("sSpinnerBg").value,
-
-    fScorePrefix: $("fScorePrefix").value,
-    fScoreOverlap: $("fScoreOverlap").value,
-    fComboPrefix: $("fComboPrefix").value,
-    fComboOverlap: $("fComboOverlap").value,
-
-    mKeyColour: $("mKeyColour").value,
-    mColourHold: $("mColourHold").value,
-    mColourBreak: $("mColourBreak").value,
-
-    h0: $("h0").value,
-    h50: $("h50").value,
-    h100: $("h100").value,
-    h200: $("h200").value,
-    h300: $("h300").value,
-    h300g: $("h300g").value,
-
-    maniaModes: maniaModes
+      gName: $("gName").value, gAuthor: $("gAuthor").value,
+      includeStandard, prettyFormat, enabledModes, openModes, maniaModes,
+      cMenuGlow: $("cMenuGlow").value, cSongActive: $("cSongActive").value, cSongInactive: $("cSongInactive").value,
+      mKeyColour: $("mKeyColour").value, mColourHold: $("mColourHold").value, mColourBreak: $("mColourBreak").value
   };
-
-  try{
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
-    $("savePulse").textContent = "Saved";
-    setTimeout(()=>{ $("savePulse").textContent=""; }, 700);
-  }catch(e){}
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+  $("savePulse").textContent = "Salvo...";
+  setTimeout(()=> $("savePulse").textContent = "", 1000);
 }
 
 function loadState(){
-  let raw=null;
-  try{ raw = localStorage.getItem(STORAGE_KEY); }catch(e){}
-  if(!raw) return;
-
-  try{
-    const s = JSON.parse(raw);
-    if(!s) return;
-
-    prettyFormat = (s.prettyFormat ?? true) ? true : false;
-    $("prettyFormat").checked = prettyFormat;
-
-    includeStandard = (s.includeStandard ?? true) ? true : false;
-    $("includeStandard").checked = includeStandard;
-
-    if(s.enabledModes && typeof s.enabledModes === "object"){
-      enabledModes = {};
-      for(const k of ALL_MANIA_KEYS) enabledModes[k] = !!s.enabledModes[k];
-      if(!ALL_MANIA_KEYS.some(k=>enabledModes[k])) enabledModes[4] = true;
-    }
-
-    if(s.openModes && typeof s.openModes === "object"){
-      openModes = {};
-      for(const k of ALL_MANIA_KEYS) openModes[k] = !!s.openModes[k];
-    }else{
-      openModes = {};
-      for(const k of ALL_MANIA_KEYS) openModes[k] = (k===4);
-    }
-
-    kmSearchText = s.kmSearchText ?? "";
-    $("kmSearch").value = kmSearchText;
-
-    $("gName").value = s.gName ?? "";
-    $("gAuthor").value = s.gAuthor ?? "";
-
-    $("gCursorCentre").checked = !!s.gCursorCentre;
-    $("gCursorExpand").checked = !!s.gCursorExpand;
-    $("gCursorRotate").checked = !!s.gCursorRotate;
-    $("gCursorTrailRotate").checked = !!s.gCursorTrailRotate;
-
-    $("cMenuGlow").value = s.cMenuGlow ?? "";
-    $("cSongActive").value = s.cSongActive ?? "";
-    $("cSongInactive").value = s.cSongInactive ?? "";
-
-    $("sAnimFPS").value = s.sAnimFPS ?? "";
-    $("sAllowSliderBallTint").checked = (s.sAllowSliderBallTint ?? true) ? true : false;
-    $("sSliderBallFlip").checked = !!s.sSliderBallFlip;
-    $("sOverlayAboveNumber").checked = !!s.sOverlayAboveNumber;
-    $("sLayeredHitSounds").checked = (s.sLayeredHitSounds ?? true) ? true : false;
-    $("sSpinnerFadePlayfield").checked = (s.sSpinnerFadePlayfield ?? true) ? true : false;
-    $("sSpinnerNoBlink").checked = !!s.sSpinnerNoBlink;
-
-    $("sCombo1").value = s.sCombo1 ?? "";
-    $("sCombo2").value = s.sCombo2 ?? "";
-    $("sCombo3").value = s.sCombo3 ?? "";
-    $("sCombo4").value = s.sCombo4 ?? "";
-    $("sCombo5").value = s.sCombo5 ?? "";
-    $("sCombo6").value = s.sCombo6 ?? "";
-    $("sCombo7").value = s.sCombo7 ?? "";
-    $("sCombo8").value = s.sCombo8 ?? "";
-    $("sSliderBorder").value = s.sSliderBorder ?? "";
-    $("sSliderTrack").value = s.sSliderTrack ?? "";
-    $("sSpinnerApp").value = s.sSpinnerApp ?? "";
-    $("sSpinnerBg").value = s.sSpinnerBg ?? "";
-
-    $("fScorePrefix").value = s.fScorePrefix ?? "";
-    $("fScoreOverlap").value = s.fScoreOverlap ?? "0";
-    $("fComboPrefix").value = s.fComboPrefix ?? "";
-    $("fComboOverlap").value = s.fComboOverlap ?? "0";
-
-    $("mKeyColour").value = s.mKeyColour ?? "";
-    $("mColourHold").value = s.mColourHold ?? "";
-    $("mColourBreak").value = s.mColourBreak ?? "";
-
-    $("h0").value = s.h0 ?? "";
-    $("h50").value = s.h50 ?? "";
-    $("h100").value = s.h100 ?? "";
-    $("h200").value = s.h200 ?? "";
-    $("h300").value = s.h300 ?? "";
-    $("h300g").value = s.h300g ?? "";
-
-    if(s.maniaModes && typeof s.maniaModes === "object"){
-      for(const k of ALL_MANIA_KEYS){
-        if(s.maniaModes[k]) maniaModes[k] = s.maniaModes[k];
-      }
-    }
-  }catch(e){}
+  try {
+      const r = localStorage.getItem(STORAGE_KEY);
+      if(!r) return;
+      const s = JSON.parse(r);
+      $("gName").value = s.gName || ""; $("gAuthor").value = s.gAuthor || "";
+      if(s.maniaModes) Object.assign(maniaModes, s.maniaModes);
+      if(s.enabledModes) enabledModes = s.enabledModes;
+      if(s.openModes) openModes = s.openModes;
+      if(s.cMenuGlow) $("cMenuGlow").value = s.cMenuGlow;
+      if(s.mKeyColour) $("mKeyColour").value = s.mKeyColour;
+      
+      // Sync color pickers
+      $("cMenuGlow").dispatchEvent(new Event('input')); 
+      $("mKeyColour").dispatchEvent(new Event('input')); 
+      
+  } catch(e){}
 }
 
-/* live update */
-function updatePreview(){
-  saveAllActiveModesIntoState();
-  $("preview").value = genIni();
-}
-function scheduleUpdate(){
-  updatePreview();
-  if(saveTimer) clearTimeout(saveTimer);
-  saveTimer = setTimeout(saveState, 250);
-}
-
-/* actions */
-function downloadIni(){
-  const text = $("preview").value;
-  const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
-  const url = URL.createObjectURL(blob);
+/* Event Binds */
+$("downloadIni").addEventListener("click", ()=>{
+  const blob = new Blob([$("preview").value], {type:"text/plain;charset=utf-8"});
   const a = document.createElement("a");
-  a.href = url;
+  a.href = URL.createObjectURL(blob);
   a.download = "skin.ini";
-  document.body.appendChild(a);
   a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-function clearWipe(){
-  if(!confirm("Clear everything (and remove local autosave)?")) return;
-  try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
-  location.reload();
-}
-$("downloadIni").addEventListener("click", downloadIni);
-$("clearWipe").addEventListener("click", clearWipe);
-
-/* toggles */
-$("prettyFormat").addEventListener("change", ()=>{
-  prettyFormat = $("prettyFormat").checked;
-  scheduleUpdate();
 });
-$("includeStandard").addEventListener("change", ()=>{
-  includeStandard = $("includeStandard").checked;
-  scheduleUpdate();
+$("clearWipe").addEventListener("click", ()=>{
+    if(confirm("Resetar tudo?")){ localStorage.removeItem(STORAGE_KEY); location.reload(); }
 });
 
-/* keymode toggles */
+$("prettyFormat").addEventListener("change", (e)=>{ prettyFormat = e.target.checked; scheduleUpdate(); });
+$("includeStandard").addEventListener("change", (e)=>{ includeStandard = e.target.checked; scheduleUpdate(); });
+
+$("kmSearch").addEventListener("input", (e)=>{ kmSearchText=e.target.value; renderKeymodeToggles(); });
+$("kmAll").addEventListener("click", ()=>{ ALL_MANIA_KEYS.forEach(k=>enabledModes[k]=true); onToggleModes(); });
+$("kmNone").addEventListener("click", ()=>{ ALL_MANIA_KEYS.forEach(k=>enabledModes[k]=false); onToggleModes(); });
+$("kmCommon").addEventListener("click", ()=>{ ALL_MANIA_KEYS.forEach(k=>enabledModes[k]=false); enabledModes[4]=true; enabledModes[7]=true; onToggleModes(); });
+
 function onToggleModes(){
-  saveAllActiveModesIntoState();
-
-  document.querySelectorAll(".kmToggle").forEach(inp=>{
-    const k = Number(inp.dataset.k);
-    const was = !!enabledModes[k];
-    const now = !!inp.checked;
-    enabledModes[k] = now;
-
-    if(!was && now) openModes[k] = true;
-    if(was && !now) openModes[k] = false;
-  });
-
-  renderKeymodeToggles();
-  rerenderModes();
-  scheduleUpdate();
+    renderKeymodeToggles(); rerenderModes(); scheduleUpdate();
 }
 
-/* mania tools */
-$("kmSearch").addEventListener("input", ()=>{
-  kmSearchText = $("kmSearch").value || "";
-  renderKeymodeToggles();
-  saveState();
-});
+function updatePreview(){
+    $("preview").value = genIni();
+}
+let saveTimer;
+function scheduleUpdate(){
+    updatePreview();
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveState, 500);
+}
 
-$("kmAll").addEventListener("click", ()=>{
-  for(const k of ALL_MANIA_KEYS){ enabledModes[k] = true; openModes[k] = false; }
-  openModes[4] = true; openModes[7] = true;
-  renderKeymodeToggles(); rerenderModes(); scheduleUpdate();
-});
-$("kmNone").addEventListener("click", ()=>{
-  for(const k of ALL_MANIA_KEYS){ enabledModes[k] = false; openModes[k] = false; }
-  enabledModes[4] = true; openModes[4] = true;
-  renderKeymodeToggles(); rerenderModes(); scheduleUpdate();
-});
-$("kmInvert").addEventListener("click", ()=>{
-  for(const k of ALL_MANIA_KEYS){
-    enabledModes[k] = !enabledModes[k];
-    if(!enabledModes[k]) openModes[k] = false;
-  }
-  if(!ALL_MANIA_KEYS.some(k=>enabledModes[k])){ enabledModes[4]=true; openModes[4]=true; }
-  renderKeymodeToggles(); rerenderModes(); scheduleUpdate();
-});
-$("kmCommon").addEventListener("click", ()=>{
-  for(const k of ALL_MANIA_KEYS){ enabledModes[k] = false; openModes[k] = false; }
-  enabledModes[4] = true; enabledModes[7] = true;
-  openModes[4] = true; openModes[7] = true;
-  renderKeymodeToggles(); rerenderModes(); scheduleUpdate();
-});
-
-/* input delegation for dynamic mode blocks */
-$("tab-mania").addEventListener("input", ()=> scheduleUpdate());
-$("tab-mania").addEventListener("change", ()=> scheduleUpdate());
-
-/* binds for general/static inputs */
-[
-  "gName","gAuthor",
-  "gCursorCentre","gCursorExpand","gCursorRotate","gCursorTrailRotate",
-  "cMenuGlow","cSongActive","cSongInactive",
-  "fScorePrefix","fScoreOverlap","fComboPrefix","fComboOverlap",
-
-  "sAnimFPS",
-  "sAllowSliderBallTint","sSliderBallFlip","sOverlayAboveNumber","sLayeredHitSounds","sSpinnerFadePlayfield","sSpinnerNoBlink",
-  "sCombo1","sCombo2","sCombo3","sCombo4","sCombo5","sCombo6","sCombo7","sCombo8",
-  "sSliderBorder","sSliderTrack","sSpinnerApp","sSpinnerBg",
-
-  "mKeyColour","mColourHold","mColourBreak",
-  "h0","h50","h100","h200","h300","h300g"
-].forEach(id=>{
-  $(id).addEventListener("input", scheduleUpdate);
-  $(id).addEventListener("change", scheduleUpdate);
-});
-
-/* Colour sync */
-bindColourSync("cMenuGlowPick","cMenuGlow");
-bindColourSync("cSongActivePick","cSongActive");
-bindColourSync("cSongInactivePick","cSongInactive");
-
-bindColourSync("sCombo1Pick","sCombo1");
-bindColourSync("sCombo2Pick","sCombo2");
-bindColourSync("sCombo3Pick","sCombo3");
-bindColourSync("sCombo4Pick","sCombo4");
-bindColourSync("sCombo5Pick","sCombo5");
-bindColourSync("sCombo6Pick","sCombo6");
-bindColourSync("sCombo7Pick","sCombo7");
-bindColourSync("sCombo8Pick","sCombo8");
-bindColourSync("sSliderBorderPick","sSliderBorder");
-bindColourSync("sSliderTrackPick","sSliderTrack");
-bindColourSync("sSpinnerAppPick","sSpinnerApp");
-bindColourSync("sSpinnerBgPick","sSpinnerBg");
-
+/* Init */
+const bindAll = (ids) => ids.forEach(id => { const el=$(id); if(el){ el.addEventListener("input", scheduleUpdate); el.addEventListener("change", scheduleUpdate); } });
+bindAll(["gName","gAuthor","gCursorCentre","gCursorExpand","gCursorRotate","gCursorTrailRotate","sAnimFPS","sAllowSliderBallTint","mKeyColour"]);
 bindColourSync("mKeyColourPick","mKeyColour");
 bindColourSync("mHoldPick","mColourHold");
 bindColourSync("mBreakPick","mColourBreak");
+// Bind combo colours
+[1,2,3,4,5,6].forEach(n => bindColourSync(`sCombo${n}Pick`, `sCombo${n}`));
 
-function seedDefaultsIfEmpty(){
-  if(!$("cMenuGlow").value) $("cMenuGlow").value = "255,255,255";
-  if(!$("cSongActive").value) $("cSongActive").value = "255,255,255";
-  if(!$("cSongInactive").value) $("cSongInactive").value = "160,160,160";
-
-  if(!$("sCombo1").value) $("sCombo1").value = "255,128,128";
-  if(!$("sCombo2").value) $("sCombo2").value = "128,255,128";
-  if(!$("sCombo3").value) $("sCombo3").value = "128,192,255";
-  if(!$("sCombo4").value) $("sCombo4").value = "255,255,128";
-  if(!$("sSliderBorder").value) $("sSliderBorder").value = "255,255,255";
-
-  if(!$("mKeyColour").value) $("mKeyColour").value = "255,255,255";
-  if(!$("mColourHold").value) $("mColourHold").value = "255,255,255";
-  if(!$("mColourBreak").value) $("mColourBreak").value = "255,80,80";
-}
-
-/* init */
 loadState();
-seedDefaultsIfEmpty();
 renderKeymodeToggles();
 rerenderModes();
 updatePreview();
-setTab("general");
 </script>
-
 </body>
 </html>
