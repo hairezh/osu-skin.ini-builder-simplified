@@ -3,86 +3,77 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>skin.ini studio (v3)</title>
+  <title>skin.ini studio</title>
   <link rel="icon" type="image/png" href="https://i.pinimg.com/1200x/d6/ca/e4/d6cae471e8471dec46c4304104adb4b1.jpg"/>
 
   <style>
     :root{
-      --bg0:#06070a;
-      --bg1:#0b0c10;
       --fg:#e9e9ee;
-      --muted:rgba(233,233,238,.55);
+      --muted:rgba(233,233,238,.62);
       --muted2:rgba(233,233,238,.40);
-      --border:rgba(255,255,255,.10);
-      --panel:rgba(255,255,255,.04);
-      --panel2:rgba(0,0,0,.25);
-      --accent:rgba(166, 255, 233, .9);
-      --danger:rgba(255,120,120,.9);
+      --border:rgba(255,255,255,.12);
+      --panel:rgba(0,0,0,.44);
+      --panel2:rgba(0,0,0,.28);
+      --shadow: 0 10px 30px rgba(0,0,0,.45);
+      --r:14px;
 
-      --r:12px;
-      --fs:14px;
-      --lh:1.55;
+      --dockW:62px;
+      --gap:10px;
 
-      --sideW: 260px;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --rowLabel: 205px; /* compacto mas clicável */
+      --inputPadY: 9px;
+      --inputPadX: 10px;
     }
 
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
 
-    /* ===== Background bonitinho ===== */
     body{
       margin:0;
       color:var(--fg);
-      font:var(--fs)/var(--lh) ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      background:
-        radial-gradient(1000px 600px at 10% 10%, rgba(140,120,255,.18), transparent 60%),
-        radial-gradient(900px 650px at 90% 20%, rgba(120,255,214,.14), transparent 55%),
-        radial-gradient(900px 700px at 55% 95%, rgba(255,160,120,.10), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
+      font: 14px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+      /* fundo pedido */
+      background-image: url("https://i.pinimg.com/originals/f5/93/a4/f593a4f4932080fb7b43c6ae96d1a73d.gif");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
       overflow:hidden;
     }
 
-    /* textura sutil */
+    /* overlay pra legibilidade */
     body::before{
       content:"";
       position:fixed; inset:0;
       pointer-events:none;
-      background-image:
-        radial-gradient(circle at 20% 30%, rgba(255,255,255,.035) 0 1px, transparent 2px),
-        radial-gradient(circle at 80% 70%, rgba(255,255,255,.030) 0 1px, transparent 2px),
-        radial-gradient(circle at 40% 80%, rgba(255,255,255,.025) 0 1px, transparent 2px);
-      background-size: 260px 260px, 320px 320px, 420px 420px;
-      filter: blur(.2px);
-      opacity:.9;
-      animation: drift 18s linear infinite;
-    }
-    @keyframes drift{
-      0%{ transform: translate3d(0,0,0); }
-      100%{ transform: translate3d(-60px, -40px, 0); }
+      background:
+        radial-gradient(900px 520px at 15% 10%, rgba(0,0,0,.25), transparent 55%),
+        radial-gradient(900px 520px at 85% 20%, rgba(0,0,0,.25), transparent 55%),
+        linear-gradient(180deg, rgba(0,0,0,.66), rgba(0,0,0,.62));
+      backdrop-filter: blur(2px);
     }
 
     /* Scrollbar */
     *{
       scrollbar-width: thin;
-      scrollbar-color: rgba(220,220,230,.30) rgba(0,0,0,.18);
+      scrollbar-color: rgba(220,220,230,.30) rgba(0,0,0,.20);
     }
     *::-webkit-scrollbar{ width:10px; height:10px; }
-    *::-webkit-scrollbar-track{ background: rgba(0,0,0,.18); border-radius: 10px; }
+    *::-webkit-scrollbar-track{ background: rgba(0,0,0,.20); border-radius: 10px; }
     *::-webkit-scrollbar-thumb{
-      background: rgba(220,220,230,.28);
-      border: 2px solid rgba(0,0,0,.18);
+      background: rgba(220,220,230,.26);
+      border: 2px solid rgba(0,0,0,.20);
       border-radius: 10px;
     }
-    *::-webkit-scrollbar-thumb:hover{ background: rgba(220,220,230,.42); }
+    *::-webkit-scrollbar-thumb:hover{ background: rgba(220,220,230,.40); }
 
-    /* ===== App layout ===== */
     .app{
+      position:relative;
+      z-index:1;
       height:100%;
       display:flex;
       flex-direction:column;
-      position:relative;
-      z-index:1;
     }
 
     .topbar{
@@ -92,46 +83,133 @@
       gap:12px;
       padding:10px 12px;
       border-bottom:1px solid var(--border);
-      background:linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.20));
+      background: rgba(0,0,0,.40);
       backdrop-filter: blur(10px);
     }
 
     .brand{
-      display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 0;
     }
-    .brand h1{
-      margin:0;
-      font-size:14px;
-      letter-spacing:.2px;
+    .brand img{
+      width:30px;
+      height:30px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(0,0,0,.25);
+      box-shadow: 0 8px 20px rgba(0,0,0,.35);
+      object-fit: cover;
+    }
+    .brand .title{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      min-width:0;
+    }
+    .brand .title b{
       font-weight:900;
+      font-size:13px;
+      letter-spacing:.2px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
-    .brand .tag{
+    .brand .title span{
       font-size:12px;
       color:var(--muted2);
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.22);
-      border-radius:999px;
-      padding:2px 10px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
 
     .layout{
       flex:1; min-height:0;
       display:grid;
-      grid-template-columns: var(--sideW) 1fr;
+      grid-template-columns: var(--dockW) 1fr;
       overflow:hidden;
     }
 
-    .sidebar{
-      min-height:0;
+    /* ===== Sidebar dock (Opera GX vibes) ===== */
+    .dock{
       border-right:1px solid var(--border);
-      background:linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.10));
-      padding:10px;
+      background: rgba(0,0,0,.42);
+      backdrop-filter: blur(10px);
       display:flex;
       flex-direction:column;
+      align-items:center;
       gap:10px;
+      padding:10px 8px;
+      min-height:0;
       overflow:auto;
     }
 
+    .dockGroup{
+      width:100%;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      align-items:center;
+      padding-bottom:10px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+    }
+    .dockGroup:last-child{ border-bottom:0; padding-bottom:0; }
+
+    .icoBtn{
+      width:46px;
+      height:46px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
+      color: rgba(233,233,238,.78);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      user-select:none;
+      transition:140ms linear;
+      position:relative;
+    }
+    .icoBtn:hover{
+      border-color: rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06);
+      color: rgba(233,233,238,.95);
+      transform: translateY(-1px);
+    }
+    .icoBtn.active{
+      border-color: rgba(255,255,255,.20);
+      background: rgba(255,255,255,.10);
+      color: rgba(233,233,238,.98);
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+
+    .tip{
+      position:absolute;
+      left:58px;
+      top:50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,.70);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:12px;
+      padding:6px 10px;
+      font-size:12px;
+      color: rgba(233,233,238,.92);
+      white-space:nowrap;
+      opacity:0;
+      pointer-events:none;
+      transition:140ms linear;
+      backdrop-filter: blur(10px);
+    }
+    .icoBtn:hover .tip{ opacity:1; }
+
+    .miniLabel{
+      font-size:11px;
+      color: var(--muted2);
+      text-align:center;
+      line-height:1.2;
+    }
+
+    /* ===== Main content ===== */
     .main{
       min-height:0;
       padding:10px;
@@ -143,8 +221,9 @@
 
     .card{
       border:1px solid var(--border);
-      background:rgba(255,255,255,.03);
-      border-radius:var(--r);
+      background: var(--panel);
+      backdrop-filter: blur(10px);
+      border-radius: var(--r);
       box-shadow: var(--shadow);
       overflow:hidden;
       min-height:0;
@@ -154,13 +233,34 @@
     .cardHead{
       padding:10px 10px 8px;
       display:flex;
-      justify-content:space-between;
       align-items:center;
+      justify-content:space-between;
       gap:10px;
-      border-bottom:1px solid var(--border);
-      background:rgba(0,0,0,.18);
+      border-bottom:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.25);
+    }
+    .cardHead .left{
+      display:flex;
+      gap:10px;
+      align-items:center;
       flex-wrap:wrap;
     }
+    .badge{
+      font-size:12px;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
+      color: rgba(233,233,238,.75);
+      font-weight:900;
+    }
+    .tools{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
     .cardBody{
       padding:10px;
       overflow:auto;
@@ -168,397 +268,402 @@
       flex:1;
     }
 
-    .group{
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.14);
-      border-radius:14px;
-      overflow:hidden;
-    }
-    .groupHead{
-      padding:10px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      color:rgba(233,233,238,.78);
-      font-weight:900;
-      font-size:12px;
-      letter-spacing:.2px;
-      background:rgba(0,0,0,.18);
-    }
-    .groupBody{
-      padding:10px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-
-    .tabs{ display:flex; flex-direction:column; gap:8px; }
-    .tab{
-      cursor:pointer;
-      padding:10px 10px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.18);
-      color:rgba(233,233,238,.62);
-      font-weight:900;
-      user-select:none;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      transition:140ms linear;
-    }
-    .tab:hover{
-      color:rgba(233,233,238,.95);
-      border-color:rgba(255,255,255,.16);
-      background:rgba(255,255,255,.04);
-    }
-    .tab.active{
-      color:rgba(233,233,238,.95);
-      border-color:rgba(255,255,255,.18);
-      background:rgba(255,255,255,.06);
-    }
-    .mini{ font-size:12px; color:var(--muted2); }
-
     .btn{
       cursor:pointer;
       padding:8px 10px;
       border-radius:12px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.22);
-      color:rgba(233,233,238,.70);
-      font-weight:800;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
+      color: rgba(233,233,238,.78);
+      font-weight:900;
       transition:140ms linear;
       user-select:none;
     }
     .btn:hover{
-      color:rgba(233,233,238,.95);
-      border-color:rgba(255,255,255,.18);
-      background:rgba(255,255,255,.05);
+      border-color: rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06);
+      color: rgba(233,233,238,.95);
     }
     .btn.primary{
-      background:rgba(255,255,255,.08);
-      color:rgba(233,233,238,.95);
-      border-color:rgba(255,255,255,.16);
+      background: rgba(255,255,255,.10);
+      border-color: rgba(255,255,255,.16);
+      color: rgba(233,233,238,.95);
     }
     .btn.danger:hover{
-      border-color:rgba(255,140,140,.35);
-      color:rgba(255,210,210,.95);
+      border-color: rgba(255,140,140,.35);
+      color: rgba(255,220,220,.95);
     }
 
-    .pill{
+    textarea{
+      width:100%;
+      min-height: calc(100vh - 220px);
+      resize:none;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius: 14px;
+      background: rgba(0,0,0,.30);
+      color: rgba(233,233,238,.95);
+      padding:10px 12px;
+      outline:none;
+      font:inherit;
+    }
+
+    /* ===== Forms (compact but clickable) ===== */
+    .block{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.20);
+      border-radius: 16px;
+      overflow:hidden;
+      margin: 10px 0;
+    }
+    .blockHead{
+      width:100%;
+      border:0;
+      cursor:pointer;
+      padding:10px 12px;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
-      padding:8px 10px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.16);
-      color:rgba(233,233,238,.60);
-      font-size:12px;
-      font-weight:800;
+      background: rgba(0,0,0,.22);
+      color: rgba(233,233,238,.95);
+      font:inherit;
+      font-weight: 900;
+      letter-spacing:.2px;
+      user-select:none;
     }
-    .sep{ height:1px; background:rgba(255,255,255,.10); margin:10px 0; }
+    .caret{
+      color: rgba(233,233,238,.60);
+      transition:140ms linear;
+    }
+    .block.open .caret{ transform: rotate(90deg); }
+    .blockBody{
+      display:none;
+      padding:10px 12px 12px;
+      border-top:1px solid rgba(255,255,255,.10);
+    }
+    .block.open .blockBody{ display:block; }
 
     .row{
       display:grid;
-      grid-template-columns: 210px 1fr;
+      grid-template-columns: var(--rowLabel) 1fr;
       gap:10px;
       align-items:center;
       margin-bottom:8px;
     }
     .row label{
       font-size:12px;
-      color:rgba(233,233,238,.76);
-      font-weight:800;
+      color: rgba(233,233,238,.80);
+      font-weight:900;
+      user-select:none;
     }
-    input[type="text"], input[type="number"], select, textarea{
+
+    input[type="text"], input[type="number"], select{
       width:100%;
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:12px;
-      background:rgba(0,0,0,.22);
-      color:rgba(233,233,238,.95);
-      padding:8px 10px;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      background: rgba(0,0,0,.26);
+      color: rgba(233,233,238,.95);
+      padding: var(--inputPadY) var(--inputPadX);
       outline:none;
       font:inherit;
     }
-    textarea{ min-height: calc(100vh - 220px); resize:none; }
 
     input[type="color"]{
-      width:46px; height:36px;
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:12px;
+      width:46px; height:38px;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
       background:transparent;
       padding:0;
     }
+
     .inline{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
     .grid2{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
 
-    /* Switch */
+    .sep{ height:1px; background: rgba(255,255,255,.10); margin:10px 0; }
+
+    /* switch */
     .switch{ display:inline-flex; align-items:center; gap:8px; }
     .switch input{ display:none; }
     .sw{
-      width:46px; height:26px;
+      width:48px; height:28px;
       border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.22);
-      border-radius:10px;
+      background: rgba(0,0,0,.24);
+      border-radius: 12px;
       position:relative;
       transition:140ms linear;
       flex:0 0 auto;
+      cursor:pointer;
     }
     .sw::after{
       content:"";
-      width:20px; height:20px;
+      width:22px; height:22px;
       position:absolute; top:50%; left:3px;
-      transform:translateY(-50%);
-      border-radius:8px;
-      background:rgba(255,255,255,.25);
+      transform: translateY(-50%);
+      border-radius: 9px;
+      background: rgba(255,255,255,.28);
       transition:140ms linear;
     }
     .switch input:checked + .sw{
-      border-color:rgba(255,255,255,.18);
-      background:rgba(255,255,255,.06);
+      border-color: rgba(255,255,255,.18);
+      background: rgba(255,255,255,.07);
     }
     .switch input:checked + .sw::after{
       left:23px;
-      background:rgba(166,255,233,.75);
-      box-shadow: 0 0 0 2px rgba(166,255,233,.14);
+      background: rgba(255,255,255,.62);
     }
 
-    /* Accordion blocks */
-    .block{
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.015);
-      border-radius:14px;
-      overflow:hidden;
-      margin:10px 0;
+    .noteUnder{
+      margin-top:6px;
+      font-size:12px;
+      color: rgba(233,233,238,.48);
+      font-weight:800;
     }
-    .blockHead{
-      width:100%;
-      border:0;
-      cursor:pointer;
-      padding:10px;
+
+    /* mania keymode toggles */
+    .kmRow{
       display:flex;
-      align-items:center;
-      justify-content:space-between;
+      flex-wrap:wrap;
       gap:10px;
-      background:rgba(0,0,0,.18);
-      color:rgba(233,233,238,.95);
-      text-align:left;
-      font:inherit;
-      font-weight:900;
+      margin: 6px 0 4px;
     }
-    .caret{ color:rgba(233,233,238,.55); transition:140ms linear; }
-    .block.open .caret{ transform: rotate(90deg); }
-    .blockBody{
-      display:none;
-      padding:10px;
-      border-top:1px solid rgba(255,255,255,.08);
-    }
-    .block.open .blockBody{ display:block; }
-
-    /* Keymode toggles */
-    .kmTools{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:8px; }
-    .kmWrap{ display:flex; flex-wrap:wrap; gap:10px; }
     .kmPill{
       display:flex;
       align-items:center;
       gap:10px;
       padding:8px 10px;
       border-radius:999px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.16);
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.20);
       font-size:12px;
       font-weight:900;
-      color:rgba(233,233,238,.65);
+      color: rgba(233,233,238,.70);
+      user-select:none;
     }
     .kmPill.on{
-      color:rgba(233,233,238,.95);
-      border-color:rgba(255,255,255,.18);
-      background:rgba(255,255,255,.06);
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.18);
+      color: rgba(233,233,238,.95);
     }
 
-    /* Preview area */
-    .previewTools{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-    .badge{
+    .disabledHint{
       font-size:12px;
-      padding:4px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.18);
-      color:rgba(233,233,238,.65);
+      color: rgba(233,233,238,.55);
       font-weight:900;
+      padding:10px 12px;
+      border:1px dashed rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      border-radius: 14px;
     }
-
-    /* Music controls */
-    .music{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-    .slider{
-      display:flex; align-items:center; gap:8px;
-      font-size:12px; color:var(--muted);
-      font-weight:800;
-    }
-    .slider input[type="range"]{ width:120px; }
 
     @media (max-width: 980px){
       .layout{ grid-template-columns: 1fr; }
-      .sidebar{ border-right:0; border-bottom:1px solid var(--border); }
+      .dock{
+        flex-direction:row;
+        border-right:0;
+        border-bottom:1px solid var(--border);
+        padding:10px;
+        gap:10px;
+      }
+      .dockGroup{
+        flex-direction:row;
+        border-bottom:0;
+        padding-bottom:0;
+        width:auto;
+      }
+      .icoBtn .tip{ display:none; }
       .main{ grid-template-columns: 1fr; }
       textarea{ min-height: 50vh; }
+      .row{ grid-template-columns: 1fr; }
     }
   </style>
 </head>
 
 <body>
-  <div class="app">
+<div class="app">
 
-    <div class="topbar">
-      <div class="brand">
-        <h1>skin.ini studio</h1>
-        <span class="tag">v3 • import/export • catch + mania • taiko info</span>
-      </div>
-
-      <div class="music">
-        <button class="btn" id="musicToggle">▶ ambient</button>
-        <div class="slider">
-          <span>vol</span>
-          <input type="range" id="musicVol" min="0" max="1" step="0.01" value="0.18">
-        </div>
+  <div class="topbar">
+    <div class="brand">
+      <img alt="icon" src="https://i.pinimg.com/originals/da/b4/cb/dab4cbf31e4e8d7688b0e830d5d640f1.gif">
+      <div class="title">
+        <b>skin.ini studio</b>
+        <span id="topSub">—</span>
       </div>
     </div>
 
-    <div class="layout">
-      <aside class="sidebar">
-
-        <div class="group">
-          <div class="groupHead">Seções</div>
-          <div class="groupBody">
-            <div class="tabs" id="tabs"></div>
-            <div class="mini">Troca rápida entre painéis. Importa/Exporta no preview.</div>
-          </div>
-        </div>
-
-        <div class="group">
-          <div class="groupHead">Export / Import</div>
-          <div class="groupBody">
-            <button class="btn primary" id="downloadIni">Download skin.ini</button>
-            <button class="btn" id="copyIni">Copiar preview</button>
-            <button class="btn" id="importOpen">Importar (colar)</button>
-            <button class="btn danger" id="wipeAll">Reset total</button>
-            <div class="sep"></div>
-            <div class="pill"><span>auto-save</span><span id="savePulse">—</span></div>
-          </div>
-        </div>
-
-        <div class="group">
-          <div class="groupHead">Opções de geração</div>
-          <div class="groupBody">
-            <div class="pill">
-              <span>formatação alinhada</span>
-              <label class="switch" title="Alinha chaves e espaça grupos">
-                <input type="checkbox" id="pretty" checked>
-                <span class="sw"></span>
-              </label>
-            </div>
-
-            <div class="pill">
-              <span>comentar vazios</span>
-              <label class="switch" title="Se ligado, linhas vazias viram //Key:">
-                <input type="checkbox" id="commentEmpty">
-                <span class="sw"></span>
-              </label>
-            </div>
-
-            <div class="pill">
-              <span>versão do skin.ini</span>
-              <select id="versionPick" style="max-width:140px">
-                <option value="2.0">2.0</option>
-                <option value="2.1">2.1</option>
-                <option value="2.2">2.2</option>
-                <option value="2.3">2.3</option>
-                <option value="2.4">2.4</option>
-                <option value="2.5">2.5</option>
-                <option value="2.6">2.6</option>
-                <option value="2.7">2.7</option>
-                <option value="latest" selected>latest</option>
-              </select>
-            </div>
-
-            <div class="mini">
-              Dica: “Taiko” não tem seção no skin.ini (é por arquivos). :contentReference[oaicite:3]{index=3}
-            </div>
-          </div>
-        </div>
-
-      </aside>
-
-      <main class="main">
-        <div class="card">
-          <div class="cardHead">
-            <div class="mini" id="panelHint">Editor</div>
-            <span class="badge" id="statusBadge">ok</span>
-          </div>
-          <div class="cardBody" id="panel"></div>
-        </div>
-
-        <div class="card">
-          <div class="cardHead">
-            <div class="mini">Preview do skin.ini</div>
-            <div class="previewTools">
-              <button class="btn" id="refresh">Atualizar</button>
-            </div>
-          </div>
-          <div class="cardBody">
-            <textarea id="preview" readonly></textarea>
-          </div>
-        </div>
-      </main>
+    <div class="tools">
+      <span class="badge" id="savePulse">—</span>
+      <button class="btn primary" id="downloadIni">Download</button>
+      <button class="btn" id="copyIni">Copiar</button>
+      <button class="btn" id="importOpen">Importar</button>
+      <button class="btn danger" id="wipeAll">Reset</button>
     </div>
   </div>
 
-  <!-- Modal de import -->
-  <dialog id="importDlg" style="max-width:900px;width:calc(100% - 24px);border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(0,0,0,.88);color:rgba(233,233,238,.95);box-shadow:0 20px 60px rgba(0,0,0,.55);">
-    <form method="dialog" style="margin:0;padding:12px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
-        <div style="font-weight:900;">Importar skin.ini (colar texto)</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn" value="cancel">Fechar</button>
-          <button class="btn primary" id="importApply" value="default" type="button">Aplicar import</button>
+  <div class="layout">
+    <aside class="dock">
+
+      <div class="dockGroup">
+        <button class="icoBtn" data-tab="general" title="General">
+          <span aria-hidden="true">⚙️</span>
+          <span class="tip">General</span>
+        </button>
+        <button class="icoBtn" data-tab="colours" title="Colours">
+          <span aria-hidden="true">🎨</span>
+          <span class="tip">Colours</span>
+        </button>
+        <button class="icoBtn" data-tab="fonts" title="Fonts">
+          <span aria-hidden="true">🔤</span>
+          <span class="tip">Fonts</span>
+        </button>
+        <button class="icoBtn" data-tab="catch" title="Catch">
+          <span aria-hidden="true">🍓</span>
+          <span class="tip">Catch</span>
+        </button>
+        <button class="icoBtn" data-tab="mania" title="Mania">
+          <span aria-hidden="true">🎹</span>
+          <span class="tip">Mania</span>
+        </button>
+        <button class="icoBtn" data-tab="preview" title="Preview">
+          <span aria-hidden="true">👁️</span>
+          <span class="tip">Preview</span>
+        </button>
+      </div>
+
+      <div class="dockGroup">
+        <div class="miniLabel">export</div>
+
+        <button class="icoBtn" id="togStd" title="Standard on/off" type="button">
+          <span aria-hidden="true">⭕</span>
+          <span class="tip">Standard</span>
+        </button>
+        <button class="icoBtn" id="togCatch" title="Catch on/off" type="button">
+          <span aria-hidden="true">🍓</span>
+          <span class="tip">Catch</span>
+        </button>
+        <button class="icoBtn" id="togMania" title="Mania on/off" type="button">
+          <span aria-hidden="true">🎹</span>
+          <span class="tip">Mania</span>
+        </button>
+      </div>
+
+      <div class="dockGroup">
+        <div class="miniLabel">style</div>
+
+        <button class="icoBtn" id="togPretty" title="h style" type="button">
+          <span aria-hidden="true">H</span>
+          <span class="tip">h style</span>
+        </button>
+
+        <button class="icoBtn" id="togCommentEmpty" title="comentar vazios" type="button">
+          <span aria-hidden="true">//</span>
+          <span class="tip">comentar vazios</span>
+        </button>
+        <div class="noteUnder" id="commentEmptyNote" style="text-align:center; padding:0 6px;">
+          *não exportado no skin.ini
+        </div>
+
+        <button class="icoBtn" id="verBtn" title="Version" type="button">
+          <span aria-hidden="true">v</span>
+          <span class="tip">Version</span>
+        </button>
+      </div>
+
+    </aside>
+
+    <main class="main">
+
+      <div class="card">
+        <div class="cardHead">
+          <div class="left">
+            <span class="badge" id="panelTitle">General</span>
+            <span class="badge" id="modeBadge">export: STD+CATCH+MANIA</span>
+          </div>
+          <div class="tools">
+            <button class="btn" id="refresh">Atualizar</button>
+          </div>
+        </div>
+        <div class="cardBody" id="panel"></div>
+      </div>
+
+      <div class="card" id="previewCard">
+        <div class="cardHead">
+          <div class="left">
+            <span class="badge">skin.ini</span>
+          </div>
+          <div class="tools">
+            <button class="btn" id="selectAll">Selecionar</button>
+          </div>
+        </div>
+        <div class="cardBody">
+          <textarea id="preview" readonly></textarea>
         </div>
       </div>
-      <div style="height:10px"></div>
-      <textarea id="importArea" style="min-height:45vh;"></textarea>
-      <div style="height:8px"></div>
-      <div class="mini">
-        Import tenta ler chaves conhecidas do skin.ini e preencher os campos. Linhas desconhecidas são ignoradas.
+
+    </main>
+  </div>
+</div>
+
+<!-- Version modal -->
+<dialog id="verDlg" style="max-width:420px;width:calc(100% - 24px);border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(0,0,0,.86);color:rgba(233,233,238,.95);box-shadow:0 20px 60px rgba(0,0,0,.55);">
+  <form method="dialog" style="margin:0;padding:12px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+      <b>Version</b>
+      <button class="btn" value="cancel">Fechar</button>
+    </div>
+    <div style="height:10px"></div>
+    <select id="versionPick" style="width:100%;">
+      <option value="2.0">2.0</option>
+      <option value="2.1">2.1</option>
+      <option value="2.2">2.2</option>
+      <option value="2.3">2.3</option>
+      <option value="2.4">2.4</option>
+      <option value="2.5">2.5</option>
+      <option value="2.6">2.6</option>
+      <option value="2.7">2.7</option>
+      <option value="latest" selected>latest</option>
+    </select>
+  </form>
+</dialog>
+
+<!-- Import modal -->
+<dialog id="importDlg" style="max-width:900px;width:calc(100% - 24px);border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(0,0,0,.88);color:rgba(233,233,238,.95);box-shadow:0 20px 60px rgba(0,0,0,.55);">
+  <form method="dialog" style="margin:0;padding:12px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+      <b>Importar skin.ini</b>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn" value="cancel">Fechar</button>
+        <button class="btn primary" id="importApply" value="default" type="button">Aplicar</button>
       </div>
-    </form>
-  </dialog>
+    </div>
+    <div style="height:10px"></div>
+    <textarea id="importArea" style="min-height:45vh;"></textarea>
+  </form>
+</dialog>
 
 <script>
 /* ===========================
-   skin.ini studio v3
-   - UI gerada por “schema” (mais escalável)
-   - Import/export
-   - Catch + Mania mais completa
-   - Música: WebAudio (sem copyright), play/pause + volume
-   - Taiko: aba informativa (não existe [Taiko] no skin.ini)
+   skin.ini studio (custom)
+   - sem textos informativos
+   - sem taiko
+   - background gif
+   - toggles por modo: standard/catch/mania
+   - columnstart auto se vazio (não exporta)
+   - blocos separados
+   - sidebar ícones
+   - sem música
+   - cores corrigidas
+   - UI Colour 1..K (export continua 0..K-1 por compatibilidade)
+   - import mais robusto
 =========================== */
 
 const $ = (id)=>document.getElementById(id);
-
-const STORAGE_KEY = "skinini_studio_v3_state";
+const STORAGE_KEY = "skinini_studio_custom_v4";
 
 /* ---------- util ---------- */
-const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
-const bool01 = (b)=> (b ? "1" : "0");
-
 function cleanLine(s){ return String(s ?? "").replace(/\r/g,"").trimEnd(); }
 function isBlank(v){ return cleanLine(v) === ""; }
+const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+const bool01 = (b)=> (b ? "1" : "0");
 
 function debounce(fn, wait){
   let t=null;
@@ -585,15 +690,6 @@ function hexToRgb(hex){
   return `${r},${g},${b}`;
 }
 
-function numOr(v, fallback){
-  const n = Number(String(v ?? "").trim());
-  return Number.isFinite(n) ? n : fallback;
-}
-function intOr(v, fallback){
-  const n = parseInt(String(v ?? "").trim(), 10);
-  return Number.isFinite(n) ? n : fallback;
-}
-
 function fmtKV(key, value){
   const v = cleanLine(value);
   if(state.pretty){
@@ -602,7 +698,6 @@ function fmtKV(key, value){
   }
   return `${key}: ${v}`;
 }
-
 function pushKV(lines, key, value){
   const v = cleanLine(value);
   if(v !== ""){
@@ -610,6 +705,7 @@ function pushKV(lines, key, value){
     return;
   }
   if(state.commentEmpty){
+    // comentário de "não exportado": linha comentada (não exporta no sentido de não ser ativa)
     if(state.pretty){
       const k = String(key).padEnd(32, " ");
       lines.push(`// ${k} :`);
@@ -618,7 +714,6 @@ function pushKV(lines, key, value){
     }
   }
 }
-
 function spacer(lines){ if(state.pretty) lines.push(""); }
 function header(lines, title){
   if(state.pretty){
@@ -632,38 +727,40 @@ const ALL_MANIA_KEYS = Array.from({length: 18}, (_,i)=>i+1);
 
 function defaultManiaMode(keys){
   return {
-    // layout
-    ColumnStart: "",
+    // layout csv / numbers
+    ColumnStart: "",       // se vazio: auto (não exporta)
     ColumnRight: "",
     ColumnSpacing: "0",
     ColumnWidth: "70",
     ColumnLineWidth: "",
 
-    // gameplay
-    BarlineHeight: "",
-    LightingNWidth: "",
-    LightingLWidth: "",
-    WidthForNoteHeightScale: "",
+    // positions
     HitPosition: "",
     LightPosition: "",
-    ComboPosition: "",
     ScorePosition: "",
+    ComboPosition: "",
+
+    // toggles
     JudgementLine: true,
+    KeysUnderNotes: false,
+    UpsideDown: false,
 
     // misc
+    BarlineHeight: "",
+    WidthForNoteHeightScale: "",
+    LightingNWidth: "",
+    LightingLWidth: "",
     LightFramePerSecond: "",
     SpecialStyle: "",
     ComboBurstStyle: "",
     SplitStages: "",
     StageSeparation: "",
     SeparateScore: "",
-    KeysUnderNotes: false,
-    UpsideDown: false,
     KeyFlipWhenUpsideDown: "",
     NoteFlipWhenUpsideDown: "",
     NoteBodyStyle: "",
 
-    // stage/lighting (numeric/string)
+    // stage/lighting
     StageLeft: "",
     StageRight: "",
     StageBottom: "",
@@ -672,17 +769,17 @@ function defaultManiaMode(keys){
     LightingN: "",
     LightingL: "",
 
-    // colours per keymode
+    // colours
     ColourColumnLine: "",
     ColourBarline: "",
     ColourJudgementLine: "",
     ColourKeyWarning: "",
     ColourHold: "",
     ColourBreak: "",
-    ColourLight: {}, // ColourLight0..n
-    Colour: {},      // Colour0..n
+    Colour: {},       // UI: 1..K, export: 0..K-1
+    ColourLight: {},  // UI: 1..K, export: 0..K-1
 
-    // patterns (filenames)
+    // patterns
     KeyImage: "",
     KeyImageD: "",
     NoteImage: "",
@@ -691,24 +788,33 @@ function defaultManiaMode(keys){
     NoteImageT: "",
     WarningArrow: "",
 
-    // hitbursts
+    // hits
     Hit0: "",
     Hit50: "",
     Hit100: "",
     Hit200: "",
     Hit300: "",
     Hit300g: "",
+
+    // auto flag for columnstart
+    AutoColumnStart: true,
   };
 }
 
 const state = {
-  pretty: true,
-  commentEmpty: false,
-  version: "latest",
-
   activeTab: "general",
 
-  // [General]
+  // export toggles
+  exportStd: true,
+  exportCatch: true,
+  exportMania: true,
+
+  // style toggles
+  pretty: true,        // "h style"
+  commentEmpty: false,
+
+  version: "latest",
+
   general: {
     Name: "",
     Author: "",
@@ -728,7 +834,6 @@ const state = {
     SpinnerNoBlink: false,
   },
 
-  // [Colours]
   colours: {
     Combo1: "",
     Combo2: "",
@@ -749,7 +854,6 @@ const state = {
     StarBreakAdditive: "",
   },
 
-  // [Fonts]
   fonts: {
     HitCirclePrefix: "",
     HitCircleOverlap: "",
@@ -759,25 +863,45 @@ const state = {
     ComboOverlap: "",
   },
 
-  // [CatchTheBeat]
   catch: {
     HyperDash: "",
     HyperDashFruit: "",
     HyperDashAfterImage: "",
   },
 
-  // [Mania] shared
   maniaShared: {
     enabled: Object.fromEntries(ALL_MANIA_KEYS.map(k => [k, k===4])),
     open: Object.fromEntries(ALL_MANIA_KEYS.map(k => [k, k===4])),
-    search: "",
   },
 
   mania: Object.fromEntries(ALL_MANIA_KEYS.map(k => [k, defaultManiaMode(k)])),
 };
 
-/* ---------- schema UI (gera campos) ---------- */
+/* ---------- state path helpers ---------- */
+function pathToId(path){
+  return "p_" + path.replaceAll(".", "__").replaceAll("[","_").replaceAll("]","_");
+}
+function getByPath(obj, path){
+  const parts = path.split(".");
+  let cur = obj;
+  for(const p of parts){
+    if(cur == null) return undefined;
+    cur = cur[p];
+  }
+  return cur;
+}
+function setByPath(obj, path, value){
+  const parts = path.split(".");
+  let cur = obj;
+  for(let i=0;i<parts.length-1;i++){
+    const p = parts[i];
+    if(!(p in cur)) cur[p] = {};
+    cur = cur[p];
+  }
+  cur[parts[parts.length-1]] = value;
+}
 
+/* ---------- UI builders ---------- */
 function uiRowText(label, path, placeholder=""){
   const id = pathToId(path);
   return `
@@ -823,43 +947,6 @@ function uiRowColor(label, path){
     </div>
   `;
 }
-function uiNote(text){
-  return `<div class="mini">${text}</div>`;
-}
-
-const TABS = [
-  { key:"general", title:"General", hint:"Config geral do skin.ini (inclui opções usadas também por standard/taiko/catch).", render: renderGeneral },
-  { key:"colours", title:"Colours", hint:"Cores do UI e gameplay (Combo1..8, SliderBorder, etc).", render: renderColours },
-  { key:"fonts", title:"Fonts", hint:"Prefixos/overlap (HitCircle/Score/Combo).", render: renderFonts },
-  { key:"catch", title:"Catch", hint:"A seção [CatchTheBeat] tem só 3 chaves oficiais.", render: renderCatch },
-  { key:"taiko", title:"Taiko (info)", hint:"Taiko é por arquivos/pasta taiko/ — não existe [Taiko] no skin.ini.", render: renderTaikoInfo },
-  { key:"mania", title:"Mania", hint:"Editor avançado por keymode (1K..18K).", render: renderMania },
-];
-
-/* ---------- helpers state <-> UI ---------- */
-function pathToId(path){
-  return "p_" + path.replaceAll(".", "__").replaceAll("[","_").replaceAll("]","_");
-}
-function getByPath(obj, path){
-  const parts = path.split(".");
-  let cur = obj;
-  for(const p of parts){
-    if(cur == null) return undefined;
-    cur = cur[p];
-  }
-  return cur;
-}
-function setByPath(obj, path, value){
-  const parts = path.split(".");
-  let cur = obj;
-  for(let i=0;i<parts.length-1;i++){
-    const p = parts[i];
-    if(!(p in cur)) cur[p] = {};
-    cur = cur[p];
-  }
-  cur[parts[parts.length-1]] = value;
-}
-
 function escapeHtml(s){
   return String(s ?? "")
     .replaceAll("&","&amp;")
@@ -869,80 +956,113 @@ function escapeHtml(s){
     .replaceAll("'","&#39;");
 }
 
-/* ---------- render tabs ---------- */
-function renderTabs(){
-  const el = $("tabs");
-  el.innerHTML = TABS.map(t => `
-    <div class="tab ${state.activeTab===t.key?"active":""}" data-tab="${t.key}">
-      <span>${t.title}</span>
-      <span class="mini">${t.key==="mania"?"1K..18K":(t.key==="taiko"?"files":"")}</span>
-    </div>
-  `).join("");
+/* ---------- Tabs ---------- */
+const TABS = [
+  { key:"general", title:"General", render: renderGeneral },
+  { key:"colours", title:"Colours", render: renderColours },
+  { key:"fonts", title:"Fonts", render: renderFonts },
+  { key:"catch", title:"Catch", render: renderCatch },
+  { key:"mania", title:"Mania", render: renderMania },
+  { key:"preview", title:"Preview", render: renderPreviewOnly },
+];
 
-  el.querySelectorAll("[data-tab]").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      state.activeTab = btn.dataset.tab;
-      saveSoon();
-      renderActiveTab();
-    });
+function setActiveTab(k){
+  state.activeTab = k;
+  renderDockActive();
+  renderActiveTab();
+  saveSoon();
+}
+
+function renderDockActive(){
+  document.querySelectorAll(".icoBtn[data-tab]").forEach(b=>{
+    b.classList.toggle("active", b.dataset.tab === state.activeTab);
   });
 }
 
+function updateTopSub(){
+  const t = TABS.find(x=>x.key===state.activeTab)?.title ?? "—";
+  $("topSub").textContent = t;
+  $("panelTitle").textContent = t;
+}
+
+/* ---------- Panels ---------- */
 function renderActiveTab(){
+  updateTopSub();
   const tab = TABS.find(t => t.key === state.activeTab) || TABS[0];
-  $("panelHint").textContent = tab.hint;
-  $("statusBadge").textContent = "ok";
   $("panel").innerHTML = tab.render();
   hydrateInputsFromState($("panel"));
   wirePanelListeners($("panel"));
-  renderTabs();
 }
 
-/* ---------- panel renderers ---------- */
 function renderGeneral(){
+  const disabled = !state.exportStd;
   return `
-    <div class="block open">
-      <button class="blockHead" type="button"><span>[General]</span><span class="caret">▸</span></button>
-      <div class="blockBody">
-        ${uiRowText("Name", "general.Name", "Ex: Minha Skin")}
-        ${uiRowText("Author", "general.Author", "Seu nome")}
-        <div class="row"><label>Version</label>
-          <div class="inline">
-            <input type="text" value="${escapeHtml(state.version)}" readonly>
-            <span class="mini">usa o seletor na sidebar</span>
-          </div>
-        </div>
+    ${disabled ? `<div class="disabledHint">Standard export desligado</div>` : ``}
 
-        <div class="sep"></div>
-        <div class="mini">Essas chaves aparecem no “Blank skin.ini” oficial. :contentReference[oaicite:4]{index=4}</div>
-        ${uiRowNum("AnimationFramerate", "general.AnimationFramerate", "-1 ou fps")}
-        ${uiRowBool("AllowSliderBallTint", "general.AllowSliderBallTint")}
-        ${uiRowText("ComboBurstRandom", "general.ComboBurstRandom", "0/1")}
+    <div class="block open">
+      <button class="blockHead" type="button"><span>[General] meta</span><span class="caret">▸</span></button>
+      <div class="blockBody">
+        ${uiRowText("Name", "general.Name")}
+        ${uiRowText("Author", "general.Author")}
+        <div class="row">
+          <label>Version</label>
+          <input type="text" value="${escapeHtml(state.version)}" readonly>
+        </div>
+      </div>
+    </div>
+
+    <div class="block open">
+      <button class="blockHead" type="button"><span>[General] cursor</span><span class="caret">▸</span></button>
+      <div class="blockBody">
         ${uiRowBool("CursorCentre", "general.CursorCentre")}
         ${uiRowBool("CursorExpand", "general.CursorExpand")}
         ${uiRowBool("CursorRotate", "general.CursorRotate")}
         ${uiRowBool("CursorTrailRotate", "general.CursorTrailRotate")}
-        ${uiRowText("CustomComboBurstSounds", "general.CustomComboBurstSounds", "ex: 50,75,100")}
+      </div>
+    </div>
+
+    <div class="block">
+      <button class="blockHead" type="button"><span>[General] gameplay</span><span class="caret">▸</span></button>
+      <div class="blockBody">
+        ${uiRowNum("AnimationFramerate", "general.AnimationFramerate")}
+        ${uiRowBool("AllowSliderBallTint", "general.AllowSliderBallTint")}
+        ${uiRowBool("SliderBallFlip", "general.SliderBallFlip")}
         ${uiRowBool("HitCircleOverlayAboveNumber", "general.HitCircleOverlayAboveNumber")}
         ${uiRowBool("LayeredHitSounds", "general.LayeredHitSounds")}
-        ${uiRowBool("SliderBallFlip", "general.SliderBallFlip")}
         ${uiRowBool("SpinnerFadePlayfield", "general.SpinnerFadePlayfield")}
-        ${uiRowText("SpinnerFrequencyModulate", "general.SpinnerFrequencyModulate", "0/1")}
         ${uiRowBool("SpinnerNoBlink", "general.SpinnerNoBlink")}
+        ${uiRowText("SpinnerFrequencyModulate", "general.SpinnerFrequencyModulate")}
+      </div>
+    </div>
+
+    <div class="block">
+      <button class="blockHead" type="button"><span>[General] misc</span><span class="caret">▸</span></button>
+      <div class="blockBody">
+        ${uiRowText("ComboBurstRandom", "general.ComboBurstRandom")}
+        ${uiRowText("CustomComboBurstSounds", "general.CustomComboBurstSounds")}
       </div>
     </div>
   `;
 }
 
 function renderColours(){
+  const disabled = !state.exportStd;
   return `
-    <div class="block open">
-      <button class="blockHead" type="button"><span>[Colours]</span><span class="caret">▸</span></button>
-      <div class="blockBody">
-        <div class="mini">RGB no formato: <b>r,g,b</b>. (Ex: 255,255,255) :contentReference[oaicite:5]{index=5}</div>
+    ${disabled ? `<div class="disabledHint">Standard export desligado</div>` : ``}
 
-        <div class="sep"></div>
-        <div class="mini"><b>Combo colours</b></div>
+    <div class="block open">
+      <button class="blockHead" type="button"><span>[Colours] ui</span><span class="caret">▸</span></button>
+      <div class="blockBody">
+        ${uiRowColor("MenuGlow", "colours.MenuGlow")}
+        ${uiRowColor("InputOverlayText", "colours.InputOverlayText")}
+        ${uiRowColor("SongSelectActiveText", "colours.SongSelectActiveText")}
+        ${uiRowColor("SongSelectInactiveText", "colours.SongSelectInactiveText")}
+      </div>
+    </div>
+
+    <div class="block open">
+      <button class="blockHead" type="button"><span>[Colours] combo</span><span class="caret">▸</span></button>
+      <div class="blockBody">
         <div class="grid2">
           ${uiRowColor("Combo1", "colours.Combo1")}
           ${uiRowColor("Combo2", "colours.Combo2")}
@@ -953,13 +1073,12 @@ function renderColours(){
           ${uiRowColor("Combo7", "colours.Combo7")}
           ${uiRowColor("Combo8", "colours.Combo8")}
         </div>
+      </div>
+    </div>
 
-        <div class="sep"></div>
-        <div class="mini"><b>UI / gameplay</b></div>
-        ${uiRowColor("InputOverlayText", "colours.InputOverlayText")}
-        ${uiRowColor("MenuGlow", "colours.MenuGlow")}
-        ${uiRowColor("SongSelectActiveText", "colours.SongSelectActiveText")}
-        ${uiRowColor("SongSelectInactiveText", "colours.SongSelectInactiveText")}
+    <div class="block">
+      <button class="blockHead" type="button"><span>[Colours] slider/spinner</span><span class="caret">▸</span></button>
+      <div class="blockBody">
         ${uiRowColor("SliderBall", "colours.SliderBall")}
         ${uiRowColor("SliderBorder", "colours.SliderBorder")}
         ${uiRowColor("SliderTrackOverride", "colours.SliderTrackOverride")}
@@ -971,90 +1090,61 @@ function renderColours(){
 }
 
 function renderFonts(){
+  const disabled = !state.exportStd;
   return `
+    ${disabled ? `<div class="disabledHint">Standard export desligado</div>` : ``}
+
     <div class="block open">
-      <button class="blockHead" type="button"><span>[Fonts]</span><span class="caret">▸</span></button>
+      <button class="blockHead" type="button"><span>[Fonts] hitcircle</span><span class="caret">▸</span></button>
       <div class="blockBody">
-        <div class="mini">Essas chaves também estão no “Blank skin.ini” oficial. :contentReference[oaicite:6]{index=6}</div>
-        <div class="sep"></div>
-        <div class="grid2">
-          <div>
-            ${uiRowText("HitCirclePrefix", "fonts.HitCirclePrefix", "default: default")}
-            ${uiRowNum("HitCircleOverlap", "fonts.HitCircleOverlap", "0")}
-          </div>
-          <div>
-            ${uiRowText("ScorePrefix", "fonts.ScorePrefix", "score")}
-            ${uiRowNum("ScoreOverlap", "fonts.ScoreOverlap", "0")}
-          </div>
-        </div>
-        <div class="grid2">
-          <div>
-            ${uiRowText("ComboPrefix", "fonts.ComboPrefix", "combo")}
-            ${uiRowNum("ComboOverlap", "fonts.ComboOverlap", "0")}
-          </div>
-          <div>${uiNote("Dica: overlaps negativos às vezes ajudam com fontes grandes.")}</div>
-        </div>
+        ${uiRowText("HitCirclePrefix", "fonts.HitCirclePrefix")}
+        ${uiRowNum("HitCircleOverlap", "fonts.HitCircleOverlap", "0")}
+      </div>
+    </div>
+
+    <div class="block open">
+      <button class="blockHead" type="button"><span>[Fonts] score</span><span class="caret">▸</span></button>
+      <div class="blockBody">
+        ${uiRowText("ScorePrefix", "fonts.ScorePrefix")}
+        ${uiRowNum("ScoreOverlap", "fonts.ScoreOverlap", "0")}
+      </div>
+    </div>
+
+    <div class="block open">
+      <button class="blockHead" type="button"><span>[Fonts] combo</span><span class="caret">▸</span></button>
+      <div class="blockBody">
+        ${uiRowText("ComboPrefix", "fonts.ComboPrefix")}
+        ${uiRowNum("ComboOverlap", "fonts.ComboOverlap", "0")}
       </div>
     </div>
   `;
 }
 
 function renderCatch(){
+  const disabled = !state.exportCatch;
   return `
+    ${disabled ? `<div class="disabledHint">Catch export desligado</div>` : ``}
+
     <div class="block open">
       <button class="blockHead" type="button"><span>[CatchTheBeat]</span><span class="caret">▸</span></button>
       <div class="blockBody">
-        <div class="mini">Oficialmente, Catch tem só estas 3 chaves no skin.ini. :contentReference[oaicite:7]{index=7}</div>
-        <div class="sep"></div>
-        ${uiRowText("HyperDash", "catch.HyperDash", "0/1")}
-        ${uiRowText("HyperDashFruit", "catch.HyperDashFruit", "0/1")}
-        ${uiRowText("HyperDashAfterImage", "catch.HyperDashAfterImage", "0/1")}
+        ${uiRowText("HyperDash", "catch.HyperDash")}
+        ${uiRowText("HyperDashFruit", "catch.HyperDashFruit")}
+        ${uiRowText("HyperDashAfterImage", "catch.HyperDashAfterImage")}
       </div>
     </div>
   `;
 }
 
-function renderTaikoInfo(){
-  return `
-    <div class="block open">
-      <button class="blockHead" type="button"><span>Taiko (por arquivos)</span><span class="caret">▸</span></button>
-      <div class="blockBody">
-        <div class="mini">
-          Não existe seção <b>[Taiko]</b> no <b>skin.ini</b>. O Taiko é skinnado por arquivos (e opcionalmente pela pasta <b>taiko/</b>),
-          e o jogador precisa ativar <i>Use Taiko skin for Taiko mode</i> nas opções. :contentReference[oaicite:8]{index=8}
-        </div>
-
-        <div class="sep"></div>
-        <div class="mini"><b>Checklist (exemplos comuns)</b></div>
-        <div class="mini">
-          • taiko-bar-left / taiko-bar-right / taiko-bar-middle<br/>
-          • taiko-drum-inner / taiko-drum-outer<br/>
-          • taiko-hitcircle / taiko-hitcircleoverlay<br/>
-          • taiko-slider / taiko-slider-fail<br/>
-          • taiko-flower / taiko-flower-group<br/>
-          • taiko-scorebar-bg / taiko-scorebar-colour<br/>
-        </div>
-
-        <div class="sep"></div>
-        <div class="mini">
-          Se você quiser, eu também posso te gerar uma aba “biblioteca de assets” (com nomes e pastas) pro teu fluxo de skinning.
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-/* ----- mania UI ----- */
 function renderMania(){
-  const q = (state.maniaShared.search || "").trim().toLowerCase();
-  const keysList = ALL_MANIA_KEYS.filter(k => !q || String(k).includes(q) || (`${k}k`).includes(q));
+  const disabled = !state.exportMania;
 
-  const toggles = keysList.map(k=>{
+  const pills = ALL_MANIA_KEYS.map(k=>{
     const on = !!state.maniaShared.enabled[k];
     return `
       <span class="kmPill ${on?"on":""}">
         <span>${k}K</span>
-        <label class="switch" title="Incluir ${k}K no export">
+        <label class="switch">
           <input type="checkbox" class="kmToggle" data-k="${k}" ${on?"checked":""}>
           <span class="sw"></span>
         </label>
@@ -1068,40 +1158,32 @@ function renderMania(){
     .join("");
 
   return `
+    ${disabled ? `<div class="disabledHint">Mania export desligado</div>` : ``}
+
     <div class="block open">
-      <button class="blockHead" type="button"><span>Mania • keymodes</span><span class="caret">▸</span></button>
+      <button class="blockHead" type="button"><span>keymodes</span><span class="caret">▸</span></button>
       <div class="blockBody">
-        <div class="kmTools">
-          <input type="text" id="kmSearch" placeholder="Buscar (ex: 4, 7, 12)..." value="${escapeHtml(state.maniaShared.search)}" style="max-width:260px">
-          <button class="btn" type="button" id="kmAll">All</button>
-          <button class="btn" type="button" id="kmNone">None</button>
-          <button class="btn" type="button" id="kmInvert">Invert</button>
-          <button class="btn" type="button" id="kmCommon" title="4K + 7K">Common</button>
-        </div>
-
-        <div class="kmWrap">${toggles}</div>
-        <div class="sep"></div>
-
-        <div class="mini">
-          Mania é a parte mais “insana” do skin.ini — e a lista completa aparece no Blank oficial. :contentReference[oaicite:9]{index=9}
-        </div>
-
-        <div id="maniaBlocks">${blocks || `<div class="mini">Nenhum modo ativo (pelo menos 1 precisa ficar ligado).</div>`}</div>
+        <div class="kmRow">${pills}</div>
       </div>
+    </div>
+
+    <div id="maniaBlocks">
+      ${blocks || `<div class="disabledHint">nenhum modo ativo</div>`}
     </div>
   `;
 }
 
 function renderManiaBlock(keys){
-  const mode = state.mania[keys] || defaultManiaMode(keys);
+  const m = state.mania[keys] || defaultManiaMode(keys);
   const open = !!state.maniaShared.open[keys];
 
-  // cria inputs Colour0..Colour{keys-1}
+  // UI: Colour1..ColourK, export: Colour0..Colour(K-1)
   const colourCols = Array.from({length: keys}, (_,i)=>{
-    const path = `mania.${keys}.Colour.${i}`;
+    const uiIndex = i + 1;
+    const path = `mania.${keys}.Colour.${uiIndex}`;
     return `
       <div class="row">
-        <label>Colour${i}</label>
+        <label>Colour${uiIndex}</label>
         <div class="inline">
           <input type="color" id="${pathToId(path)}_pick" data-pick-for="${pathToId(path)}">
           <input type="text" id="${pathToId(path)}" data-path="${path}" placeholder="255,255,255">
@@ -1111,13 +1193,14 @@ function renderManiaBlock(keys){
   }).join("");
 
   const colourLights = Array.from({length: keys}, (_,i)=>{
-    const path = `mania.${keys}.ColourLight.${i}`;
+    const uiIndex = i + 1;
+    const path = `mania.${keys}.ColourLight.${uiIndex}`;
     return `
       <div class="row">
-        <label>ColourLight${i}</label>
+        <label>ColourLight${uiIndex}</label>
         <div class="inline">
           <input type="color" id="${pathToId(path)}_pick" data-pick-for="${pathToId(path)}">
-          <input type="text" id="${pathToId(path)}" data-path="${path}" placeholder="(opcional)">
+          <input type="text" id="${pathToId(path)}" data-path="${path}" placeholder="">
         </div>
       </div>
     `;
@@ -1131,104 +1214,131 @@ function renderManiaBlock(keys){
       </button>
 
       <div class="blockBody">
-        <div class="mini"><b>[Mania]</b> • Keys: ${keys}</div>
-        <div class="sep"></div>
+        <div class="block open">
+          <button class="blockHead" type="button"><span>layout</span><span class="caret">▸</span></button>
+          <div class="blockBody">
+            ${uiRowBool("Auto ColumnStart", `mania.${keys}.AutoColumnStart`)}
+            ${uiRowNum("ColumnStart", `mania.${keys}.ColumnStart`)}
+            ${uiRowNum("ColumnRight", `mania.${keys}.ColumnRight`)}
 
-        <div class="mini"><b>Layout</b></div>
-        ${uiRowNum("ColumnStart", `mania.${keys}.ColumnStart`, "(auto/manual)")}
-        ${uiRowNum("ColumnRight", `mania.${keys}.ColumnRight`, "(opcional)")}
-        ${uiRowText("ColumnSpacing", `mania.${keys}.ColumnSpacing`, "0,0,0...")}
-        ${uiRowText("ColumnWidth", `mania.${keys}.ColumnWidth`, "70,70,70...")}
-        ${uiRowText("ColumnLineWidth", `mania.${keys}.ColumnLineWidth`, "0,0,0...")}
-
-        <div class="sep"></div>
-        <div class="mini"><b>Positions</b></div>
-        ${uiRowNum("HitPosition", `mania.${keys}.HitPosition`, "")}
-        ${uiRowNum("LightPosition", `mania.${keys}.LightPosition`, "")}
-        ${uiRowNum("ScorePosition", `mania.${keys}.ScorePosition`, "")}
-        ${uiRowNum("ComboPosition", `mania.${keys}.ComboPosition`, "")}
-
-        <div class="sep"></div>
-        <div class="mini"><b>Gameplay toggles</b></div>
-        ${uiRowBool("JudgementLine", `mania.${keys}.JudgementLine`)}
-        ${uiRowBool("KeysUnderNotes", `mania.${keys}.KeysUnderNotes`)}
-        ${uiRowBool("UpsideDown", `mania.${keys}.UpsideDown`)}
-
-        ${uiRowText("KeyFlipWhenUpsideDown", `mania.${keys}.KeyFlipWhenUpsideDown`, "0/1 (ou por coluna)")}
-        ${uiRowText("NoteFlipWhenUpsideDown", `mania.${keys}.NoteFlipWhenUpsideDown`, "0/1 (ou por coluna)")}
-        ${uiRowText("NoteBodyStyle", `mania.${keys}.NoteBodyStyle`, "stretch / cascadeTop / cascadeBottom")}
-
-        <div class="sep"></div>
-        <div class="mini"><b>Stage / Lighting</b></div>
-        <div class="grid2">
-          <div>
-            ${uiRowText("StageLeft", `mania.${keys}.StageLeft`, "")}
-            ${uiRowText("StageRight", `mania.${keys}.StageRight`, "")}
-            ${uiRowText("StageBottom", `mania.${keys}.StageBottom`, "")}
-            ${uiRowText("StageHint", `mania.${keys}.StageHint`, "")}
-            ${uiRowText("StageLight", `mania.${keys}.StageLight`, "")}
-          </div>
-          <div>
-            ${uiRowNum("LightingNWidth", `mania.${keys}.LightingNWidth`, "")}
-            ${uiRowNum("LightingLWidth", `mania.${keys}.LightingLWidth`, "")}
-            ${uiRowText("LightingN", `mania.${keys}.LightingN`, "")}
-            ${uiRowText("LightingL", `mania.${keys}.LightingL`, "")}
+            ${uiRowText("ColumnWidth", `mania.${keys}.ColumnWidth`, "70 ou 70,70,70")}
+            ${uiRowText("ColumnSpacing", `mania.${keys}.ColumnSpacing`, "0 ou 0,0,0")}
+            ${uiRowText("ColumnLineWidth", `mania.${keys}.ColumnLineWidth`, "")}
           </div>
         </div>
 
-        ${uiRowNum("BarlineHeight", `mania.${keys}.BarlineHeight`, "")}
-        ${uiRowNum("WidthForNoteHeightScale", `mania.${keys}.WidthForNoteHeightScale`, "")}
-        ${uiRowNum("LightFramePerSecond", `mania.${keys}.LightFramePerSecond`, "")}
-
-        ${uiRowText("SpecialStyle", `mania.${keys}.SpecialStyle`, "")}
-        ${uiRowText("ComboBurstStyle", `mania.${keys}.ComboBurstStyle`, "")}
-        ${uiRowText("SplitStages", `mania.${keys}.SplitStages`, "")}
-        ${uiRowText("StageSeparation", `mania.${keys}.StageSeparation`, "")}
-        ${uiRowText("SeparateScore", `mania.${keys}.SeparateScore`, "")}
-
-        <div class="sep"></div>
-        <div class="mini"><b>Colours (por coluna)</b></div>
-        <div class="grid2">
-          <div>${colourCols}</div>
-          <div>${colourLights}</div>
+        <div class="block open">
+          <button class="blockHead" type="button"><span>positions</span><span class="caret">▸</span></button>
+          <div class="blockBody">
+            ${uiRowNum("HitPosition", `mania.${keys}.HitPosition`)}
+            ${uiRowNum("LightPosition", `mania.${keys}.LightPosition`)}
+            ${uiRowNum("ScorePosition", `mania.${keys}.ScorePosition`)}
+            ${uiRowNum("ComboPosition", `mania.${keys}.ComboPosition`)}
+          </div>
         </div>
 
-        <div class="sep"></div>
-        <div class="mini"><b>Colours (extras)</b></div>
-        ${uiRowColor("ColourColumnLine", `mania.${keys}.ColourColumnLine`)}
-        ${uiRowColor("ColourBarline", `mania.${keys}.ColourBarline`)}
-        ${uiRowColor("ColourJudgementLine", `mania.${keys}.ColourJudgementLine`)}
-        ${uiRowColor("ColourKeyWarning", `mania.${keys}.ColourKeyWarning`)}
-        ${uiRowColor("ColourHold", `mania.${keys}.ColourHold`)}
-        ${uiRowColor("ColourBreak", `mania.${keys}.ColourBreak`)}
+        <div class="block">
+          <button class="blockHead" type="button"><span>toggles</span><span class="caret">▸</span></button>
+          <div class="blockBody">
+            ${uiRowBool("JudgementLine", `mania.${keys}.JudgementLine`)}
+            ${uiRowBool("KeysUnderNotes", `mania.${keys}.KeysUnderNotes`)}
+            ${uiRowBool("UpsideDown", `mania.${keys}.UpsideDown`)}
 
-        <div class="sep"></div>
-        <div class="mini"><b>Patterns de imagem</b> (usa {n} = 1..Keys)</div>
-        ${uiRowText("KeyImage# pattern", `mania.${keys}.KeyImage`, "key{n}")}
-        ${uiRowText("KeyImage#D pattern", `mania.${keys}.KeyImageD`, "key{n}D")}
-        ${uiRowText("NoteImage# pattern", `mania.${keys}.NoteImage`, "note{n}")}
-        ${uiRowText("NoteImage#H pattern", `mania.${keys}.NoteImageH`, "note{n}H")}
-        ${uiRowText("NoteImage#L pattern", `mania.${keys}.NoteImageL`, "note{n}L")}
-        ${uiRowText("NoteImage#T pattern", `mania.${keys}.NoteImageT`, "note{n}T")}
-        ${uiRowText("WarningArrow", `mania.${keys}.WarningArrow`, "")}
-
-        <div class="sep"></div>
-        <div class="mini"><b>Hit sprites</b></div>
-        <div class="grid2">
-          ${uiRowText("Hit0", `mania.${keys}.Hit0`)}
-          ${uiRowText("Hit50", `mania.${keys}.Hit50`)}
-          ${uiRowText("Hit100", `mania.${keys}.Hit100`)}
-          ${uiRowText("Hit200", `mania.${keys}.Hit200`)}
-          ${uiRowText("Hit300", `mania.${keys}.Hit300`)}
-          ${uiRowText("Hit300g", `mania.${keys}.Hit300g`)}
+            ${uiRowText("KeyFlipWhenUpsideDown", `mania.${keys}.KeyFlipWhenUpsideDown`)}
+            ${uiRowText("NoteFlipWhenUpsideDown", `mania.${keys}.NoteFlipWhenUpsideDown`)}
+            ${uiRowText("NoteBodyStyle", `mania.${keys}.NoteBodyStyle`)}
+          </div>
         </div>
+
+        <div class="block">
+          <button class="blockHead" type="button"><span>stage/lighting</span><span class="caret">▸</span></button>
+          <div class="blockBody">
+            <div class="grid2">
+              <div>
+                ${uiRowText("StageLeft", `mania.${keys}.StageLeft`)}
+                ${uiRowText("StageRight", `mania.${keys}.StageRight`)}
+                ${uiRowText("StageBottom", `mania.${keys}.StageBottom`)}
+                ${uiRowText("StageHint", `mania.${keys}.StageHint`)}
+                ${uiRowText("StageLight", `mania.${keys}.StageLight`)}
+              </div>
+              <div>
+                ${uiRowNum("LightingNWidth", `mania.${keys}.LightingNWidth`)}
+                ${uiRowNum("LightingLWidth", `mania.${keys}.LightingLWidth`)}
+                ${uiRowText("LightingN", `mania.${keys}.LightingN`)}
+                ${uiRowText("LightingL", `mania.${keys}.LightingL`)}
+              </div>
+            </div>
+
+            ${uiRowNum("BarlineHeight", `mania.${keys}.BarlineHeight`)}
+            ${uiRowNum("WidthForNoteHeightScale", `mania.${keys}.WidthForNoteHeightScale`)}
+            ${uiRowNum("LightFramePerSecond", `mania.${keys}.LightFramePerSecond`)}
+            ${uiRowText("SpecialStyle", `mania.${keys}.SpecialStyle`)}
+            ${uiRowText("ComboBurstStyle", `mania.${keys}.ComboBurstStyle`)}
+            ${uiRowText("SplitStages", `mania.${keys}.SplitStages`)}
+            ${uiRowText("StageSeparation", `mania.${keys}.StageSeparation`)}
+            ${uiRowText("SeparateScore", `mania.${keys}.SeparateScore`)}
+          </div>
+        </div>
+
+        <div class="block open">
+          <button class="blockHead" type="button"><span>colours</span><span class="caret">▸</span></button>
+          <div class="blockBody">
+            <div class="grid2">
+              <div>${colourCols}</div>
+              <div>${colourLights}</div>
+            </div>
+
+            ${uiRowColor("ColourColumnLine", `mania.${keys}.ColourColumnLine`)}
+            ${uiRowColor("ColourBarline", `mania.${keys}.ColourBarline`)}
+            ${uiRowColor("ColourJudgementLine", `mania.${keys}.ColourJudgementLine`)}
+            ${uiRowColor("ColourKeyWarning", `mania.${keys}.ColourKeyWarning`)}
+            ${uiRowColor("ColourHold", `mania.${keys}.ColourHold`)}
+            ${uiRowColor("ColourBreak", `mania.${keys}.ColourBreak`)}
+          </div>
+        </div>
+
+        <div class="block">
+          <button class="blockHead" type="button"><span>sprites/patterns</span><span class="caret">▸</span></button>
+          <div class="blockBody">
+            ${uiRowText("KeyImage pattern", `mania.${keys}.KeyImage`, "key{n}")}
+            ${uiRowText("KeyImageD pattern", `mania.${keys}.KeyImageD`, "key{n}D")}
+            ${uiRowText("NoteImage pattern", `mania.${keys}.NoteImage`, "note{n}")}
+            ${uiRowText("NoteImageH pattern", `mania.${keys}.NoteImageH`, "note{n}H")}
+            ${uiRowText("NoteImageL pattern", `mania.${keys}.NoteImageL`, "note{n}L")}
+            ${uiRowText("NoteImageT pattern", `mania.${keys}.NoteImageT`, "note{n}T")}
+            ${uiRowText("WarningArrow", `mania.${keys}.WarningArrow`)}
+          </div>
+        </div>
+
+        <div class="block">
+          <button class="blockHead" type="button"><span>hits</span><span class="caret">▸</span></button>
+          <div class="blockBody">
+            <div class="grid2">
+              ${uiRowText("Hit0", `mania.${keys}.Hit0`)}
+              ${uiRowText("Hit50", `mania.${keys}.Hit50`)}
+              ${uiRowText("Hit100", `mania.${keys}.Hit100`)}
+              ${uiRowText("Hit200", `mania.${keys}.Hit200`)}
+              ${uiRowText("Hit300", `mania.${keys}.Hit300`)}
+              ${uiRowText("Hit300g", `mania.${keys}.Hit300g`)}
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   `;
 }
 
-/* ---------- wiring ---------- */
+function renderPreviewOnly(){
+  // painel só com preview (pra quando quiser ver “limpo”)
+  return `
+    <div class="disabledHint">use o painel da direita</div>
+  `;
+}
+
+/* ---------- Accordions + hydration ---------- */
 function wireAccordions(root){
+  // generic blocks
   root.querySelectorAll(".blockHead").forEach(head=>{
     const parent = head.closest(".block");
     if(!parent) return;
@@ -1247,7 +1357,7 @@ function wireAccordions(root){
       return;
     }
 
-    // generic accordion
+    // open/close
     head.addEventListener("click", ()=>{
       const nowOpen = !parent.classList.contains("open");
       parent.classList.toggle("open", nowOpen);
@@ -1261,13 +1371,16 @@ function bindColorPickers(root){
     const txt = document.getElementById(txtId);
     if(!txt) return;
 
+    // initial sync
     const hx = rgbToHex(txt.value);
     if(hx) pick.value = hx;
 
     pick.addEventListener("input", ()=>{
       txt.value = hexToRgb(pick.value);
-      onAnyChange();
+      // dispara estado/export
+      txt.dispatchEvent(new Event("input", {bubbles:true}));
     });
+
     txt.addEventListener("input", ()=>{
       const hx2 = rgbToHex(txt.value);
       if(hx2) pick.value = hx2;
@@ -1276,7 +1389,6 @@ function bindColorPickers(root){
 }
 
 function hydrateInputsFromState(root){
-  // inputs text/number
   root.querySelectorAll("[data-path]").forEach(inp=>{
     const path = inp.getAttribute("data-path");
     const v = getByPath(state, path);
@@ -1288,12 +1400,25 @@ function hydrateInputsFromState(root){
     }
   });
 
+  // ColumnStart disabled when AutoColumnStart on
+  root.querySelectorAll('[data-path$=".AutoColumnStart"]').forEach(chk=>{
+    const path = chk.getAttribute("data-path"); // mania.K.AutoColumnStart
+    const mPath = path.replace(".AutoColumnStart", ".ColumnStart");
+    const col = root.querySelector(`[data-path="${mPath}"]`);
+    if(col){
+      col.disabled = !!chk.checked;
+      col.placeholder = chk.checked ? "auto" : "";
+      if(chk.checked) col.value = "";
+    }
+  });
+
   bindColorPickers(root);
   wireAccordions(root);
 }
 
+/* ---------- listeners ---------- */
 function wirePanelListeners(root){
-  // generic input -> state
+  // all data-path inputs
   root.querySelectorAll("[data-path]").forEach(inp=>{
     const path = inp.getAttribute("data-path");
     const handler = ()=>{
@@ -1302,67 +1427,40 @@ function wirePanelListeners(root){
       }else{
         setByPath(state, path, inp.value);
       }
+
+      // special: AutoColumnStart toggles disable ColumnStart + clears it
+      if(path.endsWith(".AutoColumnStart")){
+        const mPath = path.replace(".AutoColumnStart", ".ColumnStart");
+        const col = root.querySelector(`[data-path="${mPath}"]`);
+        if(col){
+          col.disabled = !!inp.checked;
+          col.placeholder = inp.checked ? "auto" : "";
+          if(inp.checked){
+            col.value = "";
+            setByPath(state, mPath, "");
+          }
+        }
+      }
+
       onAnyChange();
     };
     inp.addEventListener("input", handler);
     inp.addEventListener("change", handler);
   });
 
-  // mania tools
-  const kmSearch = root.querySelector("#kmSearch");
-  if(kmSearch){
-    kmSearch.addEventListener("input", ()=>{
-      state.maniaShared.search = kmSearch.value || "";
-      saveSoon();
-      renderActiveTab();
-    });
-  }
-
-  const btnAll = root.querySelector("#kmAll");
-  const btnNone = root.querySelector("#kmNone");
-  const btnInv = root.querySelector("#kmInvert");
-  const btnCom = root.querySelector("#kmCommon");
-
-  if(btnAll) btnAll.addEventListener("click", ()=>{
-    for(const k of ALL_MANIA_KEYS){ state.maniaShared.enabled[k] = true; state.maniaShared.open[k]=false; }
-    state.maniaShared.open[4]=true; state.maniaShared.open[7]=true;
-    onAnyChange(true);
-  });
-  if(btnNone) btnNone.addEventListener("click", ()=>{
-    for(const k of ALL_MANIA_KEYS){ state.maniaShared.enabled[k] = false; state.maniaShared.open[k]=false; }
-    state.maniaShared.enabled[4]=true; state.maniaShared.open[4]=true;
-    onAnyChange(true);
-  });
-  if(btnInv) btnInv.addEventListener("click", ()=>{
-    for(const k of ALL_MANIA_KEYS){
-      state.maniaShared.enabled[k] = !state.maniaShared.enabled[k];
-      if(!state.maniaShared.enabled[k]) state.maniaShared.open[k]=false;
-    }
-    if(!ALL_MANIA_KEYS.some(k=>state.maniaShared.enabled[k])){
-      state.maniaShared.enabled[4]=true; state.maniaShared.open[4]=true;
-    }
-    onAnyChange(true);
-  });
-  if(btnCom) btnCom.addEventListener("click", ()=>{
-    for(const k of ALL_MANIA_KEYS){ state.maniaShared.enabled[k]=false; state.maniaShared.open[k]=false; }
-    state.maniaShared.enabled[4]=true; state.maniaShared.enabled[7]=true;
-    state.maniaShared.open[4]=true; state.maniaShared.open[7]=true;
-    onAnyChange(true);
-  });
-
+  // mania keymode toggles
   root.querySelectorAll(".kmToggle").forEach(t=>{
     t.addEventListener("change", ()=>{
       const k = Number(t.dataset.k);
-      const was = !!state.maniaShared.enabled[k];
-      const now = !!t.checked;
-      state.maniaShared.enabled[k] = now;
-      state.maniaShared.open[k] = now ? true : false;
+      state.maniaShared.enabled[k] = !!t.checked;
+      state.maniaShared.open[k] = !!t.checked;
 
       if(!ALL_MANIA_KEYS.some(x=>state.maniaShared.enabled[x])){
         state.maniaShared.enabled[4]=true;
         state.maniaShared.open[4]=true;
       }
-      onAnyChange(true);
+      renderActiveTab();
+      onAnyChange();
     });
   });
 }
@@ -1371,70 +1469,74 @@ function wirePanelListeners(root){
 function genIni(){
   const out = [];
 
-  // [General]
-  out.push("[General]");
-  pushKV(out, "Name", state.general.Name);
-  pushKV(out, "Author", state.general.Author);
-  out.push(fmtKV("Version", state.version));
+  // STANDARD: [General] [Colours] [Fonts]
+  if(state.exportStd){
+    out.push("[General]");
+    pushKV(out, "Name", state.general.Name);
+    pushKV(out, "Author", state.general.Author);
+    out.push(fmtKV("Version", state.version));
 
-  const g = state.general;
-  pushKV(out, "AnimationFramerate", g.AnimationFramerate);
-  pushKV(out, "AllowSliderBallTint", bool01(!!g.AllowSliderBallTint));
-  pushKV(out, "ComboBurstRandom", g.ComboBurstRandom);
-  pushKV(out, "CursorCentre", bool01(!!g.CursorCentre));
-  pushKV(out, "CursorExpand", bool01(!!g.CursorExpand));
-  pushKV(out, "CursorRotate", bool01(!!g.CursorRotate));
-  pushKV(out, "CursorTrailRotate", bool01(!!g.CursorTrailRotate));
-  pushKV(out, "CustomComboBurstSounds", g.CustomComboBurstSounds);
-  pushKV(out, "HitCircleOverlayAboveNumber", bool01(!!g.HitCircleOverlayAboveNumber));
-  pushKV(out, "LayeredHitSounds", bool01(!!g.LayeredHitSounds));
-  pushKV(out, "SliderBallFlip", bool01(!!g.SliderBallFlip));
-  pushKV(out, "SpinnerFadePlayfield", bool01(!!g.SpinnerFadePlayfield));
-  pushKV(out, "SpinnerFrequencyModulate", g.SpinnerFrequencyModulate);
-  pushKV(out, "SpinnerNoBlink", bool01(!!g.SpinnerNoBlink));
+    const g = state.general;
+    pushKV(out, "AnimationFramerate", g.AnimationFramerate);
+    pushKV(out, "AllowSliderBallTint", bool01(!!g.AllowSliderBallTint));
+    pushKV(out, "ComboBurstRandom", g.ComboBurstRandom);
+    pushKV(out, "CursorCentre", bool01(!!g.CursorCentre));
+    pushKV(out, "CursorExpand", bool01(!!g.CursorExpand));
+    pushKV(out, "CursorRotate", bool01(!!g.CursorRotate));
+    pushKV(out, "CursorTrailRotate", bool01(!!g.CursorTrailRotate));
+    pushKV(out, "CustomComboBurstSounds", g.CustomComboBurstSounds);
+    pushKV(out, "HitCircleOverlayAboveNumber", bool01(!!g.HitCircleOverlayAboveNumber));
+    pushKV(out, "LayeredHitSounds", bool01(!!g.LayeredHitSounds));
+    pushKV(out, "SliderBallFlip", bool01(!!g.SliderBallFlip));
+    pushKV(out, "SpinnerFadePlayfield", bool01(!!g.SpinnerFadePlayfield));
+    pushKV(out, "SpinnerFrequencyModulate", g.SpinnerFrequencyModulate);
+    pushKV(out, "SpinnerNoBlink", bool01(!!g.SpinnerNoBlink));
 
-  out.push("");
-
-  // [Colours]
-  const c = state.colours;
-  const colourKeys = [
-    "Combo1","Combo2","Combo3","Combo4","Combo5","Combo6","Combo7","Combo8",
-    "InputOverlayText","MenuGlow","SliderBall","SliderBorder","SliderTrackOverride",
-    "SongSelectActiveText","SongSelectInactiveText","SpinnerBackground","StarBreakAdditive"
-  ];
-  const hasColours = colourKeys.some(k => !isBlank(c[k]));
-  if(hasColours){
-    out.push("[Colours]");
-    for(const k of colourKeys) pushKV(out, k, c[k]);
     out.push("");
+
+    const c = state.colours;
+    const colourKeys = [
+      "Combo1","Combo2","Combo3","Combo4","Combo5","Combo6","Combo7","Combo8",
+      "InputOverlayText","MenuGlow","SliderBall","SliderBorder","SliderTrackOverride",
+      "SongSelectActiveText","SongSelectInactiveText","SpinnerBackground","StarBreakAdditive"
+    ];
+    const hasColours = colourKeys.some(k => !isBlank(c[k]));
+    if(hasColours){
+      out.push("[Colours]");
+      for(const k of colourKeys) pushKV(out, k, c[k]);
+      out.push("");
+    }
+
+    const f = state.fonts;
+    const fontKeys = ["HitCirclePrefix","HitCircleOverlap","ScorePrefix","ScoreOverlap","ComboPrefix","ComboOverlap"];
+    const hasFonts = fontKeys.some(k => !isBlank(f[k]));
+    if(hasFonts){
+      out.push("[Fonts]");
+      for(const k of fontKeys) pushKV(out, k, f[k]);
+      out.push("");
+    }
   }
 
-  // [Fonts]
-  const f = state.fonts;
-  const fontKeys = ["HitCirclePrefix","HitCircleOverlap","ScorePrefix","ScoreOverlap","ComboPrefix","ComboOverlap"];
-  const hasFonts = fontKeys.some(k => !isBlank(f[k]));
-  if(hasFonts){
-    out.push("[Fonts]");
-    for(const k of fontKeys) pushKV(out, k, f[k]);
-    out.push("");
+  // CATCH
+  if(state.exportCatch){
+    const ca = state.catch;
+    const catchKeys = ["HyperDash","HyperDashFruit","HyperDashAfterImage"];
+    const hasCatch = catchKeys.some(k => !isBlank(ca[k]));
+    if(hasCatch){
+      out.push("[CatchTheBeat]");
+      for(const k of catchKeys) pushKV(out, k, ca[k]);
+      out.push("");
+    }
   }
 
-  // [CatchTheBeat]
-  const ca = state.catch;
-  const catchKeys = ["HyperDash","HyperDashFruit","HyperDashAfterImage"];
-  const hasCatch = catchKeys.some(k => !isBlank(ca[k]));
-  if(hasCatch){
-    out.push("[CatchTheBeat]");
-    for(const k of catchKeys) pushKV(out, k, ca[k]);
-    out.push("");
-  }
-
-  // [Mania]
-  for(const keys of ALL_MANIA_KEYS){
-    if(!state.maniaShared.enabled[keys]) continue;
-    out.push("[Mania]");
-    out.push(...genManiaBlock(keys));
-    out.push("");
+  // MANIA
+  if(state.exportMania){
+    for(const keys of ALL_MANIA_KEYS){
+      if(!state.maniaShared.enabled[keys]) continue;
+      out.push("[Mania]");
+      out.push(...genManiaBlock(keys));
+      out.push("");
+    }
   }
 
   while(out.length && out[out.length-1]==="") out.pop();
@@ -1454,24 +1556,25 @@ function genManiaBlock(keys){
   lines.push(fmtKV("Keys", keys));
   spacer(lines);
 
-  // layout lines: ColumnWidth/Spacing etc são CSV; se usuário botar só "70", replicamos
-  const cwRaw = cleanLine(m.ColumnWidth);
-  const csRaw = cleanLine(m.ColumnSpacing);
-
   function normalizeCsv(raw, count, fallback){
     const r = cleanLine(raw);
     if(!r) return fallback;
     if(r.includes(",")) return r;
     return Array.from({length: count}, ()=>r).join(",");
   }
-  lines.push(fmtKV("ColumnWidth", normalizeCsv(cwRaw, keys, Array.from({length:keys}, ()=>"70").join(","))));
-  lines.push(fmtKV("ColumnSpacing", normalizeCsv(csRaw, Math.max(0,keys-1), Array.from({length:Math.max(0,keys-1)}, ()=>"0").join(","))));
-  pushKV(lines, "ColumnStart", m.ColumnStart);
+
+  lines.push(fmtKV("ColumnWidth", normalizeCsv(m.ColumnWidth, keys, Array.from({length:keys}, ()=>"70").join(","))));
+  lines.push(fmtKV("ColumnSpacing", normalizeCsv(m.ColumnSpacing, Math.max(0,keys-1), Array.from({length:Math.max(0,keys-1)}, ()=>"0").join(","))));
+
+  // ColumnStart: auto se vazio ou AutoColumnStart = true -> não exporta a linha
+  if(!m.AutoColumnStart){
+    pushKV(lines, "ColumnStart", m.ColumnStart);
+  }
+
   pushKV(lines, "ColumnRight", m.ColumnRight);
-  pushKV(lines, "ColumnLineWidth", normalizeCsv(cleanLine(m.ColumnLineWidth), keys+1, Array.from({length:keys+1}, ()=>"0").join(",")));
+  pushKV(lines, "ColumnLineWidth", normalizeCsv(m.ColumnLineWidth, keys+1, Array.from({length:keys+1}, ()=>"0").join(",")));
   spacer(lines);
 
-  // positions + toggles
   pushKV(lines, "HitPosition", m.HitPosition);
   pushKV(lines, "LightPosition", m.LightPosition);
   pushKV(lines, "ScorePosition", m.ScorePosition);
@@ -1488,7 +1591,6 @@ function genManiaBlock(keys){
   pushKV(lines, "NoteBodyStyle", m.NoteBodyStyle);
   spacer(lines);
 
-  // stage/lighting
   header(lines, "stage");
   pushKV(lines, "StageLeft", m.StageLeft);
   pushKV(lines, "StageRight", m.StageRight);
@@ -1511,17 +1613,20 @@ function genManiaBlock(keys){
   pushKV(lines, "SeparateScore", m.SeparateScore);
   spacer(lines);
 
-  // colours
   header(lines, "colours");
-  for(let i=0;i<keys;i++){
-    const v = cleanLine(m.Colour?.[i]);
-    if(v) lines.push(fmtKV(`Colour${i}`, v));
+
+  // UI indexes 1..K, export uses 0..K-1 (compat)
+  for(let ui=1; ui<=keys; ui++){
+    const v = cleanLine(m.Colour?.[ui]);
+    if(v) lines.push(fmtKV(`Colour${ui-1}`, v));
   }
   spacer(lines);
-  for(let i=0;i<keys;i++){
-    const v = cleanLine(m.ColourLight?.[i]);
-    if(v) lines.push(fmtKV(`ColourLight${i}`, v));
+
+  for(let ui=1; ui<=keys; ui++){
+    const v = cleanLine(m.ColourLight?.[ui]);
+    if(v) lines.push(fmtKV(`ColourLight${ui-1}`, v));
   }
+
   pushKV(lines, "ColourColumnLine", m.ColourColumnLine);
   pushKV(lines, "ColourBarline", m.ColourBarline);
   pushKV(lines, "ColourJudgementLine", m.ColourJudgementLine);
@@ -1530,7 +1635,6 @@ function genManiaBlock(keys){
   pushKV(lines, "ColourBreak", m.ColourBreak);
   spacer(lines);
 
-  // patterns -> expand to KeyImage0.., NoteImage0.. etc
   header(lines, "images");
   for(let idx=0; idx<keys; idx++){
     const n = idx+1;
@@ -1567,7 +1671,6 @@ function genManiaBlock(keys){
   pushKV(lines, "WarningArrow", m.WarningArrow);
   spacer(lines);
 
-  // hits
   header(lines, "hits");
   pushKV(lines, "Hit0", m.Hit0);
   pushKV(lines, "Hit50", m.Hit50);
@@ -1580,25 +1683,29 @@ function genManiaBlock(keys){
   return lines;
 }
 
-/* ---------- import parser ---------- */
+/* ---------- import (mais robusto) ---------- */
 function parseIni(text){
   const lines = String(text||"").split("\n");
-  let section = "";
+
   const parsed = {
     General:{}, Colours:{}, Fonts:{}, CatchTheBeat:{},
-    Mania: [] // array of {Keys, kv}
+    Mania: [] // {Keys, kv}
   };
 
+  let section = "";
   let curMania = null;
 
   for(const raw of lines){
-    const line = raw.trim();
-    if(!line || line.startsWith("//")) continue;
+    const line0 = raw.replace(/\r/g,"");
+    const line = line0.trim();
 
-    const sec = line.match(/^\[(.+?)\]$/);
+    if(!line) continue;
+    if(line.startsWith("//") || line.startsWith(";")) continue;
+
+    const sec = line.match(/^\[(.+?)\]\s*$/);
     if(sec){
       section = sec[1];
-      if(section === "Mania"){
+      if(section.toLowerCase() === "mania"){
         curMania = { Keys:null, kv:{} };
         parsed.Mania.push(curMania);
       }else{
@@ -1607,21 +1714,24 @@ function parseIni(text){
       continue;
     }
 
-    const m = line.match(/^([A-Za-z0-9]+)\s*:\s*(.*)$/);
+    // suporta "Key: value" e "Key : value" e "Key=value"
+    let m = line.match(/^([A-Za-z0-9]+)\s*:\s*(.*)$/);
+    if(!m) m = line.match(/^([A-Za-z0-9]+)\s*=\s*(.*)$/);
     if(!m) continue;
-    const key = m[1];
-    const val = m[2];
 
-    if(section === "General") parsed.General[key]=val;
-    else if(section === "Colours") parsed.Colours[key]=val;
-    else if(section === "Fonts") parsed.Fonts[key]=val;
-    else if(section === "CatchTheBeat") parsed.CatchTheBeat[key]=val;
-    else if(section === "Mania" && curMania){
+    const key = m[1];
+    const val = (m[2] ?? "").trim();
+
+    const secName = section.toLowerCase();
+    if(secName === "general") parsed.General[key] = val;
+    else if(secName === "colours") parsed.Colours[key] = val;
+    else if(secName === "fonts") parsed.Fonts[key] = val;
+    else if(secName === "catchthebeat") parsed.CatchTheBeat[key] = val;
+    else if(secName === "mania" && curMania){
+      curMania.kv[key] = val;
       if(key === "Keys"){
-        curMania.Keys = intOr(val, null);
-        curMania.kv[key]=val;
-      }else{
-        curMania.kv[key]=val;
+        const k = parseInt(val,10);
+        curMania.Keys = Number.isFinite(k) ? k : null;
       }
     }
   }
@@ -1632,7 +1742,7 @@ function applyParsed(parsed){
   // version
   if(parsed.General.Version) state.version = parsed.General.Version;
 
-  // General known
+  // general
   for(const k in state.general){
     if(k in parsed.General){
       if(typeof state.general[k] === "boolean"){
@@ -1643,41 +1753,44 @@ function applyParsed(parsed){
     }
   }
 
-  // Colours
+  // colours
   for(const k in state.colours){
     if(k in parsed.Colours) state.colours[k] = parsed.Colours[k];
   }
 
-  // Fonts
+  // fonts
   for(const k in state.fonts){
     if(k in parsed.Fonts) state.fonts[k] = parsed.Fonts[k];
   }
 
-  // Catch
+  // catch
   for(const k in state.catch){
     if(k in parsed.CatchTheBeat) state.catch[k] = parsed.CatchTheBeat[k];
   }
 
-  // Mania blocks
+  // mania
   for(const blk of parsed.Mania){
     const keys = blk.Keys;
-    if(!keys || keys<1 || keys>18) continue;
+    if(!keys || keys < 1 || keys > 18) continue;
+
     state.maniaShared.enabled[keys] = true;
+    state.maniaShared.open[keys] = true;
 
     const m = state.mania[keys] || defaultManiaMode(keys);
 
-    // direct keys we support
     const direct = [
       "ColumnStart","ColumnRight","ColumnSpacing","ColumnWidth","ColumnLineWidth",
-      "BarlineHeight","LightingNWidth","LightingLWidth","WidthForNoteHeightScale",
-      "HitPosition","LightPosition","ComboPosition","ScorePosition",
-      "JudgementLine","LightFramePerSecond","SpecialStyle","ComboBurstStyle","SplitStages",
-      "StageSeparation","SeparateScore","KeysUnderNotes","UpsideDown",
+      "HitPosition","LightPosition","ScorePosition","ComboPosition",
+      "JudgementLine","KeysUnderNotes","UpsideDown",
+      "BarlineHeight","WidthForNoteHeightScale","LightingNWidth","LightingLWidth",
+      "LightFramePerSecond","SpecialStyle","ComboBurstStyle","SplitStages","StageSeparation","SeparateScore",
       "KeyFlipWhenUpsideDown","NoteFlipWhenUpsideDown","NoteBodyStyle",
       "StageLeft","StageRight","StageBottom","StageHint","StageLight","LightingN","LightingL",
+      "ColourColumnLine","ColourBarline","ColourJudgementLine","ColourKeyWarning","ColourHold","ColourBreak",
       "WarningArrow",
       "Hit0","Hit50","Hit100","Hit200","Hit300","Hit300g"
     ];
+
     for(const k of direct){
       if(k in blk.kv){
         if(typeof m[k] === "boolean") m[k] = blk.kv[k].trim() === "1";
@@ -1685,33 +1798,37 @@ function applyParsed(parsed){
       }
     }
 
-    // Colour / ColourLight per idx
+    // ColumnStart auto flag
+    if(isBlank(m.ColumnStart)){
+      m.AutoColumnStart = true;
+    }else{
+      m.AutoColumnStart = false;
+    }
+
+    // import colours: file is Colour0.. -> UI becomes Colour1..
     for(let i=0;i<keys;i++){
       const ck = `Colour${i}`;
       const lk = `ColourLight${i}`;
-      if(ck in blk.kv){ m.Colour[i] = blk.kv[ck]; }
-      if(lk in blk.kv){ m.ColourLight[i] = blk.kv[lk]; }
+      if(ck in blk.kv) m.Colour[i+1] = blk.kv[ck];
+      if(lk in blk.kv) m.ColourLight[i+1] = blk.kv[lk];
     }
 
-    // patterns: tenta inferir “pattern” a partir do idx0 e idx1 se houver
-    // (bem heurístico, mas ajuda em import real)
+    // patterns: tenta montar pattern se achar idx0/1 (heurística simples)
     function guessPattern(prefix){
       const a = blk.kv[`${prefix}0`];
       const b = blk.kv[`${prefix}1`];
       if(!a || !b) return "";
-      // se diferem só em "1"/"2", converte pra {n}
       const a2 = a.replaceAll("1","{n}");
       const b2 = b.replaceAll("2","{n}");
       if(a2 === b2) return a2;
       return "";
     }
     const gKey = guessPattern("KeyImage");
-    const gKeyD = guessPattern("KeyImage") && guessPattern("KeyImageD");
+    const gKeyD = guessPattern("KeyImageD");
     const gNote = guessPattern("NoteImage");
     const gNoteH = guessPattern("NoteImageH");
     const gNoteL = guessPattern("NoteImageL");
     const gNoteT = guessPattern("NoteImageT");
-
     if(gKey) m.KeyImage = gKey;
     if(gKeyD) m.KeyImageD = gKeyD;
     if(gNote) m.NoteImage = gNote;
@@ -1736,7 +1853,6 @@ function saveState(){
     $("savePulse").textContent = "ERR";
   }
 }
-
 function loadState(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -1744,11 +1860,15 @@ function loadState(){
     const s = JSON.parse(raw);
     if(!s) return;
 
-    // shallow merge de segurança
-    state.pretty = !!s.pretty;
-    state.commentEmpty = !!s.commentEmpty;
+    state.activeTab = s.activeTab ?? state.activeTab;
+
+    state.exportStd = (s.exportStd ?? true) ? true : false;
+    state.exportCatch = (s.exportCatch ?? true) ? true : false;
+    state.exportMania = (s.exportMania ?? true) ? true : false;
+
+    state.pretty = (s.pretty ?? true) ? true : false;
+    state.commentEmpty = (s.commentEmpty ?? false) ? true : false;
     state.version = s.version ?? "latest";
-    state.activeTab = s.activeTab ?? "general";
 
     Object.assign(state.general, s.general || {});
     Object.assign(state.colours, s.colours || {});
@@ -1756,13 +1876,13 @@ function loadState(){
     Object.assign(state.catch, s.catch || {});
 
     if(s.maniaShared){
-      state.maniaShared.search = s.maniaShared.search ?? "";
       for(const k of ALL_MANIA_KEYS){
         state.maniaShared.enabled[k] = !!s.maniaShared.enabled?.[k];
         state.maniaShared.open[k] = !!s.maniaShared.open?.[k];
       }
       if(!ALL_MANIA_KEYS.some(k=>state.maniaShared.enabled[k])){
-        state.maniaShared.enabled[4]=true; state.maniaShared.open[4]=true;
+        state.maniaShared.enabled[4]=true;
+        state.maniaShared.open[4]=true;
       }
     }
 
@@ -1779,17 +1899,15 @@ const saveSoon = debounce((force=false)=>{
   if(force) updatePreview();
 }, 350);
 
-const previewSoon = debounce(()=>{
-  updatePreview();
-}, 90);
+const previewSoon = debounce(()=> updatePreview(), 80);
 
-function onAnyChange(rerender=false){
-  if(rerender) renderActiveTab();
+function onAnyChange(){
   previewSoon();
   saveSoon();
+  updateModeBadge();
 }
 
-/* ---------- preview & actions ---------- */
+/* ---------- actions ---------- */
 function updatePreview(){
   $("preview").value = genIni();
 }
@@ -1810,11 +1928,11 @@ function downloadIni(){
 async function copyIni(){
   try{
     await navigator.clipboard.writeText($("preview").value || genIni());
-    $("statusBadge").textContent = "copiado!";
-    setTimeout(()=>$("statusBadge").textContent="ok", 900);
+    $("savePulse").textContent = "Copied";
+    setTimeout(()=>{ $("savePulse").textContent="—"; }, 800);
   }catch(e){
-    $("statusBadge").textContent = "falhou";
-    setTimeout(()=>$("statusBadge").textContent="ok", 900);
+    $("savePulse").textContent = "NoCopy";
+    setTimeout(()=>{ $("savePulse").textContent="—"; }, 800);
   }
 }
 
@@ -1824,26 +1942,79 @@ function wipeAll(){
   location.reload();
 }
 
-/* ---------- top-level wiring ---------- */
+function updateModeBadge(){
+  const parts = [];
+  if(state.exportStd) parts.push("STD");
+  if(state.exportCatch) parts.push("CATCH");
+  if(state.exportMania) parts.push("MANIA");
+  $("modeBadge").textContent = "export: " + (parts.join("+") || "NONE");
+}
+
+/* ---------- dock toggles ---------- */
+function syncDockToggles(){
+  // export toggles icons
+  $("togStd").classList.toggle("active", state.exportStd);
+  $("togCatch").classList.toggle("active", state.exportCatch);
+  $("togMania").classList.toggle("active", state.exportMania);
+
+  $("togPretty").classList.toggle("active", state.pretty);
+  $("togCommentEmpty").classList.toggle("active", state.commentEmpty);
+}
+
+/* ---------- wire top-level ---------- */
+document.querySelectorAll(".icoBtn[data-tab]").forEach(b=>{
+  b.addEventListener("click", ()=> setActiveTab(b.dataset.tab));
+});
+
 $("downloadIni").addEventListener("click", downloadIni);
 $("copyIni").addEventListener("click", copyIni);
 $("wipeAll").addEventListener("click", wipeAll);
 $("refresh").addEventListener("click", updatePreview);
-
-$("pretty").addEventListener("change", ()=>{
-  state.pretty = $("pretty").checked;
-  onAnyChange(true);
+$("selectAll").addEventListener("click", ()=>{
+  $("preview").focus();
+  $("preview").select();
 });
-$("commentEmpty").addEventListener("change", ()=>{
-  state.commentEmpty = $("commentEmpty").checked;
-  onAnyChange(true);
+
+$("togStd").addEventListener("click", ()=>{
+  state.exportStd = !state.exportStd;
+  syncDockToggles();
+  onAnyChange();
+  renderActiveTab();
+});
+$("togCatch").addEventListener("click", ()=>{
+  state.exportCatch = !state.exportCatch;
+  syncDockToggles();
+  onAnyChange();
+  renderActiveTab();
+});
+$("togMania").addEventListener("click", ()=>{
+  state.exportMania = !state.exportMania;
+  syncDockToggles();
+  onAnyChange();
+  renderActiveTab();
+});
+
+$("togPretty").addEventListener("click", ()=>{
+  state.pretty = !state.pretty;
+  syncDockToggles();
+  onAnyChange();
+});
+$("togCommentEmpty").addEventListener("click", ()=>{
+  state.commentEmpty = !state.commentEmpty;
+  syncDockToggles();
+  onAnyChange();
+});
+
+$("verBtn").addEventListener("click", ()=>{
+  $("versionPick").value = state.version;
+  $("verDlg").showModal();
 });
 $("versionPick").addEventListener("change", ()=>{
   state.version = $("versionPick").value;
   onAnyChange();
+  renderActiveTab();
 });
 
-/* import modal */
 $("importOpen").addEventListener("click", ()=>{
   $("importArea").value = $("preview").value || "";
   $("importDlg").showModal();
@@ -1854,103 +2025,11 @@ $("importApply").addEventListener("click", ()=>{
   $("importDlg").close();
 });
 
-/* ---------- music (WebAudio ambient) ---------- */
-let audio = {
-  ctx:null,
-  master:null,
-  playing:false,
-  nodes:[]
-};
-
-function buildAmbient(){
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  const master = ctx.createGain();
-  master.gain.value = Number($("musicVol").value || 0.18);
-  master.connect(ctx.destination);
-
-  // “pad” com 3 osciladores + filtro
-  const filter = ctx.createBiquadFilter();
-  filter.type = "lowpass";
-  filter.frequency.value = 800;
-  filter.Q.value = 0.7;
-  filter.connect(master);
-
-  const base = 110; // A2
-  const detunes = [-7, 0, +7]; // cents
-  const osc = detunes.map((d,i)=>{
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-
-    o.type = i===1 ? "sine" : "triangle";
-    o.frequency.value = base * (i===0 ? 1 : (i===1 ? 1.5 : 2.0));
-    o.detune.value = d;
-
-    g.gain.value = 0.0;
-    o.connect(g);
-    g.connect(filter);
-    o.start();
-
-    return {o,g};
-  });
-
-  // LFO suave pra respirar
-  const lfo = ctx.createOscillator();
-  lfo.type = "sine";
-  lfo.frequency.value = 0.05;
-  const lfoGain = ctx.createGain();
-  lfoGain.gain.value = 0.06;
-  lfo.connect(lfoGain);
-  lfoGain.connect(master.gain);
-  lfo.start();
-
-  // fade-in
-  const now = ctx.currentTime;
-  for(const n of osc){
-    n.g.gain.cancelScheduledValues(now);
-    n.g.gain.setValueAtTime(0.0001, now);
-    n.g.gain.linearRampToValueAtTime(0.12, now + 1.2);
-  }
-
-  audio.ctx = ctx;
-  audio.master = master;
-  audio.nodes = [...osc, {lfo,lfoGain,filter}];
-}
-
-async function toggleMusic(){
-  try{
-    if(!audio.ctx){
-      buildAmbient();
-      audio.playing = true;
-      $("musicToggle").textContent = "⏸ ambient";
-      return;
-    }
-    if(audio.ctx.state === "suspended"){
-      await audio.ctx.resume();
-      audio.playing = true;
-      $("musicToggle").textContent = "⏸ ambient";
-      return;
-    }
-    if(audio.ctx.state === "running"){
-      await audio.ctx.suspend();
-      audio.playing = false;
-      $("musicToggle").textContent = "▶ ambient";
-      return;
-    }
-  }catch(e){}
-}
-
-$("musicToggle").addEventListener("click", toggleMusic);
-$("musicVol").addEventListener("input", ()=>{
-  if(audio.master) audio.master.gain.value = Number($("musicVol").value || 0.18);
-});
-
 /* ---------- init ---------- */
 loadState();
-$("pretty").checked = state.pretty;
-$("commentEmpty").checked = state.commentEmpty;
-$("versionPick").value = state.version;
-
-renderTabs();
+syncDockToggles();
+renderDockActive();
+updateModeBadge();
 renderActiveTab();
 updatePreview();
 </script>
