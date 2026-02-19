@@ -1,632 +1,702 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Osu! Skin.ini Generator</title>
+  <title>Osu! Skin.ini Architect | Pro Edition</title>
   
-  <!-- Fontes Google (Inter para UI, JetBrains Mono para código) -->
+  <!-- Fontes Modernas -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      /* Palette */
-      --bg-body: #121216;
-      --bg-panel: #1e1e24;
-      --bg-sidebar: #18181d;
-      --bg-input: #272730;
-      --border: #35353f;
-      --primary: #6c5ce7; /* Cor de destaque */
-      --primary-hover: #5b4cc4;
-      --text-main: #e1e1e6;
-      --text-muted: #a1a1aa;
-      --accent-danger: #ff5252;
-      --accent-success: #4cd137;
+      /* Palette Cyberpunk/Osu Moderno */
+      --bg-dark: #09090b;
+      --bg-panel: #131318;
+      --bg-sidebar: #0f0f13;
       
-      /* Spacing & Radius */
-      --r: 8px;
-      --r-lg: 12px;
-      --sidebar-w: 260px;
+      --accent: #ff66aa; /* Osu Pink */
+      --accent-hover: #ff88bb;
+      --accent-glow: rgba(255, 102, 170, 0.35);
+      
+      --text-main: #f0f0f5;
+      --text-muted: #8b8b99;
+      --border: rgba(255, 255, 255, 0.08);
+      
+      --glass: rgba(20, 20, 25, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.05);
+      
+      --input-bg: #1a1a20;
+      --r: 12px; /* BorderRadius padrão */
+      --transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
 
     * { box-sizing: border-box; outline: none; }
 
-    /* Scrollbars */
+    /* Scrollbars customizadas */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: var(--bg-body); }
-    ::-webkit-scrollbar-thumb { background: #3f3f4b; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #555565; }
+    ::-webkit-scrollbar-track { background: var(--bg-dark); }
+    ::-webkit-scrollbar-thumb { background: #33333d; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
     body {
       margin: 0;
-      background-color: var(--bg-body);
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 15% 50%, rgba(255, 102, 170, 0.08), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(100, 100, 255, 0.08), transparent 25%);
       color: var(--text-main);
-      font-family: 'Inter', sans-serif;
+      font-family: 'Be Vietnam Pro', sans-serif;
       height: 100vh;
-      display: flex;
       overflow: hidden;
     }
 
-    /* Layout Principal */
+    /* Layout */
     .app {
-      display: flex;
-      width: 100%;
-      height: 100%;
+      display: grid;
+      grid-template-columns: 280px 1fr 420px;
+      height: 100vh;
+      width: 100vw;
     }
 
     /* --- SIDEBAR --- */
     .sidebar {
-      width: var(--sidebar-w);
-      background-color: var(--bg-sidebar);
+      background: var(--bg-sidebar);
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      padding: 20px 15px;
-      gap: 20px;
-      flex-shrink: 0;
+      padding: 24px;
+      gap: 30px;
       z-index: 10;
+      backdrop-filter: blur(20px);
     }
 
     .brand {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 700;
-      color: #fff;
+      letter-spacing: -0.5px;
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
+      gap: 12px;
+      color: #fff;
     }
-    .brand span { color: var(--primary); }
+    .brand-icon {
+      width: 32px; height: 32px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 15px var(--accent-glow);
+      display:flex; align-items:center; justify-content:center;
+      font-weight: bold; color: #fff; font-size:14px;
+    }
 
-    .nav-group {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
+    .nav-menu { display: flex; flex-direction: column; gap: 8px; }
     
-    .nav-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-muted);
-      margin-bottom: 5px;
-      font-weight: 600;
-      padding-left: 10px;
-    }
-
     .nav-item {
       cursor: pointer;
-      padding: 10px 12px;
+      padding: 12px 16px;
       border-radius: var(--r);
       color: var(--text-muted);
-      font-size: 14px;
       font-weight: 500;
       display: flex;
       align-items: center;
-      gap: 10px;
-      transition: all 0.2s ease;
+      gap: 12px;
+      transition: var(--transition);
+      border: 1px solid transparent;
     }
+    .nav-item svg { width: 18px; height: 18px; opacity: 0.7; transition: var(--transition); }
+    
     .nav-item:hover {
-      background: rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.03);
       color: #fff;
     }
     .nav-item.active {
-      background: var(--primary);
+      background: linear-gradient(90deg, rgba(255,102,170,0.15), transparent);
+      border-left: 3px solid var(--accent);
       color: #fff;
-      box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
     }
+    .nav-item.active svg { opacity: 1; color: var(--accent); }
 
-    /* Botões da Sidebar */
-    .sidebar-actions {
+    .sidebar-footer {
       margin-top: auto;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
+      gap: 12px;
     }
 
     .btn {
       cursor: pointer;
       border: none;
-      padding: 10px 16px;
+      padding: 12px;
       border-radius: var(--r);
-      font-size: 13px;
       font-weight: 600;
-      font-family: 'Inter', sans-serif;
-      transition: 0.2s;
+      font-family: inherit;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-    }
-    .btn-primary { background: var(--primary); color: white; }
-    .btn-primary:hover { background: var(--primary-hover); }
-    .btn-danger { background: rgba(255, 82, 82, 0.1); color: var(--accent-danger); border: 1px solid transparent; }
-    .btn-danger:hover { border-color: var(--accent-danger); background: rgba(255, 82, 82, 0.2); }
-    
-    .pill-badge {
-      font-size: 10px; 
-      padding: 2px 6px; 
-      border-radius: 4px; 
-      background: rgba(0,0,0,0.2);
-    }
-
-    /* --- MAIN AREA --- */
-    .main-content {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 1fr 400px; /* Editor | Preview */
+      gap: 10px;
+      transition: var(--transition);
+      position: relative;
       overflow: hidden;
     }
-
-    /* Form Panel */
-    .editor-panel {
-      padding: 30px;
-      overflow-y: auto;
-      background: var(--bg-body);
+    .btn::after {
+      content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
+      background: linear-gradient(rgba(255,255,255,0.1), transparent);
+      opacity: 0; transition: var(--transition);
     }
+    .btn:hover::after { opacity: 1; }
 
-    .section-header {
-      margin-bottom: 25px;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 15px;
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 20px var(--accent-glow);
     }
-    .section-title { font-size: 24px; font-weight: 700; margin: 0; color: #fff; }
-    .section-desc { font-size: 13px; color: var(--text-muted); margin-top: 5px; }
-
-    /* Form Grids */
-    .form-group {
-      margin-bottom: 20px;
-      background: var(--bg-panel);
-      padding: 20px;
-      border-radius: var(--r-lg);
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 25px var(--accent-glow); }
+    
+    .btn-glass {
+      background: rgba(255,255,255,0.05);
+      color: var(--text-muted);
       border: 1px solid var(--border);
     }
-    .group-label {
+    .btn-glass:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+    /* --- MAIN EDITOR --- */
+    .main {
+      background: var(--bg-panel);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .main-header {
+      padding: 24px 40px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(19, 19, 24, 0.8);
+      backdrop-filter: blur(10px);
+      position: sticky; top: 0; z-index: 5;
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    .page-title { font-size: 24px; font-weight: 700; color: #fff; }
+    .page-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+    .content-scroll {
+      flex: 1;
+      padding: 40px;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+
+    /* Sections */
+    .section-card {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 30px;
+      animation: fadeIn 0.4s ease-out;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .card-title {
       font-size: 14px;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 15px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .control-row {
-      display: grid;
-      grid-template-columns: 200px 1fr;
-      align-items: center;
-      gap: 15px;
-      margin-bottom: 12px;
-    }
-    .control-row label {
-      font-size: 13px;
+      letter-spacing: 1px;
+      font-weight: 700;
       color: var(--text-muted);
-      font-weight: 500;
+      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .card-title::after { content:""; flex:1; height:1px; background: var(--border); }
+
+    /* Inputs Grid */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .row { margin-bottom: 16px; }
+    
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
     }
 
-    /* Inputs */
-    input[type="text"], input[type="number"], select, textarea {
+    input[type="text"], input[type="number"], select {
       width: 100%;
-      background: var(--bg-input);
+      background: #09090b;
       border: 1px solid var(--border);
       color: #fff;
-      padding: 8px 12px;
-      border-radius: 6px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
       font-size: 13px;
-      transition: border 0.2s;
+      transition: var(--transition);
     }
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--primary);
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(255,102,170, 0.1);
     }
 
-    /* Color Picker Style */
-    .color-wrapper {
+    /* Modern Checkbox (Switch) */
+    .switch-wrap {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px;
+      background: #09090b;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+    .switch-label { font-size: 13px; font-weight: 500; color: var(--text-main); margin: 0; }
+    
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px; height: 24px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #333;
+      transition: .3s;
+      border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute; content: "";
+      height: 18px; width: 18px;
+      left: 3px; bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--accent); }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    /* Modern Color Picker */
+    .color-picker-group {
       display: flex;
       align-items: center;
-      gap: 8px;
-      background: var(--bg-input);
+      gap: 10px;
+      background: #09090b;
       border: 1px solid var(--border);
-      padding: 4px;
-      border-radius: 6px;
-      width: 100%;
+      border-radius: 8px;
+      padding: 6px;
     }
     input[type="color"] {
       -webkit-appearance: none;
       border: none;
-      width: 24px;
-      height: 24px;
-      cursor: pointer;
+      width: 32px; height: 32px;
+      border-radius: 6px;
       padding: 0;
       background: none;
-      border-radius: 4px;
-      overflow: hidden;
+      cursor: pointer;
     }
     input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-    input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
-    .color-text {
-      border: none;
-      background: transparent;
-      padding: 0;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-    }
-
-    /* Switches */
-    .switch {
-      display: inline-flex;
-      align-items: center;
-      cursor: pointer;
-    }
-    .switch input { display: none; }
-    .slider {
-      width: 40px; height: 22px;
-      background-color: var(--bg-input);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      position: relative;
-      transition: .3s;
-    }
-    .slider::before {
-      content: "";
-      position: absolute;
-      height: 16px; width: 16px;
-      left: 3px; bottom: 2px;
-      background-color: var(--text-muted);
-      border-radius: 50%;
-      transition: .3s;
-    }
-    input:checked + .slider { background-color: var(--primary); border-color: var(--primary); }
-    input:checked + .slider::before { transform: translateX(18px); background-color: #fff; }
-
-    /* Mania Tools */
-    .mania-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-      gap: 8px;
-      margin-bottom: 15px;
-    }
-    .mode-pill {
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 8px;
-      text-align: center;
-      cursor: pointer;
-      user-select: none;
-      transition: 0.2s;
-    }
-    .mode-pill.active {
-      background: rgba(108, 92, 231, 0.2);
-      border-color: var(--primary);
-      color: #fff;
-    }
-    .mode-pill span { font-size: 12px; font-weight: 700; }
+    input[type="color"]::-webkit-color-swatch { border: none; border-radius: 6px; }
     
-    /* Accordion */
-    .mode-block {
-      background: var(--bg-input);
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      margin-bottom: 10px;
-      overflow: hidden;
+    .color-text {
+      flex: 1; border: none !important; background: transparent !important;
+      padding: 0 !important; box-shadow: none !important;
     }
-    .accordion-head {
-      padding: 12px 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-      background: rgba(255,255,255,0.03);
-    }
-    .accordion-head:hover { background: rgba(255,255,255,0.05); }
-    .accordion-body {
-      display: none;
-      padding: 15px;
-      border-top: 1px solid var(--border);
-    }
-    .mode-block.open .accordion-body { display: block; }
-    .caret { transition: transform 0.2s; }
-    .mode-block.open .caret { transform: rotate(90deg); }
 
-    /* --- PREVIEW PANEL --- */
-    .preview-panel {
-      background: #15151a;
+    /* Mania Matrix Grid */
+    .mania-matrix {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .matrix-btn {
+      aspect-ratio: 1;
+      display: flex; align-items: center; justify-content: center;
+      background: #09090b;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-weight: 700; font-size: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+    }
+    .matrix-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: 0 4px 12px var(--accent-glow);
+    }
+    .matrix-btn:hover { border-color: var(--accent); color: #fff; }
+    
+    .matrix-tools {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;
+    }
+    .tool-btn {
+      padding: 6px 12px; font-size: 11px;
+      background: rgba(255,255,255,0.05); border-radius: 20px;
+      border: 1px solid var(--border); color: var(--text-muted);
+      cursor: pointer; transition: var(--transition);
+    }
+    .tool-btn:hover { background: #fff; color: #000; }
+
+    /* Accordion Styles */
+    .accordion-block {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .accordion-block.open {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.15);
+    }
+    
+    .acc-head {
+      padding: 15px 20px;
+      cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center;
+      user-select: none;
+    }
+    .acc-title { font-weight: 700; color: #fff; display: flex; align-items: center; gap: 10px; }
+    .acc-tag {
+      font-size: 10px; background: var(--accent); color: #fff;
+      padding: 2px 6px; border-radius: 4px; font-weight: 800;
+    }
+    .acc-icon { transition: transform 0.3s ease; opacity: 0.5; }
+    .accordion-block.open .acc-icon { transform: rotate(90deg); opacity: 1; color: var(--accent); }
+
+    .acc-body {
+      display: none;
+      padding: 20px;
+      border-top: 1px solid var(--border);
+      background: rgba(0,0,0,0.1);
+    }
+    .accordion-block.open .acc-body { display: block; animation: slideDown 0.3s ease; }
+    @keyframes slideDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+
+    /* --- RIGHT PREVIEW --- */
+    .preview-pane {
+      background: #0d0d10;
       border-left: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
+      display: flex; flex-direction: column;
+      height: 100vh;
     }
     .preview-header {
-      padding: 10px 15px;
-      background: var(--bg-sidebar);
+      padding: 15px 20px;
       border-bottom: 1px solid var(--border);
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 12px; font-weight: 700; letter-spacing: 1px;
       color: var(--text-muted);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--bg-sidebar);
     }
-    .code-editor {
-      flex: 1;
-      width: 100%;
-      background: #15151a;
-      color: #a9b7c6;
+    .editor-wrap {
+      flex: 1; position: relative;
+    }
+    textarea.code-view {
+      width: 100%; height: 100%;
+      background: #0d0d10;
       border: none;
-      padding: 15px;
+      color: #a9b7c6;
       font-family: 'JetBrains Mono', monospace;
       font-size: 13px;
-      line-height: 1.5;
+      line-height: 1.6;
+      padding: 20px;
       resize: none;
     }
+    /* Syntax highlighting simulation colors (since it's a textarea, handled by design mostly) */
+    textarea.code-view::selection { background: rgba(255, 102, 170, 0.3); }
 
-    /* Responsividade */
-    @media (max-width: 1000px) {
-      .main-content { grid-template-columns: 1fr; }
-      .preview-panel { display: none; /* Esconder preview em telas pequenas ou colocar abaixo */ }
-      .app { flex-direction: column; overflow: auto; }
+    /* Media Queries */
+    @media (max-width: 1100px) {
+      .app { grid-template-columns: 240px 1fr; }
+      .preview-pane { display: none; } /* Hide preview on medium screens */
+    }
+    @media (max-width: 768px) {
+      .app { display: flex; flex-direction: column; height: auto; overflow: auto; }
       .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
-      .sidebar-actions { flex-direction: row; }
-      .nav-group { flex-direction: row; flex-wrap: wrap; }
+      .main { height: auto; overflow: visible; }
+      .content-scroll { overflow: visible; }
     }
   </style>
 </head>
-
 <body>
-  <div class="app">
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-      <div class="brand">
-        <span>●</span> Osu!Skin<b>Gen</b>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">S</div>
+      <span>SkinIni<span style="color:var(--accent)">Gen</span></span>
+    </div>
+
+    <div class="nav-menu">
+      <div class="nav-item active" data-tab="general">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        General
       </div>
-
-      <div class="nav-group">
-        <div class="nav-label">Configuração</div>
-        <div class="nav-item active" data-tab="general">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-          Geral
-        </div>
-        <div class="nav-item" data-tab="standard">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
-          Standard
-        </div>
-        <div class="nav-item" data-tab="mania">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 4v16"/><path d="M12 4v16"/><path d="M16 4v16"/></svg>
-          Mania (1K-18K)
-        </div>
+      <div class="nav-item" data-tab="standard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+        Standard Mode
       </div>
-
-      <div class="nav-group" style="margin-top: 10px;">
-        <div class="nav-label">Opções</div>
-        <div class="nav-item">
-          <label class="switch" style="margin-right:10px">
-            <input type="checkbox" id="prettyFormat" checked>
-            <span class="slider"></span>
-          </label>
-          <span style="font-size:12px">Formatar Bonito</span>
-        </div>
-        <div class="nav-item">
-          <label class="switch" style="margin-right:10px">
-            <input type="checkbox" id="includeStandard" checked>
-            <span class="slider"></span>
-          </label>
-          <span style="font-size:12px">Incluir Standard</span>
-        </div>
+      <div class="nav-item" data-tab="mania">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="12" y1="22" x2="12" y2="2"/><line x1="8" y1="22" x2="8" y2="2"/><line x1="16" y1="22" x2="16" y2="2"/></svg>
+        Mania (1K-18K)
       </div>
+    </div>
 
-      <div class="sidebar-actions">
-        <button class="btn btn-primary" id="downloadIni">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Baixar skin.ini
-        </button>
-        <button class="btn btn-danger" id="clearWipe">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-          Limpar Tudo
-        </button>
-        <div id="savePulse" style="text-align:center; font-size:11px; color:var(--accent-success); height:15px;"></div>
+    <div style="margin-top:20px; padding-top:20px; border-top:1px solid var(--border)">
+      <label class="switch-wrap" style="background:transparent; border:none; padding:0;">
+        <span class="switch-label" style="color:var(--text-muted); font-size:12px;">Pretty Format</span>
+        <label class="switch" style="transform:scale(0.8)">
+          <input type="checkbox" id="prettyFormat" checked>
+          <span class="slider"></span>
+        </label>
+      </label>
+      <label class="switch-wrap" style="background:transparent; border:none; padding:10px 0 0;">
+        <span class="switch-label" style="color:var(--text-muted); font-size:12px;">Include Standard</span>
+        <label class="switch" style="transform:scale(0.8)">
+          <input type="checkbox" id="includeStandard" checked>
+          <span class="slider"></span>
+        </label>
+      </label>
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="btn btn-primary" id="downloadIni">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download .INI
+      </button>
+      <button class="btn btn-glass" id="clearWipe">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        Reset Data
+      </button>
+      <div id="savePulse" style="text-align:center; font-size:11px; color:var(--accent); height:16px; opacity:0; transition:opacity 0.3s">All changes saved</div>
+    </div>
+  </aside>
+
+  <!-- MAIN AREA -->
+  <main class="main">
+    <div class="main-header">
+      <div>
+        <div class="page-title">Editor Dashboard</div>
+        <div class="page-subtitle">Configure your skin settings below</div>
       </div>
-    </aside>
+      <!-- Additional header tools could go here -->
+    </div>
 
-    <!-- CONTENT -->
-    <main class="main-content">
-      <!-- EDITOR AREA -->
-      <div class="editor-panel">
-        
-        <!-- GENERAL TAB -->
-        <div id="tab-general">
-          <div class="section-header">
-            <h2 class="section-title">Geral</h2>
-            <div class="section-desc">Metadados e configurações globais da skin.</div>
-          </div>
+    <div class="content-scroll">
+      
+      <!-- === GENERAL PANEL === -->
+      <div id="tab-general">
+        <div class="section-card">
+          <div class="card-title">Metadata</div>
+          <div class="row"><label>Skin Name</label><input type="text" id="gName" placeholder="e.g. WhiteCat 2.0"></div>
+          <div class="row"><label>Author</label><input type="text" id="gAuthor" placeholder="Your Username"></div>
+          <div class="row"><label>Version</label><input type="text" id="gVersion" value="latest" readonly style="opacity:0.6; cursor:not-allowed"></div>
+        </div>
 
-          <div class="form-group">
-            <div class="group-label">Informações Básicas</div>
-            <div class="control-row"><label>Nome da Skin</label><input type="text" id="gName" placeholder="Ex: Minha Skin Pro"></div>
-            <div class="control-row"><label>Autor</label><input type="text" id="gAuthor" placeholder="Seu Nick"></div>
-            <div class="control-row"><label>Versão</label><input type="text" id="gVersion" value="latest" readonly style="opacity:0.6"></div>
-          </div>
-
-          <div class="form-group">
-            <div class="group-label">Comportamento do Cursor</div>
-            <div class="control-row">
-              <label>CursorCentre</label>
+        <div class="section-card">
+          <div class="card-title">Cursor Behavior</div>
+          <div class="grid-2">
+            <div class="switch-wrap">
+              <span class="switch-label">CursorCentre</span>
               <label class="switch"><input type="checkbox" id="gCursorCentre" checked><span class="slider"></span></label>
             </div>
-            <div class="control-row">
-              <label>CursorExpand</label>
+            <div class="switch-wrap">
+              <span class="switch-label">CursorExpand</span>
               <label class="switch"><input type="checkbox" id="gCursorExpand"><span class="slider"></span></label>
             </div>
-            <div class="control-row">
-              <label>CursorRotate</label>
+            <div class="switch-wrap">
+              <span class="switch-label">CursorRotate</span>
               <label class="switch"><input type="checkbox" id="gCursorRotate"><span class="slider"></span></label>
             </div>
-            <div class="control-row">
-              <label>CursorTrailRotate</label>
+            <div class="switch-wrap">
+              <span class="switch-label">TrailRotate</span>
               <label class="switch"><input type="checkbox" id="gCursorTrailRotate"><span class="slider"></span></label>
             </div>
           </div>
+        </div>
 
-          <div class="form-group">
-            <div class="group-label">Cores da Interface (Menu)</div>
-            <div class="control-row">
+        <div class="section-card">
+          <div class="card-title">Interface Colors</div>
+          <div class="grid-2">
+            <div class="row">
               <label>Menu Glow</label>
-              <div class="color-wrapper">
+              <div class="color-picker-group">
                 <input type="color" id="cMenuGlowPick">
-                <input type="text" id="cMenuGlow" class="color-text" placeholder="0,0,0">
+                <input type="text" id="cMenuGlow" class="color-text" placeholder="RGB">
               </div>
             </div>
-            <div class="control-row">
-              <label>Texto Música Ativa</label>
-              <div class="color-wrapper">
+            <div class="row">
+              <label>Song Active Text</label>
+              <div class="color-picker-group">
                 <input type="color" id="cSongActivePick">
-                <input type="text" id="cSongActive" class="color-text" placeholder="0,0,0">
-              </div>
-            </div>
-            <div class="control-row">
-              <label>Texto Música Inativa</label>
-              <div class="color-wrapper">
-                <input type="color" id="cSongInactivePick">
-                <input type="text" id="cSongInactive" class="color-text" placeholder="0,0,0">
+                <input type="text" id="cSongActive" class="color-text" placeholder="RGB">
               </div>
             </div>
           </div>
-          
-          <div class="form-group">
-            <div class="group-label">Fontes & Prefixos</div>
-            <div class="control-row"><label>Prefixo Score</label><input type="text" id="fScorePrefix" placeholder="score"></div>
-            <div class="control-row"><label>Overlap Score</label><input type="number" id="fScoreOverlap" value="0"></div>
-            <div class="control-row"><label>Prefixo Combo</label><input type="text" id="fComboPrefix" placeholder="combo"></div>
-            <div class="control-row"><label>Overlap Combo</label><input type="number" id="fComboOverlap" value="0"></div>
+          <div class="row">
+            <label>Song Inactive Text</label>
+            <div class="color-picker-group">
+              <input type="color" id="cSongInactivePick">
+              <input type="text" id="cSongInactive" class="color-text" placeholder="RGB">
+            </div>
           </div>
         </div>
 
-        <!-- STANDARD TAB -->
-        <div id="tab-standard" style="display:none">
-          <div class="section-header">
-            <h2 class="section-title">Standard (Osu!)</h2>
-            <div class="section-desc">Cores de combo, sliders e configurações de jogabilidade.</div>
+        <div class="section-card">
+          <div class="card-title">Fonts & Overlap</div>
+          <div class="grid-2">
+            <div>
+              <div class="row"><label>Score Prefix</label><input type="text" id="fScorePrefix" placeholder="score"></div>
+              <div class="row"><label>Score Overlap</label><input type="number" id="fScoreOverlap" value="0"></div>
+            </div>
+            <div>
+              <div class="row"><label>Combo Prefix</label><input type="text" id="fComboPrefix" placeholder="combo"></div>
+              <div class="row"><label>Combo Overlap</label><input type="number" id="fComboOverlap" value="0"></div>
+            </div>
           </div>
+        </div>
+      </div>
 
-          <div class="form-group">
-            <div class="group-label">Gameplay</div>
-            <div class="control-row"><label>Framerate Animação</label><input type="number" id="sAnimFPS" placeholder="Opcional"></div>
-            <div class="control-row">
-              <label>Tint SliderBall</label>
+      <!-- === STANDARD PANEL === -->
+      <div id="tab-standard" style="display:none">
+        <div class="section-card">
+          <div class="card-title">Gameplay Settings</div>
+          <div class="row"><label>Animation Framerate</label><input type="number" id="sAnimFPS" placeholder="-1 for unlimited"></div>
+          
+          <div class="grid-2">
+            <div class="switch-wrap">
+              <span class="switch-label">Tint SliderBall</span>
               <label class="switch"><input type="checkbox" id="sAllowSliderBallTint" checked><span class="slider"></span></label>
             </div>
-            <div class="control-row">
-              <label>SliderBall Flip</label>
+            <div class="switch-wrap">
+              <span class="switch-label">SliderBall Flip</span>
               <label class="switch"><input type="checkbox" id="sSliderBallFlip"><span class="slider"></span></label>
             </div>
-            <div class="control-row">
-              <label>HitSounds em Camadas</label>
+            <div class="switch-wrap">
+              <span class="switch-label">Layered HitSounds</span>
               <label class="switch"><input type="checkbox" id="sLayeredHitSounds" checked><span class="slider"></span></label>
             </div>
-            <div class="control-row">
-              <label>Spinner Fade Playfield</label>
+            <div class="switch-wrap">
+              <span class="switch-label">Spinner Fade</span>
               <label class="switch"><input type="checkbox" id="sSpinnerFadePlayfield" checked><span class="slider"></span></label>
             </div>
-          </div>
-
-          <div class="form-group">
-            <div class="group-label">Cores de Combo</div>
-            <!-- Gerado de forma repetitiva, idealmente um loop, mas manual aqui -->
-            <div class="control-row"><label>Combo 1</label><div class="color-wrapper"><input type="color" id="sCombo1Pick"><input type="text" id="sCombo1" class="color-text" placeholder="RGB"></div></div>
-            <div class="control-row"><label>Combo 2</label><div class="color-wrapper"><input type="color" id="sCombo2Pick"><input type="text" id="sCombo2" class="color-text" placeholder="RGB"></div></div>
-            <div class="control-row"><label>Combo 3</label><div class="color-wrapper"><input type="color" id="sCombo3Pick"><input type="text" id="sCombo3" class="color-text" placeholder="RGB"></div></div>
-            <div class="control-row"><label>Combo 4</label><div class="color-wrapper"><input type="color" id="sCombo4Pick"><input type="text" id="sCombo4" class="color-text" placeholder="RGB"></div></div>
-            <!-- Extras -->
-            <div class="control-row"><label>Combo 5</label><div class="color-wrapper"><input type="color" id="sCombo5Pick"><input type="text" id="sCombo5" class="color-text" placeholder="Opcional"></div></div>
-            <div class="control-row"><label>Combo 6</label><div class="color-wrapper"><input type="color" id="sCombo6Pick"><input type="text" id="sCombo6" class="color-text" placeholder="Opcional"></div></div>
-          </div>
-
-          <div class="form-group">
-            <div class="group-label">Slider & Spinner</div>
-            <div class="control-row"><label>Slider Border</label><div class="color-wrapper"><input type="color" id="sSliderBorderPick"><input type="text" id="sSliderBorder" class="color-text"></div></div>
-            <div class="control-row"><label>Slider Track</label><div class="color-wrapper"><input type="color" id="sSliderTrackPick"><input type="text" id="sSliderTrack" class="color-text" placeholder="Opcional"></div></div>
-            <div class="control-row"><label>Spinner Circle</label><div class="color-wrapper"><input type="color" id="sSpinnerAppPick"><input type="text" id="sSpinnerApp" class="color-text" placeholder="Opcional"></div></div>
-            <div class="control-row"><label>Spinner BG</label><div class="color-wrapper"><input type="color" id="sSpinnerBgPick"><input type="text" id="sSpinnerBg" class="color-text" placeholder="Opcional"></div></div>
+            <div class="switch-wrap">
+              <span class="switch-label">Spinner NoBlink</span>
+              <label class="switch"><input type="checkbox" id="sSpinnerNoBlink"><span class="slider"></span></label>
+            </div>
+            <div class="switch-wrap">
+              <span class="switch-label">Overlay Above #</span>
+              <label class="switch"><input type="checkbox" id="sOverlayAboveNumber"><span class="slider"></span></label>
+            </div>
           </div>
         </div>
 
-        <!-- MANIA TAB -->
-        <div id="tab-mania" style="display:none">
-          <div class="section-header">
-            <h2 class="section-title">Osu! Mania</h2>
-            <div class="section-desc">Configure padrões para Keymodes de 1K até 18K.</div>
+        <div class="section-card">
+          <div class="card-title">Combo Colors</div>
+          <div class="grid-2">
+            <div class="row"><label>Combo 1</label><div class="color-picker-group"><input type="color" id="sCombo1Pick"><input type="text" id="sCombo1" class="color-text"></div></div>
+            <div class="row"><label>Combo 2</label><div class="color-picker-group"><input type="color" id="sCombo2Pick"><input type="text" id="sCombo2" class="color-text"></div></div>
+            <div class="row"><label>Combo 3</label><div class="color-picker-group"><input type="color" id="sCombo3Pick"><input type="text" id="sCombo3" class="color-text"></div></div>
+            <div class="row"><label>Combo 4</label><div class="color-picker-group"><input type="color" id="sCombo4Pick"><input type="text" id="sCombo4" class="color-text"></div></div>
+            <div class="row"><label>Combo 5</label><div class="color-picker-group"><input type="color" id="sCombo5Pick"><input type="text" id="sCombo5" class="color-text" placeholder="Optional"></div></div>
+            <div class="row"><label>Combo 6</label><div class="color-picker-group"><input type="color" id="sCombo6Pick"><input type="text" id="sCombo6" class="color-text" placeholder="Optional"></div></div>
+            <div class="row"><label>Combo 7</label><div class="color-picker-group"><input type="color" id="sCombo7Pick"><input type="text" id="sCombo7" class="color-text" placeholder="Optional"></div></div>
+            <div class="row"><label>Combo 8</label><div class="color-picker-group"><input type="color" id="sCombo8Pick"><input type="text" id="sCombo8" class="color-text" placeholder="Optional"></div></div>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="card-title">Objects</div>
+          <div class="grid-2">
+            <div class="row"><label>Slider Border</label><div class="color-picker-group"><input type="color" id="sSliderBorderPick"><input type="text" id="sSliderBorder" class="color-text"></div></div>
+            <div class="row"><label>Slider Track</label><div class="color-picker-group"><input type="color" id="sSliderTrackPick"><input type="text" id="sSliderTrack" class="color-text" placeholder="Optional"></div></div>
+            <div class="row"><label>Spinner Circle</label><div class="color-picker-group"><input type="color" id="sSpinnerAppPick"><input type="text" id="sSpinnerApp" class="color-text" placeholder="Optional"></div></div>
+            <div class="row"><label>Spinner BG</label><div class="color-picker-group"><input type="color" id="sSpinnerBgPick"><input type="text" id="sSpinnerBg" class="color-text" placeholder="Optional"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === MANIA PANEL === -->
+      <div id="tab-mania" style="display:none">
+        <div class="section-card">
+          <div class="card-title">Keymode Management</div>
+          <input type="text" id="kmSearch" placeholder="Filter Keymodes (e.g. 4, 7)..." style="margin-bottom:15px">
+          
+          <div class="matrix-tools">
+             <button class="tool-btn" id="kmCommon">Standard (4K/7K)</button>
+             <button class="tool-btn" id="kmAll">Enable All</button>
+             <button class="tool-btn" id="kmNone">Disable All</button>
+             <button class="tool-btn" id="kmInvert">Invert Selection</button>
           </div>
 
-          <div class="form-group">
-            <div class="group-label">Modos Ativos</div>
-            <div class="control-row" style="grid-template-columns: 1fr;">
-              <input type="text" id="kmSearch" placeholder="Filtrar keymodes (ex: 4, 7)..." style="margin-bottom:8px">
-              <div style="display:flex; gap:10px; margin-bottom:10px;">
-                <button class="btn" id="kmCommon" style="background:var(--bg-input); padding:5px 10px; font-size:11px;">Comuns (4K/7K)</button>
-                <button class="btn" id="kmAll" style="background:var(--bg-input); padding:5px 10px; font-size:11px;">Todos</button>
-                <button class="btn" id="kmNone" style="background:var(--bg-input); padding:5px 10px; font-size:11px;">Nenhum</button>
-              </div>
-            </div>
-            <div class="mania-grid" id="kmToggles"></div>
-            <div style="font-size:11px; color:var(--text-muted)">*Apenas modos ativados serão escritos no skin.ini.</div>
-            
-            <div style="margin-top:15px; border-top:1px solid var(--border); padding-top:10px;">
-              <span class="group-label" style="font-size:12px">Pular para edição:</span>
-              <div class="mania-grid" id="kmJump" style="margin-top:8px;"></div>
-            </div>
-          </div>
-
-          <div id="modesContainer">
-            <!-- Dynamic Accordions Go Here -->
-          </div>
-
-          <div class="form-group">
-            <div class="group-label">Cores Globais (Mania)</div>
-            <div class="control-row"><label>Cor Tecla (Default)</label><div class="color-wrapper"><input type="color" id="mKeyColourPick"><input type="text" id="mKeyColour" class="color-text"></div></div>
-            <div class="control-row"><label>Cor Hold</label><div class="color-wrapper"><input type="color" id="mHoldPick"><input type="text" id="mColourHold" class="color-text"></div></div>
-            <div class="control-row"><label>Cor Break</label><div class="color-wrapper"><input type="color" id="mBreakPick"><input type="text" id="mColourBreak" class="color-text"></div></div>
+          <div class="mania-matrix" id="kmToggles">
+            <!-- JS Generated buttons -->
           </div>
           
-          <div class="form-group">
-            <div class="group-label">Hit Sprites</div>
-            <div class="control-row"><label>Hit0 (Miss)</label><input type="text" id="h0"></div>
-            <div class="control-row"><label>Hit50</label><input type="text" id="h50"></div>
-            <div class="control-row"><label>Hit100</label><input type="text" id="h100"></div>
-            <div class="control-row"><label>Hit200</label><input type="text" id="h200"></div>
-            <div class="control-row"><label>Hit300</label><input type="text" id="h300"></div>
-            <div class="control-row"><label>Hit300g (Max)</label><input type="text" id="h300g"></div>
+          <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:15px">
+            <label style="margin-bottom:10px">Quick Jump to Edit:</label>
+            <div class="mania-matrix" id="kmJump" style="margin-bottom:0"></div>
           </div>
-
         </div>
 
+        <!-- Dynamic Content -->
+        <div id="modesContainer"></div>
+
+        <div class="section-card">
+          <div class="card-title">Shared Mania Assets</div>
+          <div class="row"><label>Key Colour (Default)</label><div class="color-picker-group"><input type="color" id="mKeyColourPick"><input type="text" id="mKeyColour" class="color-text"></div></div>
+          <div class="grid-2">
+            <div class="row"><label>Colour Hold</label><div class="color-picker-group"><input type="color" id="mHoldPick"><input type="text" id="mColourHold" class="color-text"></div></div>
+            <div class="row"><label>Colour Break</label><div class="color-picker-group"><input type="color" id="mBreakPick"><input type="text" id="mColourBreak" class="color-text"></div></div>
+          </div>
+          
+          <div class="card-title" style="margin-top:20px">Hit Sprites</div>
+          <div class="grid-2">
+            <div class="row"><label>Hit0 (Miss)</label><input type="text" id="h0"></div>
+            <div class="row"><label>Hit50</label><input type="text" id="h50"></div>
+            <div class="row"><label>Hit100</label><input type="text" id="h100"></div>
+            <div class="row"><label>Hit200</label><input type="text" id="h200"></div>
+            <div class="row"><label>Hit300</label><input type="text" id="h300"></div>
+            <div class="row"><label>Hit300g (Max)</label><input type="text" id="h300g"></div>
+          </div>
+        </div>
       </div>
 
-      <!-- PREVIEW PANEL -->
-      <div class="preview-panel">
-        <div class="preview-header">
-          <span>PREVIEW (SKIN.INI)</span>
-          <span style="font-size:10px; opacity:0.5">READ ONLY</span>
-        </div>
-        <textarea id="preview" class="code-editor" readonly spellcheck="false"></textarea>
-      </div>
-    </main>
-  </div>
+    </div>
+  </main>
+
+  <!-- PREVIEW AREA -->
+  <aside class="preview-pane">
+    <div class="preview-header">
+      LIVE PREVIEW (SKIN.INI)
+    </div>
+    <div class="editor-wrap">
+      <textarea id="preview" class="code-view" readonly spellcheck="false"></textarea>
+    </div>
+  </aside>
+
+</div>
 
 <script>
-/* =======================================================
-   LOGIC SCRIPT (FUNCTIONALITY PRESERVED)
-   ======================================================= */
+/* 
+   --------------------------------------------------------------
+   CORE LOGIC (Preserved & Adapted for New UI)
+   --------------------------------------------------------------
+*/
 const $ = (id)=>document.getElementById(id);
-const STORAGE_KEY = "osu_skingen_v2_modern";
+const STORAGE_KEY = "aeditor_skinini_pro_v2";
 
 let includeStandard = true;
 let prettyFormat = true;
+
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 const bool01 = (b)=> (b ? "1" : "0");
 function cleanLine(s){ return String(s??"").replace(/\r/g,"").trimEnd(); }
 
-/* Formatters */
+/* Formatting Logic */
 function fmtKV(key, value){
   const v = cleanLine(value);
   if(prettyFormat){
@@ -647,7 +717,7 @@ function header(arr, title){
   }
 }
 
-/* Colors */
+/* Color Helpers */
 function rgbToHex(rgb){
   const m = String(rgb||"").match(/^\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*$/);
   if(!m) return null;
@@ -664,19 +734,25 @@ function hexToRgb(hex){
   const b = parseInt(h.slice(4,6),16);
   return `${r},${g},${b}`;
 }
+
 function bindColourSync(pickId, textId){
   const pick = $(pickId);
   const txt = $(textId);
   if(!pick || !txt) return;
 
-  const updatePick = () => { const hx = rgbToHex(txt.value); if(hx) pick.value = hx; };
-  updatePick();
+  const syncPick = () => { const hx = rgbToHex(txt.value); if(hx) pick.value = hx; };
+  syncPick(); // init
 
-  pick.addEventListener("input", ()=>{ txt.value = hexToRgb(pick.value); scheduleUpdate(); });
-  txt.addEventListener("input", ()=>{ updatePick(); scheduleUpdate(); });
+  pick.addEventListener("input", ()=>{
+    txt.value = hexToRgb(pick.value);
+    scheduleUpdate();
+  });
+  txt.addEventListener("input", ()=>{
+    syncPick();
+    scheduleUpdate();
+  });
 }
 
-/* Helpers */
 function csvRepeat(value, count){ return Array.from({length: count}, ()=>String(value)).join(","); }
 function csvBetween(value, keys){ return csvRepeat(value, Math.max(0, keys-1)); }
 function pat(pattern, n){
@@ -698,13 +774,13 @@ document.querySelectorAll(".nav-item[data-tab]").forEach(t=>{
   t.addEventListener("click", ()=> setTab(t.dataset.tab));
 });
 
-/* Mania Logic */
+/* Mania Data Models */
 function defaultMode(keys){
   return {
     mColWidth: "70", mColSpacing: "0", mAutoCenter: true,
     mARPreset: "16:9", mARW: "16", mARH: "9", mCenterOffset: "0",
     mHitPos: "", mScorePos: "", mComboPos: "",
-    mJudgementLine: true, mUpsideDown: false, mKeysUnderNotes: false,
+    mJudgementLine: false, mUpsideDown: false, mKeysUnderNotes: false,
     mBarlineHeight: "", mNoteHeightScale: "", mLightPos: "",
     mStageLeft: "", mStageRight: "", mStageBottom: "", mStageHint: "", mStageLight: "",
     mLightNWidth: "", mLightLWidth: "", mLightingN: "", mLightingL: "",
@@ -717,45 +793,69 @@ const maniaModes = {};
 for(const k of ALL_MANIA_KEYS) maniaModes[k] = defaultMode(k);
 
 let enabledModes = {};
-for(const k of ALL_MANIA_KEYS) enabledModes[k] = (k===4 || k===7);
-
+for(const k of ALL_MANIA_KEYS) enabledModes[k] = (k===4);
 let openModes = {};
-for(const k of ALL_MANIA_KEYS) openModes[k] = false;
-
+for(const k of ALL_MANIA_KEYS) openModes[k] = (k===4);
 let kmSearchText = "";
 
 function modeId(base, keys){ return `${base}_${keys}`; }
 
+/* Dynamic HTML Generation for Mania Blocks */
 function renderModeBlock(keys){
   return `
-    <div class="mode-block ${openModes[keys] ? "open" : ""}" data-keys="${keys}">
-      <div class="accordion-head" data-fold="${keys}">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span style="font-weight:700; color:#fff">${keys}K</span>
-          <span style="font-size:12px; color:var(--text-muted)">Configurações</span>
+    <div class="accordion-block ${openModes[keys] ? "open" : ""}" data-keys="${keys}">
+      <div class="acc-head" data-fold="${keys}">
+        <div class="acc-title">
+          <span class="acc-tag">${keys}K</span>
+          <span>Configuration</span>
         </div>
-        <div class="caret">▶</div>
+        <svg class="acc-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
-      <div class="accordion-body">
-        <div class="control-row"><label>ColumnWidth</label><input type="number" id="${modeId("mColWidth",keys)}" value="0"></div>
-        <div class="control-row"><label>ColumnSpacing</label><input type="number" id="${modeId("mColSpacing",keys)}" value="0"></div>
-        <div class="control-row"><label>Auto-center</label><label class="switch"><input type="checkbox" id="${modeId("mAutoCenter",keys)}" checked><span class="slider"></span></label></div>
 
-        <div class="control-row">
-          <label>Aspect Ratio</label>
-          <div style="display:flex; gap:5px">
-             <select id="${modeId("mARPreset",keys)}" style="width:80px"><option value="16:9">16:9</option><option value="4:3">4:3</option><option value="custom">Cust</option></select>
-             <input type="number" id="${modeId("mARW",keys)}" style="width:50px">
-             <input type="number" id="${modeId("mARH",keys)}" style="width:50px">
+      <div class="acc-body">
+        <div class="card-title">Essentials</div>
+        <div class="grid-2">
+            <div class="row"><label>ColumnWidth</label><input type="number" id="${modeId("mColWidth",keys)}" value="0"></div>
+            <div class="row"><label>ColumnSpacing</label><input type="number" id="${modeId("mColSpacing",keys)}" value="0"></div>
+        </div>
+        <div class="switch-wrap">
+           <span class="switch-label">Auto-Center ColumnStart</span>
+           <label class="switch"><input type="checkbox" id="${modeId("mAutoCenter",keys)}" checked><span class="slider"></span></label>
+        </div>
+        
+        <div class="row">
+          <label>Aspect Ratio (for Positioning)</label>
+          <div style="display:flex; gap:10px">
+            <select id="${modeId("mARPreset",keys)}" style="flex:1">
+              <option value="16:9" selected>16:9</option>
+              <option value="4:3">4:3</option>
+              <option value="21:9">21:9</option>
+              <option value="custom">Custom</option>
+            </select>
+            <input type="number" id="${modeId("mARW",keys)}" value="16" style="width:60px" title="W">
+            <input type="number" id="${modeId("mARH",keys)}" value="9" style="width:60px" title="H">
           </div>
         </div>
         
-        <div class="control-row"><label>HitPosition</label><input type="number" id="${modeId("mHitPos",keys)}"></div>
-        <div class="control-row"><label>ScorePosition</label><input type="number" id="${modeId("mScorePos",keys)}"></div>
+        <div class="grid-2">
+             <div class="row"><label>HitPosition</label><input type="number" id="${modeId("mHitPos",keys)}"></div>
+             <div class="row"><label>ScorePosition</label><input type="number" id="${modeId("mScorePos",keys)}"></div>
+        </div>
+
+        <div class="card-title" style="margin-top:20px">Image Patterns ({n} = 1..${keys})</div>
+        <div class="grid-2">
+            <div class="row"><label>KeyImage Pattern</label><input type="text" id="${modeId("pKey",keys)}" placeholder="key{n}"></div>
+            <div class="row"><label>NoteImage Pattern</label><input type="text" id="${modeId("pNote",keys)}" placeholder="note{n}"></div>
+        </div>
         
-        <div style="border-top:1px solid var(--border); margin:10px 0; padding-top:10px;">
-            <div class="control-row"><label>Key Img Pattern</label><input type="text" id="${modeId("pKey",keys)}" placeholder="key{n}"></div>
-            <div class="control-row"><label>Note Img Pattern</label><input type="text" id="${modeId("pNote",keys)}" placeholder="note{n}"></div>
+        <div class="card-title" style="margin-top:20px">Stage & Lighting</div>
+        <div class="grid-2">
+            <div class="row"><label>StageLeft</label><input type="text" id="${modeId("mStageLeft",keys)}"></div>
+            <div class="row"><label>StageRight</label><input type="text" id="${modeId("mStageRight",keys)}"></div>
+            <div class="row"><label>LightPosition</label><input type="text" id="${modeId("mLightPos",keys)}"></div>
+            <div class="row"><label>JudgementLine</label>
+                 <label class="switch"><input type="checkbox" id="${modeId("mJudgementLine",keys)}"><span class="slider"></span></label>
+            </div>
         </div>
       </div>
     </div>
@@ -763,41 +863,52 @@ function renderModeBlock(keys){
 }
 
 function applyModeToUI(keys, mode){
-  const setV = (id, v) => { const el = $(modeId(id,keys)); if(el) el.value = v??""; };
-  const setC = (id, v) => { const el = $(modeId(id,keys)); if(el) el.checked = !!v; };
+  const setVal = (id, v) => { const el = $(modeId(id,keys)); if(el) el.value = v??""; }
+  const setChk = (id, v) => { const el = $(modeId(id,keys)); if(el) el.checked = !!v; }
   
-  setV("mColWidth", mode.mColWidth || "70");
-  setV("mColSpacing", mode.mColSpacing || "0");
-  setC("mAutoCenter", mode.mAutoCenter);
-  setV("mARPreset", mode.mARPreset || "16:9");
-  setV("mARW", mode.mARW || "16");
-  setV("mARH", mode.mARH || "9");
-  setV("mHitPos", mode.mHitPos);
-  setV("mScorePos", mode.mScorePos);
-  setV("pKey", mode.pKey);
-  setV("pNote", mode.pNote);
+  setVal("mColWidth", mode.mColWidth || "70");
+  setVal("mColSpacing", mode.mColSpacing || "0");
+  setChk("mAutoCenter", mode.mAutoCenter);
+  setVal("mARPreset", mode.mARPreset || "16:9");
+  setVal("mARW", mode.mARW || "16");
+  setVal("mARH", mode.mARH || "9");
+  setVal("mHitPos", mode.mHitPos);
+  setVal("mScorePos", mode.mScorePos);
+  
+  setChk("mJudgementLine", mode.mJudgementLine);
+  
+  setVal("mStageLeft", mode.mStageLeft);
+  setVal("mStageRight", mode.mStageRight);
+  setVal("mLightPos", mode.mLightPos);
+  
+  setVal("pKey", mode.pKey);
+  setVal("pNote", mode.pNote);
 }
 
 function readModeFromUI(keys){
-  const getV = (id) => { const el = $(modeId(id,keys)); return el ? el.value : ""; };
-  const getC = (id) => { const el = $(modeId(id,keys)); return el ? el.checked : false; };
+  const getVal = (id) => $(modeId(id,keys))?.value;
+  const getChk = (id) => $(modeId(id,keys))?.checked;
 
   return {
-    ...maniaModes[keys], // preserve fields not currently in quick editor
-    mColWidth: getV("mColWidth"),
-    mColSpacing: getV("mColSpacing"),
-    mAutoCenter: getC("mAutoCenter"),
-    mARPreset: getV("mARPreset"),
-    mARW: getV("mARW"),
-    mARH: getV("mARH"),
-    mHitPos: getV("mHitPos"),
-    mScorePos: getV("mScorePos"),
-    pKey: getV("pKey"),
-    pNote: getV("pNote")
+    ...maniaModes[keys], // preserve un-rendered fields
+    mColWidth: getVal("mColWidth"),
+    mColSpacing: getVal("mColSpacing"),
+    mAutoCenter: getChk("mAutoCenter"),
+    mARPreset: getVal("mARPreset"),
+    mARW: getVal("mARW"),
+    mARH: getVal("mARH"),
+    mHitPos: getVal("mHitPos"),
+    mScorePos: getVal("mScorePos"),
+    mJudgementLine: getChk("mJudgementLine"),
+    mStageLeft: getVal("mStageLeft"),
+    mStageRight: getVal("mStageRight"),
+    mLightPos: getVal("mLightPos"),
+    pKey: getVal("pKey"),
+    pNote: getVal("pNote")
   };
 }
 
-/* Mania Toggles Grid */
+/* Mania Toggles & Interaction */
 function renderKeymodeToggles(){
   const cont = $("kmToggles");
   const q = (kmSearchText || "").trim().toLowerCase();
@@ -806,16 +917,12 @@ function renderKeymodeToggles(){
     .filter(k => !q || String(k).includes(q) || (`${k}k`).includes(q))
     .map(k=>{
       const on = !!enabledModes[k];
-      return `
-        <div class="mode-pill ${on ? 'active' : ''}" data-toggle="${k}">
-           <span>${k}K</span>
-        </div>
-      `;
+      return `<div class="matrix-btn ${on?'active':''}" data-toggle="${k}">${k}K</div>`;
     }).join("");
 
-  cont.querySelectorAll("[data-toggle]").forEach(el=>{
-    el.addEventListener("click", ()=>{
-       const k = Number(el.dataset.toggle);
+  cont.querySelectorAll("[data-toggle]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+       const k = Number(btn.dataset.toggle);
        enabledModes[k] = !enabledModes[k];
        if(enabledModes[k]) openModes[k] = true;
        onToggleModes();
@@ -826,15 +933,16 @@ function renderKeymodeToggles(){
 function renderJump(){
   const cont = $("kmJump");
   const active = ALL_MANIA_KEYS.filter(k => enabledModes[k]);
-  if(active.length === 0){ cont.innerHTML = ""; return; }
-  cont.innerHTML = active.map(k => `<div class="mode-pill" data-jump="${k}"><span>${k}K</span></div>`).join("");
+  if(active.length === 0){ cont.innerHTML = "<span style='color:var(--text-muted); font-size:12px'>No modes enabled</span>"; return; }
+  
+  cont.innerHTML = active.map(k => `<div class="matrix-btn" data-jump="${k}">${k}K</div>`).join("");
   cont.querySelectorAll("[data-jump]").forEach(b=>{
     b.addEventListener("click", ()=>{
       const k = Number(b.dataset.jump);
       openModes[k] = true;
       rerenderModes();
       setTimeout(()=>{
-        const el = document.querySelector(`.mode-block[data-keys="${k}"]`);
+        const el = document.querySelector(`.accordion-block[data-keys="${k}"]`);
         if(el) el.scrollIntoView({behavior:"smooth", block:"center"});
       }, 50);
       scheduleUpdate();
@@ -843,33 +951,40 @@ function renderJump(){
 }
 
 function wireAccordions(){
-  document.querySelectorAll(".accordion-head").forEach(btn=>{
+  document.querySelectorAll("[data-fold]").forEach(btn=>{
     btn.addEventListener("click", ()=>{
       const k = Number(btn.dataset.fold);
       openModes[k] = !openModes[k];
+      rerenderModes(); // re-render to apply 'open' class
       saveState();
-      rerenderModes(); // Re-render to update class
     });
   });
 }
 
 function rerenderModes(){
-  saveAllActiveModesIntoState(); // Save input values before destroying DOM
+  // 1. Save state of currently rendered inputs before wiping
+  saveAllActiveModesIntoState();
+  
+  // 2. Render
   const cont = $("modesContainer");
   const active = ALL_MANIA_KEYS.filter(k => enabledModes[k]);
   cont.innerHTML = active.map(k => renderModeBlock(k)).join("");
+  
+  // 3. Restore values
   for(const k of active) applyModeToUI(k, maniaModes[k] || defaultMode(k));
+  
   wireAccordions();
   renderJump();
 }
 
+/* Logic Helpers for INI Gen */
 function getAspectRatio(mode){
   const preset = mode.mARPreset;
   let w = Number(mode.mARW || 16);
   let h = Number(mode.mARH || 9);
   if(preset !== "custom"){
     const [pw,ph] = preset.split(":").map(Number);
-    if(Number.isFinite(pw) && ph) { w = pw; h = ph; }
+    if(Number.isFinite(pw) && ph !== 0){ w = pw; h = ph; }
   }
   return (h===0) ? 1.77 : w/h;
 }
@@ -880,7 +995,6 @@ function calcColumnStart(keys, colWidth, colSpacing, aspectRatio, offset){
   return Math.round((usableWidth/2) - (columnSum/2)) + Number(offset || 0);
 }
 
-/* Generator */
 function maniaBlockForKeys(keys){
   const mode = maniaModes[keys] || defaultMode(keys);
   const lines = [];
@@ -893,13 +1007,21 @@ function maniaBlockForKeys(keys){
   lines.push(fmtKV("ColumnWidth", csvRepeat(colW, keys)));
   lines.push(fmtKV("ColumnSpacing", csvBetween(colS, keys)));
   spacer(lines);
+
   if(mode.mAutoCenter){
     lines.push(fmtKV("ColumnStart", calcColumnStart(keys, colW, colS, ar, 0)));
   }
+  
   pushIfFmt(lines, "HitPosition", mode.mHitPos);
   pushIfFmt(lines, "ScorePosition", mode.mScorePos);
+  pushIfFmt(lines, "JudgementLine", bool01(!!mode.mJudgementLine));
   
-  // Images (Simplified for this view)
+  header(lines, "Stage");
+  pushIfFmt(lines, "StageLeft", mode.mStageLeft);
+  pushIfFmt(lines, "StageRight", mode.mStageRight);
+  pushIfFmt(lines, "LightPosition", mode.mLightPos);
+  
+  header(lines, "Images");
   if(mode.pKey){
     for(let i=0; i<keys; i++) lines.push(fmtKV(`KeyImage${i}`, pat(mode.pKey, i+1)));
     spacer(lines);
@@ -909,10 +1031,10 @@ function maniaBlockForKeys(keys){
     spacer(lines);
   }
   
-  // Shared colours
   const keyC = cleanLine($("mKeyColour").value);
   if(keyC){
      for(let i=0; i<keys; i++) lines.push(fmtKV(`Colour${i}`, keyC));
+     spacer(lines);
   }
   pushIfFmt(lines, "ColourHold", $("mColourHold").value);
   pushIfFmt(lines, "ColourBreak", $("mColourBreak").value);
@@ -920,13 +1042,15 @@ function maniaBlockForKeys(keys){
   return lines;
 }
 
+/* INI Generation */
 function genIni(){
   const out = [];
+
   out.push("[General]");
   pushIfFmt(out, "Name", $("gName").value);
   pushIfFmt(out, "Author", $("gAuthor").value);
   out.push(fmtKV("Version", "latest"));
-  
+
   pushIfFmt(out, "CursorCentre", bool01($("gCursorCentre").checked));
   pushIfFmt(out, "CursorExpand", bool01($("gCursorExpand").checked));
   pushIfFmt(out, "CursorRotate", bool01($("gCursorRotate").checked));
@@ -935,92 +1059,175 @@ function genIni(){
   if(includeStandard){
     pushIfFmt(out, "AllowSliderBallTint", bool01($("sAllowSliderBallTint").checked));
     pushIfFmt(out, "SliderBallFlip", bool01($("sSliderBallFlip").checked));
+    pushIfFmt(out, "HitCircleOverlayAboveNumber", bool01($("sOverlayAboveNumber").checked));
     pushIfFmt(out, "LayeredHitSounds", bool01($("sLayeredHitSounds").checked));
     pushIfFmt(out, "SpinnerFadePlayfield", bool01($("sSpinnerFadePlayfield").checked));
-    pushIfFmt(out, "AnimationFramerate", $("sAnimFPS").value);
+    pushIfFmt(out, "SpinnerNoBlink", bool01($("sSpinnerNoBlink").checked));
+    pushIfFmt(out, "AnimationFramerate", cleanLine($("sAnimFPS").value));
   }
   out.push("");
-  
-  // Colours
-  const cKeys = [
+
+  const colourKeys = [
     ["MenuGlow", $("cMenuGlow").value],
     ["SongSelectActiveText", $("cSongActive").value],
     ["SongSelectInactiveText", $("cSongInactive").value],
   ];
+
   if(includeStandard){
-    ["1","2","3","4","5","6"].forEach(n => cKeys.push([`Combo${n}`, $(`sCombo${n}`).value]));
-    cKeys.push(["SliderBorder", $("sSliderBorder").value]);
-    cKeys.push(["SliderTrackOverride", $("sSliderTrack").value]);
-  }
-  
-  if(cKeys.some(x=>cleanLine(x[1]))){
-      out.push("[Colours]");
-      cKeys.forEach(x => pushIfFmt(out, x[0], x[1]));
-      out.push("");
-  }
-  
-  // Fonts
-  if($("fScorePrefix").value){
-      out.push("[Fonts]");
-      pushIfFmt(out, "ScorePrefix", $("fScorePrefix").value);
-      pushIfFmt(out, "ScoreOverlap", $("fScoreOverlap").value);
-      pushIfFmt(out, "ComboPrefix", $("fComboPrefix").value);
-      pushIfFmt(out, "ComboOverlap", $("fComboOverlap").value);
-      out.push("");
+    colourKeys.push(
+      ["Combo1", $("sCombo1").value],
+      ["Combo2", $("sCombo2").value],
+      ["Combo3", $("sCombo3").value],
+      ["Combo4", $("sCombo4").value],
+      ["Combo5", $("sCombo5").value],
+      ["Combo6", $("sCombo6").value],
+      ["Combo7", $("sCombo7").value],
+      ["Combo8", $("sCombo8").value],
+      ["SliderBorder", $("sSliderBorder").value],
+      ["SliderTrackOverride", $("sSliderTrack").value],
+      ["SpinnerApproachCircle", $("sSpinnerApp").value],
+      ["SpinnerBackground", $("sSpinnerBg").value],
+    );
   }
 
-  // Mania
-  for(const k of ALL_MANIA_KEYS){
-    if(enabledModes[k]){
-      out.push("[Mania]");
-      out.push(...maniaBlockForKeys(k));
-      out.push("");
-    }
+  const hasColours = colourKeys.some(([,v]) => cleanLine(v));
+  if(hasColours){
+    out.push("[Colours]");
+    for(const [k,v] of colourKeys) pushIfFmt(out, k, v);
+    out.push("");
   }
-  
+
+  if($("fScorePrefix").value || $("fComboPrefix").value){
+    out.push("[Fonts]");
+    pushIfFmt(out, "ScorePrefix", $("fScorePrefix").value);
+    pushIfFmt(out, "ScoreOverlap", $("fScoreOverlap").value);
+    pushIfFmt(out, "ComboPrefix", $("fComboPrefix").value);
+    pushIfFmt(out, "ComboOverlap", $("fComboOverlap").value);
+    out.push("");
+  }
+
+  for(const keys of ALL_MANIA_KEYS){
+    if(!enabledModes[keys]) continue;
+    out.push("[Mania]");
+    out.push(...maniaBlockForKeys(keys));
+    out.push("");
+  }
+
   return out.join("\n");
 }
 
-/* State Management */
+/* Save/Load Logic */
+let saveTimer = null;
 function saveAllActiveModesIntoState(){
   for(const k of ALL_MANIA_KEYS){
-     if(enabledModes[k] && $(modeId("mColWidth",k))) maniaModes[k] = readModeFromUI(k);
+    if(enabledModes[k] && $(modeId("mColWidth", k))) maniaModes[k] = readModeFromUI(k);
   }
 }
 
 function saveState(){
   saveAllActiveModesIntoState();
+  
   const s = {
-      gName: $("gName").value, gAuthor: $("gAuthor").value,
-      includeStandard, prettyFormat, enabledModes, openModes, maniaModes,
-      cMenuGlow: $("cMenuGlow").value, cSongActive: $("cSongActive").value, cSongInactive: $("cSongInactive").value,
-      mKeyColour: $("mKeyColour").value, mColourHold: $("mColourHold").value, mColourBreak: $("mColourBreak").value
+    prettyFormat, includeStandard,
+    enabledModes, openModes, maniaModes,
+    gName: $("gName").value, gAuthor: $("gAuthor").value,
+    gCursorCentre: $("gCursorCentre").checked, gCursorExpand: $("gCursorExpand").checked,
+    gCursorRotate: $("gCursorRotate").checked, gCursorTrailRotate: $("gCursorTrailRotate").checked,
+    
+    // Colours
+    cMenuGlow: $("cMenuGlow").value, cSongActive: $("cSongActive").value, cSongInactive: $("cSongInactive").value,
+    sCombo1: $("sCombo1").value, sCombo2: $("sCombo2").value, sCombo3: $("sCombo3").value, sCombo4: $("sCombo4").value,
+    sSliderBorder: $("sSliderBorder").value, sSliderTrack: $("sSliderTrack").value,
+    
+    // Fonts
+    fScorePrefix: $("fScorePrefix").value, fScoreOverlap: $("fScoreOverlap").value,
+    fComboPrefix: $("fComboPrefix").value, fComboOverlap: $("fComboOverlap").value,
+    
+    // Mania Shared
+    mKeyColour: $("mKeyColour").value, mColourHold: $("mColourHold").value, mColourBreak: $("mColourBreak").value,
+    
+    // Hits
+    h0: $("h0").value, h50: $("h50").value, h100: $("h100").value
   };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
-  $("savePulse").textContent = "Salvo...";
-  setTimeout(()=> $("savePulse").textContent = "", 1000);
+
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+    const pulse = $("savePulse");
+    pulse.style.opacity = 1;
+    setTimeout(()=>{ pulse.style.opacity=0; }, 1000);
+  } catch(e){}
 }
 
 function loadState(){
   try {
-      const r = localStorage.getItem(STORAGE_KEY);
-      if(!r) return;
-      const s = JSON.parse(r);
-      $("gName").value = s.gName || ""; $("gAuthor").value = s.gAuthor || "";
-      if(s.maniaModes) Object.assign(maniaModes, s.maniaModes);
-      if(s.enabledModes) enabledModes = s.enabledModes;
-      if(s.openModes) openModes = s.openModes;
-      if(s.cMenuGlow) $("cMenuGlow").value = s.cMenuGlow;
-      if(s.mKeyColour) $("mKeyColour").value = s.mKeyColour;
-      
-      // Sync color pickers
-      $("cMenuGlow").dispatchEvent(new Event('input')); 
-      $("mKeyColour").dispatchEvent(new Event('input')); 
-      
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const s = JSON.parse(raw);
+    
+    $("gName").value = s.gName || ""; 
+    $("gAuthor").value = s.gAuthor || "";
+    
+    if(s.maniaModes) Object.assign(maniaModes, s.maniaModes);
+    if(s.enabledModes) enabledModes = s.enabledModes;
+    if(s.openModes) openModes = s.openModes;
+
+    $("gCursorCentre").checked = !!s.gCursorCentre;
+    $("gCursorExpand").checked = !!s.gCursorExpand;
+    $("gCursorRotate").checked = !!s.gCursorRotate;
+    $("gCursorTrailRotate").checked = !!s.gCursorTrailRotate;
+
+    $("cMenuGlow").value = s.cMenuGlow || "#ffffff";
+    $("cSongActive").value = s.cSongActive || "#ffffff";
+    $("cSongInactive").value = s.cSongInactive || "#a0a0a0";
+    
+    $("sCombo1").value = s.sCombo1 || "#ff8080";
+    $("sCombo2").value = s.sCombo2 || "#80ff80";
+    $("sCombo3").value = s.sCombo3 || "#80c0ff";
+    $("sCombo4").value = s.sCombo4 || "#ffff80";
+    $("sSliderBorder").value = s.sSliderBorder || "#ffffff";
+    
+    $("fScorePrefix").value = s.fScorePrefix || "";
+    $("fScoreOverlap").value = s.fScoreOverlap || "0";
+    $("fComboPrefix").value = s.fComboPrefix || "";
+    $("fComboOverlap").value = s.fComboOverlap || "0";
+    
+    $("mKeyColour").value = s.mKeyColour || "#ffffff";
+    $("mColourHold").value = s.mColourHold || "#ffffff";
+    $("mColourBreak").value = s.mColourBreak || "#ff5050";
+    
+    $("h0").value = s.h0 || ""; $("h50").value = s.h50 || ""; $("h100").value = s.h100 || "";
+
+    // Trigger input events to sync colors
+    document.querySelectorAll("input[type=color]").forEach(c => c.dispatchEvent(new Event("input")));
+    document.querySelectorAll("input[type=text]").forEach(c => c.dispatchEvent(new Event("input")));
+
   } catch(e){}
 }
 
-/* Event Binds */
+/* Event Binding & Update Loop */
+function updatePreview(){
+  saveAllActiveModesIntoState();
+  $("preview").value = genIni();
+}
+function scheduleUpdate(){
+  updatePreview();
+  if(saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveState, 500);
+}
+
+function onToggleModes(){
+  renderKeymodeToggles();
+  rerenderModes();
+  scheduleUpdate();
+}
+
+/* Button Actions */
+$("kmAll").addEventListener("click", ()=>{ ALL_MANIA_KEYS.forEach(k=>enabledModes[k]=true); onToggleModes(); });
+$("kmNone").addEventListener("click", ()=>{ ALL_MANIA_KEYS.forEach(k=>enabledModes[k]=false); onToggleModes(); });
+$("kmCommon").addEventListener("click", ()=>{ ALL_MANIA_KEYS.forEach(k=>enabledModes[k]=false); enabledModes[4]=true; enabledModes[7]=true; onToggleModes(); });
+$("kmInvert").addEventListener("click", ()=>{ ALL_MANIA_KEYS.forEach(k=>enabledModes[k]=!enabledModes[k]); onToggleModes(); });
+$("kmSearch").addEventListener("input", (e)=>{ kmSearchText = e.target.value; renderKeymodeToggles(); });
+
 $("downloadIni").addEventListener("click", ()=>{
   const blob = new Blob([$("preview").value], {type:"text/plain;charset=utf-8"});
   const a = document.createElement("a");
@@ -1029,44 +1236,50 @@ $("downloadIni").addEventListener("click", ()=>{
   a.click();
 });
 $("clearWipe").addEventListener("click", ()=>{
-    if(confirm("Resetar tudo?")){ localStorage.removeItem(STORAGE_KEY); location.reload(); }
+  if(confirm("Clear all data?")){ localStorage.removeItem(STORAGE_KEY); location.reload(); }
 });
 
-$("prettyFormat").addEventListener("change", (e)=>{ prettyFormat = e.target.checked; scheduleUpdate(); });
-$("includeStandard").addEventListener("change", (e)=>{ includeStandard = e.target.checked; scheduleUpdate(); });
+$("prettyFormat").addEventListener("change", (e)=>{ prettyFormat=e.target.checked; scheduleUpdate(); });
+$("includeStandard").addEventListener("change", (e)=>{ includeStandard=e.target.checked; scheduleUpdate(); });
 
-$("kmSearch").addEventListener("input", (e)=>{ kmSearchText=e.target.value; renderKeymodeToggles(); });
-$("kmAll").addEventListener("click", ()=>{ ALL_MANIA_KEYS.forEach(k=>enabledModes[k]=true); onToggleModes(); });
-$("kmNone").addEventListener("click", ()=>{ ALL_MANIA_KEYS.forEach(k=>enabledModes[k]=false); onToggleModes(); });
-$("kmCommon").addEventListener("click", ()=>{ ALL_MANIA_KEYS.forEach(k=>enabledModes[k]=false); enabledModes[4]=true; enabledModes[7]=true; onToggleModes(); });
+/* Bind generic inputs */
+const genericInputs = [
+  "gName","gAuthor","gCursorCentre","gCursorExpand","gCursorRotate","gCursorTrailRotate",
+  "sAnimFPS","sAllowSliderBallTint","sSliderBallFlip","sOverlayAboveNumber","sLayeredHitSounds","sSpinnerFadePlayfield","sSpinnerNoBlink",
+  "fScorePrefix","fScoreOverlap","fComboPrefix","fComboOverlap",
+  "h0","h50","h100","h200","h300","h300g"
+];
+genericInputs.forEach(id => {
+  const el = $(id);
+  if(el){ el.addEventListener("input", scheduleUpdate); el.addEventListener("change", scheduleUpdate); }
+});
 
-function onToggleModes(){
-    renderKeymodeToggles(); rerenderModes(); scheduleUpdate();
-}
-
-function updatePreview(){
-    $("preview").value = genIni();
-}
-let saveTimer;
-function scheduleUpdate(){
-    updatePreview();
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(saveState, 500);
-}
-
-/* Init */
-const bindAll = (ids) => ids.forEach(id => { const el=$(id); if(el){ el.addEventListener("input", scheduleUpdate); el.addEventListener("change", scheduleUpdate); } });
-bindAll(["gName","gAuthor","gCursorCentre","gCursorExpand","gCursorRotate","gCursorTrailRotate","sAnimFPS","sAllowSliderBallTint","mKeyColour"]);
+/* Bind Colour Syncs */
+bindColourSync("cMenuGlowPick","cMenuGlow");
+bindColourSync("cSongActivePick","cSongActive");
+bindColourSync("cSongInactivePick","cSongInactive");
+bindColourSync("sCombo1Pick","sCombo1");
+bindColourSync("sCombo2Pick","sCombo2");
+bindColourSync("sCombo3Pick","sCombo3");
+bindColourSync("sCombo4Pick","sCombo4");
+bindColourSync("sCombo5Pick","sCombo5");
+bindColourSync("sCombo6Pick","sCombo6");
+bindColourSync("sCombo7Pick","sCombo7");
+bindColourSync("sCombo8Pick","sCombo8");
+bindColourSync("sSliderBorderPick","sSliderBorder");
+bindColourSync("sSliderTrackPick","sSliderTrack");
+bindColourSync("sSpinnerAppPick","sSpinnerApp");
+bindColourSync("sSpinnerBgPick","sSpinnerBg");
 bindColourSync("mKeyColourPick","mKeyColour");
 bindColourSync("mHoldPick","mColourHold");
 bindColourSync("mBreakPick","mColourBreak");
-// Bind combo colours
-[1,2,3,4,5,6].forEach(n => bindColourSync(`sCombo${n}Pick`, `sCombo${n}`));
 
+/* Initialization */
 loadState();
 renderKeymodeToggles();
 rerenderModes();
 updatePreview();
+
 </script>
 </body>
 </html>
