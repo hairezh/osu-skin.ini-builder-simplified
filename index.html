@@ -4,7 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>skin.ini studio</title>
-  <link rel="icon" type="image/png" href="https://i.pinimg.com/originals/4b/e5/64/4be564289c13a9339468576c097548d9.gif"/>
+
+  <!-- favicon (pedido antigo) -->
+  <link rel="icon" type="image/png"
+    href="https://i.pinimg.com/1200x/d6/ca/e4/d6cae471e8471dec46c4304104adb4b1.jpg"/>
 
   <style>
     :root{
@@ -13,7 +16,6 @@
       --muted2:rgba(233,233,238,.40);
       --border:rgba(255,255,255,.12);
       --panel:rgba(0,0,0,.44);
-      --panel2:rgba(0,0,0,.28);
       --shadow: 0 10px 30px rgba(0,0,0,.45);
       --r:14px;
 
@@ -41,16 +43,16 @@
       overflow:hidden;
     }
 
-    /* overlay mais leve + blur menor (pedido) */
+    /* overlay + blur bem leve (mais fluido) */
     body::before{
       content:"";
       position:fixed; inset:0;
       pointer-events:none;
       background:
-        radial-gradient(900px 520px at 15% 10%, rgba(0,0,0,.18), transparent 55%),
-        radial-gradient(900px 520px at 85% 20%, rgba(0,0,0,.18), transparent 55%),
+        radial-gradient(900px 520px at 15% 10%, rgba(0,0,0,.16), transparent 55%),
+        radial-gradient(900px 520px at 85% 20%, rgba(0,0,0,.16), transparent 55%),
         linear-gradient(180deg, rgba(0,0,0,.58), rgba(0,0,0,.56));
-      backdrop-filter: blur(1px);
+      backdrop-filter: blur(0.6px);
     }
 
     /* Scrollbar */
@@ -83,8 +85,7 @@
       padding:10px 12px;
       border-bottom:1px solid var(--border);
       background: rgba(0,0,0,.38);
-      /* blur menor + menos “peso” */
-      backdrop-filter: blur(6px);
+      backdrop-filter: blur(3px);
       will-change: transform;
       transform: translateZ(0);
     }
@@ -137,7 +138,7 @@
     .dock{
       border-right:1px solid var(--border);
       background: rgba(0,0,0,.38);
-      backdrop-filter: blur(6px);
+      backdrop-filter: blur(3px);
       display:flex;
       flex-direction:column;
       align-items:center;
@@ -204,7 +205,7 @@
       opacity:0;
       pointer-events:none;
       transition:110ms linear;
-      backdrop-filter: blur(6px);
+      backdrop-filter: blur(3px);
     }
     .icoBtn:hover .tip{ opacity:1; }
 
@@ -228,8 +229,7 @@
     .card{
       border:1px solid var(--border);
       background: var(--panel);
-      /* blur menor em cards (performance + pedido de fluidez) */
-      backdrop-filter: blur(6px);
+      backdrop-filter: blur(3px);
       border-radius: var(--r);
       box-shadow: var(--shadow);
       overflow:hidden;
@@ -275,7 +275,6 @@
       overflow:auto;
       min-height:0;
       flex:1;
-      /* nada de blur aqui (pesa) */
     }
 
     .btn{
@@ -491,6 +490,7 @@
 
   <div class="topbar">
     <div class="brand">
+      <!-- ícone pedido -->
       <img alt="icon" src="https://i.pinimg.com/originals/da/b4/cb/dab4cbf31e4e8d7688b0e830d5d640f1.gif">
       <div class="title">
         <b>skin.ini studio</b>
@@ -510,51 +510,45 @@
   <div class="layout">
     <aside class="dock">
 
+      <!-- Tabs -->
       <div class="dockGroup">
         <button class="icoBtn" data-tab="general" title="General">
           <span aria-hidden="true">⚙️</span>
           <span class="tip">General</span>
         </button>
+
         <button class="icoBtn" data-tab="colours" title="Colours">
           <span aria-hidden="true">🎨</span>
           <span class="tip">Colours</span>
         </button>
+
         <button class="icoBtn" data-tab="fonts" title="Fonts">
           <span aria-hidden="true">🔤</span>
           <span class="tip">Fonts</span>
         </button>
-        <button class="icoBtn" data-tab="catch" title="Catch">
-          <span aria-hidden="true">🍓</span>
-          <span class="tip">Catch</span>
-        </button>
+
         <button class="icoBtn" data-tab="mania" title="Mania">
           <span aria-hidden="true">🎹</span>
           <span class="tip">Mania</span>
         </button>
+
         <button class="icoBtn" data-tab="preview" title="Preview">
           <span aria-hidden="true">👁️</span>
           <span class="tip">Preview</span>
         </button>
       </div>
 
+      <!-- Export -->
       <div class="dockGroup">
         <div class="miniLabel">export</div>
 
-        <!-- IMPORTANT: STD agora só controla cores/fonts + opções "standard", mas GENERAL sempre exporta -->
-        <button class="icoBtn" id="togStd" title="Standard extras on/off" type="button">
-          <span aria-hidden="true">⭕</span>
-          <span class="tip">Standard</span>
-        </button>
-        <button class="icoBtn" id="togCatch" title="Catch on/off" type="button">
-          <span aria-hidden="true">🍓</span>
-          <span class="tip">Catch</span>
-        </button>
         <button class="icoBtn" id="togMania" title="Mania on/off" type="button">
           <span aria-hidden="true">🎹</span>
           <span class="tip">Mania</span>
         </button>
       </div>
 
+      <!-- Style -->
       <div class="dockGroup">
         <div class="miniLabel">style</div>
 
@@ -585,7 +579,7 @@
         <div class="cardHead">
           <div class="left">
             <span class="badge" id="panelTitle">General</span>
-            <span class="badge" id="modeBadge">export: GENERAL+STD+CATCH+MANIA</span>
+            <span class="badge" id="modeBadge">export: GENERAL+COLOURS+FONTS+MANIA</span>
           </div>
           <div class="tools">
             <button class="btn" id="refresh">Atualizar</button>
@@ -651,10 +645,10 @@
 
 <script>
 const $ = (id)=>document.getElementById(id);
-const STORAGE_KEY = "skinini_studio_custom_v5_perf";
+const STORAGE_KEY = "skinini_studio_v6_no_std_no_catch";
 
 /* ---------- util ---------- */
-function cleanLine(s){ return String(s ?? "").replace(/\r/g,"").trimEnd(); }
+function cleanLine(s){ return String(s ?? "").replace(/\\r/g,"").trimEnd(); }
 function isBlank(v){ return cleanLine(v) === ""; }
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 const bool01 = (b)=> (b ? "1" : "0");
@@ -668,7 +662,7 @@ function debounce(fn, wait){
 }
 
 function rgbToHex(rgb){
-  const m = String(rgb||"").match(/^\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*$/);
+  const m = String(rgb||"").match(/^\\s*(\\d{1,3})\\s*,\\s*(\\d{1,3})\\s*,\\s*(\\d{1,3})\\s*$/);
   if(!m) return null;
   const r = clamp(parseInt(m[1],10),0,255);
   const g = clamp(parseInt(m[2],10),0,255);
@@ -737,25 +731,6 @@ function defaultManiaMode(keys){
 
     BarlineHeight: "",
     WidthForNoteHeightScale: "",
-    LightingNWidth: "",
-    LightingLWidth: "",
-    LightFramePerSecond: "",
-    SpecialStyle: "",
-    ComboBurstStyle: "",
-    SplitStages: "",
-    StageSeparation: "",
-    SeparateScore: "",
-    KeyFlipWhenUpsideDown: "",
-    NoteFlipWhenUpsideDown: "",
-    NoteBodyStyle: "",
-
-    StageLeft: "",
-    StageRight: "",
-    StageBottom: "",
-    StageHint: "",
-    StageLight: "",
-    LightingN: "",
-    LightingL: "",
 
     ColourColumnLine: "",
     ColourBarline: "",
@@ -766,21 +741,6 @@ function defaultManiaMode(keys){
     Colour: {},
     ColourLight: {},
 
-    KeyImage: "",
-    KeyImageD: "",
-    NoteImage: "",
-    NoteImageH: "",
-    NoteImageL: "",
-    NoteImageT: "",
-    WarningArrow: "",
-
-    Hit0: "",
-    Hit50: "",
-    Hit100: "",
-    Hit200: "",
-    Hit300: "",
-    Hit300g: "",
-
     AutoColumnStart: true,
   };
 }
@@ -788,9 +748,7 @@ function defaultManiaMode(keys){
 const state = {
   activeTab: "general",
 
-  // toggles por modo (mas GENERAL sempre exporta)
-  exportStdExtras: true,  // controls standard extras + [Colours] + [Fonts]
-  exportCatch: true,
+  // modos: GENERAL/COLOURS/FONTS sempre exportam; MANIA é toggle
   exportMania: true,
 
   pretty: true,        // "h style"
@@ -805,20 +763,9 @@ const state = {
     CursorExpand: false,
     CursorRotate: false,
     CursorTrailRotate: false,
-
-    // standard-related extras (controlled by exportStdExtras)
-    AnimationFramerate: "",
-    AllowSliderBallTint: true,
-    ComboBurstRandom: "",
-    CustomComboBurstSounds: "",
-    HitCircleOverlayAboveNumber: false,
-    LayeredHitSounds: true,
-    SliderBallFlip: false,
-    SpinnerFadePlayfield: true,
-    SpinnerFrequencyModulate: "",
-    SpinnerNoBlink: false,
   },
 
+  // mantém Colours e Fonts (sem “opções standard”, mas keys em si continuam)
   colours: {
     Combo1: "",
     Combo2: "",
@@ -846,12 +793,6 @@ const state = {
     ScoreOverlap: "",
     ComboPrefix: "",
     ComboOverlap: "",
-  },
-
-  catch: {
-    HyperDash: "",
-    HyperDashFruit: "",
-    HyperDashAfterImage: "",
   },
 
   maniaShared: {
@@ -946,7 +887,6 @@ const TABS = [
   { key:"general", title:"General", render: renderGeneral },
   { key:"colours", title:"Colours", render: renderColours },
   { key:"fonts", title:"Fonts", render: renderFonts },
-  { key:"catch", title:"Catch", render: renderCatch },
   { key:"mania", title:"Mania", render: renderMania },
   { key:"preview", title:"Preview", render: renderPreviewOnly },
 ];
@@ -980,7 +920,6 @@ function renderActiveTab(){
 }
 
 function renderGeneral(){
-  // GENERAL sempre disponível (e sempre exporta)
   return `
     <div class="block open">
       <button class="blockHead" type="button"><span>[General] meta</span><span class="caret">▸</span></button>
@@ -1003,30 +942,11 @@ function renderGeneral(){
         ${uiRowBool("CursorTrailRotate", "general.CursorTrailRotate")}
       </div>
     </div>
-
-    <div class="block">
-      <button class="blockHead" type="button"><span>[General] standard extras</span><span class="caret">▸</span></button>
-      <div class="blockBody">
-        ${!state.exportStdExtras ? `<div class="disabledHint">Standard export desligado</div>` : ``}
-        ${uiRowNum("AnimationFramerate", "general.AnimationFramerate")}
-        ${uiRowBool("AllowSliderBallTint", "general.AllowSliderBallTint")}
-        ${uiRowBool("SliderBallFlip", "general.SliderBallFlip")}
-        ${uiRowBool("HitCircleOverlayAboveNumber", "general.HitCircleOverlayAboveNumber")}
-        ${uiRowBool("LayeredHitSounds", "general.LayeredHitSounds")}
-        ${uiRowBool("SpinnerFadePlayfield", "general.SpinnerFadePlayfield")}
-        ${uiRowBool("SpinnerNoBlink", "general.SpinnerNoBlink")}
-        ${uiRowText("SpinnerFrequencyModulate", "general.SpinnerFrequencyModulate")}
-        ${uiRowText("ComboBurstRandom", "general.ComboBurstRandom")}
-        ${uiRowText("CustomComboBurstSounds", "general.CustomComboBurstSounds")}
-      </div>
-    </div>
   `;
 }
 
 function renderColours(){
   return `
-    ${!state.exportStdExtras ? `<div class="disabledHint">Standard export desligado</div>` : ``}
-
     <div class="block open">
       <button class="blockHead" type="button"><span>[Colours] ui</span><span class="caret">▸</span></button>
       <div class="blockBody">
@@ -1068,8 +988,6 @@ function renderColours(){
 
 function renderFonts(){
   return `
-    ${!state.exportStdExtras ? `<div class="disabledHint">Standard export desligado</div>` : ``}
-
     <div class="block open">
       <button class="blockHead" type="button"><span>[Fonts] hitcircle</span><span class="caret">▸</span></button>
       <div class="blockBody">
@@ -1091,21 +1009,6 @@ function renderFonts(){
       <div class="blockBody">
         ${uiRowText("ComboPrefix", "fonts.ComboPrefix")}
         ${uiRowNum("ComboOverlap", "fonts.ComboOverlap", "0")}
-      </div>
-    </div>
-  `;
-}
-
-function renderCatch(){
-  return `
-    ${!state.exportCatch ? `<div class="disabledHint">Catch export desligado</div>` : ``}
-
-    <div class="block open">
-      <button class="blockHead" type="button"><span>[CatchTheBeat]</span><span class="caret">▸</span></button>
-      <div class="blockBody">
-        ${uiRowText("HyperDash", "catch.HyperDash")}
-        ${uiRowText("HyperDashFruit", "catch.HyperDashFruit")}
-        ${uiRowText("HyperDashAfterImage", "catch.HyperDashAfterImage")}
       </div>
     </div>
   `;
@@ -1147,11 +1050,10 @@ function renderMania(){
 }
 
 function renderManiaBlock(keys){
-  const m = state.mania[keys] || defaultManiaMode(keys);
   const open = !!state.maniaShared.open[keys];
 
   const colourCols = Array.from({length: keys}, (_,i)=>{
-    const uiIndex = i + 1;
+    const uiIndex = i + 1; // UI começa em 1 (pedido)
     const path = `mania.${keys}.Colour.${uiIndex}`;
     return `
       <div class="row">
@@ -1214,9 +1116,6 @@ function renderManiaBlock(keys){
             ${uiRowBool("JudgementLine", `mania.${keys}.JudgementLine`)}
             ${uiRowBool("KeysUnderNotes", `mania.${keys}.KeysUnderNotes`)}
             ${uiRowBool("UpsideDown", `mania.${keys}.UpsideDown`)}
-            ${uiRowText("KeyFlipWhenUpsideDown", `mania.${keys}.KeyFlipWhenUpsideDown`)}
-            ${uiRowText("NoteFlipWhenUpsideDown", `mania.${keys}.NoteFlipWhenUpsideDown`)}
-            ${uiRowText("NoteBodyStyle", `mania.${keys}.NoteBodyStyle`)}
           </div>
         </div>
 
@@ -1301,6 +1200,7 @@ function hydrateInputsFromState(root){
     else inp.value = (v ?? "");
   });
 
+  // ColumnStart auto: se AutoColumnStart ligado, trava input + placeholder "auto"
   root.querySelectorAll('[data-path$=".AutoColumnStart"]').forEach(chk=>{
     const path = chk.getAttribute("data-path");
     const mPath = path.replace(".AutoColumnStart", ".ColumnStart");
@@ -1363,7 +1263,6 @@ function wirePanelListeners(root){
 function genIni(){
   const out = [];
 
-  // GENERAL sempre exporta
   out.push("[General]");
   pushKV(out, "Name", state.general.Name);
   pushKV(out, "Author", state.general.Author);
@@ -1374,25 +1273,10 @@ function genIni(){
   pushKV(out, "CursorRotate", bool01(!!state.general.CursorRotate));
   pushKV(out, "CursorTrailRotate", bool01(!!state.general.CursorTrailRotate));
 
-  // Standard extras só se ligado
-  if(state.exportStdExtras){
-    const g = state.general;
-    pushKV(out, "AnimationFramerate", g.AnimationFramerate);
-    pushKV(out, "AllowSliderBallTint", bool01(!!g.AllowSliderBallTint));
-    pushKV(out, "ComboBurstRandom", g.ComboBurstRandom);
-    pushKV(out, "CustomComboBurstSounds", g.CustomComboBurstSounds);
-    pushKV(out, "HitCircleOverlayAboveNumber", bool01(!!g.HitCircleOverlayAboveNumber));
-    pushKV(out, "LayeredHitSounds", bool01(!!g.LayeredHitSounds));
-    pushKV(out, "SliderBallFlip", bool01(!!g.SliderBallFlip));
-    pushKV(out, "SpinnerFadePlayfield", bool01(!!g.SpinnerFadePlayfield));
-    pushKV(out, "SpinnerFrequencyModulate", g.SpinnerFrequencyModulate);
-    pushKV(out, "SpinnerNoBlink", bool01(!!g.SpinnerNoBlink));
-  }
-
   out.push("");
 
-  // COLOURS / FONTS só se standard extras ligado
-  if(state.exportStdExtras){
+  // COLOURS sempre exporta (se tiver algo ou se commentEmpty ligado)
+  {
     const c = state.colours;
     const colourKeys = [
       "Combo1","Combo2","Combo3","Combo4","Combo5","Combo6","Combo7","Combo8",
@@ -1400,30 +1284,21 @@ function genIni(){
       "SongSelectActiveText","SongSelectInactiveText","SpinnerBackground","StarBreakAdditive"
     ];
     const hasColours = colourKeys.some(k => !isBlank(c[k]));
-    if(hasColours){
+    if(hasColours || state.commentEmpty){
       out.push("[Colours]");
       for(const k of colourKeys) pushKV(out, k, c[k]);
       out.push("");
     }
+  }
 
+  // FONTS sempre exporta (se tiver algo ou se commentEmpty ligado)
+  {
     const f = state.fonts;
     const fontKeys = ["HitCirclePrefix","HitCircleOverlap","ScorePrefix","ScoreOverlap","ComboPrefix","ComboOverlap"];
     const hasFonts = fontKeys.some(k => !isBlank(f[k]));
-    if(hasFonts){
+    if(hasFonts || state.commentEmpty){
       out.push("[Fonts]");
       for(const k of fontKeys) pushKV(out, k, f[k]);
-      out.push("");
-    }
-  }
-
-  // CATCH
-  if(state.exportCatch){
-    const ca = state.catch;
-    const catchKeys = ["HyperDash","HyperDashFruit","HyperDashAfterImage"];
-    const hasCatch = catchKeys.some(k => !isBlank(ca[k]));
-    if(hasCatch){
-      out.push("[CatchTheBeat]");
-      for(const k of catchKeys) pushKV(out, k, ca[k]);
       out.push("");
     }
   }
@@ -1440,12 +1315,6 @@ function genIni(){
 
   while(out.length && out[out.length-1]==="") out.pop();
   return out.join("\n");
-}
-
-function pat(pattern, n){
-  const p = String(pattern||"").trim();
-  if(!p) return "";
-  return p.replaceAll("{n}", String(n));
 }
 
 function genManiaBlock(keys){
@@ -1465,11 +1334,12 @@ function genManiaBlock(keys){
   lines.push(fmtKV("ColumnWidth", normalizeCsv(m.ColumnWidth, keys, Array.from({length:keys}, ()=>"70").join(","))));
   lines.push(fmtKV("ColumnSpacing", normalizeCsv(m.ColumnSpacing, Math.max(0,keys-1), Array.from({length:Math.max(0,keys-1)}, ()=>"0").join(","))));
 
+  // regra: se ColumnStart vazio ou não editável => auto (não exporta ColumnStart)
   if(!m.AutoColumnStart){
     pushKV(lines, "ColumnStart", m.ColumnStart);
   }
   pushKV(lines, "ColumnRight", m.ColumnRight);
-  pushKV(lines, "ColumnLineWidth", normalizeCsv(m.ColumnLineWidth, keys+1, Array.from({length:keys+1}, ()=>"0").join(",")));
+  lines.push(fmtKV("ColumnLineWidth", normalizeCsv(m.ColumnLineWidth, keys+1, Array.from({length:keys+1}, ()=>"0").join(","))));
   spacer(lines);
 
   pushKV(lines, "HitPosition", m.HitPosition);
@@ -1483,15 +1353,24 @@ function genManiaBlock(keys){
   lines.push(fmtKV("UpsideDown", bool01(!!m.UpsideDown)));
   spacer(lines);
 
+  pushKV(lines, "BarlineHeight", m.BarlineHeight);
+  pushKV(lines, "WidthForNoteHeightScale", m.WidthForNoteHeightScale);
+  spacer(lines);
+
   header(lines, "colours");
+
+  // IMPORTANT: export do skin.ini é 0-based (Colour0..), UI é 1-based
   for(let ui=1; ui<=keys; ui++){
     const v = cleanLine(m.Colour?.[ui]);
     if(v) lines.push(fmtKV(`Colour${ui-1}`, v));
+    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`Colour${ui-1}`).padEnd(32," ")} :` : `//Colour${ui-1}:`);
   }
   spacer(lines);
+
   for(let ui=1; ui<=keys; ui++){
     const v = cleanLine(m.ColourLight?.[ui]);
     if(v) lines.push(fmtKV(`ColourLight${ui-1}`, v));
+    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`ColourLight${ui-1}`).padEnd(32," ")} :` : `//ColourLight${ui-1}:`);
   }
 
   pushKV(lines, "ColourColumnLine", m.ColourColumnLine);
@@ -1508,11 +1387,7 @@ function genManiaBlock(keys){
 /* ---------- import ---------- */
 function parseIni(text){
   const lines = String(text||"").split("\n");
-
-  const parsed = {
-    General:{}, Colours:{}, Fonts:{}, CatchTheBeat:{},
-    Mania: []
-  };
+  const parsed = { General:{}, Colours:{}, Fonts:{}, Mania: [] };
 
   let section = "";
   let curMania = null;
@@ -1520,7 +1395,6 @@ function parseIni(text){
   for(const raw of lines){
     const line0 = raw.replace(/\r/g,"");
     const line = line0.trim();
-
     if(!line) continue;
     if(line.startsWith("//") || line.startsWith(";")) continue;
 
@@ -1547,7 +1421,6 @@ function parseIni(text){
     if(secName === "general") parsed.General[key] = val;
     else if(secName === "colours") parsed.Colours[key] = val;
     else if(secName === "fonts") parsed.Fonts[key] = val;
-    else if(secName === "catchthebeat") parsed.CatchTheBeat[key] = val;
     else if(secName === "mania" && curMania){
       curMania.kv[key] = val;
       if(key === "Keys"){
@@ -1573,10 +1446,9 @@ function applyParsed(parsed){
     }
   }
 
-  // colours/fonts/catch
+  // colours/fonts
   Object.assign(state.colours, parsed.Colours || {});
   Object.assign(state.fonts, parsed.Fonts || {});
-  Object.assign(state.catch, parsed.CatchTheBeat || {});
 
   // mania
   for(const blk of parsed.Mania){
@@ -1592,6 +1464,7 @@ function applyParsed(parsed){
       "ColumnStart","ColumnRight","ColumnSpacing","ColumnWidth","ColumnLineWidth",
       "HitPosition","LightPosition","ScorePosition","ComboPosition",
       "JudgementLine","KeysUnderNotes","UpsideDown",
+      "BarlineHeight","WidthForNoteHeightScale",
       "ColourColumnLine","ColourBarline","ColourJudgementLine","ColourKeyWarning","ColourHold","ColourBreak"
     ];
 
@@ -1602,12 +1475,13 @@ function applyParsed(parsed){
       }
     }
 
+    // auto columnstart se vier vazio/não existir
     m.AutoColumnStart = isBlank(m.ColumnStart);
 
     for(let i=0;i<keys;i++){
       const ck = `Colour${i}`;
       const lk = `ColourLight${i}`;
-      if(ck in blk.kv) m.Colour[i+1] = blk.kv[ck];
+      if(ck in blk.kv) m.Colour[i+1] = blk.kv[ck];        // UI 1..keys
       if(lk in blk.kv) m.ColourLight[i+1] = blk.kv[lk];
     }
 
@@ -1637,10 +1511,7 @@ function loadState(){
 
     state.activeTab = s.activeTab ?? state.activeTab;
 
-    state.exportStdExtras = (s.exportStdExtras ?? true) ? true : false;
-    state.exportCatch = (s.exportCatch ?? true) ? true : false;
     state.exportMania = (s.exportMania ?? true) ? true : false;
-
     state.pretty = (s.pretty ?? true) ? true : false;
     state.commentEmpty = (s.commentEmpty ?? false) ? true : false;
     state.version = s.version ?? "latest";
@@ -1648,7 +1519,6 @@ function loadState(){
     Object.assign(state.general, s.general || {});
     Object.assign(state.colours, s.colours || {});
     Object.assign(state.fonts, s.fonts || {});
-    Object.assign(state.catch, s.catch || {});
 
     if(s.maniaShared){
       for(const k of ALL_MANIA_KEYS){
@@ -1717,19 +1587,14 @@ function wipeAll(){
 }
 
 function updateModeBadge(){
-  const parts = ["GENERAL"];
-  if(state.exportStdExtras) parts.push("STD");
-  if(state.exportCatch) parts.push("CATCH");
+  const parts = ["GENERAL","COLOURS","FONTS"];
   if(state.exportMania) parts.push("MANIA");
   $("modeBadge").textContent = "export: " + parts.join("+");
 }
 
 /* ---------- dock toggles ---------- */
 function syncDockToggles(){
-  $("togStd").classList.toggle("active", state.exportStdExtras);
-  $("togCatch").classList.toggle("active", state.exportCatch);
   $("togMania").classList.toggle("active", state.exportMania);
-
   $("togPretty").classList.toggle("active", state.pretty);
   $("togCommentEmpty").classList.toggle("active", state.commentEmpty);
 }
@@ -1748,22 +1613,6 @@ $("selectAll").addEventListener("click", ()=>{
   $("preview").select();
 });
 
-$("togStd").addEventListener("click", ()=>{
-  state.exportStdExtras = !state.exportStdExtras;
-  syncDockToggles();
-  onAnyChange();
-  // não rerenderiza o painel inteiro (mais fluido)
-  if(state.activeTab === "colours" || state.activeTab === "fonts" || state.activeTab === "general"){
-    // só atualiza o hint de desligado/ligado do tab atual
-    renderActiveTab();
-  }
-});
-$("togCatch").addEventListener("click", ()=>{
-  state.exportCatch = !state.exportCatch;
-  syncDockToggles();
-  onAnyChange();
-  if(state.activeTab === "catch") renderActiveTab();
-});
 $("togMania").addEventListener("click", ()=>{
   state.exportMania = !state.exportMania;
   syncDockToggles();
