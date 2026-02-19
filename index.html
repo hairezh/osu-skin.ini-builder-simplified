@@ -20,7 +20,7 @@
       --dockW:62px;
       --gap:10px;
 
-      --rowLabel: 205px; /* compacto mas clicável */
+      --rowLabel: 205px;
       --inputPadY: 9px;
       --inputPadX: 10px;
     }
@@ -33,7 +33,6 @@
       color:var(--fg);
       font: 14px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-      /* fundo pedido */
       background-image: url("https://i.pinimg.com/originals/f5/93/a4/f593a4f4932080fb7b43c6ae96d1a73d.gif");
       background-size: cover;
       background-position: center;
@@ -42,16 +41,16 @@
       overflow:hidden;
     }
 
-    /* overlay pra legibilidade */
+    /* overlay mais leve + blur menor (pedido) */
     body::before{
       content:"";
       position:fixed; inset:0;
       pointer-events:none;
       background:
-        radial-gradient(900px 520px at 15% 10%, rgba(0,0,0,.25), transparent 55%),
-        radial-gradient(900px 520px at 85% 20%, rgba(0,0,0,.25), transparent 55%),
-        linear-gradient(180deg, rgba(0,0,0,.66), rgba(0,0,0,.62));
-      backdrop-filter: blur(2px);
+        radial-gradient(900px 520px at 15% 10%, rgba(0,0,0,.18), transparent 55%),
+        radial-gradient(900px 520px at 85% 20%, rgba(0,0,0,.18), transparent 55%),
+        linear-gradient(180deg, rgba(0,0,0,.58), rgba(0,0,0,.56));
+      backdrop-filter: blur(1px);
     }
 
     /* Scrollbar */
@@ -83,8 +82,11 @@
       gap:12px;
       padding:10px 12px;
       border-bottom:1px solid var(--border);
-      background: rgba(0,0,0,.40);
-      backdrop-filter: blur(10px);
+      background: rgba(0,0,0,.38);
+      /* blur menor + menos “peso” */
+      backdrop-filter: blur(6px);
+      will-change: transform;
+      transform: translateZ(0);
     }
 
     .brand{
@@ -131,11 +133,11 @@
       overflow:hidden;
     }
 
-    /* ===== Sidebar dock (Opera GX vibes) ===== */
+    /* ===== Sidebar dock ===== */
     .dock{
       border-right:1px solid var(--border);
-      background: rgba(0,0,0,.42);
-      backdrop-filter: blur(10px);
+      background: rgba(0,0,0,.38);
+      backdrop-filter: blur(6px);
       display:flex;
       flex-direction:column;
       align-items:center;
@@ -143,6 +145,8 @@
       padding:10px 8px;
       min-height:0;
       overflow:auto;
+      will-change: transform;
+      transform: translateZ(0);
     }
 
     .dockGroup{
@@ -167,14 +171,16 @@
       place-items:center;
       cursor:pointer;
       user-select:none;
-      transition:140ms linear;
+      transition:110ms linear;
       position:relative;
+      will-change: transform;
+      transform: translateZ(0);
     }
     .icoBtn:hover{
       border-color: rgba(255,255,255,.18);
       background: rgba(255,255,255,.06);
       color: rgba(233,233,238,.95);
-      transform: translateY(-1px);
+      transform: translateY(-1px) translateZ(0);
     }
     .icoBtn.active{
       border-color: rgba(255,255,255,.20);
@@ -197,8 +203,8 @@
       white-space:nowrap;
       opacity:0;
       pointer-events:none;
-      transition:140ms linear;
-      backdrop-filter: blur(10px);
+      transition:110ms linear;
+      backdrop-filter: blur(6px);
     }
     .icoBtn:hover .tip{ opacity:1; }
 
@@ -222,13 +228,16 @@
     .card{
       border:1px solid var(--border);
       background: var(--panel);
-      backdrop-filter: blur(10px);
+      /* blur menor em cards (performance + pedido de fluidez) */
+      backdrop-filter: blur(6px);
       border-radius: var(--r);
       box-shadow: var(--shadow);
       overflow:hidden;
       min-height:0;
       display:flex;
       flex-direction:column;
+      will-change: transform;
+      transform: translateZ(0);
     }
     .cardHead{
       padding:10px 10px 8px;
@@ -266,6 +275,7 @@
       overflow:auto;
       min-height:0;
       flex:1;
+      /* nada de blur aqui (pesa) */
     }
 
     .btn{
@@ -276,7 +286,7 @@
       background: rgba(0,0,0,.22);
       color: rgba(233,233,238,.78);
       font-weight:900;
-      transition:140ms linear;
+      transition:110ms linear;
       user-select:none;
     }
     .btn:hover{
@@ -307,7 +317,7 @@
       font:inherit;
     }
 
-    /* ===== Forms (compact but clickable) ===== */
+    /* ===== Forms ===== */
     .block{
       border:1px solid rgba(255,255,255,.12);
       background: rgba(0,0,0,.20);
@@ -333,7 +343,7 @@
     }
     .caret{
       color: rgba(233,233,238,.60);
-      transition:140ms linear;
+      transition:110ms linear;
     }
     .block.open .caret{ transform: rotate(90deg); }
     .blockBody{
@@ -379,8 +389,6 @@
     .inline{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
     .grid2{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
 
-    .sep{ height:1px; background: rgba(255,255,255,.10); margin:10px 0; }
-
     /* switch */
     .switch{ display:inline-flex; align-items:center; gap:8px; }
     .switch input{ display:none; }
@@ -390,7 +398,7 @@
       background: rgba(0,0,0,.24);
       border-radius: 12px;
       position:relative;
-      transition:140ms linear;
+      transition:110ms linear;
       flex:0 0 auto;
       cursor:pointer;
     }
@@ -401,7 +409,7 @@
       transform: translateY(-50%);
       border-radius: 9px;
       background: rgba(255,255,255,.28);
-      transition:140ms linear;
+      transition:110ms linear;
     }
     .switch input:checked + .sw{
       border-color: rgba(255,255,255,.18);
@@ -532,7 +540,8 @@
       <div class="dockGroup">
         <div class="miniLabel">export</div>
 
-        <button class="icoBtn" id="togStd" title="Standard on/off" type="button">
+        <!-- IMPORTANT: STD agora só controla cores/fonts + opções "standard", mas GENERAL sempre exporta -->
+        <button class="icoBtn" id="togStd" title="Standard extras on/off" type="button">
           <span aria-hidden="true">⭕</span>
           <span class="tip">Standard</span>
         </button>
@@ -558,7 +567,7 @@
           <span aria-hidden="true">//</span>
           <span class="tip">comentar vazios</span>
         </button>
-        <div class="noteUnder" id="commentEmptyNote" style="text-align:center; padding:0 6px;">
+        <div class="noteUnder" style="text-align:center; padding:0 6px;">
           *não exportado no skin.ini
         </div>
 
@@ -576,7 +585,7 @@
         <div class="cardHead">
           <div class="left">
             <span class="badge" id="panelTitle">General</span>
-            <span class="badge" id="modeBadge">export: STD+CATCH+MANIA</span>
+            <span class="badge" id="modeBadge">export: GENERAL+STD+CATCH+MANIA</span>
           </div>
           <div class="tools">
             <button class="btn" id="refresh">Atualizar</button>
@@ -641,23 +650,8 @@
 </dialog>
 
 <script>
-/* ===========================
-   skin.ini studio (custom)
-   - sem textos informativos
-   - sem taiko
-   - background gif
-   - toggles por modo: standard/catch/mania
-   - columnstart auto se vazio (não exporta)
-   - blocos separados
-   - sidebar ícones
-   - sem música
-   - cores corrigidas
-   - UI Colour 1..K (export continua 0..K-1 por compatibilidade)
-   - import mais robusto
-=========================== */
-
 const $ = (id)=>document.getElementById(id);
-const STORAGE_KEY = "skinini_studio_custom_v4";
+const STORAGE_KEY = "skinini_studio_custom_v5_perf";
 
 /* ---------- util ---------- */
 function cleanLine(s){ return String(s ?? "").replace(/\r/g,"").trimEnd(); }
@@ -705,7 +699,6 @@ function pushKV(lines, key, value){
     return;
   }
   if(state.commentEmpty){
-    // comentário de "não exportado": linha comentada (não exporta no sentido de não ser ativa)
     if(state.pretty){
       const k = String(key).padEnd(32, " ");
       lines.push(`// ${k} :`);
@@ -727,25 +720,21 @@ const ALL_MANIA_KEYS = Array.from({length: 18}, (_,i)=>i+1);
 
 function defaultManiaMode(keys){
   return {
-    // layout csv / numbers
-    ColumnStart: "",       // se vazio: auto (não exporta)
+    ColumnStart: "",
     ColumnRight: "",
     ColumnSpacing: "0",
     ColumnWidth: "70",
     ColumnLineWidth: "",
 
-    // positions
     HitPosition: "",
     LightPosition: "",
     ScorePosition: "",
     ComboPosition: "",
 
-    // toggles
     JudgementLine: true,
     KeysUnderNotes: false,
     UpsideDown: false,
 
-    // misc
     BarlineHeight: "",
     WidthForNoteHeightScale: "",
     LightingNWidth: "",
@@ -760,7 +749,6 @@ function defaultManiaMode(keys){
     NoteFlipWhenUpsideDown: "",
     NoteBodyStyle: "",
 
-    // stage/lighting
     StageLeft: "",
     StageRight: "",
     StageBottom: "",
@@ -769,17 +757,15 @@ function defaultManiaMode(keys){
     LightingN: "",
     LightingL: "",
 
-    // colours
     ColourColumnLine: "",
     ColourBarline: "",
     ColourJudgementLine: "",
     ColourKeyWarning: "",
     ColourHold: "",
     ColourBreak: "",
-    Colour: {},       // UI: 1..K, export: 0..K-1
-    ColourLight: {},  // UI: 1..K, export: 0..K-1
+    Colour: {},
+    ColourLight: {},
 
-    // patterns
     KeyImage: "",
     KeyImageD: "",
     NoteImage: "",
@@ -788,7 +774,6 @@ function defaultManiaMode(keys){
     NoteImageT: "",
     WarningArrow: "",
 
-    // hits
     Hit0: "",
     Hit50: "",
     Hit100: "",
@@ -796,7 +781,6 @@ function defaultManiaMode(keys){
     Hit300: "",
     Hit300g: "",
 
-    // auto flag for columnstart
     AutoColumnStart: true,
   };
 }
@@ -804,12 +788,11 @@ function defaultManiaMode(keys){
 const state = {
   activeTab: "general",
 
-  // export toggles
-  exportStd: true,
+  // toggles por modo (mas GENERAL sempre exporta)
+  exportStdExtras: true,  // controls standard extras + [Colours] + [Fonts]
   exportCatch: true,
   exportMania: true,
 
-  // style toggles
   pretty: true,        // "h style"
   commentEmpty: false,
 
@@ -818,13 +801,15 @@ const state = {
   general: {
     Name: "",
     Author: "",
-    AnimationFramerate: "",
-    AllowSliderBallTint: true,
-    ComboBurstRandom: "",
     CursorCentre: true,
     CursorExpand: false,
     CursorRotate: false,
     CursorTrailRotate: false,
+
+    // standard-related extras (controlled by exportStdExtras)
+    AnimationFramerate: "",
+    AllowSliderBallTint: true,
+    ComboBurstRandom: "",
     CustomComboBurstSounds: "",
     HitCircleOverlayAboveNumber: false,
     LayeredHitSounds: true,
@@ -877,7 +862,7 @@ const state = {
   mania: Object.fromEntries(ALL_MANIA_KEYS.map(k => [k, defaultManiaMode(k)])),
 };
 
-/* ---------- state path helpers ---------- */
+/* ---------- path helpers ---------- */
 function pathToId(path){
   return "p_" + path.replaceAll(".", "__").replaceAll("[","_").replaceAll("]","_");
 }
@@ -902,6 +887,14 @@ function setByPath(obj, path, value){
 }
 
 /* ---------- UI builders ---------- */
+function escapeHtml(s){
+  return String(s ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#39;");
+}
 function uiRowText(label, path, placeholder=""){
   const id = pathToId(path);
   return `
@@ -947,14 +940,6 @@ function uiRowColor(label, path){
     </div>
   `;
 }
-function escapeHtml(s){
-  return String(s ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#39;");
-}
 
 /* ---------- Tabs ---------- */
 const TABS = [
@@ -995,10 +980,8 @@ function renderActiveTab(){
 }
 
 function renderGeneral(){
-  const disabled = !state.exportStd;
+  // GENERAL sempre disponível (e sempre exporta)
   return `
-    ${disabled ? `<div class="disabledHint">Standard export desligado</div>` : ``}
-
     <div class="block open">
       <button class="blockHead" type="button"><span>[General] meta</span><span class="caret">▸</span></button>
       <div class="blockBody">
@@ -1022,8 +1005,9 @@ function renderGeneral(){
     </div>
 
     <div class="block">
-      <button class="blockHead" type="button"><span>[General] gameplay</span><span class="caret">▸</span></button>
+      <button class="blockHead" type="button"><span>[General] standard extras</span><span class="caret">▸</span></button>
       <div class="blockBody">
+        ${!state.exportStdExtras ? `<div class="disabledHint">Standard export desligado</div>` : ``}
         ${uiRowNum("AnimationFramerate", "general.AnimationFramerate")}
         ${uiRowBool("AllowSliderBallTint", "general.AllowSliderBallTint")}
         ${uiRowBool("SliderBallFlip", "general.SliderBallFlip")}
@@ -1032,12 +1016,6 @@ function renderGeneral(){
         ${uiRowBool("SpinnerFadePlayfield", "general.SpinnerFadePlayfield")}
         ${uiRowBool("SpinnerNoBlink", "general.SpinnerNoBlink")}
         ${uiRowText("SpinnerFrequencyModulate", "general.SpinnerFrequencyModulate")}
-      </div>
-    </div>
-
-    <div class="block">
-      <button class="blockHead" type="button"><span>[General] misc</span><span class="caret">▸</span></button>
-      <div class="blockBody">
         ${uiRowText("ComboBurstRandom", "general.ComboBurstRandom")}
         ${uiRowText("CustomComboBurstSounds", "general.CustomComboBurstSounds")}
       </div>
@@ -1046,9 +1024,8 @@ function renderGeneral(){
 }
 
 function renderColours(){
-  const disabled = !state.exportStd;
   return `
-    ${disabled ? `<div class="disabledHint">Standard export desligado</div>` : ``}
+    ${!state.exportStdExtras ? `<div class="disabledHint">Standard export desligado</div>` : ``}
 
     <div class="block open">
       <button class="blockHead" type="button"><span>[Colours] ui</span><span class="caret">▸</span></button>
@@ -1090,9 +1067,8 @@ function renderColours(){
 }
 
 function renderFonts(){
-  const disabled = !state.exportStd;
   return `
-    ${disabled ? `<div class="disabledHint">Standard export desligado</div>` : ``}
+    ${!state.exportStdExtras ? `<div class="disabledHint">Standard export desligado</div>` : ``}
 
     <div class="block open">
       <button class="blockHead" type="button"><span>[Fonts] hitcircle</span><span class="caret">▸</span></button>
@@ -1121,9 +1097,8 @@ function renderFonts(){
 }
 
 function renderCatch(){
-  const disabled = !state.exportCatch;
   return `
-    ${disabled ? `<div class="disabledHint">Catch export desligado</div>` : ``}
+    ${!state.exportCatch ? `<div class="disabledHint">Catch export desligado</div>` : ``}
 
     <div class="block open">
       <button class="blockHead" type="button"><span>[CatchTheBeat]</span><span class="caret">▸</span></button>
@@ -1137,8 +1112,6 @@ function renderCatch(){
 }
 
 function renderMania(){
-  const disabled = !state.exportMania;
-
   const pills = ALL_MANIA_KEYS.map(k=>{
     const on = !!state.maniaShared.enabled[k];
     return `
@@ -1158,7 +1131,7 @@ function renderMania(){
     .join("");
 
   return `
-    ${disabled ? `<div class="disabledHint">Mania export desligado</div>` : ``}
+    ${!state.exportMania ? `<div class="disabledHint">Mania export desligado</div>` : ``}
 
     <div class="block open">
       <button class="blockHead" type="button"><span>keymodes</span><span class="caret">▸</span></button>
@@ -1177,7 +1150,6 @@ function renderManiaBlock(keys){
   const m = state.mania[keys] || defaultManiaMode(keys);
   const open = !!state.maniaShared.open[keys];
 
-  // UI: Colour1..ColourK, export: Colour0..Colour(K-1)
   const colourCols = Array.from({length: keys}, (_,i)=>{
     const uiIndex = i + 1;
     const path = `mania.${keys}.Colour.${uiIndex}`;
@@ -1220,7 +1192,6 @@ function renderManiaBlock(keys){
             ${uiRowBool("Auto ColumnStart", `mania.${keys}.AutoColumnStart`)}
             ${uiRowNum("ColumnStart", `mania.${keys}.ColumnStart`)}
             ${uiRowNum("ColumnRight", `mania.${keys}.ColumnRight`)}
-
             ${uiRowText("ColumnWidth", `mania.${keys}.ColumnWidth`, "70 ou 70,70,70")}
             ${uiRowText("ColumnSpacing", `mania.${keys}.ColumnSpacing`, "0 ou 0,0,0")}
             ${uiRowText("ColumnLineWidth", `mania.${keys}.ColumnLineWidth`, "")}
@@ -1243,40 +1214,9 @@ function renderManiaBlock(keys){
             ${uiRowBool("JudgementLine", `mania.${keys}.JudgementLine`)}
             ${uiRowBool("KeysUnderNotes", `mania.${keys}.KeysUnderNotes`)}
             ${uiRowBool("UpsideDown", `mania.${keys}.UpsideDown`)}
-
             ${uiRowText("KeyFlipWhenUpsideDown", `mania.${keys}.KeyFlipWhenUpsideDown`)}
             ${uiRowText("NoteFlipWhenUpsideDown", `mania.${keys}.NoteFlipWhenUpsideDown`)}
             ${uiRowText("NoteBodyStyle", `mania.${keys}.NoteBodyStyle`)}
-          </div>
-        </div>
-
-        <div class="block">
-          <button class="blockHead" type="button"><span>stage/lighting</span><span class="caret">▸</span></button>
-          <div class="blockBody">
-            <div class="grid2">
-              <div>
-                ${uiRowText("StageLeft", `mania.${keys}.StageLeft`)}
-                ${uiRowText("StageRight", `mania.${keys}.StageRight`)}
-                ${uiRowText("StageBottom", `mania.${keys}.StageBottom`)}
-                ${uiRowText("StageHint", `mania.${keys}.StageHint`)}
-                ${uiRowText("StageLight", `mania.${keys}.StageLight`)}
-              </div>
-              <div>
-                ${uiRowNum("LightingNWidth", `mania.${keys}.LightingNWidth`)}
-                ${uiRowNum("LightingLWidth", `mania.${keys}.LightingLWidth`)}
-                ${uiRowText("LightingN", `mania.${keys}.LightingN`)}
-                ${uiRowText("LightingL", `mania.${keys}.LightingL`)}
-              </div>
-            </div>
-
-            ${uiRowNum("BarlineHeight", `mania.${keys}.BarlineHeight`)}
-            ${uiRowNum("WidthForNoteHeightScale", `mania.${keys}.WidthForNoteHeightScale`)}
-            ${uiRowNum("LightFramePerSecond", `mania.${keys}.LightFramePerSecond`)}
-            ${uiRowText("SpecialStyle", `mania.${keys}.SpecialStyle`)}
-            ${uiRowText("ComboBurstStyle", `mania.${keys}.ComboBurstStyle`)}
-            ${uiRowText("SplitStages", `mania.${keys}.SplitStages`)}
-            ${uiRowText("StageSeparation", `mania.${keys}.StageSeparation`)}
-            ${uiRowText("SeparateScore", `mania.${keys}.SeparateScore`)}
           </div>
         </div>
 
@@ -1296,54 +1236,21 @@ function renderManiaBlock(keys){
             ${uiRowColor("ColourBreak", `mania.${keys}.ColourBreak`)}
           </div>
         </div>
-
-        <div class="block">
-          <button class="blockHead" type="button"><span>sprites/patterns</span><span class="caret">▸</span></button>
-          <div class="blockBody">
-            ${uiRowText("KeyImage pattern", `mania.${keys}.KeyImage`, "key{n}")}
-            ${uiRowText("KeyImageD pattern", `mania.${keys}.KeyImageD`, "key{n}D")}
-            ${uiRowText("NoteImage pattern", `mania.${keys}.NoteImage`, "note{n}")}
-            ${uiRowText("NoteImageH pattern", `mania.${keys}.NoteImageH`, "note{n}H")}
-            ${uiRowText("NoteImageL pattern", `mania.${keys}.NoteImageL`, "note{n}L")}
-            ${uiRowText("NoteImageT pattern", `mania.${keys}.NoteImageT`, "note{n}T")}
-            ${uiRowText("WarningArrow", `mania.${keys}.WarningArrow`)}
-          </div>
-        </div>
-
-        <div class="block">
-          <button class="blockHead" type="button"><span>hits</span><span class="caret">▸</span></button>
-          <div class="blockBody">
-            <div class="grid2">
-              ${uiRowText("Hit0", `mania.${keys}.Hit0`)}
-              ${uiRowText("Hit50", `mania.${keys}.Hit50`)}
-              ${uiRowText("Hit100", `mania.${keys}.Hit100`)}
-              ${uiRowText("Hit200", `mania.${keys}.Hit200`)}
-              ${uiRowText("Hit300", `mania.${keys}.Hit300`)}
-              ${uiRowText("Hit300g", `mania.${keys}.Hit300g`)}
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
   `;
 }
 
 function renderPreviewOnly(){
-  // painel só com preview (pra quando quiser ver “limpo”)
-  return `
-    <div class="disabledHint">use o painel da direita</div>
-  `;
+  return `<div class="disabledHint">use o painel da direita</div>`;
 }
 
-/* ---------- Accordions + hydration ---------- */
+/* ---------- hydration + accordions ---------- */
 function wireAccordions(root){
-  // generic blocks
   root.querySelectorAll(".blockHead").forEach(head=>{
     const parent = head.closest(".block");
     if(!parent) return;
 
-    // mania fold
     if(head.dataset.fold){
       head.addEventListener("click", ()=>{
         const k = Number(head.dataset.fold);
@@ -1357,7 +1264,6 @@ function wireAccordions(root){
       return;
     }
 
-    // open/close
     head.addEventListener("click", ()=>{
       const nowOpen = !parent.classList.contains("open");
       parent.classList.toggle("open", nowOpen);
@@ -1371,13 +1277,11 @@ function bindColorPickers(root){
     const txt = document.getElementById(txtId);
     if(!txt) return;
 
-    // initial sync
     const hx = rgbToHex(txt.value);
     if(hx) pick.value = hx;
 
     pick.addEventListener("input", ()=>{
       txt.value = hexToRgb(pick.value);
-      // dispara estado/export
       txt.dispatchEvent(new Event("input", {bubbles:true}));
     });
 
@@ -1393,16 +1297,12 @@ function hydrateInputsFromState(root){
     const path = inp.getAttribute("data-path");
     const v = getByPath(state, path);
 
-    if(inp.type === "checkbox"){
-      inp.checked = !!v;
-    }else{
-      inp.value = (v ?? "");
-    }
+    if(inp.type === "checkbox") inp.checked = !!v;
+    else inp.value = (v ?? "");
   });
 
-  // ColumnStart disabled when AutoColumnStart on
   root.querySelectorAll('[data-path$=".AutoColumnStart"]').forEach(chk=>{
-    const path = chk.getAttribute("data-path"); // mania.K.AutoColumnStart
+    const path = chk.getAttribute("data-path");
     const mPath = path.replace(".AutoColumnStart", ".ColumnStart");
     const col = root.querySelector(`[data-path="${mPath}"]`);
     if(col){
@@ -1418,17 +1318,12 @@ function hydrateInputsFromState(root){
 
 /* ---------- listeners ---------- */
 function wirePanelListeners(root){
-  // all data-path inputs
   root.querySelectorAll("[data-path]").forEach(inp=>{
     const path = inp.getAttribute("data-path");
     const handler = ()=>{
-      if(inp.type === "checkbox"){
-        setByPath(state, path, !!inp.checked);
-      }else{
-        setByPath(state, path, inp.value);
-      }
+      if(inp.type === "checkbox") setByPath(state, path, !!inp.checked);
+      else setByPath(state, path, inp.value);
 
-      // special: AutoColumnStart toggles disable ColumnStart + clears it
       if(path.endsWith(".AutoColumnStart")){
         const mPath = path.replace(".AutoColumnStart", ".ColumnStart");
         const col = root.querySelector(`[data-path="${mPath}"]`);
@@ -1448,7 +1343,6 @@ function wirePanelListeners(root){
     inp.addEventListener("change", handler);
   });
 
-  // mania keymode toggles
   root.querySelectorAll(".kmToggle").forEach(t=>{
     t.addEventListener("change", ()=>{
       const k = Number(t.dataset.k);
@@ -1469,21 +1363,23 @@ function wirePanelListeners(root){
 function genIni(){
   const out = [];
 
-  // STANDARD: [General] [Colours] [Fonts]
-  if(state.exportStd){
-    out.push("[General]");
-    pushKV(out, "Name", state.general.Name);
-    pushKV(out, "Author", state.general.Author);
-    out.push(fmtKV("Version", state.version));
+  // GENERAL sempre exporta
+  out.push("[General]");
+  pushKV(out, "Name", state.general.Name);
+  pushKV(out, "Author", state.general.Author);
+  out.push(fmtKV("Version", state.version));
 
+  pushKV(out, "CursorCentre", bool01(!!state.general.CursorCentre));
+  pushKV(out, "CursorExpand", bool01(!!state.general.CursorExpand));
+  pushKV(out, "CursorRotate", bool01(!!state.general.CursorRotate));
+  pushKV(out, "CursorTrailRotate", bool01(!!state.general.CursorTrailRotate));
+
+  // Standard extras só se ligado
+  if(state.exportStdExtras){
     const g = state.general;
     pushKV(out, "AnimationFramerate", g.AnimationFramerate);
     pushKV(out, "AllowSliderBallTint", bool01(!!g.AllowSliderBallTint));
     pushKV(out, "ComboBurstRandom", g.ComboBurstRandom);
-    pushKV(out, "CursorCentre", bool01(!!g.CursorCentre));
-    pushKV(out, "CursorExpand", bool01(!!g.CursorExpand));
-    pushKV(out, "CursorRotate", bool01(!!g.CursorRotate));
-    pushKV(out, "CursorTrailRotate", bool01(!!g.CursorTrailRotate));
     pushKV(out, "CustomComboBurstSounds", g.CustomComboBurstSounds);
     pushKV(out, "HitCircleOverlayAboveNumber", bool01(!!g.HitCircleOverlayAboveNumber));
     pushKV(out, "LayeredHitSounds", bool01(!!g.LayeredHitSounds));
@@ -1491,9 +1387,12 @@ function genIni(){
     pushKV(out, "SpinnerFadePlayfield", bool01(!!g.SpinnerFadePlayfield));
     pushKV(out, "SpinnerFrequencyModulate", g.SpinnerFrequencyModulate);
     pushKV(out, "SpinnerNoBlink", bool01(!!g.SpinnerNoBlink));
+  }
 
-    out.push("");
+  out.push("");
 
+  // COLOURS / FONTS só se standard extras ligado
+  if(state.exportStdExtras){
     const c = state.colours;
     const colourKeys = [
       "Combo1","Combo2","Combo3","Combo4","Combo5","Combo6","Combo7","Combo8",
@@ -1566,11 +1465,9 @@ function genManiaBlock(keys){
   lines.push(fmtKV("ColumnWidth", normalizeCsv(m.ColumnWidth, keys, Array.from({length:keys}, ()=>"70").join(","))));
   lines.push(fmtKV("ColumnSpacing", normalizeCsv(m.ColumnSpacing, Math.max(0,keys-1), Array.from({length:Math.max(0,keys-1)}, ()=>"0").join(","))));
 
-  // ColumnStart: auto se vazio ou AutoColumnStart = true -> não exporta a linha
   if(!m.AutoColumnStart){
     pushKV(lines, "ColumnStart", m.ColumnStart);
   }
-
   pushKV(lines, "ColumnRight", m.ColumnRight);
   pushKV(lines, "ColumnLineWidth", normalizeCsv(m.ColumnLineWidth, keys+1, Array.from({length:keys+1}, ()=>"0").join(",")));
   spacer(lines);
@@ -1586,42 +1483,12 @@ function genManiaBlock(keys){
   lines.push(fmtKV("UpsideDown", bool01(!!m.UpsideDown)));
   spacer(lines);
 
-  pushKV(lines, "KeyFlipWhenUpsideDown", m.KeyFlipWhenUpsideDown);
-  pushKV(lines, "NoteFlipWhenUpsideDown", m.NoteFlipWhenUpsideDown);
-  pushKV(lines, "NoteBodyStyle", m.NoteBodyStyle);
-  spacer(lines);
-
-  header(lines, "stage");
-  pushKV(lines, "StageLeft", m.StageLeft);
-  pushKV(lines, "StageRight", m.StageRight);
-  pushKV(lines, "StageBottom", m.StageBottom);
-  pushKV(lines, "StageHint", m.StageHint);
-  pushKV(lines, "StageLight", m.StageLight);
-  pushKV(lines, "LightingNWidth", m.LightingNWidth);
-  pushKV(lines, "LightingLWidth", m.LightingLWidth);
-  pushKV(lines, "LightingN", m.LightingN);
-  pushKV(lines, "LightingL", m.LightingL);
-  spacer(lines);
-
-  pushKV(lines, "BarlineHeight", m.BarlineHeight);
-  pushKV(lines, "WidthForNoteHeightScale", m.WidthForNoteHeightScale);
-  pushKV(lines, "LightFramePerSecond", m.LightFramePerSecond);
-  pushKV(lines, "SpecialStyle", m.SpecialStyle);
-  pushKV(lines, "ComboBurstStyle", m.ComboBurstStyle);
-  pushKV(lines, "SplitStages", m.SplitStages);
-  pushKV(lines, "StageSeparation", m.StageSeparation);
-  pushKV(lines, "SeparateScore", m.SeparateScore);
-  spacer(lines);
-
   header(lines, "colours");
-
-  // UI indexes 1..K, export uses 0..K-1 (compat)
   for(let ui=1; ui<=keys; ui++){
     const v = cleanLine(m.Colour?.[ui]);
     if(v) lines.push(fmtKV(`Colour${ui-1}`, v));
   }
   spacer(lines);
-
   for(let ui=1; ui<=keys; ui++){
     const v = cleanLine(m.ColourLight?.[ui]);
     if(v) lines.push(fmtKV(`ColourLight${ui-1}`, v));
@@ -1633,63 +1500,18 @@ function genManiaBlock(keys){
   pushKV(lines, "ColourKeyWarning", m.ColourKeyWarning);
   pushKV(lines, "ColourHold", m.ColourHold);
   pushKV(lines, "ColourBreak", m.ColourBreak);
-  spacer(lines);
-
-  header(lines, "images");
-  for(let idx=0; idx<keys; idx++){
-    const n = idx+1;
-    const a = pat(m.KeyImage, n); if(a) lines.push(fmtKV(`KeyImage${idx}`, a));
-  }
-  spacer(lines);
-  for(let idx=0; idx<keys; idx++){
-    const n = idx+1;
-    const a = pat(m.KeyImageD, n); if(a) lines.push(fmtKV(`KeyImage${idx}D`, a));
-  }
-  spacer(lines);
-
-  for(let idx=0; idx<keys; idx++){
-    const n = idx+1;
-    const a = pat(m.NoteImage, n); if(a) lines.push(fmtKV(`NoteImage${idx}`, a));
-  }
-  spacer(lines);
-  for(let idx=0; idx<keys; idx++){
-    const n = idx+1;
-    const a = pat(m.NoteImageH, n); if(a) lines.push(fmtKV(`NoteImage${idx}H`, a));
-  }
-  spacer(lines);
-  for(let idx=0; idx<keys; idx++){
-    const n = idx+1;
-    const a = pat(m.NoteImageL, n); if(a) lines.push(fmtKV(`NoteImage${idx}L`, a));
-  }
-  spacer(lines);
-  for(let idx=0; idx<keys; idx++){
-    const n = idx+1;
-    const a = pat(m.NoteImageT, n); if(a) lines.push(fmtKV(`NoteImage${idx}T`, a));
-  }
-  spacer(lines);
-
-  pushKV(lines, "WarningArrow", m.WarningArrow);
-  spacer(lines);
-
-  header(lines, "hits");
-  pushKV(lines, "Hit0", m.Hit0);
-  pushKV(lines, "Hit50", m.Hit50);
-  pushKV(lines, "Hit100", m.Hit100);
-  pushKV(lines, "Hit200", m.Hit200);
-  pushKV(lines, "Hit300", m.Hit300);
-  pushKV(lines, "Hit300g", m.Hit300g);
 
   while(lines.length && lines[lines.length-1]==="") lines.pop();
   return lines;
 }
 
-/* ---------- import (mais robusto) ---------- */
+/* ---------- import ---------- */
 function parseIni(text){
   const lines = String(text||"").split("\n");
 
   const parsed = {
     General:{}, Colours:{}, Fonts:{}, CatchTheBeat:{},
-    Mania: [] // {Keys, kv}
+    Mania: []
   };
 
   let section = "";
@@ -1714,7 +1536,6 @@ function parseIni(text){
       continue;
     }
 
-    // suporta "Key: value" e "Key : value" e "Key=value"
     let m = line.match(/^([A-Za-z0-9]+)\s*:\s*(.*)$/);
     if(!m) m = line.match(/^([A-Za-z0-9]+)\s*=\s*(.*)$/);
     if(!m) continue;
@@ -1739,7 +1560,6 @@ function parseIni(text){
 }
 
 function applyParsed(parsed){
-  // version
   if(parsed.General.Version) state.version = parsed.General.Version;
 
   // general
@@ -1753,20 +1573,10 @@ function applyParsed(parsed){
     }
   }
 
-  // colours
-  for(const k in state.colours){
-    if(k in parsed.Colours) state.colours[k] = parsed.Colours[k];
-  }
-
-  // fonts
-  for(const k in state.fonts){
-    if(k in parsed.Fonts) state.fonts[k] = parsed.Fonts[k];
-  }
-
-  // catch
-  for(const k in state.catch){
-    if(k in parsed.CatchTheBeat) state.catch[k] = parsed.CatchTheBeat[k];
-  }
+  // colours/fonts/catch
+  Object.assign(state.colours, parsed.Colours || {});
+  Object.assign(state.fonts, parsed.Fonts || {});
+  Object.assign(state.catch, parsed.CatchTheBeat || {});
 
   // mania
   for(const blk of parsed.Mania){
@@ -1782,13 +1592,7 @@ function applyParsed(parsed){
       "ColumnStart","ColumnRight","ColumnSpacing","ColumnWidth","ColumnLineWidth",
       "HitPosition","LightPosition","ScorePosition","ComboPosition",
       "JudgementLine","KeysUnderNotes","UpsideDown",
-      "BarlineHeight","WidthForNoteHeightScale","LightingNWidth","LightingLWidth",
-      "LightFramePerSecond","SpecialStyle","ComboBurstStyle","SplitStages","StageSeparation","SeparateScore",
-      "KeyFlipWhenUpsideDown","NoteFlipWhenUpsideDown","NoteBodyStyle",
-      "StageLeft","StageRight","StageBottom","StageHint","StageLight","LightingN","LightingL",
-      "ColourColumnLine","ColourBarline","ColourJudgementLine","ColourKeyWarning","ColourHold","ColourBreak",
-      "WarningArrow",
-      "Hit0","Hit50","Hit100","Hit200","Hit300","Hit300g"
+      "ColourColumnLine","ColourBarline","ColourJudgementLine","ColourKeyWarning","ColourHold","ColourBreak"
     ];
 
     for(const k of direct){
@@ -1798,43 +1602,14 @@ function applyParsed(parsed){
       }
     }
 
-    // ColumnStart auto flag
-    if(isBlank(m.ColumnStart)){
-      m.AutoColumnStart = true;
-    }else{
-      m.AutoColumnStart = false;
-    }
+    m.AutoColumnStart = isBlank(m.ColumnStart);
 
-    // import colours: file is Colour0.. -> UI becomes Colour1..
     for(let i=0;i<keys;i++){
       const ck = `Colour${i}`;
       const lk = `ColourLight${i}`;
       if(ck in blk.kv) m.Colour[i+1] = blk.kv[ck];
       if(lk in blk.kv) m.ColourLight[i+1] = blk.kv[lk];
     }
-
-    // patterns: tenta montar pattern se achar idx0/1 (heurística simples)
-    function guessPattern(prefix){
-      const a = blk.kv[`${prefix}0`];
-      const b = blk.kv[`${prefix}1`];
-      if(!a || !b) return "";
-      const a2 = a.replaceAll("1","{n}");
-      const b2 = b.replaceAll("2","{n}");
-      if(a2 === b2) return a2;
-      return "";
-    }
-    const gKey = guessPattern("KeyImage");
-    const gKeyD = guessPattern("KeyImageD");
-    const gNote = guessPattern("NoteImage");
-    const gNoteH = guessPattern("NoteImageH");
-    const gNoteL = guessPattern("NoteImageL");
-    const gNoteT = guessPattern("NoteImageT");
-    if(gKey) m.KeyImage = gKey;
-    if(gKeyD) m.KeyImageD = gKeyD;
-    if(gNote) m.NoteImage = gNote;
-    if(gNoteH) m.NoteImageH = gNoteH;
-    if(gNoteL) m.NoteImageL = gNoteL;
-    if(gNoteT) m.NoteImageT = gNoteT;
 
     state.mania[keys] = m;
   }
@@ -1862,7 +1637,7 @@ function loadState(){
 
     state.activeTab = s.activeTab ?? state.activeTab;
 
-    state.exportStd = (s.exportStd ?? true) ? true : false;
+    state.exportStdExtras = (s.exportStdExtras ?? true) ? true : false;
     state.exportCatch = (s.exportCatch ?? true) ? true : false;
     state.exportMania = (s.exportMania ?? true) ? true : false;
 
@@ -1885,7 +1660,6 @@ function loadState(){
         state.maniaShared.open[4]=true;
       }
     }
-
     if(s.mania){
       for(const k of ALL_MANIA_KEYS){
         if(s.mania[k]) state.mania[k] = { ...defaultManiaMode(k), ...s.mania[k] };
@@ -1897,9 +1671,9 @@ function loadState(){
 const saveSoon = debounce((force=false)=>{
   saveState();
   if(force) updatePreview();
-}, 350);
+}, 300);
 
-const previewSoon = debounce(()=> updatePreview(), 80);
+const previewSoon = debounce(()=> updatePreview(), 70);
 
 function onAnyChange(){
   previewSoon();
@@ -1943,17 +1717,16 @@ function wipeAll(){
 }
 
 function updateModeBadge(){
-  const parts = [];
-  if(state.exportStd) parts.push("STD");
+  const parts = ["GENERAL"];
+  if(state.exportStdExtras) parts.push("STD");
   if(state.exportCatch) parts.push("CATCH");
   if(state.exportMania) parts.push("MANIA");
-  $("modeBadge").textContent = "export: " + (parts.join("+") || "NONE");
+  $("modeBadge").textContent = "export: " + parts.join("+");
 }
 
 /* ---------- dock toggles ---------- */
 function syncDockToggles(){
-  // export toggles icons
-  $("togStd").classList.toggle("active", state.exportStd);
+  $("togStd").classList.toggle("active", state.exportStdExtras);
   $("togCatch").classList.toggle("active", state.exportCatch);
   $("togMania").classList.toggle("active", state.exportMania);
 
@@ -1976,22 +1749,26 @@ $("selectAll").addEventListener("click", ()=>{
 });
 
 $("togStd").addEventListener("click", ()=>{
-  state.exportStd = !state.exportStd;
+  state.exportStdExtras = !state.exportStdExtras;
   syncDockToggles();
   onAnyChange();
-  renderActiveTab();
+  // não rerenderiza o painel inteiro (mais fluido)
+  if(state.activeTab === "colours" || state.activeTab === "fonts" || state.activeTab === "general"){
+    // só atualiza o hint de desligado/ligado do tab atual
+    renderActiveTab();
+  }
 });
 $("togCatch").addEventListener("click", ()=>{
   state.exportCatch = !state.exportCatch;
   syncDockToggles();
   onAnyChange();
-  renderActiveTab();
+  if(state.activeTab === "catch") renderActiveTab();
 });
 $("togMania").addEventListener("click", ()=>{
   state.exportMania = !state.exportMania;
   syncDockToggles();
   onAnyChange();
-  renderActiveTab();
+  if(state.activeTab === "mania") renderActiveTab();
 });
 
 $("togPretty").addEventListener("click", ()=>{
