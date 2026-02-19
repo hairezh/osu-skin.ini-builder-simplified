@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>skin.ini studio</title>
 
-  <!-- favicon (pedido antigo) -->
+  <!-- favicon -->
   <link rel="icon" type="image/png"
     href="https://i.pinimg.com/1200x/d6/ca/e4/d6cae471e8471dec46c4304104adb4b1.jpg"/>
 
@@ -25,6 +25,8 @@
       --rowLabel: 205px;
       --inputPadY: 9px;
       --inputPadX: 10px;
+
+      color-scheme: dark; /* ajuda selects ficarem escuros */
     }
 
     *{ box-sizing:border-box; }
@@ -43,7 +45,7 @@
       overflow:hidden;
     }
 
-    /* overlay + blur bem leve (mais fluido) */
+    /* overlay + blur bem leve */
     body::before{
       content:"";
       position:fixed; inset:0;
@@ -377,6 +379,21 @@
       font:inherit;
     }
 
+    /* make select dropdown black */
+    select{
+      color-scheme: dark;
+      background: rgba(0,0,0,.72);
+      border-color: rgba(255,255,255,.14);
+    }
+    select option{
+      background: #0b0c0f;
+      color: rgba(233,233,238,.95);
+    }
+    select option:checked{
+      background:#11141a;
+      color: rgba(233,233,238,.98);
+    }
+
     input[type="color"]{
       width:46px; height:38px;
       border:1px solid rgba(255,255,255,.12);
@@ -490,7 +507,7 @@
 
   <div class="topbar">
     <div class="brand">
-      <!-- ícone pedido -->
+      <!-- icon -->
       <img alt="icon" src="https://i.pinimg.com/originals/da/b4/cb/dab4cbf31e4e8d7688b0e830d5d640f1.gif">
       <div class="title">
         <b>skin.ini studio</b>
@@ -645,7 +662,7 @@
 
 <script>
 const $ = (id)=>document.getElementById(id);
-const STORAGE_KEY = "skinini_studio_v6_no_std_no_catch";
+const STORAGE_KEY = "skinini_studio_v7_paths";
 
 /* ---------- util ---------- */
 function cleanLine(s){ return String(s ?? "").replace(/\\r/g,"").trimEnd(); }
@@ -676,6 +693,12 @@ function hexToRgb(hex){
   const g = parseInt(h.slice(2,4),16);
   const b = parseInt(h.slice(4,6),16);
   return `${r},${g},${b}`;
+}
+
+function pat(pattern, n){
+  const p = String(pattern || "").trim();
+  if(!p) return "";
+  return p.replaceAll("{n}", String(n));
 }
 
 function fmtKV(key, value){
@@ -742,13 +765,20 @@ function defaultManiaMode(keys){
     ColourLight: {},
 
     AutoColumnStart: true,
+
+    // patterns / paths (use {n} = 1..Keys)
+    pKey: "",
+    pKeyD: "",
+    pNote: "",
+    pNoteH: "",
+    pNoteL: "",
+    pNoteT: "",
+    WarningArrow: "",
   };
 }
 
 const state = {
   activeTab: "general",
-
-  // modos: GENERAL/COLOURS/FONTS sempre exportam; MANIA é toggle
   exportMania: true,
 
   pretty: true,        // "h style"
@@ -765,7 +795,6 @@ const state = {
     CursorTrailRotate: false,
   },
 
-  // mantém Colours e Fonts (sem “opções standard”, mas keys em si continuam)
   colours: {
     Combo1: "",
     Combo2: "",
@@ -1053,7 +1082,7 @@ function renderManiaBlock(keys){
   const open = !!state.maniaShared.open[keys];
 
   const colourCols = Array.from({length: keys}, (_,i)=>{
-    const uiIndex = i + 1; // UI começa em 1 (pedido)
+    const uiIndex = i + 1; // UI 1..Keys
     const path = `mania.${keys}.Colour.${uiIndex}`;
     return `
       <div class="row">
@@ -1133,6 +1162,19 @@ function renderManiaBlock(keys){
             ${uiRowColor("ColourKeyWarning", `mania.${keys}.ColourKeyWarning`)}
             ${uiRowColor("ColourHold", `mania.${keys}.ColourHold`)}
             ${uiRowColor("ColourBreak", `mania.${keys}.ColourBreak`)}
+          </div>
+        </div>
+
+        <div class="block open">
+          <button class="blockHead" type="button"><span>paths</span><span class="caret">▸</span></button>
+          <div class="blockBody">
+            ${uiRowText("KeyImage# pattern", `mania.${keys}.pKey`, "ex: mania/key{n}")}
+            ${uiRowText("KeyImage#D pattern", `mania.${keys}.pKeyD`, "ex: mania/key{n}d")}
+            ${uiRowText("NoteImage# pattern", `mania.${keys}.pNote`, "ex: mania/note{n}")}
+            ${uiRowText("NoteImage#H pattern", `mania.${keys}.pNoteH`, "ex: mania/note{n}h")}
+            ${uiRowText("NoteImage#L pattern", `mania.${keys}.pNoteL`, "ex: mania/note{n}l")}
+            ${uiRowText("NoteImage#T pattern", `mania.${keys}.pNoteT`, "ex: mania/note{n}t")}
+            ${uiRowText("WarningArrow", `mania.${keys}.WarningArrow`, "ex: mania/warning")}
           </div>
         </div>
       </div>
@@ -1275,7 +1317,7 @@ function genIni(){
 
   out.push("");
 
-  // COLOURS sempre exporta (se tiver algo ou se commentEmpty ligado)
+  // COLOURS
   {
     const c = state.colours;
     const colourKeys = [
@@ -1291,7 +1333,7 @@ function genIni(){
     }
   }
 
-  // FONTS sempre exporta (se tiver algo ou se commentEmpty ligado)
+  // FONTS
   {
     const f = state.fonts;
     const fontKeys = ["HitCirclePrefix","HitCircleOverlap","ScorePrefix","ScoreOverlap","ComboPrefix","ComboOverlap"];
@@ -1314,7 +1356,7 @@ function genIni(){
   }
 
   while(out.length && out[out.length-1]==="") out.pop();
-  return out.join("\n");
+  return out.join("\\n");
 }
 
 function genManiaBlock(keys){
@@ -1334,7 +1376,7 @@ function genManiaBlock(keys){
   lines.push(fmtKV("ColumnWidth", normalizeCsv(m.ColumnWidth, keys, Array.from({length:keys}, ()=>"70").join(","))));
   lines.push(fmtKV("ColumnSpacing", normalizeCsv(m.ColumnSpacing, Math.max(0,keys-1), Array.from({length:Math.max(0,keys-1)}, ()=>"0").join(","))));
 
-  // regra: se ColumnStart vazio ou não editável => auto (não exporta ColumnStart)
+  // regra: se ColumnStart vazio ou AutoColumnStart => auto (não exporta ColumnStart)
   if(!m.AutoColumnStart){
     pushKV(lines, "ColumnStart", m.ColumnStart);
   }
@@ -1359,7 +1401,7 @@ function genManiaBlock(keys){
 
   header(lines, "colours");
 
-  // IMPORTANT: export do skin.ini é 0-based (Colour0..), UI é 1-based
+  // UI é 1-based; export de skin.ini é 0-based
   for(let ui=1; ui<=keys; ui++){
     const v = cleanLine(m.Colour?.[ui]);
     if(v) lines.push(fmtKV(`Colour${ui-1}`, v));
@@ -1380,25 +1422,86 @@ function genManiaBlock(keys){
   pushKV(lines, "ColourHold", m.ColourHold);
   pushKV(lines, "ColourBreak", m.ColourBreak);
 
+  spacer(lines);
+
+  header(lines, "images");
+
+  const pKey  = m.pKey  || "";
+  const pKeyD = m.pKeyD || "";
+  const pNote = m.pNote || "";
+  const pNoteH= m.pNoteH|| "";
+  const pNoteL= m.pNoteL|| "";
+  const pNoteT= m.pNoteT|| "";
+
+  for(let idx=0; idx<keys; idx++){
+    const n = idx + 1;
+    const v = pat(pKey, n);
+    if(v) lines.push(fmtKV(`KeyImage${idx}`, v));
+    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`KeyImage${idx}`).padEnd(32," ")} :` : `//KeyImage${idx}:`);
+  }
+  spacer(lines);
+
+  for(let idx=0; idx<keys; idx++){
+    const n = idx + 1;
+    const v = pat(pKeyD, n);
+    if(v) lines.push(fmtKV(`KeyImage${idx}D`, v));
+    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`KeyImage${idx}D`).padEnd(32," ")} :` : `//KeyImage${idx}D:`);
+  }
+  spacer(lines);
+
+  for(let idx=0; idx<keys; idx++){
+    const n = idx + 1;
+    const v = pat(pNote, n);
+    if(v) lines.push(fmtKV(`NoteImage${idx}`, v));
+    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`NoteImage${idx}`).padEnd(32," ")} :` : `//NoteImage${idx}:`);
+  }
+  spacer(lines);
+
+  for(let idx=0; idx<keys; idx++){
+    const n = idx + 1;
+    const v = pat(pNoteH, n);
+    if(v) lines.push(fmtKV(`NoteImage${idx}H`, v));
+    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`NoteImage${idx}H`).padEnd(32," ")} :` : `//NoteImage${idx}H:`);
+  }
+  spacer(lines);
+
+  for(let idx=0; idx<keys; idx++){
+    const n = idx + 1;
+    const v = pat(pNoteL, n);
+    if(v) lines.push(fmtKV(`NoteImage${idx}L`, v));
+    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`NoteImage${idx}L`).padEnd(32," ")} :` : `//NoteImage${idx}L:`);
+  }
+  spacer(lines);
+
+  for(let idx=0; idx<keys; idx++){
+    const n = idx + 1;
+    const v = pat(pNoteT, n);
+    if(v) lines.push(fmtKV(`NoteImage${idx}T`, v));
+    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`NoteImage${idx}T`).padEnd(32," ")} :` : `//NoteImage${idx}T:`);
+  }
+  spacer(lines);
+
+  pushKV(lines, "WarningArrow", m.WarningArrow);
+
   while(lines.length && lines[lines.length-1]==="") lines.pop();
   return lines;
 }
 
 /* ---------- import ---------- */
 function parseIni(text){
-  const lines = String(text||"").split("\n");
+  const lines = String(text||"").split("\\n");
   const parsed = { General:{}, Colours:{}, Fonts:{}, Mania: [] };
 
   let section = "";
   let curMania = null;
 
   for(const raw of lines){
-    const line0 = raw.replace(/\r/g,"");
+    const line0 = raw.replace(/\\r/g,"");
     const line = line0.trim();
     if(!line) continue;
     if(line.startsWith("//") || line.startsWith(";")) continue;
 
-    const sec = line.match(/^\[(.+?)\]\s*$/);
+    const sec = line.match(/^\\[(.+?)\\]\\s*$/);
     if(sec){
       section = sec[1];
       if(section.toLowerCase() === "mania"){
@@ -1410,8 +1513,8 @@ function parseIni(text){
       continue;
     }
 
-    let m = line.match(/^([A-Za-z0-9]+)\s*:\s*(.*)$/);
-    if(!m) m = line.match(/^([A-Za-z0-9]+)\s*=\s*(.*)$/);
+    let m = line.match(/^([A-Za-z0-9]+)\\s*:\\s*(.*)$/);
+    if(!m) m = line.match(/^([A-Za-z0-9]+)\\s*=\\s*(.*)$/);
     if(!m) continue;
 
     const key = m[1];
@@ -1435,7 +1538,6 @@ function parseIni(text){
 function applyParsed(parsed){
   if(parsed.General.Version) state.version = parsed.General.Version;
 
-  // general
   for(const k in state.general){
     if(k in parsed.General){
       if(typeof state.general[k] === "boolean"){
@@ -1446,11 +1548,9 @@ function applyParsed(parsed){
     }
   }
 
-  // colours/fonts
   Object.assign(state.colours, parsed.Colours || {});
   Object.assign(state.fonts, parsed.Fonts || {});
 
-  // mania
   for(const blk of parsed.Mania){
     const keys = blk.Keys;
     if(!keys || keys < 1 || keys > 18) continue;
@@ -1465,7 +1565,8 @@ function applyParsed(parsed){
       "HitPosition","LightPosition","ScorePosition","ComboPosition",
       "JudgementLine","KeysUnderNotes","UpsideDown",
       "BarlineHeight","WidthForNoteHeightScale",
-      "ColourColumnLine","ColourBarline","ColourJudgementLine","ColourKeyWarning","ColourHold","ColourBreak"
+      "ColourColumnLine","ColourBarline","ColourJudgementLine","ColourKeyWarning","ColourHold","ColourBreak",
+      "WarningArrow"
     ];
 
     for(const k of direct){
@@ -1475,16 +1576,16 @@ function applyParsed(parsed){
       }
     }
 
-    // auto columnstart se vier vazio/não existir
     m.AutoColumnStart = isBlank(m.ColumnStart);
 
     for(let i=0;i<keys;i++){
       const ck = `Colour${i}`;
       const lk = `ColourLight${i}`;
-      if(ck in blk.kv) m.Colour[i+1] = blk.kv[ck];        // UI 1..keys
+      if(ck in blk.kv) m.Colour[i+1] = blk.kv[ck];
       if(lk in blk.kv) m.ColourLight[i+1] = blk.kv[lk];
     }
 
+    // (não dá pra inferir patterns automaticamente sem heurística)
     state.mania[keys] = m;
   }
 
