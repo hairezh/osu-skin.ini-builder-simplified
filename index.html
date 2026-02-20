@@ -222,6 +222,7 @@
       min-height:0;
       padding:10px;
       display:grid;
+      /* Better layout: options panel slightly larger */
       grid-template-columns: 1.20fr .80fr;
       gap:10px;
       overflow:hidden;
@@ -242,6 +243,7 @@
       transform: translateZ(0);
     }
 
+    /* Sticky header with a bit of blur for readability while scrolling */
     .cardHead{
       padding:10px 10px 8px;
       display:flex;
@@ -317,6 +319,7 @@
 
     textarea{
       width:100%;
+      /* Better: fill card height without guessing 100vh */
       height: calc(100% - 2px);
       min-height: 100%;
       resize:none;
@@ -727,52 +730,36 @@ function header(lines, title){
   }
 }
 
-/* ---------- NEW (auto-center) ---------- */
-function parseCsvNums(raw, expectedLen, fallbackVal){
+/* ---------- auto-center helpers (from the other code) ---------- */
+function firstNumber(raw, fallback){
   const r = cleanLine(raw);
-  if(!expectedLen || expectedLen <= 0) return [];
-  if(!r){
-    return Array.from({length: expectedLen}, ()=>Number(fallbackVal));
-  }
-  if(r.includes(",")){
-    const parts = r.split(",").map(x=>Number(String(x).trim()));
-    const out = [];
-    for(let i=0;i<expectedLen;i++){
-      const v = parts[i];
-      out.push(Number.isFinite(v) ? v : Number(fallbackVal));
-    }
-    return out;
-  }
-  const one = Number(r);
-  const v = Number.isFinite(one) ? one : Number(fallbackVal);
-  return Array.from({length: expectedLen}, ()=>v);
+  if(!r) return fallback;
+  const first = r.split(",")[0].trim();
+  const n = parseFloat(first);
+  return Number.isFinite(n) ? n : fallback;
 }
-
 function getAspectRatio(m){
-  const preset = m.ARPreset || "16:9";
-  let w = Number(m.ARW || 16);
-  let h = Number(m.ARH || 9);
+  const preset = cleanLine(m.ARPreset) || "16:9";
+  let w = firstNumber(m.ARW, 16);
+  let h = firstNumber(m.ARH, 9);
 
   if(preset !== "custom"){
-    const map = {
-      "16:9": [16,9],
-      "4:3": [4,3],
-      "21:9": [21,9],
-    };
-    const pair = map[preset];
-    if(pair){
-      w = pair[0]; h = pair[1];
+    const [pw, ph] = preset.split(":").map(Number);
+    if(Number.isFinite(pw) && Number.isFinite(ph) && ph !== 0){
+      w = pw; h = ph;
     }
   }
   if(!Number.isFinite(w) || !Number.isFinite(h) || h === 0) return 16/9;
   return w / h;
 }
+function calcAutoColumnStart(keys, m){
+  const colW = firstNumber(m.ColumnWidth, 70);
+  const colS = firstNumber(m.ColumnSpacing, 0);
+  const ar = getAspectRatio(m);
+  const offset = firstNumber(m.CenterOffset, 0);
 
-function calcColumnStart(keys, widths, spacings, aspectRatio, offset){
-  const usableWidth = 480 * aspectRatio;
-  const sumW = widths.reduce((a,b)=>a+b, 0);
-  const sumS = spacings.reduce((a,b)=>a+b, 0);
-  const columnSum = sumW + sumS;
+  const usableWidth = 480 * ar;
+  const columnSum = (colW * keys) + (colS * (keys - 1));
   return Math.round((usableWidth/2) - (columnSum/2)) + Number(offset || 0);
 }
 
@@ -799,6 +786,17 @@ function defaultManiaMode(keys){
     BarlineHeight: "",
     WidthForNoteHeightScale: "",
 
+    /* stage / lighting (added) */
+    StageLeft: "",
+    StageRight: "",
+    StageBottom: "",
+    StageHint: "",
+    StageLight: "",
+    LightingNWidth: "",
+    LightingLWidth: "",
+    LightingN: "",
+    LightingL: "",
+
     ColourColumnLine: "",
     ColourBarline: "",
     ColourJudgementLine: "",
@@ -808,7 +806,7 @@ function defaultManiaMode(keys){
     Colour: {},
     ColourLight: {},
 
-    /* NEW: auto-center settings (from first code) */
+    /* auto-center (added) */
     AutoColumnStart: true,
     ARPreset: "16:9",
     ARW: "16",
@@ -838,11 +836,18 @@ const state = {
   general: {
     Name: "",
     Author: "",
-    /* NEW: cursor options (from first code) */
+
+    /* cursor (added) */
     CursorCentre: true,
     CursorExpand: false,
     CursorRotate: false,
     CursorTrailRotate: false,
+
+    /* fonts (prefix/overlap) (added) */
+    ScorePrefix: "",
+    ScoreOverlap: "0",
+    ComboPrefix: "",
+    ComboOverlap: "0",
   },
 
   maniaShared: {
@@ -996,8 +1001,7 @@ function renderMania(){
           <input type="text" value="${escapeHtml(state.version)}" readonly>
         </div>
 
-        <!-- NEW: Cursor options (from first code) -->
-        <div class="block open" style="margin:10px 0 0;">
+        <div class="block open">
           <button class="blockHead" type="button"><span>cursor</span><span class="caret">▸</span></button>
           <div class="blockBody">
             ${uiRowBool("CursorCentre", "general.CursorCentre")}
@@ -1007,6 +1011,15 @@ function renderMania(){
           </div>
         </div>
 
+        <div class="block open">
+          <button class="blockHead" type="button"><span>fonts</span><span class="caret">▸</span></button>
+          <div class="blockBody">
+            ${uiRowText("ScorePrefix", "general.ScorePrefix", "score")}
+            ${uiRowNum("ScoreOverlap", "general.ScoreOverlap", "0")}
+            ${uiRowText("ComboPrefix", "general.ComboPrefix", "combo")}
+            ${uiRowNum("ComboOverlap", "general.ComboOverlap", "0")}
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1056,10 +1069,11 @@ function renderManiaBlock(keys){
     `;
   }).join("");
 
-  /* NEW ids for AR controls */
+  /* aspect ratio fields (added) */
   const arPresetPath = `mania.${keys}.ARPreset`;
   const arWPath = `mania.${keys}.ARW`;
   const arHPath = `mania.${keys}.ARH`;
+  const offPath = `mania.${keys}.CenterOffset`;
 
   return `
     <div class="block ${open?"open":""}" data-keys="${keys}">
@@ -1072,27 +1086,26 @@ function renderManiaBlock(keys){
         <div class="block open">
           <button class="blockHead" type="button"><span>layout</span><span class="caret">▸</span></button>
           <div class="blockBody">
-            <!-- NEW: Auto-center like first code -->
-            ${uiRowBool("Auto-center ColumnStart", `mania.${keys}.AutoColumnStart`)}
-            ${uiRowNum("ColumnStart", `mania.${keys}.ColumnStart`)}
+            ${uiRowBool("Auto ColumnStart", `mania.${keys}.AutoColumnStart`)}
 
-            <!-- NEW: Aspect ratio controls like first code -->
             <div class="row">
               <label>Aspect ratio</label>
               <div class="inline">
-                <select data-path="${arPresetPath}" id="${pathToId(arPresetPath)}" style="max-width:140px">
+                <select id="${pathToId(arPresetPath)}" data-path="${arPresetPath}">
                   <option value="16:9">16:9</option>
                   <option value="4:3">4:3</option>
                   <option value="21:9">21:9</option>
                   <option value="custom">Custom</option>
                 </select>
-                <input type="number" data-path="${arWPath}" id="${pathToId(arWPath)}" style="max-width:110px" title="Custom width">
-                <input type="number" data-path="${arHPath}" id="${pathToId(arHPath)}" style="max-width:110px" title="Custom height">
+                <input type="number" id="${pathToId(arWPath)}" data-path="${arWPath}" style="max-width:120px" placeholder="16" title="Custom width">
+                <input type="number" id="${pathToId(arHPath)}" data-path="${arHPath}" style="max-width:120px" placeholder="9" title="Custom height">
+                <span style="font-size:12px;color:rgba(233,233,238,.55);font-weight:900;">AR=W/H</span>
               </div>
             </div>
 
-            ${uiRowNum("Fine adjust (px)", `mania.${keys}.CenterOffset`)}
+            ${uiRowNum("Fine Offset (px)", offPath, "0")}
 
+            ${uiRowNum("ColumnStart", `mania.${keys}.ColumnStart`)}
             ${uiRowNum("ColumnRight", `mania.${keys}.ColumnRight`)}
             ${uiRowText("ColumnWidth", `mania.${keys}.ColumnWidth`, "70 or 70,70,70")}
             ${uiRowText("ColumnSpacing", `mania.${keys}.ColumnSpacing`, "0 or 0,0,0")}
@@ -1116,6 +1129,22 @@ function renderManiaBlock(keys){
             ${uiRowBool("JudgementLine", `mania.${keys}.JudgementLine`)}
             ${uiRowBool("KeysUnderNotes", `mania.${keys}.KeysUnderNotes`)}
             ${uiRowBool("UpsideDown", `mania.${keys}.UpsideDown`)}
+          </div>
+        </div>
+
+        <div class="block open">
+          <button class="blockHead" type="button"><span>stage</span><span class="caret">▸</span></button>
+          <div class="blockBody">
+            ${uiRowText("StageLeft", `mania.${keys}.StageLeft`)}
+            ${uiRowText("StageRight", `mania.${keys}.StageRight`)}
+            ${uiRowText("StageBottom", `mania.${keys}.StageBottom`)}
+            ${uiRowText("StageHint", `mania.${keys}.StageHint`)}
+            ${uiRowText("StageLight", `mania.${keys}.StageLight`)}
+
+            ${uiRowNum("LightingNWidth", `mania.${keys}.LightingNWidth`)}
+            ${uiRowNum("LightingLWidth", `mania.${keys}.LightingLWidth`)}
+            ${uiRowText("LightingN", `mania.${keys}.LightingN`)}
+            ${uiRowText("LightingL", `mania.${keys}.LightingL`)}
           </div>
         </div>
 
@@ -1213,7 +1242,6 @@ function hydrateInputsFromState(root){
     else inp.value = (v ?? "");
   });
 
-  /* Auto-center: disable manual ColumnStart when enabled */
   root.querySelectorAll('[data-path$=".AutoColumnStart"]').forEach(chk=>{
     const path = chk.getAttribute("data-path");
     const mPath = path.replace(".AutoColumnStart", ".ColumnStart");
@@ -1223,17 +1251,6 @@ function hydrateInputsFromState(root){
       col.placeholder = chk.checked ? "auto" : "";
       if(chk.checked) col.value = "";
     }
-  });
-
-  /* NEW: AR custom enable/disable */
-  root.querySelectorAll('[data-path$=".ARPreset"]').forEach(sel=>{
-    const preset = sel.value || "16:9";
-    const base = sel.getAttribute("data-path").replace(".ARPreset","");
-    const w = root.querySelector(`[data-path="${base}.ARW"]`);
-    const h = root.querySelector(`[data-path="${base}.ARH"]`);
-    const custom = (preset === "custom");
-    if(w) w.disabled = !custom;
-    if(h) h.disabled = !custom;
   });
 
   bindColorPickers(root);
@@ -1259,16 +1276,6 @@ function wirePanelListeners(root){
             setByPath(state, mPath, "");
           }
         }
-      }
-
-      /* NEW: AR preset custom enable/disable */
-      if(path.endsWith(".ARPreset")){
-        const base = path.replace(".ARPreset","");
-        const w = root.querySelector(`[data-path="${base}.ARW"]`);
-        const h = root.querySelector(`[data-path="${base}.ARH"]`);
-        const custom = (inp.value === "custom");
-        if(w) w.disabled = !custom;
-        if(h) h.disabled = !custom;
       }
 
       onAnyChange();
@@ -1302,13 +1309,28 @@ function genIni(){
   pushKV(out, "Author", state.general.Author);
   out.push(fmtKV("Version", state.version));
 
-  /* NEW: cursor options exported (from first code) */
+  /* cursor (added) */
   out.push(fmtKV("CursorCentre", bool01(!!state.general.CursorCentre)));
   out.push(fmtKV("CursorExpand", bool01(!!state.general.CursorExpand)));
   out.push(fmtKV("CursorRotate", bool01(!!state.general.CursorRotate)));
   out.push(fmtKV("CursorTrailRotate", bool01(!!state.general.CursorTrailRotate)));
-
   out.push("");
+
+  /* fonts (added) */
+  const hasFonts =
+    cleanLine(state.general.ScorePrefix) ||
+    cleanLine(state.general.ComboPrefix) ||
+    cleanLine(state.general.ScoreOverlap) ||
+    cleanLine(state.general.ComboOverlap);
+
+  if(hasFonts){
+    out.push("[Fonts]");
+    pushKV(out, "ScorePrefix", state.general.ScorePrefix);
+    pushKV(out, "ScoreOverlap", state.general.ScoreOverlap);
+    pushKV(out, "ComboPrefix", state.general.ComboPrefix);
+    pushKV(out, "ComboOverlap", state.general.ComboOverlap);
+    out.push("");
+  }
 
   if(state.exportMania){
     for(const keys of ALL_MANIA_KEYS){
@@ -1337,20 +1359,12 @@ function genManiaBlock(keys){
     return Array.from({length: count}, ()=>r).join(",");
   }
 
-  const cwCsv = normalizeCsv(m.ColumnWidth, keys, Array.from({length:keys}, ()=>"70").join(","));
-  const csCsv = normalizeCsv(m.ColumnSpacing, Math.max(0,keys-1), Array.from({length:Math.max(0,keys-1)}, ()=>"0").join(","));
+  lines.push(fmtKV("ColumnWidth", normalizeCsv(m.ColumnWidth, keys, Array.from({length:keys}, ()=>"70").join(","))));
+  lines.push(fmtKV("ColumnSpacing", normalizeCsv(m.ColumnSpacing, Math.max(0,keys-1), Array.from({length:Math.max(0,keys-1)}, ()=>"0").join(","))));
 
-  lines.push(fmtKV("ColumnWidth", cwCsv));
-  lines.push(fmtKV("ColumnSpacing", csCsv));
-
-  /* NEW: Auto-center ColumnStart writes computed ColumnStart (like first code) */
-  if(!!m.AutoColumnStart){
-    const widths = parseCsvNums(m.ColumnWidth, keys, 70);
-    const spacings = parseCsvNums(m.ColumnSpacing, Math.max(0, keys-1), 0);
-    const ar = getAspectRatio(m);
-    const off = Number(m.CenterOffset || 0);
-    const cs = calcColumnStart(keys, widths, spacings, ar, off);
-    lines.push(fmtKV("ColumnStart", String(cs)));
+  /* auto-center ColumnStart (changed from "omit" to "compute + write") */
+  if(m.AutoColumnStart){
+    lines.push(fmtKV("ColumnStart", String(calcAutoColumnStart(keys, m))));
   }else{
     pushKV(lines, "ColumnStart", m.ColumnStart);
   }
@@ -1372,6 +1386,19 @@ function genManiaBlock(keys){
 
   pushKV(lines, "BarlineHeight", m.BarlineHeight);
   pushKV(lines, "WidthForNoteHeightScale", m.WidthForNoteHeightScale);
+  spacer(lines);
+
+  /* stage (added) */
+  header(lines, "stage");
+  pushKV(lines, "StageLeft", m.StageLeft);
+  pushKV(lines, "StageRight", m.StageRight);
+  pushKV(lines, "StageBottom", m.StageBottom);
+  pushKV(lines, "StageHint", m.StageHint);
+  pushKV(lines, "StageLight", m.StageLight);
+  pushKV(lines, "LightingNWidth", m.LightingNWidth);
+  pushKV(lines, "LightingLWidth", m.LightingLWidth);
+  pushKV(lines, "LightingN", m.LightingN);
+  pushKV(lines, "LightingL", m.LightingL);
   spacer(lines);
 
   header(lines, "colours");
@@ -1463,7 +1490,7 @@ function genManiaBlock(keys){
 /* ---------- import ---------- */
 function parseIni(text){
   const lines = String(text||"").split("\n");
-  const parsed = { General:{}, Mania: [] };
+  const parsed = { General:{}, Fonts:{}, Mania: [] };
 
   let section = "";
   let curMania = null;
@@ -1495,6 +1522,7 @@ function parseIni(text){
 
     const secName = section.toLowerCase();
     if(secName === "general") parsed.General[key] = val;
+    else if(secName === "fonts") parsed.Fonts[key] = val;
     else if(secName === "mania" && curMania){
       curMania.kv[key] = val;
       if(key === "Keys"){
@@ -1511,11 +1539,17 @@ function applyParsed(parsed){
   if("Name" in parsed.General) state.general.Name = parsed.General.Name;
   if("Author" in parsed.General) state.general.Author = parsed.General.Author;
 
-  /* NEW: cursor import if present */
-  if("CursorCentre" in parsed.General) state.general.CursorCentre = parsed.General.CursorCentre.trim() === "1";
-  if("CursorExpand" in parsed.General) state.general.CursorExpand = parsed.General.CursorExpand.trim() === "1";
-  if("CursorRotate" in parsed.General) state.general.CursorRotate = parsed.General.CursorRotate.trim() === "1";
-  if("CursorTrailRotate" in parsed.General) state.general.CursorTrailRotate = parsed.General.CursorTrailRotate.trim() === "1";
+  /* cursor (import) */
+  const cursorKeys = ["CursorCentre","CursorExpand","CursorRotate","CursorTrailRotate"];
+  for(const k of cursorKeys){
+    if(k in parsed.General) state.general[k] = parsed.General[k].trim() === "1";
+  }
+
+  /* fonts (import) */
+  const fontKeys = ["ScorePrefix","ScoreOverlap","ComboPrefix","ComboOverlap"];
+  for(const k of fontKeys){
+    if(k in parsed.Fonts) state.general[k] = parsed.Fonts[k];
+  }
 
   for(const blk of parsed.Mania){
     const keys = blk.Keys;
@@ -1531,6 +1565,11 @@ function applyParsed(parsed){
       "HitPosition","LightPosition","ScorePosition","ComboPosition",
       "JudgementLine","KeysUnderNotes","UpsideDown",
       "BarlineHeight","WidthForNoteHeightScale",
+
+      /* stage (import) */
+      "StageLeft","StageRight","StageBottom","StageHint","StageLight",
+      "LightingNWidth","LightingLWidth","LightingN","LightingL",
+
       "ColourColumnLine","ColourBarline","ColourJudgementLine","ColourKeyWarning","ColourHold","ColourBreak",
       "WarningArrow"
     ];
@@ -1542,7 +1581,6 @@ function applyParsed(parsed){
       }
     }
 
-    /* keep behavior: auto if blank ColumnStart */
     m.AutoColumnStart = isBlank(m.ColumnStart);
 
     for(let i=0;i<keys;i++){
