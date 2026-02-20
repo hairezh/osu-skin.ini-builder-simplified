@@ -1,739 +1,128 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>skin.ini studio</title>
-
-  <!-- favicon -->
-  <link rel="icon" type="image/png"
-    href="https://i.pinimg.com/1200x/d6/ca/e4/d6cae471e8471dec46c4304104adb4b1.jpg"/>
-
-  <style>
-    :root{
-      --fg:#e9e9ee;
-      --muted:rgba(233,233,238,.62);
-      --muted2:rgba(233,233,238,.40);
-      --border:rgba(255,255,255,.12);
-      --panel:rgba(0,0,0,.44);
-      --shadow: 0 10px 30px rgba(0,0,0,.45);
-      --r:14px;
-
-      --dockW:62px;
-      --gap:10px;
-
-      --rowLabel: 205px;
-      --inputPadY: 9px;
-      --inputPadX: 10px;
-
-      color-scheme: dark;
-    }
-
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
-
-    body{
-      margin:0;
-      color:var(--fg);
-      font: 14px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-
-      background-image: url("https://i.pinimg.com/originals/f5/93/a4/f593a4f4932080fb7b43c6ae96d1a73d.gif");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      overflow:hidden;
-    }
-
-    body::before{
-      content:"";
-      position:fixed; inset:0;
-      pointer-events:none;
-      background:
-        radial-gradient(900px 520px at 15% 10%, rgba(0,0,0,.16), transparent 55%),
-        radial-gradient(900px 520px at 85% 20%, rgba(0,0,0,.16), transparent 55%),
-        linear-gradient(180deg, rgba(0,0,0,.58), rgba(0,0,0,.56));
-      backdrop-filter: blur(0.6px);
-    }
-
-    /* Scrollbar */
-    *{
-      scrollbar-width: thin;
-      scrollbar-color: rgba(220,220,230,.30) rgba(0,0,0,.20);
-    }
-    *::-webkit-scrollbar{ width:10px; height:10px; }
-    *::-webkit-scrollbar-track{ background: rgba(0,0,0,.20); border-radius: 10px; }
-    *::-webkit-scrollbar-thumb{
-      background: rgba(220,220,230,.26);
-      border: 2px solid rgba(0,0,0,.20);
-      border-radius: 10px;
-    }
-    *::-webkit-scrollbar-thumb:hover{ background: rgba(220,220,230,.40); }
-
-    .app{
-      position:relative;
-      z-index:1;
-      height:100%;
-      display:flex;
-      flex-direction:column;
-    }
-
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:10px 12px;
-      border-bottom:1px solid var(--border);
-      background: rgba(0,0,0,.38);
-      backdrop-filter: blur(3px);
-      will-change: transform;
-      transform: translateZ(0);
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width: 0;
-    }
-    .brand img{
-      width:30px;
-      height:30px;
-      border-radius:10px;
-      border:1px solid rgba(255,255,255,.16);
-      background:rgba(0,0,0,.25);
-      box-shadow: 0 8px 20px rgba(0,0,0,.35);
-      object-fit: cover;
-    }
-    .brand .title{
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-      min-width:0;
-    }
-    .brand .title b{
-      font-weight:900;
-      font-size:13px;
-      letter-spacing:.2px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .brand .title span{
-      font-size:12px;
-      color:var(--muted2);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .layout{
-      flex:1; min-height:0;
-      display:grid;
-      grid-template-columns: var(--dockW) 1fr;
-      overflow:hidden;
-    }
-
-    /* ===== Sidebar dock ===== */
-    .dock{
-      border-right:1px solid var(--border);
-      background: rgba(0,0,0,.38);
-      backdrop-filter: blur(3px);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:10px;
-      padding:10px 8px;
-      min-height:0;
-      overflow:auto;
-      will-change: transform;
-      transform: translateZ(0);
-    }
-
-    .dockGroup{
-      width:100%;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      align-items:center;
-      padding-bottom:10px;
-      border-bottom:1px solid rgba(255,255,255,.10);
-    }
-    .dockGroup:last-child{ border-bottom:0; padding-bottom:0; }
-
-    .icoBtn{
-      width:46px;
-      height:46px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.22);
-      color: rgba(233,233,238,.78);
-      display:grid;
-      place-items:center;
-      cursor:pointer;
-      user-select:none;
-      transition:110ms linear;
-      position:relative;
-      will-change: transform;
-      transform: translateZ(0);
-    }
-    .icoBtn:hover{
-      border-color: rgba(255,255,255,.18);
-      background: rgba(255,255,255,.06);
-      color: rgba(233,233,238,.95);
-      transform: translateY(-1px) translateZ(0);
-    }
-    .icoBtn.active{
-      border-color: rgba(255,255,255,.20);
-      background: rgba(255,255,255,.10);
-      color: rgba(233,233,238,.98);
-      box-shadow: 0 10px 30px rgba(0,0,0,.35);
-    }
-
-    .tip{
-      position:absolute;
-      left:58px;
-      top:50%;
-      transform: translateY(-50%);
-      background: rgba(0,0,0,.70);
-      border:1px solid rgba(255,255,255,.14);
-      border-radius:12px;
-      padding:6px 10px;
-      font-size:12px;
-      color: rgba(233,233,238,.92);
-      white-space:nowrap;
-      opacity:0;
-      pointer-events:none;
-      transition:110ms linear;
-      backdrop-filter: blur(3px);
-    }
-    .icoBtn:hover .tip{ opacity:1; }
-
-    .miniLabel{
-      font-size:11px;
-      color: var(--muted2);
-      text-align:center;
-      line-height:1.2;
-    }
-
-    /* ===== Main content ===== */
-    .main{
-      min-height:0;
-      padding:10px;
-      display:grid;
-      /* Better layout: options panel slightly larger */
-      grid-template-columns: 1.20fr .80fr;
-      gap:10px;
-      overflow:hidden;
-      align-items:stretch;
-    }
-
-    .card{
-      border:1px solid var(--border);
-      background: var(--panel);
-      backdrop-filter: blur(3px);
-      border-radius: var(--r);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      min-height:0;
-      display:flex;
-      flex-direction:column;
-      will-change: transform;
-      transform: translateZ(0);
-    }
-
-    /* Sticky header with a bit of blur for readability while scrolling */
-    .cardHead{
-      padding:10px 10px 8px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      border-bottom:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.25);
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      backdrop-filter: blur(4px);
-    }
-    .cardHead .left{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-      min-width:0;
-    }
-    .badge{
-      font-size:12px;
-      padding:4px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.22);
-      color: rgba(233,233,238,.75);
-      font-weight:900;
-      max-width: 100%;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
-    .tools{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-
-    .cardBody{
-      padding:10px;
-      overflow:auto;
-      min-height:0;
-      flex:1;
-    }
-
-    .btn{
-      cursor:pointer;
-      padding:8px 10px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.22);
-      color: rgba(233,233,238,.78);
-      font-weight:900;
-      transition:110ms linear;
-      user-select:none;
-    }
-    .btn:hover{
-      border-color: rgba(255,255,255,.18);
-      background: rgba(255,255,255,.06);
-      color: rgba(233,233,238,.95);
-    }
-    .btn.primary{
-      background: rgba(255,255,255,.10);
-      border-color: rgba(255,255,255,.16);
-      color: rgba(233,233,238,.95);
-    }
-    .btn.danger:hover{
-      border-color: rgba(255,140,140,.35);
-      color: rgba(255,220,220,.95);
-    }
-
-    textarea{
-      width:100%;
-      /* Better: fill card height without guessing 100vh */
-      height: calc(100% - 2px);
-      min-height: 100%;
-      resize:none;
-      border:1px solid rgba(255,255,255,.12);
-      border-radius: 14px;
-      background: rgba(0,0,0,.30);
-      color: rgba(233,233,238,.95);
-      padding:10px 12px;
-      outline:none;
-      font:inherit;
-    }
-
-    /* ===== Forms ===== */
-    .block{
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.20);
-      border-radius: 16px;
-      overflow:hidden;
-      margin: 10px 0;
-    }
-    .blockHead{
-      width:100%;
-      border:0;
-      cursor:pointer;
-      padding:10px 12px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      background: rgba(0,0,0,.22);
-      color: rgba(233,233,238,.95);
-      font:inherit;
-      font-weight: 900;
-      letter-spacing:.2px;
-      user-select:none;
-    }
-    .caret{
-      color: rgba(233,233,238,.60);
-      transition:110ms linear;
-    }
-    .block.open .caret{ transform: rotate(90deg); }
-    .blockBody{
-      display:none;
-      padding:10px 12px 12px;
-      border-top:1px solid rgba(255,255,255,.10);
-    }
-    .block.open .blockBody{ display:block; }
-
-    .row{
-      display:grid;
-      grid-template-columns: var(--rowLabel) 1fr;
-      gap:10px;
-      align-items:center;
-      margin-bottom:8px;
-    }
-    .row label{
-      font-size:12px;
-      color: rgba(233,233,238,.80);
-      font-weight:900;
-      user-select:none;
-    }
-
-    input[type="text"], input[type="number"], select{
-      width:100%;
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:14px;
-      background: rgba(0,0,0,.26);
-      color: rgba(233,233,238,.95);
-      padding: var(--inputPadY) var(--inputPadX);
-      outline:none;
-      font:inherit;
-    }
-
-    select{
-      color-scheme: dark;
-      background: rgba(0,0,0,.72);
-      border-color: rgba(255,255,255,.14);
-    }
-    select option{
-      background: #0b0c0f;
-      color: rgba(233,233,238,.95);
-    }
-    select option:checked{
-      background:#11141a;
-      color: rgba(233,233,238,.98);
-    }
-
-    input[type="color"]{
-      width:46px; height:38px;
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:14px;
-      background:transparent;
-      padding:0;
-    }
-
-    .inline{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-    .grid2{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
-
-    /* switch */
-    .switch{ display:inline-flex; align-items:center; gap:8px; }
-    .switch input{ display:none; }
-    .sw{
-      width:48px; height:28px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.24);
-      border-radius: 12px;
-      position:relative;
-      transition:110ms linear;
-      flex:0 0 auto;
-      cursor:pointer;
-    }
-    .sw::after{
-      content:"";
-      width:22px; height:22px;
-      position:absolute; top:50%; left:3px;
-      transform: translateY(-50%);
-      border-radius: 9px;
-      background: rgba(255,255,255,.28);
-      transition:110ms linear;
-    }
-    .switch input:checked + .sw{
-      border-color: rgba(255,255,255,.18);
-      background: rgba(255,255,255,.07);
-    }
-    .switch input:checked + .sw::after{
-      left:23px;
-      background: rgba(255,255,255,.62);
-    }
-
-    .noteUnder{
-      margin-top:6px;
-      font-size:12px;
-      color: rgba(233,233,238,.48);
-      font-weight:800;
-    }
-
-    /* mania keymode toggles */
-    .kmRow{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin: 6px 0 4px;
-    }
-    .kmPill{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.20);
-      font-size:12px;
-      font-weight:900;
-      color: rgba(233,233,238,.70);
-      user-select:none;
-    }
-    .kmPill.on{
-      background: rgba(255,255,255,.08);
-      border-color: rgba(255,255,255,.18);
-      color: rgba(233,233,238,.95);
-    }
-
-    .disabledHint{
-      font-size:12px;
-      color: rgba(233,233,238,.55);
-      font-weight:900;
-      padding:10px 12px;
-      border:1px dashed rgba(255,255,255,.14);
-      background: rgba(0,0,0,.18);
-      border-radius: 14px;
-    }
-
-    @media (max-width: 980px){
-      .layout{ grid-template-columns: 1fr; }
-      .dock{
-        flex-direction:row;
-        border-right:0;
-        border-bottom:1px solid var(--border);
-        padding:10px;
-        gap:10px;
-      }
-      .dockGroup{
-        flex-direction:row;
-        border-bottom:0;
-        padding-bottom:0;
-        width:auto;
-      }
-      .icoBtn .tip{ display:none; }
-      .main{ grid-template-columns: 1fr; }
-      .row{ grid-template-columns: 1fr; }
-      textarea{ height: 55vh; min-height: 55vh; }
-    }
-  </style>
-</head>
-
-<body>
-<div class="app">
-
-  <div class="topbar">
-    <div class="brand">
-      <!-- icon -->
-      <img alt="icon" src="https://i.pinimg.com/originals/da/b4/cb/dab4cbf31e4e8d7688b0e830d5d640f1.gif">
-      <div class="title">
-        <b>skin.ini studio</b>
-        <span id="topSub">—</span>
-      </div>
-    </div>
-
-    <div class="tools">
-      <span class="badge" id="savePulse">—</span>
-      <button class="btn primary" id="downloadIni">Download</button>
-      <button class="btn" id="copyIni">Copy</button>
-      <button class="btn" id="importOpen">Import</button>
-      <button class="btn danger" id="wipeAll">Reset</button>
-    </div>
-  </div>
-
-  <div class="layout">
-    <aside class="dock">
-
-      <!-- Tabs (Mania + Preview only) -->
-      <div class="dockGroup">
-        <button class="icoBtn" data-tab="mania" title="Mania">
-          <span aria-hidden="true">🎹</span>
-          <span class="tip">Mania</span>
-        </button>
-
-        <button class="icoBtn" data-tab="preview" title="Preview">
-          <span aria-hidden="true">👁️</span>
-          <span class="tip">Preview</span>
-        </button>
-      </div>
-
-      <!-- Export -->
-      <div class="dockGroup">
-        <div class="miniLabel">export</div>
-
-        <button class="icoBtn" id="togMania" title="Mania on/off" type="button">
-          <span aria-hidden="true">🎹</span>
-          <span class="tip">Mania</span>
-        </button>
-      </div>
-
-      <!-- Style -->
-      <div class="dockGroup">
-        <div class="miniLabel">style</div>
-
-        <button class="icoBtn" id="togPretty" title="h style" type="button">
-          <span aria-hidden="true">H</span>
-          <span class="tip">h style</span>
-        </button>
-
-        <button class="icoBtn" id="togCommentEmpty" title="comment empty fields" type="button">
-          <span aria-hidden="true">//</span>
-          <span class="tip">comment empty fields</span>
-        </button>
-        <div class="noteUnder" style="text-align:center; padding:0 6px;">
-          *not exported to skin.ini
-        </div>
-
-        <button class="icoBtn" id="verBtn" title="Version" type="button">
-          <span aria-hidden="true">v</span>
-          <span class="tip">Version</span>
-        </button>
-      </div>
-
-    </aside>
-
-    <main class="main">
-
-      <div class="card">
-        <div class="cardHead">
-          <div class="left">
-            <span class="badge" id="panelTitle">Mania</span>
-            <span class="badge" id="modeBadge">export: GENERAL+MANIA</span>
-          </div>
-          <div class="tools">
-            <button class="btn" id="refresh">Refresh</button>
-          </div>
-        </div>
-        <div class="cardBody" id="panel"></div>
-      </div>
-
-      <div class="card" id="previewCard">
-        <div class="cardHead">
-          <div class="left">
-            <span class="badge">skin.ini</span>
-          </div>
-          <div class="tools">
-            <button class="btn" id="selectAll">Select</button>
-          </div>
-        </div>
-        <div class="cardBody">
-          <textarea id="preview" readonly></textarea>
-        </div>
-      </div>
-
-    </main>
-  </div>
-</div>
-
-<!-- Version modal -->
-<dialog id="verDlg" style="max-width:420px;width:calc(100% - 24px);border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(0,0,0,.86);color:rgba(233,233,238,.95);box-shadow:0 20px 60px rgba(0,0,0,.55);">
-  <form method="dialog" style="margin:0;padding:12px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
-      <b>Version</b>
-      <button class="btn" value="cancel">Close</button>
-    </div>
-    <div style="height:10px"></div>
-    <select id="versionPick" style="width:100%;">
-      <option value="2.0">2.0</option>
-      <option value="2.1">2.1</option>
-      <option value="2.2">2.2</option>
-      <option value="2.3">2.3</option>
-      <option value="2.4">2.4</option>
-      <option value="2.5">2.5</option>
-      <option value="2.6">2.6</option>
-      <option value="2.7">2.7</option>
-      <option value="latest" selected>latest</option>
-    </select>
-  </form>
-</dialog>
-
-<!-- Import modal -->
-<dialog id="importDlg" style="max-width:900px;width:calc(100% - 24px);border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(0,0,0,.88);color:rgba(233,233,238,.95);box-shadow:0 20px 60px rgba(0,0,0,.55);">
-  <form method="dialog" style="margin:0;padding:12px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
-      <b>Import skin.ini</b>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn" value="cancel">Close</button>
-        <button class="btn primary" id="importApply" value="default" type="button">Apply</button>
-      </div>
-    </div>
-    <div style="height:10px"></div>
-    <textarea id="importArea" style="min-height:45vh;"></textarea>
-  </form>
-</dialog>
-
 <script>
-const $ = (id)=>document.getElementById(id);
-const STORAGE_KEY = "skinini_studio_v7_mania_only";
+/* ===========================
+   skin.ini studio — refactor v1
+   - cursor options in [General]
+   - less duplicated listeners via delegation
+   - cleaner state + render flow
+=========================== */
 
-/* ---------- util ---------- */
-function cleanLine(s){ return String(s ?? "").replace(/\r/g,"").trimEnd(); }
-function isBlank(v){ return cleanLine(v) === ""; }
-const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
-const bool01 = (b)=> (b ? "1" : "0");
+const $ = (id) => document.getElementById(id);
 
-function debounce(fn, wait){
-  let t=null;
-  return (...args)=>{
+const STORAGE_KEY = "skinini_studio_v8_mania_only_refactor";
+const ALL_MANIA_KEYS = Array.from({ length: 18 }, (_, i) => i + 1);
+
+/* ---------- utils ---------- */
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const cleanLine = (s) => String(s ?? "").replace(/\r/g, "").trimEnd();
+const isBlank = (v) => cleanLine(v) === "";
+const bool01 = (b) => (b ? "1" : "0");
+
+function debounce(fn, wait) {
+  let t = null;
+  return (...args) => {
     clearTimeout(t);
-    t=setTimeout(()=>fn(...args), wait);
+    t = setTimeout(() => fn(...args), wait);
   };
 }
 
-function rgbToHex(rgb){
-  const m = String(rgb||"").match(/^\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*$/);
-  if(!m) return null;
-  const r = clamp(parseInt(m[1],10),0,255);
-  const g = clamp(parseInt(m[2],10),0,255);
-  const b = clamp(parseInt(m[3],10),0,255);
-  return "#" + [r,g,b].map(x=>x.toString(16).padStart(2,"0")).join("");
+function rgbToHex(rgb) {
+  const m = String(rgb || "").match(/^\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*$/);
+  if (!m) return null;
+  const r = clamp(parseInt(m[1], 10), 0, 255);
+  const g = clamp(parseInt(m[2], 10), 0, 255);
+  const b = clamp(parseInt(m[3], 10), 0, 255);
+  return "#" + [r, g, b].map((x) => x.toString(16).padStart(2, "0")).join("");
 }
-function hexToRgb(hex){
-  const h = String(hex||"").replace("#","").trim();
-  if(!/^[0-9a-fA-F]{6}$/.test(h)) return "";
-  const r = parseInt(h.slice(0,2),16);
-  const g = parseInt(h.slice(2,4),16);
-  const b = parseInt(h.slice(4,6),16);
+
+function hexToRgb(hex) {
+  const h = String(hex || "").replace("#", "").trim();
+  if (!/^[0-9a-fA-F]{6}$/.test(h)) return "";
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
   return `${r},${g},${b}`;
 }
 
-function pat(pattern, n){
-  const p = String(pattern || "").trim();
-  if(!p) return "";
-  return p.replaceAll("{n}", String(n));
+function escapeHtml(s) {
+  return String(s ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
 }
 
-function fmtKV(key, value){
+/* ---------- path helpers ---------- */
+function pathToId(path) {
+  return "p_" + path.replaceAll(".", "__").replaceAll("[", "_").replaceAll("]", "_");
+}
+
+function getByPath(obj, path) {
+  const parts = path.split(".");
+  let cur = obj;
+  for (const p of parts) {
+    if (cur == null) return undefined;
+    cur = cur[p];
+  }
+  return cur;
+}
+
+function setByPath(obj, path, value) {
+  const parts = path.split(".");
+  let cur = obj;
+  for (let i = 0; i < parts.length - 1; i++) {
+    const p = parts[i];
+    if (!(p in cur)) cur[p] = {};
+    cur = cur[p];
+  }
+  cur[parts[parts.length - 1]] = value;
+}
+
+/* ---------- ini formatting ---------- */
+function fmtKV(key, value) {
   const v = cleanLine(value);
-  if(state.pretty){
+  if (state.pretty) {
     const k = String(key).padEnd(32, " ");
     return `${k} : ${v}`;
   }
   return `${key}: ${v}`;
 }
-function pushKV(lines, key, value){
+
+function pushKV(lines, key, value) {
   const v = cleanLine(value);
-  if(v !== ""){
+  if (v !== "") {
     lines.push(fmtKV(key, v));
     return;
   }
-  if(state.commentEmpty){
-    if(state.pretty){
+  if (state.commentEmpty) {
+    if (state.pretty) {
       const k = String(key).padEnd(32, " ");
       lines.push(`// ${k} :`);
-    }else{
+    } else {
       lines.push(`//${key}:`);
     }
   }
 }
-function spacer(lines){ if(state.pretty) lines.push(""); }
-function header(lines, title){
-  if(state.pretty){
+
+function spacer(lines) {
+  if (state.pretty) lines.push("");
+}
+
+function header(lines, title) {
+  if (state.pretty) {
     lines.push(`// ${title} --`);
     lines.push("");
   }
 }
 
-/* ---------- state ---------- */
-const ALL_MANIA_KEYS = Array.from({length: 18}, (_,i)=>i+1);
+function pat(pattern, n) {
+  const p = String(pattern || "").trim();
+  if (!p) return "";
+  return p.replaceAll("{n}", String(n));
+}
 
-function defaultManiaMode(keys){
+/* ---------- default state ---------- */
+function defaultManiaMode() {
   return {
     ColumnStart: "",
     ColumnRight: "",
@@ -764,7 +153,7 @@ function defaultManiaMode(keys){
 
     AutoColumnStart: true,
 
-    // patterns / paths (use {n} = 1..Keys)
+    // patterns (use {n})
     pKey: "",
     pKeyD: "",
     pNote: "",
@@ -775,62 +164,46 @@ function defaultManiaMode(keys){
   };
 }
 
-const state = {
-  activeTab: "mania",
-  exportMania: true,
+function makeDefaultState() {
+  return {
+    activeTab: "mania",
+    exportMania: true,
 
-  pretty: true,        // "h style"
-  commentEmpty: false,
+    pretty: true,        // "h style"
+    commentEmpty: false,
 
-  version: "latest",
+    version: "latest",
 
-  general: {
-    Name: "",
-    Author: "",
-  },
+    general: {
+      Name: "",
+      Author: "",
 
-  maniaShared: {
-    enabled: Object.fromEntries(ALL_MANIA_KEYS.map(k => [k, k===4])),
-    open: Object.fromEntries(ALL_MANIA_KEYS.map(k => [k, k===4])),
-  },
+      // cursor (skin.ini [General])
+      CursorRotate: false,
+      CursorTrailRotate: false,
+      CursorExpand: true,
+      CursorCentre: true,
+    },
 
-  mania: Object.fromEntries(ALL_MANIA_KEYS.map(k => [k, defaultManiaMode(k)])),
-};
+    maniaShared: {
+      enabled: Object.fromEntries(ALL_MANIA_KEYS.map((k) => [k, k === 4])),
+      open: Object.fromEntries(ALL_MANIA_KEYS.map((k) => [k, k === 4])),
+    },
 
-/* ---------- path helpers ---------- */
-function pathToId(path){
-  return "p_" + path.replaceAll(".", "__").replaceAll("[","_").replaceAll("]","_");
-}
-function getByPath(obj, path){
-  const parts = path.split(".");
-  let cur = obj;
-  for(const p of parts){
-    if(cur == null) return undefined;
-    cur = cur[p];
-  }
-  return cur;
-}
-function setByPath(obj, path, value){
-  const parts = path.split(".");
-  let cur = obj;
-  for(let i=0;i<parts.length-1;i++){
-    const p = parts[i];
-    if(!(p in cur)) cur[p] = {};
-    cur = cur[p];
-  }
-  cur[parts[parts.length-1]] = value;
+    mania: Object.fromEntries(ALL_MANIA_KEYS.map((k) => [k, defaultManiaMode()])),
+  };
 }
 
-/* ---------- UI builders ---------- */
-function escapeHtml(s){
-  return String(s ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#39;");
-}
-function uiRowText(label, path, placeholder=""){
+let state = makeDefaultState();
+
+/* ---------- tabs ---------- */
+const TABS = [
+  { key: "mania", title: "Mania", render: renderMania },
+  { key: "preview", title: "Preview", render: renderPreviewOnly },
+];
+
+/* ---------- UI row builders ---------- */
+function uiRowText(label, path, placeholder = "") {
   const id = pathToId(path);
   return `
     <div class="row">
@@ -839,7 +212,8 @@ function uiRowText(label, path, placeholder=""){
     </div>
   `;
 }
-function uiRowNum(label, path, placeholder=""){
+
+function uiRowNum(label, path, placeholder = "") {
   const id = pathToId(path);
   return `
     <div class="row">
@@ -848,7 +222,8 @@ function uiRowNum(label, path, placeholder=""){
     </div>
   `;
 }
-function uiRowBool(label, path){
+
+function uiRowBool(label, path) {
   const id = pathToId(path);
   return `
     <div class="row">
@@ -862,7 +237,8 @@ function uiRowBool(label, path){
     </div>
   `;
 }
-function uiRowColor(label, path){
+
+function uiRowColor(label, path) {
   const id = pathToId(path);
   const pickId = id + "_pick";
   return `
@@ -876,48 +252,44 @@ function uiRowColor(label, path){
   `;
 }
 
-/* ---------- Tabs (mania/preview only) ---------- */
-const TABS = [
-  { key:"mania", title:"Mania", render: renderMania },
-  { key:"preview", title:"Preview", render: renderPreviewOnly },
-];
-
-function setActiveTab(k){
+/* ---------- rendering ---------- */
+function setActiveTab(k) {
   state.activeTab = k;
   renderDockActive();
   renderActiveTab();
   saveSoon();
 }
 
-function renderDockActive(){
-  document.querySelectorAll(".icoBtn[data-tab]").forEach(b=>{
+function renderDockActive() {
+  document.querySelectorAll(".icoBtn[data-tab]").forEach((b) => {
     b.classList.toggle("active", b.dataset.tab === state.activeTab);
   });
 }
 
-function updateTopSub(){
-  const t = TABS.find(x=>x.key===state.activeTab)?.title ?? "—";
+function updateTopSub() {
+  const t = TABS.find((x) => x.key === state.activeTab)?.title ?? "—";
   $("topSub").textContent = t;
   $("panelTitle").textContent = t;
 }
 
-/* ---------- Panels ---------- */
-function renderActiveTab(){
+function renderActiveTab() {
   updateTopSub();
-  const tab = TABS.find(t => t.key === state.activeTab) || TABS[0];
+  const tab = TABS.find((t) => t.key === state.activeTab) || TABS[0];
   $("panel").innerHTML = tab.render();
+
   hydrateInputsFromState($("panel"));
-  wirePanelListeners($("panel"));
+  updateModeBadge();
+  onAnyChange(true); // refresh preview without spamming saves
 }
 
-function renderMania(){
-  const pills = ALL_MANIA_KEYS.map(k=>{
+function renderMania() {
+  const pills = ALL_MANIA_KEYS.map((k) => {
     const on = !!state.maniaShared.enabled[k];
     return `
-      <span class="kmPill ${on?"on":""}">
+      <span class="kmPill ${on ? "on" : ""}">
         <span>${k}K</span>
         <label class="switch">
-          <input type="checkbox" class="kmToggle" data-k="${k}" ${on?"checked":""}>
+          <input type="checkbox" class="kmToggle" data-k="${k}" ${on ? "checked" : ""}>
           <span class="sw"></span>
         </label>
       </span>
@@ -925,8 +297,8 @@ function renderMania(){
   }).join("");
 
   const blocks = ALL_MANIA_KEYS
-    .filter(k => state.maniaShared.enabled[k])
-    .map(k => renderManiaBlock(k))
+    .filter((k) => state.maniaShared.enabled[k])
+    .map((k) => renderManiaBlock(k))
     .join("");
 
   return `
@@ -935,9 +307,20 @@ function renderMania(){
       <div class="blockBody">
         ${uiRowText("Name", "general.Name")}
         ${uiRowText("Author", "general.Author")}
+
         <div class="row">
           <label>Version</label>
           <input type="text" value="${escapeHtml(state.version)}" readonly>
+        </div>
+
+        <div class="block open" style="margin-top:10px;">
+          <button class="blockHead" type="button"><span>cursor</span><span class="caret">▸</span></button>
+          <div class="blockBody">
+            ${uiRowBool("CursorCentre", "general.CursorCentre")}
+            ${uiRowBool("CursorExpand", "general.CursorExpand")}
+            ${uiRowBool("CursorRotate", "general.CursorRotate")}
+            ${uiRowBool("CursorTrailRotate", "general.CursorTrailRotate")}
+          </div>
         </div>
       </div>
     </div>
@@ -957,10 +340,10 @@ function renderMania(){
   `;
 }
 
-function renderManiaBlock(keys){
+function renderManiaBlock(keys) {
   const open = !!state.maniaShared.open[keys];
 
-  const colourCols = Array.from({length: keys}, (_,i)=>{
+  const colourCols = Array.from({ length: keys }, (_, i) => {
     const uiIndex = i + 1;
     const path = `mania.${keys}.Colour.${uiIndex}`;
     return `
@@ -974,7 +357,7 @@ function renderManiaBlock(keys){
     `;
   }).join("");
 
-  const colourLights = Array.from({length: keys}, (_,i)=>{
+  const colourLights = Array.from({ length: keys }, (_, i) => {
     const uiIndex = i + 1;
     const path = `mania.${keys}.ColourLight.${uiIndex}`;
     return `
@@ -989,7 +372,7 @@ function renderManiaBlock(keys){
   }).join("");
 
   return `
-    <div class="block ${open?"open":""}" data-keys="${keys}">
+    <div class="block ${open ? "open" : ""}" data-keys="${keys}">
       <button class="blockHead" type="button" data-fold="${keys}">
         <span>${keys}K</span>
         <span class="caret">▸</span>
@@ -1061,169 +444,151 @@ function renderManiaBlock(keys){
   `;
 }
 
-function renderPreviewOnly(){
+function renderPreviewOnly() {
   return `<div class="disabledHint">use the right panel</div>`;
 }
 
-/* ---------- hydration + accordions ---------- */
-function wireAccordions(root){
-  root.querySelectorAll(".blockHead").forEach(head=>{
-    const parent = head.closest(".block");
-    if(!parent) return;
-
-    if(head.dataset.fold){
-      head.addEventListener("click", ()=>{
-        const k = Number(head.dataset.fold);
-        const block = root.querySelector(`.block[data-keys="${k}"]`);
-        if(!block) return;
-        const nowOpen = !block.classList.contains("open");
-        block.classList.toggle("open", nowOpen);
-        state.maniaShared.open[k] = nowOpen;
-        saveSoon();
-      });
-      return;
-    }
-
-    head.addEventListener("click", ()=>{
-      const nowOpen = !parent.classList.contains("open");
-      parent.classList.toggle("open", nowOpen);
-    });
-  });
-}
-
-function bindColorPickers(root){
-  root.querySelectorAll("[data-pick-for]").forEach(pick=>{
-    const txtId = pick.getAttribute("data-pick-for");
-    const txt = document.getElementById(txtId);
-    if(!txt) return;
-
-    const hx = rgbToHex(txt.value);
-    if(hx) pick.value = hx;
-
-    pick.addEventListener("input", ()=>{
-      txt.value = hexToRgb(pick.value);
-      txt.dispatchEvent(new Event("input", {bubbles:true}));
-    });
-
-    txt.addEventListener("input", ()=>{
-      const hx2 = rgbToHex(txt.value);
-      if(hx2) pick.value = hx2;
-    });
-  });
-}
-
-function hydrateInputsFromState(root){
-  root.querySelectorAll("[data-path]").forEach(inp=>{
+/* ---------- hydration + interactions ---------- */
+function hydrateInputsFromState(root) {
+  // set values
+  root.querySelectorAll("[data-path]").forEach((inp) => {
     const path = inp.getAttribute("data-path");
     const v = getByPath(state, path);
-
-    if(inp.type === "checkbox") inp.checked = !!v;
+    if (inp.type === "checkbox") inp.checked = !!v;
     else inp.value = (v ?? "");
   });
 
-  root.querySelectorAll('[data-path$=".AutoColumnStart"]').forEach(chk=>{
+  // handle AutoColumnStart -> disable ColumnStart
+  root.querySelectorAll('[data-path$=".AutoColumnStart"]').forEach((chk) => {
     const path = chk.getAttribute("data-path");
-    const mPath = path.replace(".AutoColumnStart", ".ColumnStart");
-    const col = root.querySelector(`[data-path="${mPath}"]`);
-    if(col){
-      col.disabled = !!chk.checked;
-      col.placeholder = chk.checked ? "auto" : "";
-      if(chk.checked) col.value = "";
-    }
+    const colPath = path.replace(".AutoColumnStart", ".ColumnStart");
+    const col = root.querySelector(`[data-path="${colPath}"]`);
+    if (!col) return;
+
+    col.disabled = !!chk.checked;
+    col.placeholder = chk.checked ? "auto" : "";
+    if (chk.checked) col.value = "";
   });
 
-  bindColorPickers(root);
-  wireAccordions(root);
+  // sync color pickers
+  root.querySelectorAll('input[type="color"][data-pick-for]').forEach((pick) => {
+    const txtId = pick.getAttribute("data-pick-for");
+    const txt = root.querySelector(`#${CSS.escape(txtId)}`);
+    if (!txt) return;
+    const hx = rgbToHex(txt.value);
+    if (hx) pick.value = hx;
+  });
 }
 
-/* ---------- listeners ---------- */
-function wirePanelListeners(root){
-  root.querySelectorAll("[data-path]").forEach(inp=>{
-    const path = inp.getAttribute("data-path");
-    const handler = ()=>{
-      if(inp.type === "checkbox") setByPath(state, path, !!inp.checked);
-      else setByPath(state, path, inp.value);
+function handleAccordionClick(root, head) {
+  const parent = head.closest(".block");
+  if (!parent) return;
 
-      if(path.endsWith(".AutoColumnStart")){
-        const mPath = path.replace(".AutoColumnStart", ".ColumnStart");
-        const col = root.querySelector(`[data-path="${mPath}"]`);
-        if(col){
-          col.disabled = !!inp.checked;
-          col.placeholder = inp.checked ? "auto" : "";
-          if(inp.checked){
-            col.value = "";
-            setByPath(state, mPath, "");
-          }
-        }
-      }
+  // special: fold mania key blocks (persist open state)
+  if (head.dataset.fold) {
+    const k = Number(head.dataset.fold);
+    const block = root.querySelector(`.block[data-keys="${k}"]`);
+    if (!block) return;
+    const nowOpen = !block.classList.contains("open");
+    block.classList.toggle("open", nowOpen);
+    state.maniaShared.open[k] = nowOpen;
+    saveSoon();
+    return;
+  }
 
-      onAnyChange();
-    };
-    inp.addEventListener("input", handler);
-    inp.addEventListener("change", handler);
-  });
+  const nowOpen = !parent.classList.contains("open");
+  parent.classList.toggle("open", nowOpen);
+}
 
-  root.querySelectorAll(".kmToggle").forEach(t=>{
-    t.addEventListener("change", ()=>{
-      const k = Number(t.dataset.k);
-      state.maniaShared.enabled[k] = !!t.checked;
-      state.maniaShared.open[k] = !!t.checked;
+function syncColumnStart(root, autoChk) {
+  const path = autoChk.getAttribute("data-path");
+  const colPath = path.replace(".AutoColumnStart", ".ColumnStart");
+  const col = root.querySelector(`[data-path="${colPath}"]`);
+  if (!col) return;
 
-      if(!ALL_MANIA_KEYS.some(x=>state.maniaShared.enabled[x])){
-        state.maniaShared.enabled[4]=true;
-        state.maniaShared.open[4]=true;
-      }
-      renderActiveTab();
-      onAnyChange();
-    });
-  });
+  col.disabled = !!autoChk.checked;
+  col.placeholder = autoChk.checked ? "auto" : "";
+  if (autoChk.checked) {
+    col.value = "";
+    setByPath(state, colPath, "");
+  }
+}
+
+function handleColorPick(root, pick) {
+  const txtId = pick.getAttribute("data-pick-for");
+  const txt = root.querySelector(`#${CSS.escape(txtId)}`);
+  if (!txt) return;
+  txt.value = hexToRgb(pick.value);
+  // dispara input manualmente para atualizar state + preview
+  txt.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
+function handleTextToPick(root, txt) {
+  if (!txt.id) return;
+  const pick = root.querySelector(`[data-pick-for="${CSS.escape(txt.id)}"]`);
+  if (!pick) return;
+  const hx = rgbToHex(txt.value);
+  if (hx) pick.value = hx;
+}
+
+function ensureAtLeastOneKeymodeOn() {
+  if (ALL_MANIA_KEYS.some((k) => state.maniaShared.enabled[k])) return;
+  state.maniaShared.enabled[4] = true;
+  state.maniaShared.open[4] = true;
 }
 
 /* ---------- ini generation ---------- */
-function genIni(){
+function genIni() {
   const out = [];
 
   out.push("[General]");
   pushKV(out, "Name", state.general.Name);
   pushKV(out, "Author", state.general.Author);
   out.push(fmtKV("Version", state.version));
+
+  // cursor options
+  out.push(fmtKV("CursorRotate", bool01(!!state.general.CursorRotate)));
+  out.push(fmtKV("CursorTrailRotate", bool01(!!state.general.CursorTrailRotate)));
+  out.push(fmtKV("CursorExpand", bool01(!!state.general.CursorExpand)));
+  out.push(fmtKV("CursorCentre", bool01(!!state.general.CursorCentre)));
+
   out.push("");
 
-  if(state.exportMania){
-    for(const keys of ALL_MANIA_KEYS){
-      if(!state.maniaShared.enabled[keys]) continue;
+  if (state.exportMania) {
+    for (const keys of ALL_MANIA_KEYS) {
+      if (!state.maniaShared.enabled[keys]) continue;
       out.push("[Mania]");
       out.push(...genManiaBlock(keys));
       out.push("");
     }
   }
 
-  while(out.length && out[out.length-1]==="") out.pop();
+  while (out.length && out[out.length - 1] === "") out.pop();
   return out.join("\n");
 }
 
-function genManiaBlock(keys){
-  const m = state.mania[keys] || defaultManiaMode(keys);
+function genManiaBlock(keys) {
+  const m = state.mania[keys] || defaultManiaMode();
   const lines = [];
 
   lines.push(fmtKV("Keys", keys));
   spacer(lines);
 
-  function normalizeCsv(raw, count, fallback){
+  function normalizeCsv(raw, count, fallback) {
     const r = cleanLine(raw);
-    if(!r) return fallback;
-    if(r.includes(",")) return r;
-    return Array.from({length: count}, ()=>r).join(",");
+    if (!r) return fallback;
+    if (r.includes(",")) return r;
+    return Array.from({ length: count }, () => r).join(",");
   }
 
-  lines.push(fmtKV("ColumnWidth", normalizeCsv(m.ColumnWidth, keys, Array.from({length:keys}, ()=>"70").join(","))));
-  lines.push(fmtKV("ColumnSpacing", normalizeCsv(m.ColumnSpacing, Math.max(0,keys-1), Array.from({length:Math.max(0,keys-1)}, ()=>"0").join(","))));
+  lines.push(fmtKV("ColumnWidth", normalizeCsv(m.ColumnWidth, keys, Array.from({ length: keys }, () => "70").join(","))));
+  lines.push(fmtKV("ColumnSpacing", normalizeCsv(m.ColumnSpacing, Math.max(0, keys - 1), Array.from({ length: Math.max(0, keys - 1) }, () => "0").join(","))));
 
-  if(!m.AutoColumnStart){
+  if (!m.AutoColumnStart) {
     pushKV(lines, "ColumnStart", m.ColumnStart);
   }
   pushKV(lines, "ColumnRight", m.ColumnRight);
-  lines.push(fmtKV("ColumnLineWidth", normalizeCsv(m.ColumnLineWidth, keys+1, Array.from({length:keys+1}, ()=>"0").join(","))));
+  lines.push(fmtKV("ColumnLineWidth", normalizeCsv(m.ColumnLineWidth, keys + 1, Array.from({ length: keys + 1 }, () => "0").join(","))));
   spacer(lines);
 
   pushKV(lines, "HitPosition", m.HitPosition);
@@ -1243,17 +608,17 @@ function genManiaBlock(keys){
 
   header(lines, "colours");
 
-  for(let ui=1; ui<=keys; ui++){
+  for (let ui = 1; ui <= keys; ui++) {
     const v = cleanLine(m.Colour?.[ui]);
-    if(v) lines.push(fmtKV(`Colour${ui-1}`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`Colour${ui-1}`).padEnd(32," ")} :` : `//Colour${ui-1}:`);
+    if (v) lines.push(fmtKV(`Colour${ui - 1}`, v));
+    else if (state.commentEmpty) lines.push(state.pretty ? `// ${String(`Colour${ui - 1}`).padEnd(32, " ")} :` : `//Colour${ui - 1}:`);
   }
   spacer(lines);
 
-  for(let ui=1; ui<=keys; ui++){
+  for (let ui = 1; ui <= keys; ui++) {
     const v = cleanLine(m.ColourLight?.[ui]);
-    if(v) lines.push(fmtKV(`ColourLight${ui-1}`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`ColourLight${ui-1}`).padEnd(32," ")} :` : `//ColourLight${ui-1}:`);
+    if (v) lines.push(fmtKV(`ColourLight${ui - 1}`, v));
+    else if (state.commentEmpty) lines.push(state.pretty ? `// ${String(`ColourLight${ui - 1}`).padEnd(32, " ")} :` : `//ColourLight${ui - 1}:`);
   }
 
   pushKV(lines, "ColourColumnLine", m.ColourColumnLine);
@@ -1266,106 +631,106 @@ function genManiaBlock(keys){
   spacer(lines);
   header(lines, "images");
 
-  const pKey  = m.pKey  || "";
+  const pKey = m.pKey || "";
   const pKeyD = m.pKeyD || "";
   const pNote = m.pNote || "";
-  const pNoteH= m.pNoteH|| "";
-  const pNoteL= m.pNoteL|| "";
-  const pNoteT= m.pNoteT|| "";
+  const pNoteH = m.pNoteH || "";
+  const pNoteL = m.pNoteL || "";
+  const pNoteT = m.pNoteT || "";
 
-  for(let idx=0; idx<keys; idx++){
+  for (let idx = 0; idx < keys; idx++) {
     const n = idx + 1;
     const v = pat(pKey, n);
-    if(v) lines.push(fmtKV(`KeyImage${idx}`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`KeyImage${idx}`).padEnd(32," ")} :` : `//KeyImage${idx}:`);
+    if (v) lines.push(fmtKV(`KeyImage${idx}`, v));
+    else if (state.commentEmpty) lines.push(state.pretty ? `// ${String(`KeyImage${idx}`).padEnd(32, " ")} :` : `//KeyImage${idx}:`);
   }
   spacer(lines);
 
-  for(let idx=0; idx<keys; idx++){
+  for (let idx = 0; idx < keys; idx++) {
     const n = idx + 1;
     const v = pat(pKeyD, n);
-    if(v) lines.push(fmtKV(`KeyImage${idx}D`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`KeyImage${idx}D`).padEnd(32," ")} :` : `//KeyImage${idx}D:`);
+    if (v) lines.push(fmtKV(`KeyImage${idx}D`, v));
+    else if (state.commentEmpty) lines.push(state.pretty ? `// ${String(`KeyImage${idx}D`).padEnd(32, " ")} :` : `//KeyImage${idx}D:`);
   }
   spacer(lines);
 
-  for(let idx=0; idx<keys; idx++){
+  for (let idx = 0; idx < keys; idx++) {
     const n = idx + 1;
     const v = pat(pNote, n);
-    if(v) lines.push(fmtKV(`NoteImage${idx}`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`NoteImage${idx}`).padEnd(32," ")} :` : `//NoteImage${idx}:`);
+    if (v) lines.push(fmtKV(`NoteImage${idx}`, v));
+    else if (state.commentEmpty) lines.push(state.pretty ? `// ${String(`NoteImage${idx}`).padEnd(32, " ")} :` : `//NoteImage${idx}:`);
   }
   spacer(lines);
 
-  for(let idx=0; idx<keys; idx++){
+  for (let idx = 0; idx < keys; idx++) {
     const n = idx + 1;
     const v = pat(pNoteH, n);
-    if(v) lines.push(fmtKV(`NoteImage${idx}H`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`NoteImage${idx}H`).padEnd(32," ")} :` : `//NoteImage${idx}H:`);
+    if (v) lines.push(fmtKV(`NoteImage${idx}H`, v));
+    else if (state.commentEmpty) lines.push(state.pretty ? `// ${String(`NoteImage${idx}H`).padEnd(32, " ")} :` : `//NoteImage${idx}H:`);
   }
   spacer(lines);
 
-  for(let idx=0; idx<keys; idx++){
+  for (let idx = 0; idx < keys; idx++) {
     const n = idx + 1;
     const v = pat(pNoteL, n);
-    if(v) lines.push(fmtKV(`NoteImage${idx}L`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`NoteImage${idx}L`).padEnd(32," ")} :` : `//NoteImage${idx}L:`);
+    if (v) lines.push(fmtKV(`NoteImage${idx}L`, v));
+    else if (state.commentEmpty) lines.push(state.pretty ? `// ${String(`NoteImage${idx}L`).padEnd(32, " ")} :` : `//NoteImage${idx}L:`);
   }
   spacer(lines);
 
-  for(let idx=0; idx<keys; idx++){
+  for (let idx = 0; idx < keys; idx++) {
     const n = idx + 1;
     const v = pat(pNoteT, n);
-    if(v) lines.push(fmtKV(`NoteImage${idx}T`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`NoteImage${idx}T`).padEnd(32," ")} :` : `//NoteImage${idx}T:`);
+    if (v) lines.push(fmtKV(`NoteImage${idx}T`, v));
+    else if (state.commentEmpty) lines.push(state.pretty ? `// ${String(`NoteImage${idx}T`).padEnd(32, " ")} :` : `//NoteImage${idx}T:`);
   }
   spacer(lines);
 
   pushKV(lines, "WarningArrow", m.WarningArrow);
 
-  while(lines.length && lines[lines.length-1]==="") lines.pop();
+  while (lines.length && lines[lines.length - 1] === "") lines.pop();
   return lines;
 }
 
 /* ---------- import ---------- */
-function parseIni(text){
-  const lines = String(text||"").split("\n");
-  const parsed = { General:{}, Mania: [] };
+function parseIni(text) {
+  const lines = String(text || "").split("\n");
+  const parsed = { General: {}, Mania: [] };
 
   let section = "";
   let curMania = null;
 
-  for(const raw of lines){
-    const line0 = raw.replace(/\r/g,"");
+  for (const raw of lines) {
+    const line0 = raw.replace(/\r/g, "");
     const line = line0.trim();
-    if(!line) continue;
-    if(line.startsWith("//") || line.startsWith(";")) continue;
+    if (!line) continue;
+    if (line.startsWith("//") || line.startsWith(";")) continue;
 
     const sec = line.match(/^\[(.+?)\]\s*$/);
-    if(sec){
+    if (sec) {
       section = sec[1];
-      if(section.toLowerCase() === "mania"){
-        curMania = { Keys:null, kv:{} };
+      if (section.toLowerCase() === "mania") {
+        curMania = { Keys: null, kv: {} };
         parsed.Mania.push(curMania);
-      }else{
+      } else {
         curMania = null;
       }
       continue;
     }
 
     let m = line.match(/^([A-Za-z0-9]+)\s*:\s*(.*)$/);
-    if(!m) m = line.match(/^([A-Za-z0-9]+)\s*=\s*(.*)$/);
-    if(!m) continue;
+    if (!m) m = line.match(/^([A-Za-z0-9]+)\s*=\s*(.*)$/);
+    if (!m) continue;
 
     const key = m[1];
     const val = (m[2] ?? "").trim();
 
     const secName = section.toLowerCase();
-    if(secName === "general") parsed.General[key] = val;
-    else if(secName === "mania" && curMania){
+    if (secName === "general") parsed.General[key] = val;
+    else if (secName === "mania" && curMania) {
       curMania.kv[key] = val;
-      if(key === "Keys"){
-        const k = parseInt(val,10);
+      if (key === "Keys") {
+        const k = parseInt(val, 10);
         curMania.Keys = Number.isFinite(k) ? k : null;
       }
     }
@@ -1373,117 +738,125 @@ function parseIni(text){
   return parsed;
 }
 
-function applyParsed(parsed){
-  if(parsed.General.Version) state.version = parsed.General.Version;
-  if("Name" in parsed.General) state.general.Name = parsed.General.Name;
-  if("Author" in parsed.General) state.general.Author = parsed.General.Author;
+function applyParsed(parsed) {
+  if (parsed.General.Version) state.version = parsed.General.Version;
+  if ("Name" in parsed.General) state.general.Name = parsed.General.Name;
+  if ("Author" in parsed.General) state.general.Author = parsed.General.Author;
 
-  for(const blk of parsed.Mania){
+  // General cursor bools
+  for (const k of ["CursorRotate", "CursorTrailRotate", "CursorExpand", "CursorCentre"]) {
+    if (k in parsed.General) state.general[k] = String(parsed.General[k]).trim() === "1";
+  }
+
+  for (const blk of parsed.Mania) {
     const keys = blk.Keys;
-    if(!keys || keys < 1 || keys > 18) continue;
+    if (!keys || keys < 1 || keys > 18) continue;
 
     state.maniaShared.enabled[keys] = true;
     state.maniaShared.open[keys] = true;
 
-    const m = state.mania[keys] || defaultManiaMode(keys);
+    const m = state.mania[keys] || defaultManiaMode();
 
     const direct = [
-      "ColumnStart","ColumnRight","ColumnSpacing","ColumnWidth","ColumnLineWidth",
-      "HitPosition","LightPosition","ScorePosition","ComboPosition",
-      "JudgementLine","KeysUnderNotes","UpsideDown",
-      "BarlineHeight","WidthForNoteHeightScale",
-      "ColourColumnLine","ColourBarline","ColourJudgementLine","ColourKeyWarning","ColourHold","ColourBreak",
+      "ColumnStart", "ColumnRight", "ColumnSpacing", "ColumnWidth", "ColumnLineWidth",
+      "HitPosition", "LightPosition", "ScorePosition", "ComboPosition",
+      "JudgementLine", "KeysUnderNotes", "UpsideDown",
+      "BarlineHeight", "WidthForNoteHeightScale",
+      "ColourColumnLine", "ColourBarline", "ColourJudgementLine", "ColourKeyWarning", "ColourHold", "ColourBreak",
       "WarningArrow"
     ];
 
-    for(const k of direct){
-      if(k in blk.kv){
-        if(typeof m[k] === "boolean") m[k] = blk.kv[k].trim() === "1";
+    for (const k of direct) {
+      if (k in blk.kv) {
+        if (typeof m[k] === "boolean") m[k] = blk.kv[k].trim() === "1";
         else m[k] = blk.kv[k];
       }
     }
 
     m.AutoColumnStart = isBlank(m.ColumnStart);
 
-    for(let i=0;i<keys;i++){
+    for (let i = 0; i < keys; i++) {
       const ck = `Colour${i}`;
       const lk = `ColourLight${i}`;
-      if(ck in blk.kv) m.Colour[i+1] = blk.kv[ck];
-      if(lk in blk.kv) m.ColourLight[i+1] = blk.kv[lk];
+      if (ck in blk.kv) m.Colour[i + 1] = blk.kv[ck];
+      if (lk in blk.kv) m.ColourLight[i + 1] = blk.kv[lk];
     }
 
     state.mania[keys] = m;
   }
 
+  ensureAtLeastOneKeymodeOn();
   saveSoon(true);
   renderActiveTab();
 }
 
 /* ---------- save/load ---------- */
-function saveState(){
-  try{
+function saveState() {
+  try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     $("savePulse").textContent = "Saved";
-    setTimeout(()=>{ $("savePulse").textContent="—"; }, 700);
-  }catch(e){
+    setTimeout(() => { $("savePulse").textContent = "—"; }, 700);
+  } catch (e) {
     $("savePulse").textContent = "ERR";
   }
 }
-function loadState(){
-  try{
+
+function loadState() {
+  try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw) return;
+    if (!raw) return;
     const s = JSON.parse(raw);
-    if(!s) return;
+    if (!s) return;
 
-    state.activeTab = s.activeTab ?? state.activeTab;
+    // start clean, then merge carefully
+    const base = makeDefaultState();
 
-    state.exportMania = (s.exportMania ?? true) ? true : false;
-    state.pretty = (s.pretty ?? true) ? true : false;
-    state.commentEmpty = (s.commentEmpty ?? false) ? true : false;
-    state.version = s.version ?? "latest";
+    base.activeTab = s.activeTab ?? base.activeTab;
+    base.exportMania = (s.exportMania ?? true) ? true : false;
+    base.pretty = (s.pretty ?? true) ? true : false;
+    base.commentEmpty = (s.commentEmpty ?? false) ? true : false;
+    base.version = s.version ?? base.version;
 
-    Object.assign(state.general, s.general || {});
+    Object.assign(base.general, s.general || {});
 
-    if(s.maniaShared){
-      for(const k of ALL_MANIA_KEYS){
-        state.maniaShared.enabled[k] = !!s.maniaShared.enabled?.[k];
-        state.maniaShared.open[k] = !!s.maniaShared.open?.[k];
+    // sanity for cursor fields (in case old storage)
+    for (const k of ["CursorRotate", "CursorTrailRotate", "CursorExpand", "CursorCentre"]) {
+      base.general[k] = !!base.general[k];
+    }
+
+    if (s.maniaShared) {
+      for (const k of ALL_MANIA_KEYS) {
+        base.maniaShared.enabled[k] = !!s.maniaShared.enabled?.[k];
+        base.maniaShared.open[k] = !!s.maniaShared.open?.[k];
       }
-      if(!ALL_MANIA_KEYS.some(k=>state.maniaShared.enabled[k])){
-        state.maniaShared.enabled[4]=true;
-        state.maniaShared.open[4]=true;
+      ensureAtLeastOneKeymodeOn();
+    }
+
+    if (s.mania) {
+      for (const k of ALL_MANIA_KEYS) {
+        if (s.mania[k]) base.mania[k] = { ...defaultManiaMode(), ...s.mania[k] };
       }
     }
-    if(s.mania){
-      for(const k of ALL_MANIA_KEYS){
-        if(s.mania[k]) state.mania[k] = { ...defaultManiaMode(k), ...s.mania[k] };
-      }
-    }
-  }catch(e){}
+
+    state = base;
+  } catch (e) { /* ignore */ }
 }
 
-const saveSoon = debounce((force=false)=>{
+const saveSoon = debounce((force = false) => {
   saveState();
-  if(force) updatePreview();
+  if (force) updatePreview();
 }, 300);
 
-const previewSoon = debounce(()=> updatePreview(), 70);
-
-function onAnyChange(){
-  previewSoon();
-  saveSoon();
-  updateModeBadge();
-}
+const previewSoon = debounce(() => updatePreview(), 70);
 
 /* ---------- actions ---------- */
-function updatePreview(){
+function updatePreview() {
   $("preview").value = genIni();
 }
 
-function downloadIni(){
+function downloadIni() {
   const text = $("preview").value || genIni();
-  const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
+  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -1494,95 +867,172 @@ function downloadIni(){
   URL.revokeObjectURL(url);
 }
 
-async function copyIni(){
-  try{
+async function copyIni() {
+  try {
     await navigator.clipboard.writeText($("preview").value || genIni());
     $("savePulse").textContent = "Copied";
-    setTimeout(()=>{ $("savePulse").textContent="—"; }, 800);
-  }catch(e){
+    setTimeout(() => { $("savePulse").textContent = "—"; }, 800);
+  } catch (e) {
     $("savePulse").textContent = "NoCopy";
-    setTimeout(()=>{ $("savePulse").textContent="—"; }, 800);
+    setTimeout(() => { $("savePulse").textContent = "—"; }, 800);
   }
 }
 
-function wipeAll(){
-  if(!confirm("Full reset + clear autosave?")) return;
-  try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+function wipeAll() {
+  if (!confirm("Full reset + clear autosave?")) return;
+  try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
   location.reload();
 }
 
-function updateModeBadge(){
+function updateModeBadge() {
   const parts = ["GENERAL"];
-  if(state.exportMania) parts.push("MANIA");
+  if (state.exportMania) parts.push("MANIA");
   $("modeBadge").textContent = "export: " + parts.join("+");
 }
 
-/* ---------- dock toggles ---------- */
-function syncDockToggles(){
+function syncDockToggles() {
   $("togMania").classList.toggle("active", state.exportMania);
   $("togPretty").classList.toggle("active", state.pretty);
   $("togCommentEmpty").classList.toggle("active", state.commentEmpty);
 }
 
-/* ---------- wire top-level ---------- */
-document.querySelectorAll(".icoBtn[data-tab]").forEach(b=>{
-  b.addEventListener("click", ()=> setActiveTab(b.dataset.tab));
-});
+/* ---------- change pipeline ---------- */
+function onAnyChange(skipSave = false) {
+  previewSoon();
+  if (!skipSave) saveSoon();
+  updateModeBadge();
+}
 
-$("downloadIni").addEventListener("click", downloadIni);
-$("copyIni").addEventListener("click", copyIni);
-$("wipeAll").addEventListener("click", wipeAll);
-$("refresh").addEventListener("click", updatePreview);
-$("selectAll").addEventListener("click", ()=>{
-  $("preview").focus();
-  $("preview").select();
-});
+/* ---------- event wiring ---------- */
+function wireDock() {
+  document.querySelectorAll(".icoBtn[data-tab]").forEach((b) => {
+    b.addEventListener("click", () => setActiveTab(b.dataset.tab));
+  });
 
-$("togMania").addEventListener("click", ()=>{
-  state.exportMania = !state.exportMania;
-  syncDockToggles();
-  onAnyChange();
-  if(state.activeTab === "mania") renderActiveTab();
-});
+  $("togMania").addEventListener("click", () => {
+    state.exportMania = !state.exportMania;
+    syncDockToggles();
+    onAnyChange();
+    if (state.activeTab === "mania") renderActiveTab();
+  });
 
-$("togPretty").addEventListener("click", ()=>{
-  state.pretty = !state.pretty;
-  syncDockToggles();
-  onAnyChange();
-});
-$("togCommentEmpty").addEventListener("click", ()=>{
-  state.commentEmpty = !state.commentEmpty;
-  syncDockToggles();
-  onAnyChange();
-});
+  $("togPretty").addEventListener("click", () => {
+    state.pretty = !state.pretty;
+    syncDockToggles();
+    onAnyChange();
+  });
 
-$("verBtn").addEventListener("click", ()=>{
-  $("versionPick").value = state.version;
-  $("verDlg").showModal();
-});
-$("versionPick").addEventListener("change", ()=>{
-  state.version = $("versionPick").value;
-  onAnyChange();
-  renderActiveTab();
-});
+  $("togCommentEmpty").addEventListener("click", () => {
+    state.commentEmpty = !state.commentEmpty;
+    syncDockToggles();
+    onAnyChange();
+  });
+}
 
-$("importOpen").addEventListener("click", ()=>{
-  $("importArea").value = $("preview").value || "";
-  $("importDlg").showModal();
-});
-$("importApply").addEventListener("click", ()=>{
-  const parsed = parseIni($("importArea").value || "");
-  applyParsed(parsed);
-  $("importDlg").close();
-});
+function wireTopbar() {
+  $("downloadIni").addEventListener("click", downloadIni);
+  $("copyIni").addEventListener("click", copyIni);
+  $("wipeAll").addEventListener("click", wipeAll);
+  $("refresh").addEventListener("click", updatePreview);
+
+  $("selectAll").addEventListener("click", () => {
+    $("preview").focus();
+    $("preview").select();
+  });
+
+  $("verBtn").addEventListener("click", () => {
+    $("versionPick").value = state.version;
+    $("verDlg").showModal();
+  });
+
+  $("versionPick").addEventListener("change", () => {
+    state.version = $("versionPick").value;
+    onAnyChange();
+    renderActiveTab();
+  });
+
+  $("importOpen").addEventListener("click", () => {
+    $("importArea").value = $("preview").value || "";
+    $("importDlg").showModal();
+  });
+
+  $("importApply").addEventListener("click", () => {
+    const parsed = parseIni($("importArea").value || "");
+    applyParsed(parsed);
+    $("importDlg").close();
+  });
+}
+
+function wirePanelDelegation() {
+  const panel = $("panel");
+
+  // click: accordions
+  panel.addEventListener("click", (e) => {
+    const head = e.target.closest(".blockHead");
+    if (!head || !panel.contains(head)) return;
+    handleAccordionClick(panel, head);
+  });
+
+  // input/change: all inputs
+  function handleInputEvent(e) {
+    const t = e.target;
+
+    // color pickers
+    if (t && t.matches('input[type="color"][data-pick-for]')) {
+      handleColorPick(panel, t);
+      return;
+    }
+
+    // km toggles (enable/disable keymodes)
+    if (t && t.classList && t.classList.contains("kmToggle")) {
+      const k = Number(t.dataset.k);
+      state.maniaShared.enabled[k] = !!t.checked;
+      state.maniaShared.open[k] = !!t.checked;
+      ensureAtLeastOneKeymodeOn();
+      renderActiveTab();
+      onAnyChange();
+      return;
+    }
+
+    // data-path inputs
+    if (t && t.dataset && t.dataset.path) {
+      const path = t.dataset.path;
+      const prev = getByPath(state, path);
+
+      if (t.type === "checkbox") setByPath(state, path, !!t.checked);
+      else setByPath(state, path, t.value);
+
+      // AutoColumnStart special handling
+      if (path.endsWith(".AutoColumnStart")) {
+        syncColumnStart(panel, t);
+      }
+
+      // keep pick synced for color text fields
+      if (t.type === "text") handleTextToPick(panel, t);
+
+      // Avoid unnecessary spam if value didn't change (small perf)
+      const next = getByPath(state, path);
+      if (prev !== next) onAnyChange();
+      return;
+    }
+  }
+
+  panel.addEventListener("input", handleInputEvent);
+  panel.addEventListener("change", handleInputEvent);
+}
 
 /* ---------- init ---------- */
-loadState();
-syncDockToggles();
-renderDockActive();
-updateModeBadge();
-renderActiveTab();
-updatePreview();
+function init() {
+  loadState();
+  syncDockToggles();
+  renderDockActive();
+  updateModeBadge();
+  wireDock();
+  wireTopbar();
+  wirePanelDelegation();
+  renderActiveTab();
+  updatePreview();
+}
+
+init();
 </script>
-</body>
-</html>
