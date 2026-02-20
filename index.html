@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -222,7 +222,7 @@
       min-height:0;
       padding:10px;
       display:grid;
-      /* Layout melhor: painel de opções um pouco maior */
+      /* Better layout: options panel slightly larger */
       grid-template-columns: 1.20fr .80fr;
       gap:10px;
       overflow:hidden;
@@ -243,7 +243,7 @@
       transform: translateZ(0);
     }
 
-    /* Cabeçalho sticky e com leve “blur” para ficar legível ao rolar */
+    /* Sticky header with a bit of blur for readability while scrolling */
     .cardHead{
       padding:10px 10px 8px;
       display:flex;
@@ -319,7 +319,7 @@
 
     textarea{
       width:100%;
-      /* melhor: ocupa a altura do card, sem “chutar” 100vh */
+      /* Better: fill card height without guessing 100vh */
       height: calc(100% - 2px);
       min-height: 100%;
       resize:none;
@@ -531,8 +531,8 @@
     <div class="tools">
       <span class="badge" id="savePulse">—</span>
       <button class="btn primary" id="downloadIni">Download</button>
-      <button class="btn" id="copyIni">Copiar</button>
-      <button class="btn" id="importOpen">Importar</button>
+      <button class="btn" id="copyIni">Copy</button>
+      <button class="btn" id="importOpen">Import</button>
       <button class="btn danger" id="wipeAll">Reset</button>
     </div>
   </div>
@@ -540,7 +540,7 @@
   <div class="layout">
     <aside class="dock">
 
-      <!-- Tabs (só Mania + Preview) -->
+      <!-- Tabs (Mania + Preview only) -->
       <div class="dockGroup">
         <button class="icoBtn" data-tab="mania" title="Mania">
           <span aria-hidden="true">🎹</span>
@@ -572,12 +572,12 @@
           <span class="tip">h style</span>
         </button>
 
-        <button class="icoBtn" id="togCommentEmpty" title="comentar vazios" type="button">
+        <button class="icoBtn" id="togCommentEmpty" title="comment empty fields" type="button">
           <span aria-hidden="true">//</span>
-          <span class="tip">comentar vazios</span>
+          <span class="tip">comment empty fields</span>
         </button>
         <div class="noteUnder" style="text-align:center; padding:0 6px;">
-          *não exportado no skin.ini
+          *not exported to skin.ini
         </div>
 
         <button class="icoBtn" id="verBtn" title="Version" type="button">
@@ -597,7 +597,7 @@
             <span class="badge" id="modeBadge">export: GENERAL+MANIA</span>
           </div>
           <div class="tools">
-            <button class="btn" id="refresh">Atualizar</button>
+            <button class="btn" id="refresh">Refresh</button>
           </div>
         </div>
         <div class="cardBody" id="panel"></div>
@@ -609,7 +609,7 @@
             <span class="badge">skin.ini</span>
           </div>
           <div class="tools">
-            <button class="btn" id="selectAll">Selecionar</button>
+            <button class="btn" id="selectAll">Select</button>
           </div>
         </div>
         <div class="cardBody">
@@ -626,7 +626,7 @@
   <form method="dialog" style="margin:0;padding:12px;">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
       <b>Version</b>
-      <button class="btn" value="cancel">Fechar</button>
+      <button class="btn" value="cancel">Close</button>
     </div>
     <div style="height:10px"></div>
     <select id="versionPick" style="width:100%;">
@@ -647,10 +647,10 @@
 <dialog id="importDlg" style="max-width:900px;width:calc(100% - 24px);border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(0,0,0,.88);color:rgba(233,233,238,.95);box-shadow:0 20px 60px rgba(0,0,0,.55);">
   <form method="dialog" style="margin:0;padding:12px;">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
-      <b>Importar skin.ini</b>
+      <b>Import skin.ini</b>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn" value="cancel">Fechar</button>
-        <button class="btn primary" id="importApply" value="default" type="button">Aplicar</button>
+        <button class="btn" value="cancel">Close</button>
+        <button class="btn primary" id="importApply" value="default" type="button">Apply</button>
       </div>
     </div>
     <div style="height:10px"></div>
@@ -876,7 +876,7 @@ function uiRowColor(label, path){
   `;
 }
 
-/* ---------- Tabs (só mania/preview) ---------- */
+/* ---------- Tabs (mania/preview only) ---------- */
 const TABS = [
   { key:"mania", title:"Mania", render: renderMania },
   { key:"preview", title:"Preview", render: renderPreviewOnly },
@@ -942,7 +942,7 @@ function renderMania(){
       </div>
     </div>
 
-    ${!state.exportMania ? `<div class="disabledHint">Mania export desligado</div>` : ``}
+    ${!state.exportMania ? `<div class="disabledHint">Mania export is disabled</div>` : ``}
 
     <div class="block open">
       <button class="blockHead" type="button"><span>keymodes</span><span class="caret">▸</span></button>
@@ -952,7 +952,7 @@ function renderMania(){
     </div>
 
     <div id="maniaBlocks">
-      ${blocks || `<div class="disabledHint">nenhum modo ativo</div>`}
+      ${blocks || `<div class="disabledHint">no active mode</div>`}
     </div>
   `;
 }
@@ -1002,8 +1002,8 @@ function renderManiaBlock(keys){
             ${uiRowBool("Auto ColumnStart", `mania.${keys}.AutoColumnStart`)}
             ${uiRowNum("ColumnStart", `mania.${keys}.ColumnStart`)}
             ${uiRowNum("ColumnRight", `mania.${keys}.ColumnRight`)}
-            ${uiRowText("ColumnWidth", `mania.${keys}.ColumnWidth`, "70 ou 70,70,70")}
-            ${uiRowText("ColumnSpacing", `mania.${keys}.ColumnSpacing`, "0 ou 0,0,0")}
+            ${uiRowText("ColumnWidth", `mania.${keys}.ColumnWidth`, "70 or 70,70,70")}
+            ${uiRowText("ColumnSpacing", `mania.${keys}.ColumnSpacing`, "0 or 0,0,0")}
             ${uiRowText("ColumnLineWidth", `mania.${keys}.ColumnLineWidth`, "")}
           </div>
         </div>
@@ -1047,13 +1047,13 @@ function renderManiaBlock(keys){
         <div class="block open">
           <button class="blockHead" type="button"><span>paths</span><span class="caret">▸</span></button>
           <div class="blockBody">
-            ${uiRowText("KeyImage# pattern", `mania.${keys}.pKey`, "ex: mania/key{n}")}
-            ${uiRowText("KeyImage#D pattern", `mania.${keys}.pKeyD`, "ex: mania/key{n}d")}
-            ${uiRowText("NoteImage# pattern", `mania.${keys}.pNote`, "ex: mania/note{n}")}
-            ${uiRowText("NoteImage#H pattern", `mania.${keys}.pNoteH`, "ex: mania/note{n}h")}
-            ${uiRowText("NoteImage#L pattern", `mania.${keys}.pNoteL`, "ex: mania/note{n}l")}
-            ${uiRowText("NoteImage#T pattern", `mania.${keys}.pNoteT`, "ex: mania/note{n}t")}
-            ${uiRowText("WarningArrow", `mania.${keys}.WarningArrow`, "ex: mania/warning")}
+            ${uiRowText("KeyImage# pattern", `mania.${keys}.pKey`, "e.g. mania/key{n}")}
+            ${uiRowText("KeyImage#D pattern", `mania.${keys}.pKeyD`, "e.g. mania/key{n}d")}
+            ${uiRowText("NoteImage# pattern", `mania.${keys}.pNote`, "e.g. mania/note{n}")}
+            ${uiRowText("NoteImage#H pattern", `mania.${keys}.pNoteH`, "e.g. mania/note{n}h")}
+            ${uiRowText("NoteImage#L pattern", `mania.${keys}.pNoteL`, "e.g. mania/note{n}l")}
+            ${uiRowText("NoteImage#T pattern", `mania.${keys}.pNoteT`, "e.g. mania/note{n}t")}
+            ${uiRowText("WarningArrow", `mania.${keys}.WarningArrow`, "e.g. mania/warning")}
           </div>
         </div>
       </div>
@@ -1062,7 +1062,7 @@ function renderManiaBlock(keys){
 }
 
 function renderPreviewOnly(){
-  return `<div class="disabledHint">use o painel da direita</div>`;
+  return `<div class="disabledHint">use the right panel</div>`;
 }
 
 /* ---------- hydration + accordions ---------- */
@@ -1506,7 +1506,7 @@ async function copyIni(){
 }
 
 function wipeAll(){
-  if(!confirm("Reset total + apagar autosave?")) return;
+  if(!confirm("Full reset + clear autosave?")) return;
   try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
   location.reload();
 }
