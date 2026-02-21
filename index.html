@@ -517,7 +517,6 @@
 
   <div class="topbar">
     <div class="brand">
-      <!-- icon -->
       <img alt="icon" src="https://i.pinimg.com/originals/da/b4/cb/dab4cbf31e4e8d7688b0e830d5d640f1.gif">
       <div class="title">
         <b>skin.ini studio</b>
@@ -537,7 +536,7 @@
   <div class="layout">
     <aside class="dock">
 
-      <!-- Tabs (Mania + Preview only) -->
+      <!-- Tabs -->
       <div class="dockGroup">
         <button class="icoBtn" data-tab="mania" title="Mania">
           <span aria-hidden="true">🎹</span>
@@ -553,25 +552,44 @@
       <!-- Export -->
       <div class="dockGroup">
         <div class="miniLabel">export</div>
-
         <button class="icoBtn" id="togMania" title="Mania on/off" type="button">
           <span aria-hidden="true">🎹</span>
           <span class="tip">Mania</span>
         </button>
       </div>
 
-      <!-- Style -->
+      <!-- Styles (TRULY different) -->
       <div class="dockGroup">
-        <div class="miniLabel">style</div>
+        <div class="miniLabel">styles</div>
 
-        <button class="icoBtn" id="togPretty" title="h style" type="button">
+        <button class="icoBtn" id="styleH" title="H style (aligned + // headers)" type="button">
           <span aria-hidden="true">H</span>
-          <span class="tip">h style</span>
+          <span class="tip">H (aligned)</span>
         </button>
+
+        <button class="icoBtn" id="styleArc" title="ARC (tabs + UPPERCASE + =)" type="button">
+          <span aria-hidden="true">⟡</span>
+          <span class="tip">ARC</span>
+        </button>
+
+        <button class="icoBtn" id="styleRune" title="RUNE (boxed banners + ; comments)" type="button">
+          <span aria-hidden="true">ᚱ</span>
+          <span class="tip">RUNE</span>
+        </button>
+
+        <button class="icoBtn" id="styleNano" title="NANO (ultra compact, no fluff)" type="button">
+          <span aria-hidden="true">·</span>
+          <span class="tip">NANO</span>
+        </button>
+      </div>
+
+      <!-- Extra -->
+      <div class="dockGroup">
+        <div class="miniLabel">extra</div>
 
         <button class="icoBtn" id="togCommentEmpty" title="comment empty fields" type="button">
           <span aria-hidden="true">//</span>
-          <span class="tip">comment empty fields</span>
+          <span class="tip">comment empty</span>
         </button>
         <div class="noteUnder" style="text-align:center; padding:0 6px;">
           *not exported to skin.ini
@@ -592,6 +610,7 @@
           <div class="left">
             <span class="badge" id="panelTitle">Mania</span>
             <span class="badge" id="modeBadge">export: GENERAL+MANIA</span>
+            <span class="badge" id="styleBadge">style: —</span>
           </div>
           <div class="tools">
             <button class="btn" id="refresh">Refresh</button>
@@ -657,7 +676,7 @@
 
 <script>
 const $ = (id)=>document.getElementById(id);
-const STORAGE_KEY = "skinini_studio_v8_mania_hits";
+const STORAGE_KEY = "skinini_studio_v9_styles_hits";
 
 /* ---------- util ---------- */
 function cleanLine(s){ return String(s ?? "").replace(/\r/g,"").trimEnd(); }
@@ -696,35 +715,153 @@ function pat(pattern, n){
   return p.replaceAll("{n}", String(n));
 }
 
-function fmtKV(key, value){
-  const v = cleanLine(value);
-  if(state.pretty){
-    const k = String(key).padEnd(32, " ");
-    return `${k} : ${v}`;
-  }
-  return `${key}: ${v}`;
+/* ---------- STYLE ENGINE (unique de verdade) ---------- */
+/*
+  H    : alinhado, ":" com espaço, headers "// x --", blank lines
+  ARC  : UPPERCASE keys, "=" sem espaços, tab alignment, section names em CAPS, comentários ";;"
+  RUNE : banners gigantes, comentários ";", ":" normal, valores com aspas se tiver espaço, separadores decorativos
+  NANO : ultra-compact, sem headers, sem linhas em branco, "=" sem espaços, e se commentEmpty ligado usa ";" curtinho
+*/
+const STYLES = {
+  H: {
+    name: "H",
+    icon: "H",
+    sectionCase: "normal",
+    keyCase: "normal",
+    sep: " : ",
+    align: 32,
+    alignMode: "spaces",
+    comment: "//",
+    blankLines: true,
+    includeHeaders: true,
+    headerLines: (title)=> [`// ${title} --`, ""],
+    valueTransform: (v)=> v,
+  },
+  ARC: {
+    name: "ARC",
+    icon: "⟡",
+    sectionCase: "upper",
+    keyCase: "upper",
+    sep: "=",
+    align: 1,              // 1 = liga tab alignment
+    alignMode: "tabs",      // usa \t para colunar (bem diferente)
+    comment: ";;",
+    blankLines: false,      // sem respiro
+    includeHeaders: true,
+    headerLines: (title)=> [`;;[${String(title).toUpperCase()}]`, `;;--------------------`],
+    valueTransform: (v)=> v,
+  },
+  RUNE: {
+    name: "RUNE",
+    icon: "ᚱ",
+    sectionCase: "title",
+    keyCase: "normal",
+    sep: " : ",
+    align: 24,
+    alignMode: "spaces",
+    comment: ";",
+    blankLines: true,
+    includeHeaders: true,
+    headerLines: (title)=>{
+      const t = String(title||"").toUpperCase();
+      const bar = ";".padEnd(54,"=");
+      return [bar, `;  ${t}`, bar, ""];
+    },
+    valueTransform: (v)=>{
+      const s = cleanLine(v);
+      // se tiver espaço/tab, envolve em aspas — "estilo único" sem quebrar ini
+      if(/[ \t]/.test(s) && !/^".*"$/.test(s)) return `"${s}"`;
+      return s;
+    },
+  },
+  NANO: {
+    name: "NANO",
+    icon: "·",
+    sectionCase: "normal",
+    keyCase: "normal",
+    sep: "=",
+    align: 0,
+    alignMode: "none",
+    comment: ";",
+    blankLines: false,
+    includeHeaders: false,
+    headerLines: (_)=> [],
+    valueTransform: (v)=> cleanLine(v),
+  },
+};
+
+function curStyle(){ return STYLES[state.style] || STYLES.H; }
+
+function formatSectionName(name){
+  const st = curStyle();
+  const s = String(name || "");
+  if(st.sectionCase === "upper") return s.toUpperCase();
+  if(st.sectionCase === "title") return s.replace(/\w+/g, w=>w[0].toUpperCase()+w.slice(1).toLowerCase());
+  return s;
 }
+function formatKeyName(key){
+  const st = curStyle();
+  const k = String(key || "");
+  if(st.keyCase === "upper") return k.toUpperCase();
+  return k;
+}
+function formatValue(value){
+  return curStyle().valueTransform(String(value ?? ""));
+}
+
+function fmtKV(key, value){
+  const st = curStyle();
+  const k = formatKeyName(key);
+  const v = formatValue(value);
+
+  if(st.alignMode === "tabs"){
+    // tab alignment: KEY<TAB>=VALUE (bem diferente do H)
+    // número de tabs depende do tamanho da key
+    const len = k.length;
+    const tabs = (len < 8) ? "\t\t\t" : (len < 16) ? "\t\t" : "\t";
+    return `${k}${tabs}${st.sep}${v}`; // sep já é "=" no ARC
+  }
+
+  if(st.alignMode === "spaces" && st.align > 0){
+    const kk = k.padEnd(st.align, " ");
+    return `${kk}${st.sep}${v}`;
+  }
+
+  return `${k}${st.sep}${v}`;
+}
+
 function pushKV(lines, key, value){
-  const v = cleanLine(value);
-  if(v !== ""){
-    lines.push(fmtKV(key, v));
+  const v0 = cleanLine(value);
+  if(v0 !== ""){
+    lines.push(fmtKV(key, v0));
     return;
   }
-  if(state.commentEmpty){
-    if(state.pretty){
-      const k = String(key).padEnd(32, " ");
-      lines.push(`// ${k} :`);
-    }else{
-      lines.push(`//${key}:`);
-    }
+
+  if(!state.commentEmpty) return;
+
+  const st = curStyle();
+  const k = formatKeyName(key);
+
+  if(st.alignMode === "tabs"){
+    lines.push(`${st.comment}${k}\t${st.sep}`.trimEnd());
+    return;
   }
+  if(st.alignMode === "spaces" && st.align > 0){
+    const kk = k.padEnd(st.align, " ");
+    lines.push(`${st.comment} ${kk}${st.sep}`.trimEnd());
+    return;
+  }
+  lines.push(`${st.comment}${k}${st.sep}`.trimEnd());
 }
-function spacer(lines){ if(state.pretty) lines.push(""); }
+
+function spacer(lines){
+  if(curStyle().blankLines) lines.push("");
+}
 function header(lines, title){
-  if(state.pretty){
-    lines.push(`// ${title} --`);
-    lines.push("");
-  }
+  const st = curStyle();
+  if(!st.includeHeaders) return;
+  const hs = st.headerLines?.(title) || [];
+  lines.push(...hs);
 }
 
 /* ---------- auto-center helpers ---------- */
@@ -783,7 +920,6 @@ function defaultManiaMode(keys){
     BarlineHeight: "",
     WidthForNoteHeightScale: "",
 
-    /* stage / lighting */
     StageLeft: "",
     StageRight: "",
     StageBottom: "",
@@ -803,14 +939,12 @@ function defaultManiaMode(keys){
     Colour: {},
     ColourLight: {},
 
-    /* auto-center */
     AutoColumnStart: true,
     ARPreset: "16:9",
     ARW: "16",
     ARH: "9",
     CenterOffset: "0",
 
-    // patterns / paths (use {n} = 1..Keys)
     pKey: "",
     pKeyD: "",
     pNote: "",
@@ -819,7 +953,6 @@ function defaultManiaMode(keys){
     pNoteT: "",
     WarningArrow: "",
 
-    // hits (osu!mania judgements)
     Hit0: "",
     Hit50: "",
     Hit100: "",
@@ -833,7 +966,7 @@ const state = {
   activeTab: "mania",
   exportMania: true,
 
-  pretty: true,
+  style: "H",          // H | ARC | RUNE | NANO
   commentEmpty: false,
 
   version: "latest",
@@ -963,6 +1096,9 @@ function updateTopSub(){
   const t = TABS.find(x=>x.key===state.activeTab)?.title ?? "—";
   $("topSub").textContent = t;
   $("panelTitle").textContent = t;
+
+  const st = curStyle();
+  $("styleBadge").textContent = `style: ${st.name}`;
 }
 
 /* ---------- Panels ---------- */
@@ -1180,7 +1316,6 @@ function renderManiaBlock(keys){
           </div>
         </div>
 
-        <!-- NEW: hits -->
         <div class="block open">
           <button class="blockHead" type="button"><span>hits (judgements)</span><span class="caret">▸</span></button>
           <div class="blockBody">
@@ -1210,7 +1345,7 @@ function wireAccordions(root){
     if(head.dataset.fold){
       head.addEventListener("click", ()=>{
         const k = Number(head.dataset.fold);
-        const block = root.querySelector(`.block[data-keys="${k}"]`);
+        const block = root.querySelector(\`.block[data-keys="\${k}"]\`);
         if(!block) return;
         const nowOpen = !block.classList.contains("open");
         block.classList.toggle("open", nowOpen);
@@ -1318,8 +1453,9 @@ function wirePanelListeners(root){
 /* ---------- ini generation ---------- */
 function genIni(){
   const out = [];
+  const st = curStyle();
 
-  out.push("[General]");
+  out.push(`[${formatSectionName("General")}]`);
   pushKV(out, "Name", state.general.Name);
   pushKV(out, "Author", state.general.Author);
   out.push(fmtKV("Version", state.version));
@@ -1328,7 +1464,7 @@ function genIni(){
   out.push(fmtKV("CursorExpand", bool01(!!state.general.CursorExpand)));
   out.push(fmtKV("CursorRotate", bool01(!!state.general.CursorRotate)));
   out.push(fmtKV("CursorTrailRotate", bool01(!!state.general.CursorTrailRotate)));
-  out.push("");
+  spacer(out);
 
   const hasFonts =
     cleanLine(state.general.ScorePrefix) ||
@@ -1337,20 +1473,20 @@ function genIni(){
     cleanLine(state.general.ComboOverlap);
 
   if(hasFonts){
-    out.push("[Fonts]");
+    out.push(`[${formatSectionName("Fonts")}]`);
     pushKV(out, "ScorePrefix", state.general.ScorePrefix);
     pushKV(out, "ScoreOverlap", state.general.ScoreOverlap);
     pushKV(out, "ComboPrefix", state.general.ComboPrefix);
     pushKV(out, "ComboOverlap", state.general.ComboOverlap);
-    out.push("");
+    spacer(out);
   }
 
   if(state.exportMania){
     for(const keys of ALL_MANIA_KEYS){
       if(!state.maniaShared.enabled[keys]) continue;
-      out.push("[Mania]");
+      out.push(`[${formatSectionName("Mania")}]`);
       out.push(...genManiaBlock(keys));
-      out.push("");
+      spacer(out);
     }
   }
 
@@ -1417,14 +1553,14 @@ function genManiaBlock(keys){
   for(let ui=1; ui<=keys; ui++){
     const v = cleanLine(m.Colour?.[ui]);
     if(v) lines.push(fmtKV(`Colour${ui-1}`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`Colour${ui-1}`).padEnd(32," ")} :` : `//Colour${ui-1}:`);
+    else pushKV(lines, `Colour${ui-1}`, "");
   }
   spacer(lines);
 
   for(let ui=1; ui<=keys; ui++){
     const v = cleanLine(m.ColourLight?.[ui]);
     if(v) lines.push(fmtKV(`ColourLight${ui-1}`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`ColourLight${ui-1}`).padEnd(32," ")} :` : `//ColourLight${ui-1}:`);
+    else pushKV(lines, `ColourLight${ui-1}`, "");
   }
 
   pushKV(lines, "ColourColumnLine", m.ColourColumnLine);
@@ -1433,8 +1569,8 @@ function genManiaBlock(keys){
   pushKV(lines, "ColourKeyWarning", m.ColourKeyWarning);
   pushKV(lines, "ColourHold", m.ColourHold);
   pushKV(lines, "ColourBreak", m.ColourBreak);
-
   spacer(lines);
+
   header(lines, "images");
 
   const pKey  = m.pKey  || "";
@@ -1448,7 +1584,7 @@ function genManiaBlock(keys){
     const n = idx + 1;
     const v = pat(pKey, n);
     if(v) lines.push(fmtKV(`KeyImage${idx}`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`KeyImage${idx}`).padEnd(32," ")} :` : `//KeyImage${idx}:`);
+    else pushKV(lines, `KeyImage${idx}`, "");
   }
   spacer(lines);
 
@@ -1456,7 +1592,7 @@ function genManiaBlock(keys){
     const n = idx + 1;
     const v = pat(pKeyD, n);
     if(v) lines.push(fmtKV(`KeyImage${idx}D`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`KeyImage${idx}D`).padEnd(32," ")} :` : `//KeyImage${idx}D:`);
+    else pushKV(lines, `KeyImage${idx}D`, "");
   }
   spacer(lines);
 
@@ -1464,7 +1600,7 @@ function genManiaBlock(keys){
     const n = idx + 1;
     const v = pat(pNote, n);
     if(v) lines.push(fmtKV(`NoteImage${idx}`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`NoteImage${idx}`).padEnd(32," ")} :` : `//NoteImage${idx}:`);
+    else pushKV(lines, `NoteImage${idx}`, "");
   }
   spacer(lines);
 
@@ -1472,7 +1608,7 @@ function genManiaBlock(keys){
     const n = idx + 1;
     const v = pat(pNoteH, n);
     if(v) lines.push(fmtKV(`NoteImage${idx}H`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`NoteImage${idx}H`).padEnd(32," ")} :` : `//NoteImage${idx}H:`);
+    else pushKV(lines, `NoteImage${idx}H`, "");
   }
   spacer(lines);
 
@@ -1480,7 +1616,7 @@ function genManiaBlock(keys){
     const n = idx + 1;
     const v = pat(pNoteL, n);
     if(v) lines.push(fmtKV(`NoteImage${idx}L`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`NoteImage${idx}L`).padEnd(32," ")} :` : `//NoteImage${idx}L:`);
+    else pushKV(lines, `NoteImage${idx}L`, "");
   }
   spacer(lines);
 
@@ -1488,14 +1624,13 @@ function genManiaBlock(keys){
     const n = idx + 1;
     const v = pat(pNoteT, n);
     if(v) lines.push(fmtKV(`NoteImage${idx}T`, v));
-    else if(state.commentEmpty) lines.push(state.pretty ? `// ${String(`NoteImage${idx}T`).padEnd(32," ")} :` : `//NoteImage${idx}T:`);
+    else pushKV(lines, `NoteImage${idx}T`, "");
   }
   spacer(lines);
 
   pushKV(lines, "WarningArrow", m.WarningArrow);
   spacer(lines);
 
-  // NEW: hits
   header(lines, "hits");
   pushKV(lines, "Hit0", m.Hit0);
   pushKV(lines, "Hit50", m.Hit50);
@@ -1534,19 +1669,23 @@ function parseIni(text){
       continue;
     }
 
+    // aceita ":" e "=" e também o estilo ARC com tabs
     let m = line.match(/^([A-Za-z0-9]+)\s*:\s*(.*)$/);
     if(!m) m = line.match(/^([A-Za-z0-9]+)\s*=\s*(.*)$/);
     if(!m) continue;
 
     const key = m[1];
-    const val = (m[2] ?? "").trim();
+    let val = (m[2] ?? "").trim();
+
+    // remove aspas do RUNE se tiver
+    if(/^".*"$/.test(val)) val = val.slice(1,-1);
 
     const secName = section.toLowerCase();
     if(secName === "general") parsed.General[key] = val;
     else if(secName === "fonts") parsed.Fonts[key] = val;
     else if(secName === "mania" && curMania){
       curMania.kv[key] = val;
-      if(key === "Keys"){
+      if(key.toLowerCase() === "keys"){
         const k = parseInt(val,10);
         curMania.Keys = Number.isFinite(k) ? k : null;
       }
@@ -1591,15 +1730,17 @@ function applyParsed(parsed){
       "ColourColumnLine","ColourBarline","ColourJudgementLine","ColourKeyWarning","ColourHold","ColourBreak",
       "WarningArrow",
 
-      // NEW: hits import
       "Hit0","Hit50","Hit100","Hit200","Hit300","Hit300g",
     ];
 
+    // também aceita versão UPPERCASE do ARC
     for(const k of direct){
-      if(k in blk.kv){
-        if(typeof m[k] === "boolean") m[k] = blk.kv[k].trim() === "1";
-        else m[k] = blk.kv[k];
-      }
+      const k2 = k.toUpperCase();
+      const hit = (k in blk.kv) ? k : (k2 in blk.kv) ? k2 : null;
+      if(!hit) continue;
+
+      if(typeof m[k] === "boolean") m[k] = blk.kv[hit].trim() === "1";
+      else m[k] = blk.kv[hit];
     }
 
     m.AutoColumnStart = isBlank(m.ColumnStart);
@@ -1607,8 +1748,12 @@ function applyParsed(parsed){
     for(let i=0;i<keys;i++){
       const ck = `Colour${i}`;
       const lk = `ColourLight${i}`;
+      const ckU = ck.toUpperCase();
+      const lkU = lk.toUpperCase();
       if(ck in blk.kv) m.Colour[i+1] = blk.kv[ck];
+      else if(ckU in blk.kv) m.Colour[i+1] = blk.kv[ckU];
       if(lk in blk.kv) m.ColourLight[i+1] = blk.kv[lk];
+      else if(lkU in blk.kv) m.ColourLight[i+1] = blk.kv[lkU];
     }
 
     state.mania[keys] = m;
@@ -1638,7 +1783,7 @@ function loadState(){
     state.activeTab = s.activeTab ?? state.activeTab;
 
     state.exportMania = (s.exportMania ?? true) ? true : false;
-    state.pretty = (s.pretty ?? true) ? true : false;
+    state.style = s.style ?? "H";
     state.commentEmpty = (s.commentEmpty ?? false) ? true : false;
     state.version = s.version ?? "latest";
 
@@ -1673,6 +1818,7 @@ function onAnyChange(){
   previewSoon();
   saveSoon();
   updateModeBadge();
+  updateTopSub();
 }
 
 /* ---------- actions ---------- */
@@ -1719,7 +1865,12 @@ function updateModeBadge(){
 /* ---------- dock toggles ---------- */
 function syncDockToggles(){
   $("togMania").classList.toggle("active", state.exportMania);
-  $("togPretty").classList.toggle("active", state.pretty);
+
+  $("styleH").classList.toggle("active", state.style === "H");
+  $("styleArc").classList.toggle("active", state.style === "ARC");
+  $("styleRune").classList.toggle("active", state.style === "RUNE");
+  $("styleNano").classList.toggle("active", state.style === "NANO");
+
   $("togCommentEmpty").classList.toggle("active", state.commentEmpty);
 }
 
@@ -1744,11 +1895,27 @@ $("togMania").addEventListener("click", ()=>{
   if(state.activeTab === "mania") renderActiveTab();
 });
 
-$("togPretty").addEventListener("click", ()=>{
-  state.pretty = !state.pretty;
+$("styleH").addEventListener("click", ()=>{
+  state.style = "H";
   syncDockToggles();
   onAnyChange();
 });
+$("styleArc").addEventListener("click", ()=>{
+  state.style = "ARC";
+  syncDockToggles();
+  onAnyChange();
+});
+$("styleRune").addEventListener("click", ()=>{
+  state.style = "RUNE";
+  syncDockToggles();
+  onAnyChange();
+});
+$("styleNano").addEventListener("click", ()=>{
+  state.style = "NANO";
+  syncDockToggles();
+  onAnyChange();
+});
+
 $("togCommentEmpty").addEventListener("click", ()=>{
   state.commentEmpty = !state.commentEmpty;
   syncDockToggles();
