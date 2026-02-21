@@ -22,8 +22,6 @@
       --gap:10px;
 
       --rowLabel: 205px;
-      --inputPadY: 9px;
-      --inputPadX: 10px;
 
       color-scheme: dark;
     }
@@ -68,118 +66,67 @@
     }
     *::-webkit-scrollbar-thumb:hover{ background: rgba(220,220,230,.40); }
 
-    .app{
-      position:relative;
-      z-index:1;
-      height:100%;
-      display:flex;
-      flex-direction:column;
-    }
+    .app{ position:relative; z-index:1; height:100%; display:flex; flex-direction:column; }
 
     .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
       padding:10px 12px;
       border-bottom:1px solid var(--border);
       background: rgba(0,0,0,.38);
       backdrop-filter: blur(3px);
-      will-change: transform;
-      transform: translateZ(0);
     }
 
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width: 0;
-    }
+    .brand{ display:flex; align-items:center; gap:10px; min-width:0; }
     .brand img{
-      width:30px;
-      height:30px;
-      border-radius:10px;
+      width:30px; height:30px; border-radius:10px;
       border:1px solid rgba(255,255,255,.16);
       background:rgba(0,0,0,.25);
       box-shadow: 0 8px 20px rgba(0,0,0,.35);
       object-fit: cover;
     }
-    .brand .title{
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-      min-width:0;
-    }
+    .brand .title{ display:flex; flex-direction:column; gap:2px; min-width:0; }
     .brand .title b{
-      font-weight:900;
-      font-size:13px;
-      letter-spacing:.2px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      font-weight:900; font-size:13px; letter-spacing:.2px;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
     .brand .title span{
-      font-size:12px;
-      color:var(--muted2);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      font-size:12px; color:var(--muted2);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
 
-    .layout{
-      flex:1; min-height:0;
-      display:grid;
-      grid-template-columns: var(--dockW) 1fr;
-      overflow:hidden;
-    }
+    .layout{ flex:1; min-height:0; display:grid; grid-template-columns: var(--dockW) 1fr; overflow:hidden; }
 
     .dock{
       border-right:1px solid var(--border);
       background: rgba(0,0,0,.38);
       backdrop-filter: blur(3px);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:10px;
-      padding:10px 8px;
-      min-height:0;
-      overflow:auto;
-      will-change: transform;
-      transform: translateZ(0);
+      display:flex; flex-direction:column; align-items:center; gap:10px;
+      padding:10px 8px; min-height:0; overflow:auto;
     }
 
     .dockGroup{
       width:100%;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      align-items:center;
+      display:flex; flex-direction:column; gap:8px; align-items:center;
       padding-bottom:10px;
       border-bottom:1px solid rgba(255,255,255,.10);
     }
     .dockGroup:last-child{ border-bottom:0; padding-bottom:0; }
 
     .icoBtn{
-      width:46px;
-      height:46px;
-      border-radius:16px;
+      width:46px; height:46px; border-radius:16px;
       border:1px solid rgba(255,255,255,.12);
       background: rgba(0,0,0,.22);
       color: rgba(233,233,238,.78);
-      display:grid;
-      place-items:center;
-      cursor:pointer;
-      user-select:none;
+      display:grid; place-items:center;
+      cursor:pointer; user-select:none;
       transition:110ms linear;
       position:relative;
-      will-change: transform;
-      transform: translateZ(0);
     }
     .icoBtn:hover{
       border-color: rgba(255,255,255,.18);
       background: rgba(255,255,255,.06);
       color: rgba(233,233,238,.95);
-      transform: translateY(-1px) translateZ(0);
+      transform: translateY(-1px);
     }
     .icoBtn.active{
       border-color: rgba(255,255,255,.20);
@@ -189,10 +136,7 @@
     }
 
     .tip{
-      position:absolute;
-      left:58px;
-      top:50%;
-      transform: translateY(-50%);
+      position:absolute; left:58px; top:50%; transform: translateY(-50%);
       background: rgba(0,0,0,.70);
       border:1px solid rgba(255,255,255,.14);
       border-radius:12px;
@@ -207,12 +151,7 @@
     }
     .icoBtn:hover .tip{ opacity:1; }
 
-    .miniLabel{
-      font-size:11px;
-      color: var(--muted2);
-      text-align:center;
-      line-height:1.2;
-    }
+    .miniLabel{ font-size:11px; color: var(--muted2); text-align:center; line-height:1.2; }
 
     .main{
       min-height:0;
@@ -234,30 +173,21 @@
       min-height:0;
       display:flex;
       flex-direction:column;
-      will-change: transform;
-      transform: translateZ(0);
     }
 
     .cardHead{
       padding:10px 10px 8px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
       border-bottom:1px solid rgba(255,255,255,.10);
       background: rgba(0,0,0,.25);
-      position: sticky;
-      top: 0;
-      z-index: 2;
+      position: sticky; top: 0; z-index: 2;
       backdrop-filter: blur(4px);
     }
     .cardHead .left{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-      min-width:0;
+      display:flex; gap:10px; align-items:center;
+      flex-wrap:wrap; min-width:0;
     }
+
     .badge{
       font-size:12px;
       padding:4px 10px;
@@ -267,23 +197,11 @@
       color: rgba(233,233,238,.75);
       font-weight:900;
       max-width: 100%;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
-    .tools{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
     }
 
-    .cardBody{
-      padding:10px;
-      overflow:auto;
-      min-height:0;
-      flex:1;
-    }
+    .tools{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .cardBody{ padding:10px; overflow:auto; min-height:0; flex:1; }
 
     .btn{
       cursor:pointer;
@@ -348,16 +266,9 @@
       letter-spacing:.2px;
       user-select:none;
     }
-    .caret{
-      color: rgba(233,233,238,.60);
-      transition:110ms linear;
-    }
+    .caret{ color: rgba(233,233,238,.60); transition:110ms linear; }
     .block.open .caret{ transform: rotate(90deg); }
-    .blockBody{
-      display:none;
-      padding:10px 12px 12px;
-      border-top:1px solid rgba(255,255,255,.10);
-    }
+    .blockBody{ display:none; padding:10px 12px 12px; border-top:1px solid rgba(255,255,255,.10); }
     .block.open .blockBody{ display:block; }
 
     .row{
@@ -390,14 +301,7 @@
       background: rgba(0,0,0,.72);
       border-color: rgba(255,255,255,.14);
     }
-    select option{
-      background: #0b0c0f;
-      color: rgba(233,233,238,.95);
-    }
-    select option:checked{
-      background:#11141a;
-      color: rgba(233,233,238,.98);
-    }
+    select option{ background: #0b0c0f; color: rgba(233,233,238,.95); }
 
     input[type="color"]{
       width:46px; height:38px;
@@ -447,16 +351,9 @@
       font-weight:800;
     }
 
-    .kmRow{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin: 6px 0 4px;
-    }
+    .kmRow{ display:flex; flex-wrap:wrap; gap:10px; margin: 6px 0 4px; }
     .kmPill{
-      display:flex;
-      align-items:center;
-      gap:10px;
+      display:flex; align-items:center; gap:10px;
       padding:8px 10px;
       border-radius:999px;
       border:1px solid rgba(255,255,255,.12);
@@ -491,12 +388,7 @@
         padding:10px;
         gap:10px;
       }
-      .dockGroup{
-        flex-direction:row;
-        border-bottom:0;
-        padding-bottom:0;
-        width:auto;
-      }
+      .dockGroup{ flex-direction:row; border-bottom:0; padding-bottom:0; width:auto; }
       .icoBtn .tip{ display:none; }
       .main{ grid-template-columns: 1fr; }
       .row{ grid-template-columns: 1fr; }
@@ -528,6 +420,7 @@
 
   <div class="layout">
     <aside class="dock">
+
       <div class="dockGroup">
         <button class="icoBtn" data-tab="mania" title="Mania">
           <span aria-hidden="true">🎹</span>
@@ -551,17 +444,17 @@
       <div class="dockGroup">
         <div class="miniLabel">styles</div>
 
-        <button class="icoBtn" id="styleH" title="H (aligned : + // headers)" type="button">
+        <button class="icoBtn" id="styleH" title="H (aligned + headers)" type="button">
           <span aria-hidden="true">H</span>
           <span class="tip">H</span>
         </button>
 
-        <button class="icoBtn" id="styleArc" title="ARC (tabs + UPPERCASE + =)" type="button">
+        <button class="icoBtn" id="styleArc" title="ARC (tabs + UPPERCASE + ;;)" type="button">
           <span aria-hidden="true">⟡</span>
           <span class="tip">ARC</span>
         </button>
 
-        <button class="icoBtn" id="styleRune" title="RUNE (boxed banners + quoting)" type="button">
+        <button class="icoBtn" id="styleRune" title="RUNE (banners + quoting)" type="button">
           <span aria-hidden="true">ᚱ</span>
           <span class="tip">RUNE</span>
         </button>
@@ -588,6 +481,7 @@
           <span class="tip">Version</span>
         </button>
       </div>
+
     </aside>
 
     <main class="main">
@@ -622,6 +516,7 @@
   </div>
 </div>
 
+<!-- Version modal -->
 <dialog id="verDlg" style="max-width:420px;width:calc(100% - 24px);border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(0,0,0,.86);color:rgba(233,233,238,.95);box-shadow:0 20px 60px rgba(0,0,0,.55);">
   <form method="dialog" style="margin:0;padding:12px;">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
@@ -643,6 +538,7 @@
   </form>
 </dialog>
 
+<!-- Import modal -->
 <dialog id="importDlg" style="max-width:900px;width:calc(100% - 24px);border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(0,0,0,.88);color:rgba(233,233,238,.95);box-shadow:0 20px 60px rgba(0,0,0,.55);">
   <form method="dialog" style="margin:0;padding:12px;">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
@@ -654,12 +550,15 @@
     </div>
     <div style="height:10px"></div>
     <textarea id="importArea" style="min-height:45vh;"></textarea>
+    <div class="noteUnder" style="margin-top:8px;">
+      Import rules: only <b>key:value</b> lines are read. "=" is ignored.
+    </div>
   </form>
 </dialog>
 
 <script>
 const $ = (id)=>document.getElementById(id);
-const STORAGE_KEY = "skinini_studio_v9_styles_hits_fixed";
+const STORAGE_KEY = "skinini_studio_v10_no_equals_import_paths_styles";
 
 /* ---------- util ---------- */
 function cleanLine(s){ return String(s ?? "").replace(/\r/g,"").trimEnd(); }
@@ -698,7 +597,7 @@ function pat(pattern, n){
   return p.replaceAll("{n}", String(n));
 }
 
-/* ---------- STYLE ENGINE ---------- */
+/* ---------- STYLE ENGINE (NO "=" anywhere, only ":") ---------- */
 const STYLES = {
   H: {
     name: "H",
@@ -719,7 +618,7 @@ const STYLES = {
     icon: "⟡",
     sectionCase: "upper",
     keyCase: "upper",
-    sep: "=",
+    sep: ":",
     align: 1,
     alignMode: "tabs",
     comment: ";;",
@@ -741,7 +640,8 @@ const STYLES = {
     includeHeaders: true,
     headerLines: (title)=>{
       const t = String(title||"").toUpperCase();
-      const bar = ";".padEnd(54,"=");
+      // not "=": use unicode box-ish line
+      const bar = ";━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━";
       return [bar, `;  ${t}`, bar, ""];
     },
     valueTransform: (v)=>{
@@ -755,7 +655,7 @@ const STYLES = {
     icon: "·",
     sectionCase: "normal",
     keyCase: "normal",
-    sep: "=",
+    sep: ":",
     align: 0,
     alignMode: "none",
     comment: ";",
@@ -835,6 +735,79 @@ function header(lines, title){
   if(!st.includeHeaders) return;
   const hs = st.headerLines?.(title) || [];
   lines.push(...hs);
+}
+
+/* ---------- pattern helpers for import ---------- */
+function unquote(v){
+  const s = String(v ?? "").trim();
+  if(/^".*"$/.test(s) || /^'.*'$/.test(s)) return s.slice(1,-1);
+  return s;
+}
+
+// infer prefix{n}suffix from 1..N series (needs >=2 to be safe)
+function inferPatternFromSeries(values, startN=1){
+  const vals = values.map(v=>cleanLine(v)).filter(v=>v!=="");
+  if(vals.length < 2) return "";
+
+  const first = vals[0];
+
+  // common prefix
+  let pref = first;
+  for(const v of vals){
+    let i=0;
+    while(i < pref.length && i < v.length && pref[i] === v[i]) i++;
+    pref = pref.slice(0,i);
+    if(pref==="") break;
+  }
+
+  // common suffix
+  let suf = first;
+  for(const v of vals){
+    let i=0;
+    while(i < suf.length && i < v.length && suf[suf.length-1-i] === v[v.length-1-i]) i++;
+    suf = suf.slice(suf.length - i);
+    if(suf==="") break;
+  }
+
+  // validate mid is exact number
+  for(let idx=0; idx<vals.length; idx++){
+    const expected = String(startN + idx);
+    const v = vals[idx];
+    if(!v.startsWith(pref) || !v.endsWith(suf)) return "";
+    const mid = v.slice(pref.length, v.length - suf.length);
+    if(mid !== expected) return "";
+  }
+
+  return `${pref}{n}${suf}`;
+}
+
+function inferByKeyPrefix(kv, keyPrefix, keys){
+  const arr = [];
+  for(let i=0;i<keys;i++){
+    arr.push(kv[`${keyPrefix}${i}`] ?? "");
+  }
+  return inferPatternFromSeries(arr, 1);
+}
+
+function inferByKeyPrefixWithSuffix(kv, keyPrefix, suffix, keys){
+  const arr = [];
+  for(let i=0;i<keys;i++){
+    arr.push(kv[`${keyPrefix}${i}${suffix}`] ?? "");
+  }
+  return inferPatternFromSeries(arr, 1);
+}
+
+// style guess based on comment flavour in the imported file
+function guessStyleFromIni(text){
+  const s = String(text||"");
+  const hasDoubleSemi = /(^|\n)\s*;;/.test(s);
+  const hasSlashes = /(^|\n)\s*\/\//.test(s);
+  const hasSemi = /(^|\n)\s*;/.test(s);
+
+  if(hasDoubleSemi) return "ARC";
+  if(hasSlashes) return "H";
+  if(hasSemi) return "RUNE";
+  return "NANO";
 }
 
 /* ---------- auto-center helpers ---------- */
@@ -918,6 +891,7 @@ function defaultManiaMode(keys){
     ARH: "9",
     CenterOffset: "0",
 
+    // patterns
     pKey: "",
     pKeyD: "",
     pNote: "",
@@ -926,6 +900,7 @@ function defaultManiaMode(keys){
     pNoteT: "",
     WarningArrow: "",
 
+    // hits
     Hit0: "",
     Hit50: "",
     Hit100: "",
@@ -939,8 +914,8 @@ const state = {
   activeTab: "mania",
   exportMania: true,
 
-  style: "H",
-  commentEmpty: false,
+  style: "H",          // H | ARC | RUNE | NANO
+  commentEmpty: false, // only affects preview (not exported in ini)
 
   version: "latest",
 
@@ -1067,9 +1042,7 @@ function updateTopSub(){
   const t = TABS.find(x=>x.key===state.activeTab)?.title ?? "—";
   $("topSub").textContent = t;
   $("panelTitle").textContent = t;
-
-  const st = curStyle();
-  $("styleBadge").textContent = `style: ${st.name}`;
+  $("styleBadge").textContent = `style: ${curStyle().name}`;
 }
 
 /* ---------- Panels ---------- */
@@ -1519,7 +1492,6 @@ function genManiaBlock(keys){
   spacer(lines);
 
   header(lines, "colours");
-
   for(let ui=1; ui<=keys; ui++){
     const v = cleanLine(m.Colour?.[ui]);
     if(v) lines.push(fmtKV(`Colour${ui-1}`, v));
@@ -1613,10 +1585,10 @@ function genManiaBlock(keys){
   return lines;
 }
 
-/* ---------- import ---------- */
+/* ---------- import (ONLY ":" accepted; "=" ignored) ---------- */
 function parseIni(text){
   const lines = String(text||"").split("\n");
-  const parsed = { General:{}, Fonts:{}, Mania: [] };
+  const parsed = { General:{}, Fonts:{}, Mania: [], _rawText: String(text||"") };
 
   let section = "";
   let curMania = null;
@@ -1625,7 +1597,8 @@ function parseIni(text){
     const line0 = raw.replace(/\r/g,"");
     const line = line0.trim();
     if(!line) continue;
-    if(line.startsWith("//") || line.startsWith(";")) continue;
+
+    if(line.startsWith("//") || line.startsWith(";") || line.startsWith(";;")) continue;
 
     const sec = line.match(/^\[(.+?)\]\s*$/);
     if(sec){
@@ -1639,43 +1612,50 @@ function parseIni(text){
       continue;
     }
 
-    let m = line.match(/^([A-Za-z0-9]+)\s*:\s*(.*)$/);
-    if(!m) m = line.match(/^([A-Za-z0-9]+)\s*=\s*(.*)$/);
+    // IMPORTANT: only ":" supported
+    const m = line.match(/^([A-Za-z0-9]+)\s*:\s*(.*)$/);
     if(!m) continue;
 
     const key = m[1];
-    let val = (m[2] ?? "").trim();
-    if(/^".*"$/.test(val)) val = val.slice(1,-1);
+    const val = unquote((m[2] ?? "").trim());
 
     const secName = section.toLowerCase();
     if(secName === "general") parsed.General[key] = val;
     else if(secName === "fonts") parsed.Fonts[key] = val;
     else if(secName === "mania" && curMania){
       curMania.kv[key] = val;
-      if(key.toLowerCase() === "keys"){
+      if(key === "Keys"){
         const k = parseInt(val,10);
         curMania.Keys = Number.isFinite(k) ? k : null;
       }
     }
   }
+
   return parsed;
 }
 
 function applyParsed(parsed){
+  // guess and apply style from imported file
+  const guessed = guessStyleFromIni(parsed._rawText || "");
+  state.style = guessed;
+
   if(parsed.General.Version) state.version = parsed.General.Version;
   if("Name" in parsed.General) state.general.Name = parsed.General.Name;
   if("Author" in parsed.General) state.general.Author = parsed.General.Author;
 
+  // cursor
   const cursorKeys = ["CursorCentre","CursorExpand","CursorRotate","CursorTrailRotate"];
   for(const k of cursorKeys){
     if(k in parsed.General) state.general[k] = parsed.General[k].trim() === "1";
   }
 
+  // fonts
   const fontKeys = ["ScorePrefix","ScoreOverlap","ComboPrefix","ComboOverlap"];
   for(const k of fontKeys){
     if(k in parsed.Fonts) state.general[k] = parsed.Fonts[k];
   }
 
+  // mania blocks
   for(const blk of parsed.Mania){
     const keys = blk.Keys;
     if(!keys || keys < 1 || keys > 18) continue;
@@ -1690,42 +1670,53 @@ function applyParsed(parsed){
       "HitPosition","LightPosition","ScorePosition","ComboPosition",
       "JudgementLine","KeysUnderNotes","UpsideDown",
       "BarlineHeight","WidthForNoteHeightScale",
-
       "StageLeft","StageRight","StageBottom","StageHint","StageLight",
       "LightingNWidth","LightingLWidth","LightingN","LightingL",
-
       "ColourColumnLine","ColourBarline","ColourJudgementLine","ColourKeyWarning","ColourHold","ColourBreak",
       "WarningArrow",
-
       "Hit0","Hit50","Hit100","Hit200","Hit300","Hit300g",
     ];
 
     for(const k of direct){
-      const k2 = k.toUpperCase();
-      const hit = (k in blk.kv) ? k : (k2 in blk.kv) ? k2 : null;
-      if(!hit) continue;
-
-      if(typeof m[k] === "boolean") m[k] = blk.kv[hit].trim() === "1";
-      else m[k] = blk.kv[hit];
+      if(!(k in blk.kv)) continue;
+      if(typeof m[k] === "boolean") m[k] = blk.kv[k].trim() === "1";
+      else m[k] = blk.kv[k];
     }
 
-    m.AutoColumnStart = isBlank(m.ColumnStart);
-
+    // colours
     for(let i=0;i<keys;i++){
       const ck = `Colour${i}`;
       const lk = `ColourLight${i}`;
-      const ckU = ck.toUpperCase();
-      const lkU = lk.toUpperCase();
       if(ck in blk.kv) m.Colour[i+1] = blk.kv[ck];
-      else if(ckU in blk.kv) m.Colour[i+1] = blk.kv[ckU];
       if(lk in blk.kv) m.ColourLight[i+1] = blk.kv[lk];
-      else if(lkU in blk.kv) m.ColourLight[i+1] = blk.kv[lkU];
     }
+
+    // infer patterns from imported KeyImage/NoteImage series
+    const pKey  = inferByKeyPrefix(blk.kv, "KeyImage", keys);
+    const pKeyD = inferByKeyPrefixWithSuffix(blk.kv, "KeyImage", "D", keys);
+    const pNote = inferByKeyPrefix(blk.kv, "NoteImage", keys);
+    const pNoteH= inferByKeyPrefixWithSuffix(blk.kv, "NoteImage", "H", keys);
+    const pNoteL= inferByKeyPrefixWithSuffix(blk.kv, "NoteImage", "L", keys);
+    const pNoteT= inferByKeyPrefixWithSuffix(blk.kv, "NoteImage", "T", keys);
+
+    // only overwrite if we successfully inferred (so we don't nuke user custom)
+    if(pKey)  m.pKey = pKey;
+    if(pKeyD) m.pKeyD = pKeyD;
+    if(pNote) m.pNote = pNote;
+    if(pNoteH) m.pNoteH = pNoteH;
+    if(pNoteL) m.pNoteL = pNoteL;
+    if(pNoteT) m.pNoteT = pNoteT;
+
+    // auto-columnstart flag
+    m.AutoColumnStart = isBlank(m.ColumnStart);
 
     state.mania[keys] = m;
   }
 
   saveSoon(true);
+  syncDockToggles();
+  renderDockActive();
+  updateModeBadge();
   renderActiveTab();
 }
 
@@ -1902,7 +1893,8 @@ $("importOpen").addEventListener("click", ()=>{
   $("importDlg").showModal();
 });
 $("importApply").addEventListener("click", ()=>{
-  const parsed = parseIni($("importArea").value || "");
+  const raw = $("importArea").value || "";
+  const parsed = parseIni(raw);
   applyParsed(parsed);
   $("importDlg").close();
 });
