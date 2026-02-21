@@ -222,7 +222,6 @@
       min-height:0;
       padding:10px;
       display:grid;
-      /* Better layout: options panel slightly larger */
       grid-template-columns: 1.20fr .80fr;
       gap:10px;
       overflow:hidden;
@@ -243,7 +242,6 @@
       transform: translateZ(0);
     }
 
-    /* Sticky header with a bit of blur for readability while scrolling */
     .cardHead{
       padding:10px 10px 8px;
       display:flex;
@@ -319,7 +317,6 @@
 
     textarea{
       width:100%;
-      /* Better: fill card height without guessing 100vh */
       height: calc(100% - 2px);
       min-height: 100%;
       resize:none;
@@ -660,7 +657,7 @@
 
 <script>
 const $ = (id)=>document.getElementById(id);
-const STORAGE_KEY = "skinini_studio_v7_mania_only";
+const STORAGE_KEY = "skinini_studio_v8_mania_hits";
 
 /* ---------- util ---------- */
 function cleanLine(s){ return String(s ?? "").replace(/\r/g,"").trimEnd(); }
@@ -730,7 +727,7 @@ function header(lines, title){
   }
 }
 
-/* ---------- auto-center helpers (from the other code) ---------- */
+/* ---------- auto-center helpers ---------- */
 function firstNumber(raw, fallback){
   const r = cleanLine(raw);
   if(!r) return fallback;
@@ -786,7 +783,7 @@ function defaultManiaMode(keys){
     BarlineHeight: "",
     WidthForNoteHeightScale: "",
 
-    /* stage / lighting (added) */
+    /* stage / lighting */
     StageLeft: "",
     StageRight: "",
     StageBottom: "",
@@ -806,7 +803,7 @@ function defaultManiaMode(keys){
     Colour: {},
     ColourLight: {},
 
-    /* auto-center (added) */
+    /* auto-center */
     AutoColumnStart: true,
     ARPreset: "16:9",
     ARW: "16",
@@ -821,6 +818,14 @@ function defaultManiaMode(keys){
     pNoteL: "",
     pNoteT: "",
     WarningArrow: "",
+
+    // hits (osu!mania judgements)
+    Hit0: "",
+    Hit50: "",
+    Hit100: "",
+    Hit200: "",
+    Hit300: "",
+    Hit300g: "",
   };
 }
 
@@ -828,7 +833,7 @@ const state = {
   activeTab: "mania",
   exportMania: true,
 
-  pretty: true,        // "h style"
+  pretty: true,
   commentEmpty: false,
 
   version: "latest",
@@ -837,13 +842,11 @@ const state = {
     Name: "",
     Author: "",
 
-    /* cursor (added) */
     CursorCentre: true,
     CursorExpand: false,
     CursorRotate: false,
     CursorTrailRotate: false,
 
-    /* fonts (prefix/overlap) (added) */
     ScorePrefix: "",
     ScoreOverlap: "0",
     ComboPrefix: "",
@@ -937,7 +940,7 @@ function uiRowColor(label, path){
   `;
 }
 
-/* ---------- Tabs (mania/preview only) ---------- */
+/* ---------- Tabs ---------- */
 const TABS = [
   { key:"mania", title:"Mania", render: renderMania },
   { key:"preview", title:"Preview", render: renderPreviewOnly },
@@ -1069,7 +1072,6 @@ function renderManiaBlock(keys){
     `;
   }).join("");
 
-  /* aspect ratio fields (added) */
   const arPresetPath = `mania.${keys}.ARPreset`;
   const arWPath = `mania.${keys}.ARW`;
   const arHPath = `mania.${keys}.ARH`;
@@ -1175,6 +1177,19 @@ function renderManiaBlock(keys){
             ${uiRowText("NoteImage#L pattern", `mania.${keys}.pNoteL`, "e.g. mania/note{n}l")}
             ${uiRowText("NoteImage#T pattern", `mania.${keys}.pNoteT`, "e.g. mania/note{n}t")}
             ${uiRowText("WarningArrow", `mania.${keys}.WarningArrow`, "e.g. mania/warning")}
+          </div>
+        </div>
+
+        <!-- NEW: hits -->
+        <div class="block open">
+          <button class="blockHead" type="button"><span>hits (judgements)</span><span class="caret">▸</span></button>
+          <div class="blockBody">
+            ${uiRowText("Hit0",    `mania.${keys}.Hit0`,    "text (path to image)")}
+            ${uiRowText("Hit50",   `mania.${keys}.Hit50`,   "text (path to image)")}
+            ${uiRowText("Hit100",  `mania.${keys}.Hit100`,  "text (path to image)")}
+            ${uiRowText("Hit200",  `mania.${keys}.Hit200`,  "text (path to image)")}
+            ${uiRowText("Hit300",  `mania.${keys}.Hit300`,  "text (path to image)")}
+            ${uiRowText("Hit300g", `mania.${keys}.Hit300g`, "text (path to image)")}
           </div>
         </div>
       </div>
@@ -1309,14 +1324,12 @@ function genIni(){
   pushKV(out, "Author", state.general.Author);
   out.push(fmtKV("Version", state.version));
 
-  /* cursor (added) */
   out.push(fmtKV("CursorCentre", bool01(!!state.general.CursorCentre)));
   out.push(fmtKV("CursorExpand", bool01(!!state.general.CursorExpand)));
   out.push(fmtKV("CursorRotate", bool01(!!state.general.CursorRotate)));
   out.push(fmtKV("CursorTrailRotate", bool01(!!state.general.CursorTrailRotate)));
   out.push("");
 
-  /* fonts (added) */
   const hasFonts =
     cleanLine(state.general.ScorePrefix) ||
     cleanLine(state.general.ComboPrefix) ||
@@ -1362,7 +1375,6 @@ function genManiaBlock(keys){
   lines.push(fmtKV("ColumnWidth", normalizeCsv(m.ColumnWidth, keys, Array.from({length:keys}, ()=>"70").join(","))));
   lines.push(fmtKV("ColumnSpacing", normalizeCsv(m.ColumnSpacing, Math.max(0,keys-1), Array.from({length:Math.max(0,keys-1)}, ()=>"0").join(","))));
 
-  /* auto-center ColumnStart (changed from "omit" to "compute + write") */
   if(m.AutoColumnStart){
     lines.push(fmtKV("ColumnStart", String(calcAutoColumnStart(keys, m))));
   }else{
@@ -1388,7 +1400,6 @@ function genManiaBlock(keys){
   pushKV(lines, "WidthForNoteHeightScale", m.WidthForNoteHeightScale);
   spacer(lines);
 
-  /* stage (added) */
   header(lines, "stage");
   pushKV(lines, "StageLeft", m.StageLeft);
   pushKV(lines, "StageRight", m.StageRight);
@@ -1482,6 +1493,16 @@ function genManiaBlock(keys){
   spacer(lines);
 
   pushKV(lines, "WarningArrow", m.WarningArrow);
+  spacer(lines);
+
+  // NEW: hits
+  header(lines, "hits");
+  pushKV(lines, "Hit0", m.Hit0);
+  pushKV(lines, "Hit50", m.Hit50);
+  pushKV(lines, "Hit100", m.Hit100);
+  pushKV(lines, "Hit200", m.Hit200);
+  pushKV(lines, "Hit300", m.Hit300);
+  pushKV(lines, "Hit300g", m.Hit300g);
 
   while(lines.length && lines[lines.length-1]==="") lines.pop();
   return lines;
@@ -1539,13 +1560,11 @@ function applyParsed(parsed){
   if("Name" in parsed.General) state.general.Name = parsed.General.Name;
   if("Author" in parsed.General) state.general.Author = parsed.General.Author;
 
-  /* cursor (import) */
   const cursorKeys = ["CursorCentre","CursorExpand","CursorRotate","CursorTrailRotate"];
   for(const k of cursorKeys){
     if(k in parsed.General) state.general[k] = parsed.General[k].trim() === "1";
   }
 
-  /* fonts (import) */
   const fontKeys = ["ScorePrefix","ScoreOverlap","ComboPrefix","ComboOverlap"];
   for(const k of fontKeys){
     if(k in parsed.Fonts) state.general[k] = parsed.Fonts[k];
@@ -1566,12 +1585,14 @@ function applyParsed(parsed){
       "JudgementLine","KeysUnderNotes","UpsideDown",
       "BarlineHeight","WidthForNoteHeightScale",
 
-      /* stage (import) */
       "StageLeft","StageRight","StageBottom","StageHint","StageLight",
       "LightingNWidth","LightingLWidth","LightingN","LightingL",
 
       "ColourColumnLine","ColourBarline","ColourJudgementLine","ColourKeyWarning","ColourHold","ColourBreak",
-      "WarningArrow"
+      "WarningArrow",
+
+      // NEW: hits import
+      "Hit0","Hit50","Hit100","Hit200","Hit300","Hit300g",
     ];
 
     for(const k of direct){
