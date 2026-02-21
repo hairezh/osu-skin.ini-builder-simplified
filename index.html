@@ -301,7 +301,6 @@
       background: rgba(0,0,0,.72);
       border-color: rgba(255,255,255,.14);
     }
-    select option{ background: #0b0c0f; color: rgba(233,233,238,.95); }
 
     input[type="color"]{
       width:46px; height:38px;
@@ -449,19 +448,9 @@
           <span class="tip">H</span>
         </button>
 
-        <button class="icoBtn" id="styleArc" title="ARC (tabs + UPPERCASE + ;;)" type="button">
-          <span aria-hidden="true">⟡</span>
-          <span class="tip">ARC</span>
-        </button>
-
-        <button class="icoBtn" id="styleRune" title="RUNE (banners + quoting)" type="button">
+        <button class="icoBtn" id="styleR" title="R (banners + quoting)" type="button">
           <span aria-hidden="true">ᚱ</span>
-          <span class="tip">RUNE</span>
-        </button>
-
-        <button class="icoBtn" id="styleNano" title="NANO (ultra compact)" type="button">
-          <span aria-hidden="true">·</span>
-          <span class="tip">NANO</span>
+          <span class="tip">R</span>
         </button>
       </div>
 
@@ -558,7 +547,7 @@
 
 <script>
 const $ = (id)=>document.getElementById(id);
-const STORAGE_KEY = "skinini_studio_v10_no_equals_import_paths_styles";
+const STORAGE_KEY = "skinini_studio_v11_H_R_import_paths_fixed";
 
 /* ---------- util ---------- */
 function cleanLine(s){ return String(s ?? "").replace(/\r/g,"").trimEnd(); }
@@ -597,50 +586,29 @@ function pat(pattern, n){
   return p.replaceAll("{n}", String(n));
 }
 
-/* ---------- STYLE ENGINE (NO "=" anywhere, only ":") ---------- */
+/* ---------- styles (ONLY H + R, ALWAYS ":" ) ---------- */
 const STYLES = {
   H: {
     name: "H",
     icon: "H",
-    sectionCase: "normal",
-    keyCase: "normal",
     sep: " : ",
     align: 32,
-    alignMode: "spaces",
     comment: "//",
     blankLines: true,
     includeHeaders: true,
     headerLines: (title)=> [`// ${title} --`, ""],
     valueTransform: (v)=> cleanLine(v),
   },
-  ARC: {
-    name: "ARC",
-    icon: "⟡",
-    sectionCase: "upper",
-    keyCase: "upper",
-    sep: ":",
-    align: 1,
-    alignMode: "tabs",
-    comment: ";;",
-    blankLines: false,
-    includeHeaders: true,
-    headerLines: (title)=> [`;;[${String(title).toUpperCase()}]`, `;;--------------------`],
-    valueTransform: (v)=> cleanLine(v),
-  },
-  RUNE: {
-    name: "RUNE",
+  R: {
+    name: "R",
     icon: "ᚱ",
-    sectionCase: "title",
-    keyCase: "normal",
     sep: " : ",
     align: 24,
-    alignMode: "spaces",
     comment: ";",
     blankLines: true,
     includeHeaders: true,
     headerLines: (title)=>{
       const t = String(title||"").toUpperCase();
-      // not "=": use unicode box-ish line
       const bar = ";━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━";
       return [bar, `;  ${t}`, bar, ""];
     },
@@ -649,59 +617,17 @@ const STYLES = {
       if(/[ \t]/.test(s) && !/^".*"$/.test(s)) return `"${s}"`;
       return s;
     },
-  },
-  NANO: {
-    name: "NANO",
-    icon: "·",
-    sectionCase: "normal",
-    keyCase: "normal",
-    sep: ":",
-    align: 0,
-    alignMode: "none",
-    comment: ";",
-    blankLines: false,
-    includeHeaders: false,
-    headerLines: (_)=> [],
-    valueTransform: (v)=> cleanLine(v),
-  },
+  }
 };
 
 function curStyle(){ return STYLES[state.style] || STYLES.H; }
 
-function formatSectionName(name){
-  const st = curStyle();
-  const s = String(name || "");
-  if(st.sectionCase === "upper") return s.toUpperCase();
-  if(st.sectionCase === "title") return s.replace(/\w+/g, w=>w[0].toUpperCase()+w.slice(1).toLowerCase());
-  return s;
-}
-function formatKeyName(key){
-  const st = curStyle();
-  const k = String(key || "");
-  if(st.keyCase === "upper") return k.toUpperCase();
-  return k;
-}
-function formatValue(value){
-  return curStyle().valueTransform(String(value ?? ""));
-}
-
 function fmtKV(key, value){
   const st = curStyle();
-  const k = formatKeyName(key);
-  const v = formatValue(value);
-
-  if(st.alignMode === "tabs"){
-    const len = k.length;
-    const tabs = (len < 8) ? "\t\t\t" : (len < 16) ? "\t\t" : "\t";
-    return `${k}${tabs}${st.sep}${v}`;
-  }
-
-  if(st.alignMode === "spaces" && st.align > 0){
-    const kk = k.padEnd(st.align, " ");
-    return `${kk}${st.sep}${v}`;
-  }
-
-  return `${k}${st.sep}${v}`;
+  const k = String(key||"");
+  const v = st.valueTransform(String(value ?? ""));
+  const kk = st.align > 0 ? k.padEnd(st.align, " ") : k;
+  return `${kk}${st.sep}${v}`;
 }
 
 function pushKV(lines, key, value){
@@ -713,18 +639,9 @@ function pushKV(lines, key, value){
   if(!state.commentEmpty) return;
 
   const st = curStyle();
-  const k = formatKeyName(key);
-
-  if(st.alignMode === "tabs"){
-    lines.push(`${st.comment}${k}\t${st.sep}`.trimEnd());
-    return;
-  }
-  if(st.alignMode === "spaces" && st.align > 0){
-    const kk = k.padEnd(st.align, " ");
-    lines.push(`${st.comment} ${kk}${st.sep}`.trimEnd());
-    return;
-  }
-  lines.push(`${st.comment}${k}${st.sep}`.trimEnd());
+  const k = String(key||"");
+  const kk = st.align > 0 ? k.padEnd(st.align, " ") : k;
+  lines.push(`${st.comment} ${kk}${st.sep}`.trimEnd());
 }
 
 function spacer(lines){
@@ -737,15 +654,16 @@ function header(lines, title){
   lines.push(...hs);
 }
 
-/* ---------- pattern helpers for import ---------- */
+/* ---------- import helpers ---------- */
 function unquote(v){
   const s = String(v ?? "").trim();
   if(/^".*"$/.test(s) || /^'.*'$/.test(s)) return s.slice(1,-1);
   return s;
 }
 
-// infer prefix{n}suffix from 1..N series (needs >=2 to be safe)
-function inferPatternFromSeries(values, startN=1){
+// tenta montar pattern usando prefix/suffix comuns e validando mid numérico com:
+// start 0 ou 1 + zero-padding (01/02/03)
+function inferPatternFromSeriesFlexible(values){
   const vals = values.map(v=>cleanLine(v)).filter(v=>v!=="");
   if(vals.length < 2) return "";
 
@@ -769,16 +687,35 @@ function inferPatternFromSeries(values, startN=1){
     if(suf==="") break;
   }
 
-  // validate mid is exact number
-  for(let idx=0; idx<vals.length; idx++){
-    const expected = String(startN + idx);
-    const v = vals[idx];
-    if(!v.startsWith(pref) || !v.endsWith(suf)) return "";
-    const mid = v.slice(pref.length, v.length - suf.length);
-    if(mid !== expected) return "";
-  }
+  // mid sample
+  const mid0 = first.slice(pref.length, first.length - suf.length);
+  if(!/^\d+$/.test(mid0)) return "";
+  const width = mid0.length;
 
-  return `${pref}{n}${suf}`;
+  const tryStart = (start)=>{
+    for(let idx=0; idx<vals.length; idx++){
+      const v = vals[idx];
+      if(!v.startsWith(pref) || !v.endsWith(suf)) return false;
+      const mid = v.slice(pref.length, v.length - suf.length);
+      const expectedNum = String(start + idx).padStart(width, "0");
+      if(mid !== expectedNum) return false;
+    }
+    return true;
+  };
+
+  if(tryStart(0)) return `${pref}{n}${suf}`;
+  if(tryStart(1)) return `${pref}{n}${suf}`;
+  return "";
+}
+
+// fallback: pega um exemplo e substitui o primeiro número por {n}
+function fallbackPatternFromSingle(sample){
+  const s = cleanLine(sample);
+  if(!s) return "";
+  const m = s.match(/\d+/);
+  if(!m) return "";
+  const idx = m.index ?? 0;
+  return s.slice(0, idx) + "{n}" + s.slice(idx + m[0].length);
 }
 
 function inferByKeyPrefix(kv, keyPrefix, keys){
@@ -786,7 +723,7 @@ function inferByKeyPrefix(kv, keyPrefix, keys){
   for(let i=0;i<keys;i++){
     arr.push(kv[`${keyPrefix}${i}`] ?? "");
   }
-  return inferPatternFromSeries(arr, 1);
+  return inferPatternFromSeriesFlexible(arr);
 }
 
 function inferByKeyPrefixWithSuffix(kv, keyPrefix, suffix, keys){
@@ -794,20 +731,14 @@ function inferByKeyPrefixWithSuffix(kv, keyPrefix, suffix, keys){
   for(let i=0;i<keys;i++){
     arr.push(kv[`${keyPrefix}${i}${suffix}`] ?? "");
   }
-  return inferPatternFromSeries(arr, 1);
+  return inferPatternFromSeriesFlexible(arr);
 }
 
-// style guess based on comment flavour in the imported file
 function guessStyleFromIni(text){
   const s = String(text||"");
-  const hasDoubleSemi = /(^|\n)\s*;;/.test(s);
-  const hasSlashes = /(^|\n)\s*\/\//.test(s);
-  const hasSemi = /(^|\n)\s*;/.test(s);
-
-  if(hasDoubleSemi) return "ARC";
-  if(hasSlashes) return "H";
-  if(hasSemi) return "RUNE";
-  return "NANO";
+  if(/(^|\n)\s*\/\//.test(s)) return "H";
+  if(/(^|\n)\s*;/.test(s)) return "R";
+  return "H";
 }
 
 /* ---------- auto-center helpers ---------- */
@@ -891,7 +822,7 @@ function defaultManiaMode(keys){
     ARH: "9",
     CenterOffset: "0",
 
-    // patterns
+    // patterns / paths
     pKey: "",
     pKeyD: "",
     pNote: "",
@@ -914,8 +845,8 @@ const state = {
   activeTab: "mania",
   exportMania: true,
 
-  style: "H",          // H | ARC | RUNE | NANO
-  commentEmpty: false, // only affects preview (not exported in ini)
+  style: "H",
+  commentEmpty: false,
 
   version: "latest",
 
@@ -1398,7 +1329,7 @@ function wirePanelListeners(root){
 function genIni(){
   const out = [];
 
-  out.push(`[${formatSectionName("General")}]`);
+  out.push("[General]");
   pushKV(out, "Name", state.general.Name);
   pushKV(out, "Author", state.general.Author);
   out.push(fmtKV("Version", state.version));
@@ -1416,7 +1347,7 @@ function genIni(){
     cleanLine(state.general.ComboOverlap);
 
   if(hasFonts){
-    out.push(`[${formatSectionName("Fonts")}]`);
+    out.push("[Fonts]");
     pushKV(out, "ScorePrefix", state.general.ScorePrefix);
     pushKV(out, "ScoreOverlap", state.general.ScoreOverlap);
     pushKV(out, "ComboPrefix", state.general.ComboPrefix);
@@ -1427,7 +1358,7 @@ function genIni(){
   if(state.exportMania){
     for(const keys of ALL_MANIA_KEYS){
       if(!state.maniaShared.enabled[keys]) continue;
-      out.push(`[${formatSectionName("Mania")}]`);
+      out.push("[Mania]");
       out.push(...genManiaBlock(keys));
       spacer(out);
     }
@@ -1598,7 +1529,7 @@ function parseIni(text){
     const line = line0.trim();
     if(!line) continue;
 
-    if(line.startsWith("//") || line.startsWith(";") || line.startsWith(";;")) continue;
+    if(line.startsWith("//") || line.startsWith(";")) continue;
 
     const sec = line.match(/^\[(.+?)\]\s*$/);
     if(sec){
@@ -1612,7 +1543,7 @@ function parseIni(text){
       continue;
     }
 
-    // IMPORTANT: only ":" supported
+    // ONLY ":" supported
     const m = line.match(/^([A-Za-z0-9]+)\s*:\s*(.*)$/);
     if(!m) continue;
 
@@ -1635,27 +1566,22 @@ function parseIni(text){
 }
 
 function applyParsed(parsed){
-  // guess and apply style from imported file
-  const guessed = guessStyleFromIni(parsed._rawText || "");
-  state.style = guessed;
+  state.style = guessStyleFromIni(parsed._rawText || "");
 
   if(parsed.General.Version) state.version = parsed.General.Version;
   if("Name" in parsed.General) state.general.Name = parsed.General.Name;
   if("Author" in parsed.General) state.general.Author = parsed.General.Author;
 
-  // cursor
   const cursorKeys = ["CursorCentre","CursorExpand","CursorRotate","CursorTrailRotate"];
   for(const k of cursorKeys){
     if(k in parsed.General) state.general[k] = parsed.General[k].trim() === "1";
   }
 
-  // fonts
   const fontKeys = ["ScorePrefix","ScoreOverlap","ComboPrefix","ComboOverlap"];
   for(const k of fontKeys){
     if(k in parsed.Fonts) state.general[k] = parsed.Fonts[k];
   }
 
-  // mania blocks
   for(const blk of parsed.Mania){
     const keys = blk.Keys;
     if(!keys || keys < 1 || keys > 18) continue;
@@ -1683,7 +1609,6 @@ function applyParsed(parsed){
       else m[k] = blk.kv[k];
     }
 
-    // colours
     for(let i=0;i<keys;i++){
       const ck = `Colour${i}`;
       const lk = `ColourLight${i}`;
@@ -1691,23 +1616,30 @@ function applyParsed(parsed){
       if(lk in blk.kv) m.ColourLight[i+1] = blk.kv[lk];
     }
 
-    // infer patterns from imported KeyImage/NoteImage series
-    const pKey  = inferByKeyPrefix(blk.kv, "KeyImage", keys);
-    const pKeyD = inferByKeyPrefixWithSuffix(blk.kv, "KeyImage", "D", keys);
-    const pNote = inferByKeyPrefix(blk.kv, "NoteImage", keys);
-    const pNoteH= inferByKeyPrefixWithSuffix(blk.kv, "NoteImage", "H", keys);
-    const pNoteL= inferByKeyPrefixWithSuffix(blk.kv, "NoteImage", "L", keys);
-    const pNoteT= inferByKeyPrefixWithSuffix(blk.kv, "NoteImage", "T", keys);
+    // ✅ paths: infer if possible (0-based / 1-based / padded)
+    let pKey  = inferByKeyPrefix(blk.kv, "KeyImage", keys);
+    let pKeyD = inferByKeyPrefixWithSuffix(blk.kv, "KeyImage", "D", keys);
+    let pNote = inferByKeyPrefix(blk.kv, "NoteImage", keys);
+    let pNoteH= inferByKeyPrefixWithSuffix(blk.kv, "NoteImage", "H", keys);
+    let pNoteL= inferByKeyPrefixWithSuffix(blk.kv, "NoteImage", "L", keys);
+    let pNoteT= inferByKeyPrefixWithSuffix(blk.kv, "NoteImage", "T", keys);
 
-    // only overwrite if we successfully inferred (so we don't nuke user custom)
-    if(pKey)  m.pKey = pKey;
-    if(pKeyD) m.pKeyD = pKeyD;
-    if(pNote) m.pNote = pNote;
+    // ✅ fallback: mesmo se não inferir, coloca algo no pattern
+    if(!pKey  && blk.kv["KeyImage0"])    pKey  = fallbackPatternFromSingle(blk.kv["KeyImage0"]);
+    if(!pKeyD && blk.kv["KeyImage0D"])   pKeyD = fallbackPatternFromSingle(blk.kv["KeyImage0D"]);
+    if(!pNote && blk.kv["NoteImage0"])   pNote = fallbackPatternFromSingle(blk.kv["NoteImage0"]);
+    if(!pNoteH&& blk.kv["NoteImage0H"])  pNoteH= fallbackPatternFromSingle(blk.kv["NoteImage0H"]);
+    if(!pNoteL&& blk.kv["NoteImage0L"])  pNoteL= fallbackPatternFromSingle(blk.kv["NoteImage0L"]);
+    if(!pNoteT&& blk.kv["NoteImage0T"])  pNoteT= fallbackPatternFromSingle(blk.kv["NoteImage0T"]);
+
+    // aplica (não deixa vazio se tiver como)
+    if(pKey)   m.pKey = pKey;
+    if(pKeyD)  m.pKeyD = pKeyD;
+    if(pNote)  m.pNote = pNote;
     if(pNoteH) m.pNoteH = pNoteH;
     if(pNoteL) m.pNoteL = pNoteL;
     if(pNoteT) m.pNoteT = pNoteT;
 
-    // auto-columnstart flag
     m.AutoColumnStart = isBlank(m.ColumnStart);
 
     state.mania[keys] = m;
@@ -1741,7 +1673,7 @@ function loadState(){
     state.activeTab = s.activeTab ?? state.activeTab;
 
     state.exportMania = (s.exportMania ?? true) ? true : false;
-    state.style = s.style ?? "H";
+    state.style = (s.style === "R" ? "R" : "H");
     state.commentEmpty = (s.commentEmpty ?? false) ? true : false;
     state.version = s.version ?? "latest";
 
@@ -1824,9 +1756,7 @@ function updateModeBadge(){
 function syncDockToggles(){
   $("togMania").classList.toggle("active", state.exportMania);
   $("styleH").classList.toggle("active", state.style === "H");
-  $("styleArc").classList.toggle("active", state.style === "ARC");
-  $("styleRune").classList.toggle("active", state.style === "RUNE");
-  $("styleNano").classList.toggle("active", state.style === "NANO");
+  $("styleR").classList.toggle("active", state.style === "R");
   $("togCommentEmpty").classList.toggle("active", state.commentEmpty);
 }
 
@@ -1856,18 +1786,8 @@ $("styleH").addEventListener("click", ()=>{
   syncDockToggles();
   onAnyChange();
 });
-$("styleArc").addEventListener("click", ()=>{
-  state.style = "ARC";
-  syncDockToggles();
-  onAnyChange();
-});
-$("styleRune").addEventListener("click", ()=>{
-  state.style = "RUNE";
-  syncDockToggles();
-  onAnyChange();
-});
-$("styleNano").addEventListener("click", ()=>{
-  state.style = "NANO";
+$("styleR").addEventListener("click", ()=>{
+  state.style = "R";
   syncDockToggles();
   onAnyChange();
 });
