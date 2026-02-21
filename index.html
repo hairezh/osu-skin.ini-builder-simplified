@@ -5,9 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>skin.ini studio</title>
 
-  <!-- favicon -->
   <link rel="icon" type="image/png"
-    href="https://i.pinimg.com/1200x/d6/ca/e4/d6cae471e8471dec46c4304104adb4b1.jpg"/>
+        href="https://i.pinimg.com/1200x/d6/ca/e4/d6cae471e8471dec46c4304104adb4b1.jpg"/>
 
   <style>
     :root{
@@ -56,7 +55,6 @@
       backdrop-filter: blur(0.6px);
     }
 
-    /* Scrollbar */
     *{
       scrollbar-width: thin;
       scrollbar-color: rgba(220,220,230,.30) rgba(0,0,0,.20);
@@ -135,7 +133,6 @@
       overflow:hidden;
     }
 
-    /* ===== Sidebar dock ===== */
     .dock{
       border-right:1px solid var(--border);
       background: rgba(0,0,0,.38);
@@ -188,7 +185,7 @@
       border-color: rgba(255,255,255,.20);
       background: rgba(255,255,255,.10);
       color: rgba(233,233,238,.98);
-      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      box-shadow:0 10px 30px rgba(0,0,0,.35);
     }
 
     .tip{
@@ -217,7 +214,6 @@
       line-height:1.2;
     }
 
-    /* ===== Main content ===== */
     .main{
       min-height:0;
       padding:10px;
@@ -329,7 +325,6 @@
       font:inherit;
     }
 
-    /* ===== Forms ===== */
     .block{
       border:1px solid rgba(255,255,255,.12);
       background: rgba(0,0,0,.20);
@@ -385,7 +380,7 @@
       border-radius:14px;
       background: rgba(0,0,0,.26);
       color: rgba(233,233,238,.95);
-      padding: var(--inputPadY) var(--inputPadX);
+      padding: 9px 10px;
       outline:none;
       font:inherit;
     }
@@ -415,7 +410,6 @@
     .inline{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
     .grid2{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
 
-    /* switch */
     .switch{ display:inline-flex; align-items:center; gap:8px; }
     .switch input{ display:none; }
     .sw{
@@ -453,7 +447,6 @@
       font-weight:800;
     }
 
-    /* mania keymode toggles */
     .kmRow{
       display:flex;
       flex-wrap:wrap;
@@ -535,8 +528,6 @@
 
   <div class="layout">
     <aside class="dock">
-
-      <!-- Tabs -->
       <div class="dockGroup">
         <button class="icoBtn" data-tab="mania" title="Mania">
           <span aria-hidden="true">🎹</span>
@@ -549,7 +540,6 @@
         </button>
       </div>
 
-      <!-- Export -->
       <div class="dockGroup">
         <div class="miniLabel">export</div>
         <button class="icoBtn" id="togMania" title="Mania on/off" type="button">
@@ -558,13 +548,12 @@
         </button>
       </div>
 
-      <!-- Styles (TRULY different) -->
       <div class="dockGroup">
         <div class="miniLabel">styles</div>
 
-        <button class="icoBtn" id="styleH" title="H style (aligned + // headers)" type="button">
+        <button class="icoBtn" id="styleH" title="H (aligned : + // headers)" type="button">
           <span aria-hidden="true">H</span>
-          <span class="tip">H (aligned)</span>
+          <span class="tip">H</span>
         </button>
 
         <button class="icoBtn" id="styleArc" title="ARC (tabs + UPPERCASE + =)" type="button">
@@ -572,18 +561,17 @@
           <span class="tip">ARC</span>
         </button>
 
-        <button class="icoBtn" id="styleRune" title="RUNE (boxed banners + ; comments)" type="button">
+        <button class="icoBtn" id="styleRune" title="RUNE (boxed banners + quoting)" type="button">
           <span aria-hidden="true">ᚱ</span>
           <span class="tip">RUNE</span>
         </button>
 
-        <button class="icoBtn" id="styleNano" title="NANO (ultra compact, no fluff)" type="button">
+        <button class="icoBtn" id="styleNano" title="NANO (ultra compact)" type="button">
           <span aria-hidden="true">·</span>
           <span class="tip">NANO</span>
         </button>
       </div>
 
-      <!-- Extra -->
       <div class="dockGroup">
         <div class="miniLabel">extra</div>
 
@@ -600,11 +588,9 @@
           <span class="tip">Version</span>
         </button>
       </div>
-
     </aside>
 
     <main class="main">
-
       <div class="card">
         <div class="cardHead">
           <div class="left">
@@ -632,12 +618,10 @@
           <textarea id="preview" readonly></textarea>
         </div>
       </div>
-
     </main>
   </div>
 </div>
 
-<!-- Version modal -->
 <dialog id="verDlg" style="max-width:420px;width:calc(100% - 24px);border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(0,0,0,.86);color:rgba(233,233,238,.95);box-shadow:0 20px 60px rgba(0,0,0,.55);">
   <form method="dialog" style="margin:0;padding:12px;">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
@@ -659,7 +643,6 @@
   </form>
 </dialog>
 
-<!-- Import modal -->
 <dialog id="importDlg" style="max-width:900px;width:calc(100% - 24px);border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(0,0,0,.88);color:rgba(233,233,238,.95);box-shadow:0 20px 60px rgba(0,0,0,.55);">
   <form method="dialog" style="margin:0;padding:12px;">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
@@ -676,7 +659,7 @@
 
 <script>
 const $ = (id)=>document.getElementById(id);
-const STORAGE_KEY = "skinini_studio_v9_styles_hits";
+const STORAGE_KEY = "skinini_studio_v9_styles_hits_fixed";
 
 /* ---------- util ---------- */
 function cleanLine(s){ return String(s ?? "").replace(/\r/g,"").trimEnd(); }
@@ -715,13 +698,7 @@ function pat(pattern, n){
   return p.replaceAll("{n}", String(n));
 }
 
-/* ---------- STYLE ENGINE (unique de verdade) ---------- */
-/*
-  H    : alinhado, ":" com espaço, headers "// x --", blank lines
-  ARC  : UPPERCASE keys, "=" sem espaços, tab alignment, section names em CAPS, comentários ";;"
-  RUNE : banners gigantes, comentários ";", ":" normal, valores com aspas se tiver espaço, separadores decorativos
-  NANO : ultra-compact, sem headers, sem linhas em branco, "=" sem espaços, e se commentEmpty ligado usa ";" curtinho
-*/
+/* ---------- STYLE ENGINE ---------- */
 const STYLES = {
   H: {
     name: "H",
@@ -735,7 +712,7 @@ const STYLES = {
     blankLines: true,
     includeHeaders: true,
     headerLines: (title)=> [`// ${title} --`, ""],
-    valueTransform: (v)=> v,
+    valueTransform: (v)=> cleanLine(v),
   },
   ARC: {
     name: "ARC",
@@ -743,13 +720,13 @@ const STYLES = {
     sectionCase: "upper",
     keyCase: "upper",
     sep: "=",
-    align: 1,              // 1 = liga tab alignment
-    alignMode: "tabs",      // usa \t para colunar (bem diferente)
+    align: 1,
+    alignMode: "tabs",
     comment: ";;",
-    blankLines: false,      // sem respiro
+    blankLines: false,
     includeHeaders: true,
     headerLines: (title)=> [`;;[${String(title).toUpperCase()}]`, `;;--------------------`],
-    valueTransform: (v)=> v,
+    valueTransform: (v)=> cleanLine(v),
   },
   RUNE: {
     name: "RUNE",
@@ -769,7 +746,6 @@ const STYLES = {
     },
     valueTransform: (v)=>{
       const s = cleanLine(v);
-      // se tiver espaço/tab, envolve em aspas — "estilo único" sem quebrar ini
       if(/[ \t]/.test(s) && !/^".*"$/.test(s)) return `"${s}"`;
       return s;
     },
@@ -815,11 +791,9 @@ function fmtKV(key, value){
   const v = formatValue(value);
 
   if(st.alignMode === "tabs"){
-    // tab alignment: KEY<TAB>=VALUE (bem diferente do H)
-    // número de tabs depende do tamanho da key
     const len = k.length;
     const tabs = (len < 8) ? "\t\t\t" : (len < 16) ? "\t\t" : "\t";
-    return `${k}${tabs}${st.sep}${v}`; // sep já é "=" no ARC
+    return `${k}${tabs}${st.sep}${v}`;
   }
 
   if(st.alignMode === "spaces" && st.align > 0){
@@ -836,7 +810,6 @@ function pushKV(lines, key, value){
     lines.push(fmtKV(key, v0));
     return;
   }
-
   if(!state.commentEmpty) return;
 
   const st = curStyle();
@@ -966,7 +939,7 @@ const state = {
   activeTab: "mania",
   exportMania: true,
 
-  style: "H",          // H | ARC | RUNE | NANO
+  style: "H",
   commentEmpty: false,
 
   version: "latest",
@@ -974,12 +947,10 @@ const state = {
   general: {
     Name: "",
     Author: "",
-
     CursorCentre: true,
     CursorExpand: false,
     CursorRotate: false,
     CursorTrailRotate: false,
-
     ScorePrefix: "",
     ScoreOverlap: "0",
     ComboPrefix: "",
@@ -1345,7 +1316,7 @@ function wireAccordions(root){
     if(head.dataset.fold){
       head.addEventListener("click", ()=>{
         const k = Number(head.dataset.fold);
-        const block = root.querySelector(\`.block[data-keys="\${k}"]\`);
+        const block = root.querySelector(`.block[data-keys="${k}"]`);
         if(!block) return;
         const nowOpen = !block.classList.contains("open");
         block.classList.toggle("open", nowOpen);
@@ -1453,7 +1424,6 @@ function wirePanelListeners(root){
 /* ---------- ini generation ---------- */
 function genIni(){
   const out = [];
-  const st = curStyle();
 
   out.push(`[${formatSectionName("General")}]`);
   pushKV(out, "Name", state.general.Name);
@@ -1669,15 +1639,12 @@ function parseIni(text){
       continue;
     }
 
-    // aceita ":" e "=" e também o estilo ARC com tabs
     let m = line.match(/^([A-Za-z0-9]+)\s*:\s*(.*)$/);
     if(!m) m = line.match(/^([A-Za-z0-9]+)\s*=\s*(.*)$/);
     if(!m) continue;
 
     const key = m[1];
     let val = (m[2] ?? "").trim();
-
-    // remove aspas do RUNE se tiver
     if(/^".*"$/.test(val)) val = val.slice(1,-1);
 
     const secName = section.toLowerCase();
@@ -1733,7 +1700,6 @@ function applyParsed(parsed){
       "Hit0","Hit50","Hit100","Hit200","Hit300","Hit300g",
     ];
 
-    // também aceita versão UPPERCASE do ARC
     for(const k of direct){
       const k2 = k.toUpperCase();
       const hit = (k in blk.kv) ? k : (k2 in blk.kv) ? k2 : null;
@@ -1773,6 +1739,7 @@ function saveState(){
     $("savePulse").textContent = "ERR";
   }
 }
+
 function loadState(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -1865,12 +1832,10 @@ function updateModeBadge(){
 /* ---------- dock toggles ---------- */
 function syncDockToggles(){
   $("togMania").classList.toggle("active", state.exportMania);
-
   $("styleH").classList.toggle("active", state.style === "H");
   $("styleArc").classList.toggle("active", state.style === "ARC");
   $("styleRune").classList.toggle("active", state.style === "RUNE");
   $("styleNano").classList.toggle("active", state.style === "NANO");
-
   $("togCommentEmpty").classList.toggle("active", state.commentEmpty);
 }
 
