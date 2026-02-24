@@ -452,6 +452,12 @@
           <span aria-hidden="true">ᚱ</span>
           <span class="tip">R</span>
         </button>
+
+        <!-- ✅ NEW STYLE -->
+        <button class="icoBtn" id="styleP" title="P (ini parser style)" type="button">
+          <span aria-hidden="true">P</span>
+          <span class="tip">P</span>
+        </button>
       </div>
 
       <div class="dockGroup">
@@ -586,13 +592,13 @@ function pat(pattern, n){
   return p.replaceAll("{n}", String(n));
 }
 
-/* ---------- styles (ONLY H + R, ALWAYS ":" ) ---------- */
+/* ---------- styles (ONLY H + R + P, ALWAYS ":" ) ---------- */
 const STYLES = {
   H: {
     name: "H",
     icon: "H",
-    sep: " : ",
-    align: 32,
+    sep: ": ",
+    align: 0,
     comment: "//",
     blankLines: true,
     includeHeaders: true,
@@ -617,6 +623,23 @@ const STYLES = {
       if(/[ \t]/.test(s) && !/^".*"$/.test(s)) return `"${s}"`;
       return s;
     },
+  },
+
+  /* ✅ NEW: "P" (ini parser vibe)
+     - separator ":" (no alignment)
+     - comment prefix "//"
+     - section-style headers like: // -=- Something
+  */
+  P: {
+    name: "P",
+    icon: "P",
+    sep: ": ",
+    align: 0,
+    comment: "//",
+    blankLines: true,
+    includeHeaders: true,
+    headerLines: (title)=> [`// -=- ${String(title||"")}`, ""],
+    valueTransform: (v)=> cleanLine(v),
   }
 };
 
@@ -736,8 +759,9 @@ function inferByKeyPrefixWithSuffix(kv, keyPrefix, suffix, keys){
 
 function guessStyleFromIni(text){
   const s = String(text||"");
-  if(/(^|\n)\s*\/\//.test(s)) return "H";
   if(/(^|\n)\s*;/.test(s)) return "R";
+  if(/(^|\n)\s*\/\/\s*-\=-/.test(s)) return "P";
+  if(/(^|\n)\s*\/\//.test(s)) return "H";
   return "H";
 }
 
@@ -1329,10 +1353,22 @@ function wirePanelListeners(root){
 function genIni(){
   const out = [];
 
+  // P style "ini parser" header
+  if(state.style === "P"){
+    out.push("[General]");
+    out.push("// Ini parser v0.2.20 // https://osuck.link/skin.ini");
+    out.push("");
+  }
+
   out.push("[General]");
   pushKV(out, "Name", state.general.Name);
   pushKV(out, "Author", state.general.Author);
   out.push(fmtKV("Version", state.version));
+
+  if(state.style === "P"){
+    out.push("");
+    out.push("// -=- Cursor");
+  }
 
   out.push(fmtKV("CursorCentre", bool01(!!state.general.CursorCentre)));
   out.push(fmtKV("CursorExpand", bool01(!!state.general.CursorExpand)));
@@ -1348,6 +1384,7 @@ function genIni(){
 
   if(hasFonts){
     out.push("[Fonts]");
+    if(state.style === "P") out.push("// -=- Score Font");
     pushKV(out, "ScorePrefix", state.general.ScorePrefix);
     pushKV(out, "ScoreOverlap", state.general.ScoreOverlap);
     pushKV(out, "ComboPrefix", state.general.ComboPrefix);
@@ -1382,6 +1419,7 @@ function genManiaBlock(keys){
     return Array.from({length: count}, ()=>r).join(",");
   }
 
+  if(state.style === "P") lines.push("// -=- Column");
   lines.push(fmtKV("ColumnWidth", normalizeCsv(m.ColumnWidth, keys, Array.from({length:keys}, ()=>"70").join(","))));
   lines.push(fmtKV("ColumnSpacing", normalizeCsv(m.ColumnSpacing, Math.max(0,keys-1), Array.from({length:Math.max(0,keys-1)}, ()=>"0").join(","))));
 
@@ -1395,12 +1433,14 @@ function genManiaBlock(keys){
   lines.push(fmtKV("ColumnLineWidth", normalizeCsv(m.ColumnLineWidth, keys+1, Array.from({length:keys+1}, ()=>"0").join(","))));
   spacer(lines);
 
+  if(state.style === "P") lines.push("// -=- Position");
   pushKV(lines, "HitPosition", m.HitPosition);
   pushKV(lines, "LightPosition", m.LightPosition);
   pushKV(lines, "ScorePosition", m.ScorePosition);
   pushKV(lines, "ComboPosition", m.ComboPosition);
   spacer(lines);
 
+  if(state.style === "P") lines.push("// -=- Toggles");
   lines.push(fmtKV("JudgementLine", bool01(!!m.JudgementLine)));
   lines.push(fmtKV("KeysUnderNotes", bool01(!!m.KeysUnderNotes)));
   lines.push(fmtKV("UpsideDown", bool01(!!m.UpsideDown)));
@@ -1410,6 +1450,7 @@ function genManiaBlock(keys){
   pushKV(lines, "WidthForNoteHeightScale", m.WidthForNoteHeightScale);
   spacer(lines);
 
+  if(state.style === "P") lines.push("// -=- Stage");
   header(lines, "stage");
   pushKV(lines, "StageLeft", m.StageLeft);
   pushKV(lines, "StageRight", m.StageRight);
@@ -1422,6 +1463,7 @@ function genManiaBlock(keys){
   pushKV(lines, "LightingL", m.LightingL);
   spacer(lines);
 
+  if(state.style === "P") lines.push("// -=- Colors");
   header(lines, "colours");
   for(let ui=1; ui<=keys; ui++){
     const v = cleanLine(m.Colour?.[ui]);
@@ -1444,6 +1486,7 @@ function genManiaBlock(keys){
   pushKV(lines, "ColourBreak", m.ColourBreak);
   spacer(lines);
 
+  if(state.style === "P") lines.push("// -=- Key Image");
   header(lines, "images");
 
   const pKey  = m.pKey  || "";
@@ -1469,6 +1512,7 @@ function genManiaBlock(keys){
   }
   spacer(lines);
 
+  if(state.style === "P") lines.push("// -=- Note Image");
   for(let idx=0; idx<keys; idx++){
     const n = idx + 1;
     const v = pat(pNote, n);
@@ -1504,6 +1548,7 @@ function genManiaBlock(keys){
   pushKV(lines, "WarningArrow", m.WarningArrow);
   spacer(lines);
 
+  if(state.style === "P") lines.push("// -=- Hitburst Image");
   header(lines, "hits");
   pushKV(lines, "Hit0", m.Hit0);
   pushKV(lines, "Hit50", m.Hit50);
@@ -1673,7 +1718,7 @@ function loadState(){
     state.activeTab = s.activeTab ?? state.activeTab;
 
     state.exportMania = (s.exportMania ?? true) ? true : false;
-    state.style = (s.style === "R" ? "R" : "H");
+    state.style = (s.style === "R" ? "R" : (s.style === "P" ? "P" : "H"));
     state.commentEmpty = (s.commentEmpty ?? false) ? true : false;
     state.version = s.version ?? "latest";
 
@@ -1757,6 +1802,7 @@ function syncDockToggles(){
   $("togMania").classList.toggle("active", state.exportMania);
   $("styleH").classList.toggle("active", state.style === "H");
   $("styleR").classList.toggle("active", state.style === "R");
+  $("styleP").classList.toggle("active", state.style === "P");
   $("togCommentEmpty").classList.toggle("active", state.commentEmpty);
 }
 
@@ -1788,6 +1834,11 @@ $("styleH").addEventListener("click", ()=>{
 });
 $("styleR").addEventListener("click", ()=>{
   state.style = "R";
+  syncDockToggles();
+  onAnyChange();
+});
+$("styleP").addEventListener("click", ()=>{
+  state.style = "P";
   syncDockToggles();
   onAnyChange();
 });
