@@ -1353,13 +1353,6 @@ function wirePanelListeners(root){
 function genIni(){
   const out = [];
 
-  // P style "ini parser" header
-  if(state.style === "P"){
-    out.push("[General]");
-    out.push("// Ini parser v0.2.20 // https://osuck.link/skin.ini");
-    out.push("");
-  }
-
   out.push("[General]");
   pushKV(out, "Name", state.general.Name);
   pushKV(out, "Author", state.general.Author);
