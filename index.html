@@ -1,1875 +1,1383 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>skin.ini studio</title>
-
-  <link rel="icon" type="image/png"
-        href="https://i.pinimg.com/1200x/d6/ca/e4/d6cae471e8471dec46c4304104adb4b1.jpg"/>
-
+  <title>skin.ini studio rebuilt</title>
   <style>
+    @font-face{
+      font-family:"font";
+      src:url("../fonts/font.otf") format("opentype");
+      font-weight:normal;
+      font-style:normal;
+    }
+
     :root{
-      --fg:#e9e9ee;
-      --muted:rgba(233,233,238,.62);
-      --muted2:rgba(233,233,238,.40);
+      --bg:#0b0c0f;
+      --panel:rgba(255,255,255,.05);
+      --panel-2:rgba(255,255,255,.03);
       --border:rgba(255,255,255,.12);
-      --panel:rgba(0,0,0,.44);
-      --shadow: 0 10px 30px rgba(0,0,0,.45);
-      --r:14px;
-
-      --dockW:62px;
-      --gap:10px;
-
-      --rowLabel: 205px;
-
-      color-scheme: dark;
+      --border-2:rgba(255,255,255,.18);
+      --text:#e8e8e8;
+      --muted:rgba(232,232,232,.60);
+      --muted-2:rgba(232,232,232,.42);
+      --radius:10px;
+      --shadow:0 16px 34px rgba(0,0,0,.34);
+      --ok:#d7f5d4;
+      --warn:#ffe3b0;
+      color-scheme:dark;
     }
 
     *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    html,body{ height:100%; min-height:100%; }
 
     body{
       margin:0;
-      color:var(--fg);
-      font: 14px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-
-      background-image: url("https://i.pinimg.com/originals/f5/93/a4/f593a4f4932080fb7b43c6ae96d1a73d.gif");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      overflow:hidden;
-    }
-
-    body::before{
-      content:"";
-      position:fixed; inset:0;
-      pointer-events:none;
-      background:
-        radial-gradient(900px 520px at 15% 10%, rgba(0,0,0,.16), transparent 55%),
-        radial-gradient(900px 520px at 85% 20%, rgba(0,0,0,.16), transparent 55%),
-        linear-gradient(180deg, rgba(0,0,0,.58), rgba(0,0,0,.56));
-      backdrop-filter: blur(0.6px);
-    }
-
-    *{
-      scrollbar-width: thin;
-      scrollbar-color: rgba(220,220,230,.30) rgba(0,0,0,.20);
-    }
-    *::-webkit-scrollbar{ width:10px; height:10px; }
-    *::-webkit-scrollbar-track{ background: rgba(0,0,0,.20); border-radius: 10px; }
-    *::-webkit-scrollbar-thumb{
-      background: rgba(220,220,230,.26);
-      border: 2px solid rgba(0,0,0,.20);
-      border-radius: 10px;
-    }
-    *::-webkit-scrollbar-thumb:hover{ background: rgba(220,220,230,.40); }
-
-    .app{ position:relative; z-index:1; height:100%; display:flex; flex-direction:column; }
-
-    .topbar{
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-      padding:10px 12px;
-      border-bottom:1px solid var(--border);
-      background: rgba(0,0,0,.38);
-      backdrop-filter: blur(3px);
-    }
-
-    .brand{ display:flex; align-items:center; gap:10px; min-width:0; }
-    .brand img{
-      width:30px; height:30px; border-radius:10px;
-      border:1px solid rgba(255,255,255,.16);
-      background:rgba(0,0,0,.25);
-      box-shadow: 0 8px 20px rgba(0,0,0,.35);
-      object-fit: cover;
-    }
-    .brand .title{ display:flex; flex-direction:column; gap:2px; min-width:0; }
-    .brand .title b{
-      font-weight:900; font-size:13px; letter-spacing:.2px;
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    }
-    .brand .title span{
-      font-size:12px; color:var(--muted2);
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    }
-
-    .layout{ flex:1; min-height:0; display:grid; grid-template-columns: var(--dockW) 1fr; overflow:hidden; }
-
-    .dock{
-      border-right:1px solid var(--border);
-      background: rgba(0,0,0,.38);
-      backdrop-filter: blur(3px);
-      display:flex; flex-direction:column; align-items:center; gap:10px;
-      padding:10px 8px; min-height:0; overflow:auto;
-    }
-
-    .dockGroup{
-      width:100%;
-      display:flex; flex-direction:column; gap:8px; align-items:center;
-      padding-bottom:10px;
-      border-bottom:1px solid rgba(255,255,255,.10);
-    }
-    .dockGroup:last-child{ border-bottom:0; padding-bottom:0; }
-
-    .icoBtn{
-      width:46px; height:46px; border-radius:16px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.22);
-      color: rgba(233,233,238,.78);
-      display:grid; place-items:center;
-      cursor:pointer; user-select:none;
-      transition:110ms linear;
       position:relative;
-    }
-    .icoBtn:hover{
-      border-color: rgba(255,255,255,.18);
-      background: rgba(255,255,255,.06);
-      color: rgba(233,233,238,.95);
-      transform: translateY(-1px);
-    }
-    .icoBtn.active{
-      border-color: rgba(255,255,255,.20);
-      background: rgba(255,255,255,.10);
-      color: rgba(233,233,238,.98);
-      box-shadow:0 10px 30px rgba(0,0,0,.35);
-    }
-
-    .tip{
-      position:absolute; left:58px; top:50%; transform: translateY(-50%);
-      background: rgba(0,0,0,.70);
-      border:1px solid rgba(255,255,255,.14);
-      border-radius:12px;
-      padding:6px 10px;
-      font-size:12px;
-      color: rgba(233,233,238,.92);
-      white-space:nowrap;
-      opacity:0;
-      pointer-events:none;
-      transition:110ms linear;
-      backdrop-filter: blur(3px);
-    }
-    .icoBtn:hover .tip{ opacity:1; }
-
-    .miniLabel{ font-size:11px; color: var(--muted2); text-align:center; line-height:1.2; }
-
-    .main{
-      min-height:0;
-      padding:10px;
-      display:grid;
-      grid-template-columns: 1.20fr .80fr;
-      gap:10px;
+      background-color:var(--bg);
+      background-image:
+        linear-gradient(rgba(0,0,0,.60), rgba(0,0,0,.60)),
+        url("https://media.discordapp.net/attachments/1473364920291557406/1479978239710597243/7.jpg?ex=69ae00a5&is=69acaf25&hm=a6042d5d44fd1c7f0f6c81061b05d708f86ec02fe29b4327d794ac480bbad284&=&format=webp&width=1463&height=822");
+      background-position:center center;
+      background-size:cover;
+      background-repeat:no-repeat;
+      background-attachment:fixed;
+      color:var(--text);
+      font:16px/1.6 "font", ui-monospace, monospace;
       overflow:hidden;
-      align-items:stretch;
+    }
+
+    a{ color:inherit; text-decoration:none; }
+
+    #rainCanvas{
+      position:fixed;
+      inset:0;
+      z-index:2;
+      pointer-events:none;
+      background:transparent;
+    }
+
+    #clockBox{
+      position:fixed;
+      top:14px;
+      left:14px;
+      z-index:9998;
+      padding:8px 12px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:rgba(0,0,0,.28);
+      backdrop-filter:blur(8px);
+      color:var(--text);
+      font-size:12px;
+      line-height:1.4;
+      box-shadow:0 8px 20px rgba(0,0,0,.25);
+    }
+
+    #rainToggle{
+      margin-top:6px;
+      display:inline-block;
+      font-size:11px;
+      cursor:pointer;
+      border:1px solid var(--border);
+      border-radius:8px;
+      padding:4px 8px;
+      background:rgba(0,0,0,.25);
+      color:var(--muted);
+      transition:color .2s ease, background .2s ease, border-color .2s ease, transform .2s ease;
+      user-select:none;
+    }
+    #rainToggle:hover{
+      color:var(--text);
+      background:rgba(255,255,255,.08);
+      border-color:rgba(255,255,255,.20);
+      transform:translateY(-1px);
+    }
+
+    .container{
+      position:relative;
+      z-index:3;
+      height:100%;
+      max-width:1500px;
+      margin:0 auto;
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+
+    .top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      padding:14px 16px;
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      background:var(--panel);
+      backdrop-filter:blur(8px);
+      animation:fadeUp .7s ease both;
+    }
+
+    .brand{ display:flex; align-items:center; gap:12px; min-width:0; }
+    .logo{
+      width:64px; height:64px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:rgba(0,0,0,.25);
+      display:grid; place-items:center;
+      color:var(--muted);
+      font-weight:800;
+      overflow:hidden;
+      transition:transform .35s ease, box-shadow .35s ease;
+      flex:0 0 auto;
+    }
+    .logo:hover{ transform:translateY(-2px) scale(1.03); box-shadow:0 10px 22px rgba(0,0,0,.28); }
+    .logo img{ width:100%; height:100%; display:block; object-fit:cover; }
+    .title{ font-weight:800; letter-spacing:.3px; font-size:18px; }
+    .sub{ color:var(--muted); font-size:12px; margin-top:2px; }
+
+    .nav{ display:flex; gap:8px; flex-wrap:wrap; }
+    .btn, .small, select, input, textarea, button{ font:inherit; }
+
+    .btn, .small{
+      padding:9px 13px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      background:rgba(0,0,0,.18);
+      color:var(--muted);
+      font-weight:700;
+      transition:transform .25s ease, color .25s ease, border-color .25s ease, background .25s ease, box-shadow .25s ease;
+      animation:btnFloat 6s ease-in-out infinite;
+      cursor:pointer;
+    }
+    .btn:hover, .small:hover{
+      color:var(--text);
+      border-color:rgba(255,255,255,.24);
+      background:rgba(255,255,255,.08);
+      transform:translateY(-3px) scale(1.03);
+      box-shadow:0 10px 24px rgba(0,0,0,.30);
+    }
+    .btn.active{ color:var(--text); border-color:rgba(255,255,255,.22); background:rgba(255,255,255,.06); }
+    .btn.primary{ color:var(--text); border-color:rgba(255,255,255,.22); background:rgba(255,255,255,.10); }
+
+    .hero{
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      background:rgba(255,255,255,.03);
+      backdrop-filter:blur(8px);
+      padding:14px 18px;
+      animation:fadeUp .7s ease both;
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      align-items:flex-start;
+      flex-wrap:wrap;
+    }
+    .hero h1{ margin:0 0 6px; font-size:18px; }
+    .hero p{ margin:0; color:var(--muted); max-width:900px; }
+    .heroStats{ display:flex; flex-wrap:wrap; gap:8px; }
+    .pill{
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(0,0,0,.16);
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+    }
+
+    .workspace{
+      min-height:0;
+      display:grid;
+      grid-template-columns: 360px minmax(0,1fr) 480px;
+      gap:12px;
+      flex:1;
     }
 
     .card{
       border:1px solid var(--border);
-      background: var(--panel);
-      backdrop-filter: blur(3px);
-      border-radius: var(--r);
-      box-shadow: var(--shadow);
+      border-radius:var(--radius);
+      background:rgba(255,255,255,.03);
+      backdrop-filter:blur(8px);
       overflow:hidden;
-      min-height:0;
       display:flex;
       flex-direction:column;
+      min-height:0;
+      transition:transform .3s ease, border-color .3s ease, box-shadow .3s ease, background .3s ease;
+      animation:cardEntrance .6s ease both;
     }
+    .card:hover{ border-color:rgba(255,255,255,.20); box-shadow:0 16px 34px rgba(0,0,0,.24); background:rgba(255,255,255,.05); }
 
     .cardHead{
-      padding:10px 10px 8px;
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      border-bottom:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.25);
-      position: sticky; top: 0; z-index: 2;
-      backdrop-filter: blur(4px);
-    }
-    .cardHead .left{
-      display:flex; gap:10px; align-items:center;
-      flex-wrap:wrap; min-width:0;
-    }
-
-    .badge{
-      font-size:12px;
-      padding:4px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.22);
-      color: rgba(233,233,238,.75);
-      font-weight:900;
-      max-width: 100%;
-      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-    }
-
-    .tools{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-    .cardBody{ padding:10px; overflow:auto; min-height:0; flex:1; }
-
-    .btn{
-      cursor:pointer;
-      padding:8px 10px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.22);
-      color: rgba(233,233,238,.78);
-      font-weight:900;
-      transition:110ms linear;
-      user-select:none;
-    }
-    .btn:hover{
-      border-color: rgba(255,255,255,.18);
-      background: rgba(255,255,255,.06);
-      color: rgba(233,233,238,.95);
-    }
-    .btn.primary{
-      background: rgba(255,255,255,.10);
-      border-color: rgba(255,255,255,.16);
-      color: rgba(233,233,238,.95);
-    }
-    .btn.danger:hover{
-      border-color: rgba(255,140,140,.35);
-      color: rgba(255,220,220,.95);
-    }
-
-    textarea{
-      width:100%;
-      height: calc(100% - 2px);
-      min-height: 100%;
-      resize:none;
-      border:1px solid rgba(255,255,255,.12);
-      border-radius: 14px;
-      background: rgba(0,0,0,.30);
-      color: rgba(233,233,238,.95);
-      padding:10px 12px;
-      outline:none;
-      font:inherit;
-    }
-
-    .block{
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.20);
-      border-radius: 16px;
-      overflow:hidden;
-      margin: 10px 0;
-    }
-    .blockHead{
-      width:100%;
-      border:0;
-      cursor:pointer;
-      padding:10px 12px;
+      padding:12px 14px;
+      border-bottom:1px solid rgba(255,255,255,.08);
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:10px;
-      background: rgba(0,0,0,.22);
-      color: rgba(233,233,238,.95);
-      font:inherit;
-      font-weight: 900;
-      letter-spacing:.2px;
-      user-select:none;
+      gap:12px;
+      background:rgba(0,0,0,.14);
+      position:sticky;
+      top:0;
+      z-index:1;
+      backdrop-filter:blur(10px);
     }
-    .caret{ color: rgba(233,233,238,.60); transition:110ms linear; }
-    .block.open .caret{ transform: rotate(90deg); }
-    .blockBody{ display:none; padding:10px 12px 12px; border-top:1px solid rgba(255,255,255,.10); }
-    .block.open .blockBody{ display:block; }
+    .cardTitle{ font-weight:800; font-size:15px; line-height:1.45; }
+    .meta{ color:var(--muted); font-size:12px; display:flex; gap:10px; flex-wrap:wrap; }
+    .cardBody{ flex:1; min-height:0; padding:14px; overflow:auto; display:flex; flex-direction:column; gap:12px; }
 
-    .row{
-      display:grid;
-      grid-template-columns: var(--rowLabel) 1fr;
-      gap:10px;
-      align-items:center;
-      margin-bottom:8px;
+    .sideList{ display:flex; flex-direction:column; gap:10px; }
+    .homeCard{ position:relative; overflow:hidden; isolation:isolate; }
+    .homeCard::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:var(--card-bg);
+      background-position:center;
+      background-size:cover;
+      background-repeat:no-repeat;
+      opacity:var(--card-opacity,.18);
+      filter:blur(var(--card-blur,8px));
+      transform:scale(1.08);
+      transition:opacity .3s ease, filter .3s ease, transform .35s ease;
+      z-index:0;
     }
-    .row label{
-      font-size:12px;
-      color: rgba(233,233,238,.80);
-      font-weight:900;
-      user-select:none;
+    .homeCard::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.45));
+      z-index:0;
+    }
+    .homeCard .cardBody{ position:relative; z-index:1; min-height:auto; align-items:flex-start; text-align:left; }
+    .homeCard:hover::before{
+      opacity:calc(var(--card-opacity,.18) + .08);
+      filter:blur(calc(var(--card-blur,8px) - 2px));
+      transform:scale(1.12);
     }
 
-    input[type="text"], input[type="number"], select{
+    .stack{ display:flex; flex-direction:column; gap:10px; }
+    .sectionBlock{
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:12px;
+      background:rgba(0,0,0,.14);
+      overflow:hidden;
+    }
+    .sectionHead{
+      width:100%; border:0; background:rgba(255,255,255,.03); color:var(--text);
+      padding:12px 13px; text-align:left; display:flex; justify-content:space-between; gap:10px; align-items:center;
+      cursor:pointer; font-weight:800;
+    }
+    .sectionHead:hover{ background:rgba(255,255,255,.05); }
+    .sectionBody{ padding:12px; display:grid; gap:10px; }
+    .sectionBlock.closed .sectionBody{ display:none; }
+
+    .row{ display:grid; grid-template-columns: 170px 1fr; gap:10px; align-items:center; }
+    .row > label{ color:var(--muted); font-size:12px; }
+    .help{ color:var(--muted-2); font-size:11px; }
+
+    input[type="text"], input[type="number"], select, textarea{
       width:100%;
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:14px;
-      background: rgba(0,0,0,.26);
-      color: rgba(233,233,238,.95);
-      padding: 9px 10px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      background:rgba(0,0,0,.20);
+      color:var(--text);
+      padding:10px 12px;
       outline:none;
-      font:inherit;
     }
-
-    select{
-      color-scheme: dark;
-      background: rgba(0,0,0,.72);
-      border-color: rgba(255,255,255,.14);
-    }
-
+    input:focus, select:focus, textarea:focus{ border-color:var(--border-2); box-shadow:0 0 0 1px rgba(255,255,255,.06); }
+    textarea{ min-height:240px; resize:vertical; }
+    select{ background:rgba(0,0,0,.28); }
     input[type="color"]{
-      width:46px; height:38px;
-      border:1px solid rgba(255,255,255,.12);
+      width:48px; height:40px; padding:0; border-radius:10px; border:1px solid var(--border); background:transparent;
+    }
+    input[type="checkbox"]{ accent-color:#fff; }
+
+    .inline{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+
+    .kmGrid{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+    .kmItem{
+      padding:10px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      background:rgba(0,0,0,.14);
+      display:flex; align-items:center; justify-content:space-between; gap:8px;
+      font-size:12px;
+    }
+
+    .warnBox, .okBox{
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:12px;
+      padding:10px 12px;
+      font-size:12px;
+      background:rgba(0,0,0,.18);
+    }
+    .warnBox{ color:var(--warn); }
+    .okBox{ color:var(--ok); }
+
+    .previewToolbar{ display:flex; gap:8px; flex-wrap:wrap; }
+    #preview{
+      flex:1;
+      min-height:0;
+      resize:none;
+      white-space:pre;
+      font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    .diagnostics{ display:flex; flex-direction:column; gap:8px; }
+    .diagItem{
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:10px;
+      background:rgba(0,0,0,.16);
+      padding:10px 12px;
+      font-size:12px;
+    }
+    .diagItem b{ color:var(--text); }
+    .diagItem span{ color:var(--muted); }
+
+    .footer{ margin:4px 0 0; color:rgba(232,232,232,.35); font-size:12px; }
+    .kbd{ padding:2px 6px; border-radius:8px; border:1px solid var(--border); background:rgba(0,0,0,.18); color:var(--text); }
+
+    dialog{
+      width:min(1000px, calc(100% - 24px));
+      border:1px solid var(--border);
       border-radius:14px;
-      background:transparent;
+      background:rgba(8,8,10,.92);
+      color:var(--text);
+      box-shadow:0 20px 60px rgba(0,0,0,.55);
       padding:0;
     }
+    dialog::backdrop{ background:rgba(0,0,0,.55); backdrop-filter:blur(3px); }
+    .modal{ padding:14px; display:flex; flex-direction:column; gap:12px; }
+    .modalHead{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
 
-    .inline{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-    .grid2{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
-
-    .switch{ display:inline-flex; align-items:center; gap:8px; }
-    .switch input{ display:none; }
-    .sw{
-      width:48px; height:28px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.24);
-      border-radius: 12px;
-      position:relative;
-      transition:110ms linear;
-      flex:0 0 auto;
-      cursor:pointer;
+    #intro{
+      position:fixed;
+      inset:0;
+      background:#000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+      opacity:1;
+      visibility:visible;
+      transition:opacity .2s ease, visibility .2s ease;
     }
-    .sw::after{
-      content:"";
-      width:22px; height:22px;
-      position:absolute; top:50%; left:3px;
-      transform: translateY(-50%);
-      border-radius: 9px;
-      background: rgba(255,255,255,.28);
-      transition:110ms linear;
-    }
-    .switch input:checked + .sw{
-      border-color: rgba(255,255,255,.18);
-      background: rgba(255,255,255,.07);
-    }
-    .switch input:checked + .sw::after{
-      left:23px;
-      background: rgba(255,255,255,.62);
-    }
-
-    .noteUnder{
-      margin-top:6px;
-      font-size:12px;
-      color: rgba(233,233,238,.48);
+    #intro.hide{ opacity:0; visibility:hidden; pointer-events:none; }
+    .introText{
+      color:#fff;
+      font-size:clamp(12px, 1vw, 21px);
       font-weight:800;
+      letter-spacing:2px;
+      opacity:0;
+      transform:translateY(10px);
+      animation:introTextShow 2s ease forwards;
     }
 
-    .kmRow{ display:flex; flex-wrap:wrap; gap:10px; margin: 6px 0 4px; }
-    .kmPill{
-      display:flex; align-items:center; gap:10px;
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.20);
-      font-size:12px;
-      font-weight:900;
-      color: rgba(233,233,238,.70);
-      user-select:none;
+    @media (max-width:1280px){
+      .workspace{ grid-template-columns:320px minmax(0,1fr); }
+      .previewCard{ grid-column:1 / -1; min-height:380px; }
     }
-    .kmPill.on{
-      background: rgba(255,255,255,.08);
-      border-color: rgba(255,255,255,.18);
-      color: rgba(233,233,238,.95);
+    @media (max-width:900px){
+      body{ overflow:auto; }
+      .container{ height:auto; }
+      .workspace{ grid-template-columns:1fr; }
+      .row{ grid-template-columns:1fr; }
+      .grid2,.grid3,.kmGrid{ grid-template-columns:1fr; }
+      #clockBox{ position:static; width:fit-content; margin:12px; }
     }
 
-    .disabledHint{
-      font-size:12px;
-      color: rgba(233,233,238,.55);
-      font-weight:900;
-      padding:10px 12px;
-      border:1px dashed rgba(255,255,255,.14);
-      background: rgba(0,0,0,.18);
-      border-radius: 14px;
-    }
-
-    @media (max-width: 980px){
-      .layout{ grid-template-columns: 1fr; }
-      .dock{
-        flex-direction:row;
-        border-right:0;
-        border-bottom:1px solid var(--border);
-        padding:10px;
-        gap:10px;
-      }
-      .dockGroup{ flex-direction:row; border-bottom:0; padding-bottom:0; width:auto; }
-      .icoBtn .tip{ display:none; }
-      .main{ grid-template-columns: 1fr; }
-      .row{ grid-template-columns: 1fr; }
-      textarea{ height: 55vh; min-height: 55vh; }
-    }
+    @keyframes introTextShow{ to{ opacity:1; transform:translateY(0); } }
+    @keyframes btnFloat{ 0%{ transform:translateY(0); } 50%{ transform:translateY(-2px); } 100%{ transform:translateY(0); } }
+    @keyframes fadeUp{ from{ opacity:0; transform:translateY(12px); } to{ opacity:1; transform:translateY(0); } }
+    @keyframes cardEntrance{ from{ opacity:0; transform:translateY(18px); } to{ opacity:1; transform:translateY(0); } }
   </style>
 </head>
-
 <body>
-<div class="app">
+  <div id="intro"><div class="introText">skin.ini studio rebuilt</div></div>
+  <canvas id="rainCanvas"></canvas>
 
-  <div class="topbar">
-    <div class="brand">
-      <img alt="icon" src="https://i.pinimg.com/originals/da/b4/cb/dab4cbf31e4e8d7688b0e830d5d640f1.gif">
-      <div class="title">
-        <b>skin.ini studio</b>
-        <span id="topSub">—</span>
-      </div>
-    </div>
-
-    <div class="tools">
-      <span class="badge" id="savePulse">—</span>
-      <button class="btn primary" id="downloadIni">Download</button>
-      <button class="btn" id="copyIni">Copy</button>
-      <button class="btn" id="importOpen">Import</button>
-      <button class="btn danger" id="wipeAll">Reset</button>
-    </div>
+  <div id="clockBox">
+    <div id="clockText">--:--:--</div>
+    <div id="clockDate">----</div>
+    <div id="rainToggle">rain: on</div>
   </div>
 
-  <div class="layout">
-    <aside class="dock">
-
-      <div class="dockGroup">
-        <button class="icoBtn" data-tab="mania" title="Mania">
-          <span aria-hidden="true">🎹</span>
-          <span class="tip">Mania</span>
-        </button>
-
-        <button class="icoBtn" data-tab="preview" title="Preview">
-          <span aria-hidden="true">👁️</span>
-          <span class="tip">Preview</span>
-        </button>
-      </div>
-
-      <div class="dockGroup">
-        <div class="miniLabel">export</div>
-        <button class="icoBtn" id="togMania" title="Mania on/off" type="button">
-          <span aria-hidden="true">🎹</span>
-          <span class="tip">Mania</span>
-        </button>
-      </div>
-
-      <div class="dockGroup">
-        <div class="miniLabel">styles</div>
-
-        <button class="icoBtn" id="styleH" title="H (aligned + headers)" type="button">
-          <span aria-hidden="true">H</span>
-          <span class="tip">H</span>
-        </button>
-
-        <button class="icoBtn" id="styleR" title="R (banners + quoting)" type="button">
-          <span aria-hidden="true">ᚱ</span>
-          <span class="tip">R</span>
-        </button>
-
-        <!-- ✅ NEW STYLE -->
-        <button class="icoBtn" id="styleP" title="P (ini parser style)" type="button">
-          <span aria-hidden="true">P</span>
-          <span class="tip">P</span>
-        </button>
-      </div>
-
-      <div class="dockGroup">
-        <div class="miniLabel">extra</div>
-
-        <button class="icoBtn" id="togCommentEmpty" title="comment empty fields" type="button">
-          <span aria-hidden="true">//</span>
-          <span class="tip">comment empty</span>
-        </button>
-        <div class="noteUnder" style="text-align:center; padding:0 6px;">
-          *not exported to skin.ini
+  <div class="container">
+    <header class="top">
+      <div class="brand">
+        <div class="logo">
+          <img alt="logo" src="https://i.pinimg.com/originals/da/b4/cb/dab4cbf31e4e8d7688b0e830d5d640f1.gif">
         </div>
-
-        <button class="icoBtn" id="verBtn" title="Version" type="button">
-          <span aria-hidden="true">v</span>
-          <span class="tip">Version</span>
-        </button>
+        <div>
+          <div class="title">skin.ini studio rebuilt</div>
+          <div class="sub" id="topSub">editor completo para osu!mania skin.ini</div>
+        </div>
       </div>
 
-    </aside>
+      <nav class="nav">
+        <button class="btn active" id="tabEditor">editor</button>
+        <button class="btn" id="tabImport">import</button>
+        <button class="btn" id="tabAbout">wiki notes</button>
+      </nav>
+    </header>
 
-    <main class="main">
-      <div class="card">
+    <section class="hero">
+      <div>
+        <h1>editor refeito com import melhor, preservação de chaves extras e cobertura maior de mania</h1>
+        <p>Suporta <span class="kbd">:</span> e <span class="kbd">=</span> no import, mantém linhas desconhecidas por seção, alerta sobre recursos que pedem <span class="kbd">Version &gt;= 2.5</span> e gera seções <span class="kbd">[Mania]</span> por keycount.</p>
+      </div>
+      <div class="heroStats">
+        <span class="pill" id="saveState">autosave: idle</span>
+        <span class="pill" id="styleState">style: clean</span>
+        <span class="pill" id="versionState">version: latest</span>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <aside class="card homeCard" style="--card-bg:url('https://i.pinimg.com/originals/f5/93/a4/f593a4f4932080fb7b43c6ae96d1a73d.gif'); --card-opacity:.14; --card-blur:10px;">
         <div class="cardHead">
-          <div class="left">
-            <span class="badge" id="panelTitle">Mania</span>
-            <span class="badge" id="modeBadge">export: GENERAL+MANIA</span>
-            <span class="badge" id="styleBadge">style: —</span>
-          </div>
-          <div class="tools">
-            <button class="btn" id="refresh">Refresh</button>
+          <div>
+            <div class="cardTitle">navegação</div>
+            <div class="meta"><span>seções</span><span>ações</span></div>
           </div>
         </div>
-        <div class="cardBody" id="panel"></div>
-      </div>
+        <div class="cardBody sideList">
+          <button class="small" data-focus="generalSection">general + fonts</button>
+          <button class="small" data-focus="modesSection">keymodes</button>
+          <button class="small" data-focus="maniaSection">mania selected</button>
+          <button class="small" data-focus="previewCard">preview</button>
+          <button class="small" id="toggleCommentEmpty">comment empty: off</button>
+          <button class="small" id="toggleRainButton">rain fx: on</button>
+          <button class="small" id="openImport">abrir import</button>
+          <button class="small" id="openVersion">version</button>
+          <button class="small" id="resetAll">reset</button>
+          <div class="footer">atalhos: <span class="kbd">Ctrl+S</span> baixar • <span class="kbd">Ctrl+C</span> copiar preview selecionado</div>
+        </div>
+      </aside>
 
-      <div class="card" id="previewCard">
+      <main class="card" id="editorCard">
         <div class="cardHead">
-          <div class="left">
-            <span class="badge">skin.ini</span>
+          <div>
+            <div class="cardTitle">editor</div>
+            <div class="meta"><span id="selectedModeText">4K</span><span id="modeCountText">1 modo ativo</span></div>
           </div>
-          <div class="tools">
-            <button class="btn" id="selectAll">Select</button>
+          <div class="previewToolbar">
+            <button class="btn" id="refreshPreview">refresh</button>
+            <button class="btn" id="copyIni">copy</button>
+            <button class="btn primary" id="downloadIni">download</button>
+          </div>
+        </div>
+        <div class="cardBody stack" id="editorPanel"></div>
+      </main>
+
+      <section class="card previewCard" id="previewCard">
+        <div class="cardHead">
+          <div>
+            <div class="cardTitle">preview + diagnostics</div>
+            <div class="meta"><span>skin.ini</span><span id="previewMeta">0 linhas</span></div>
+          </div>
+          <div class="previewToolbar">
+            <button class="btn" id="selectAll">select</button>
+            <button class="btn" id="runChecks">checks</button>
           </div>
         </div>
         <div class="cardBody">
-          <textarea id="preview" readonly></textarea>
+          <textarea id="preview" readonly spellcheck="false"></textarea>
+          <div class="diagnostics" id="diagnostics"></div>
         </div>
-      </div>
-    </main>
+      </section>
+    </section>
   </div>
-</div>
 
-<!-- Version modal -->
-<dialog id="verDlg" style="max-width:420px;width:calc(100% - 24px);border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(0,0,0,.86);color:rgba(233,233,238,.95);box-shadow:0 20px 60px rgba(0,0,0,.55);">
-  <form method="dialog" style="margin:0;padding:12px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
-      <b>Version</b>
-      <button class="btn" value="cancel">Close</button>
-    </div>
-    <div style="height:10px"></div>
-    <select id="versionPick" style="width:100%;">
-      <option value="2.0">2.0</option>
-      <option value="2.1">2.1</option>
-      <option value="2.2">2.2</option>
-      <option value="2.3">2.3</option>
-      <option value="2.4">2.4</option>
-      <option value="2.5">2.5</option>
-      <option value="2.6">2.6</option>
-      <option value="2.7">2.7</option>
-      <option value="latest" selected>latest</option>
-    </select>
-  </form>
-</dialog>
-
-<!-- Import modal -->
-<dialog id="importDlg" style="max-width:900px;width:calc(100% - 24px);border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(0,0,0,.88);color:rgba(233,233,238,.95);box-shadow:0 20px 60px rgba(0,0,0,.55);">
-  <form method="dialog" style="margin:0;padding:12px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
-      <b>Import skin.ini</b>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn" value="cancel">Close</button>
-        <button class="btn primary" id="importApply" value="default" type="button">Apply</button>
-      </div>
-    </div>
-    <div style="height:10px"></div>
-    <textarea id="importArea" style="min-height:45vh;"></textarea>
-    <div class="noteUnder" style="margin-top:8px;">
-      Import rules: only <b>key:value</b> lines are read. "=" is ignored.
-    </div>
-  </form>
-</dialog>
-
-<script>
-const $ = (id)=>document.getElementById(id);
-const STORAGE_KEY = "skinini_studio_v11_H_R_import_paths_fixed";
-
-/* ---------- util ---------- */
-function cleanLine(s){ return String(s ?? "").replace(/\r/g,"").trimEnd(); }
-function isBlank(v){ return cleanLine(v) === ""; }
-const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
-const bool01 = (b)=> (b ? "1" : "0");
-
-function debounce(fn, wait){
-  let t=null;
-  return (...args)=>{
-    clearTimeout(t);
-    t=setTimeout(()=>fn(...args), wait);
-  };
-}
-
-function rgbToHex(rgb){
-  const m = String(rgb||"").match(/^\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*$/);
-  if(!m) return null;
-  const r = clamp(parseInt(m[1],10),0,255);
-  const g = clamp(parseInt(m[2],10),0,255);
-  const b = clamp(parseInt(m[3],10),0,255);
-  return "#" + [r,g,b].map(x=>x.toString(16).padStart(2,"0")).join("");
-}
-function hexToRgb(hex){
-  const h = String(hex||"").replace("#","").trim();
-  if(!/^[0-9a-fA-F]{6}$/.test(h)) return "";
-  const r = parseInt(h.slice(0,2),16);
-  const g = parseInt(h.slice(2,4),16);
-  const b = parseInt(h.slice(4,6),16);
-  return `${r},${g},${b}`;
-}
-
-function pat(pattern, n){
-  const p = String(pattern || "").trim();
-  if(!p) return "";
-  return p.replaceAll("{n}", String(n));
-}
-
-/* ---------- styles (ONLY H + R + P, ALWAYS ":" ) ---------- */
-const STYLES = {
-  H: {
-    name: "H",
-    icon: "H",
-    sep: ": ",
-    align: 0,
-    comment: "//",
-    blankLines: true,
-    includeHeaders: true,
-    headerLines: (title)=> [`// ${title} --`, ""],
-    valueTransform: (v)=> cleanLine(v),
-  },
-  R: {
-    name: "R",
-    icon: "ᚱ",
-    sep: " : ",
-    align: 24,
-    comment: ";",
-    blankLines: true,
-    includeHeaders: true,
-    headerLines: (title)=>{
-      const t = String(title||"").toUpperCase();
-      const bar = ";━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━";
-      return [bar, `;  ${t}`, bar, ""];
-    },
-    valueTransform: (v)=>{
-      const s = cleanLine(v);
-      if(/[ \t]/.test(s) && !/^".*"$/.test(s)) return `"${s}"`;
-      return s;
-    },
-  },
-
-  /* ✅ NEW: "P" (ini parser vibe)
-     - separator ":" (no alignment)
-     - comment prefix "//"
-     - section-style headers like: // -=- Something
-  */
-  P: {
-    name: "P",
-    icon: "P",
-    sep: ": ",
-    align: 0,
-    comment: "//",
-    blankLines: true,
-    includeHeaders: true,
-    headerLines: (title)=> [`// -=- ${String(title||"")}`, ""],
-    valueTransform: (v)=> cleanLine(v),
-  }
-};
-
-function curStyle(){ return STYLES[state.style] || STYLES.H; }
-
-function fmtKV(key, value){
-  const st = curStyle();
-  const k = String(key||"");
-  const v = st.valueTransform(String(value ?? ""));
-  const kk = st.align > 0 ? k.padEnd(st.align, " ") : k;
-  return `${kk}${st.sep}${v}`;
-}
-
-function pushKV(lines, key, value){
-  const v0 = cleanLine(value);
-  if(v0 !== ""){
-    lines.push(fmtKV(key, v0));
-    return;
-  }
-  if(!state.commentEmpty) return;
-
-  const st = curStyle();
-  const k = String(key||"");
-  const kk = st.align > 0 ? k.padEnd(st.align, " ") : k;
-  lines.push(`${st.comment} ${kk}${st.sep}`.trimEnd());
-}
-
-function spacer(lines){
-  if(curStyle().blankLines) lines.push("");
-}
-function header(lines, title){
-  const st = curStyle();
-  if(!st.includeHeaders) return;
-  const hs = st.headerLines?.(title) || [];
-  lines.push(...hs);
-}
-
-/* ---------- import helpers ---------- */
-function unquote(v){
-  const s = String(v ?? "").trim();
-  if(/^".*"$/.test(s) || /^'.*'$/.test(s)) return s.slice(1,-1);
-  return s;
-}
-
-// tenta montar pattern usando prefix/suffix comuns e validando mid numérico com:
-// start 0 ou 1 + zero-padding (01/02/03)
-function inferPatternFromSeriesFlexible(values){
-  const vals = values.map(v=>cleanLine(v)).filter(v=>v!=="");
-  if(vals.length < 2) return "";
-
-  const first = vals[0];
-
-  // common prefix
-  let pref = first;
-  for(const v of vals){
-    let i=0;
-    while(i < pref.length && i < v.length && pref[i] === v[i]) i++;
-    pref = pref.slice(0,i);
-    if(pref==="") break;
-  }
-
-  // common suffix
-  let suf = first;
-  for(const v of vals){
-    let i=0;
-    while(i < suf.length && i < v.length && suf[suf.length-1-i] === v[v.length-1-i]) i++;
-    suf = suf.slice(suf.length - i);
-    if(suf==="") break;
-  }
-
-  // mid sample
-  const mid0 = first.slice(pref.length, first.length - suf.length);
-  if(!/^\d+$/.test(mid0)) return "";
-  const width = mid0.length;
-
-  const tryStart = (start)=>{
-    for(let idx=0; idx<vals.length; idx++){
-      const v = vals[idx];
-      if(!v.startsWith(pref) || !v.endsWith(suf)) return false;
-      const mid = v.slice(pref.length, v.length - suf.length);
-      const expectedNum = String(start + idx).padStart(width, "0");
-      if(mid !== expectedNum) return false;
-    }
-    return true;
-  };
-
-  if(tryStart(0)) return `${pref}{n}${suf}`;
-  if(tryStart(1)) return `${pref}{n}${suf}`;
-  return "";
-}
-
-// fallback: pega um exemplo e substitui o primeiro número por {n}
-function fallbackPatternFromSingle(sample){
-  const s = cleanLine(sample);
-  if(!s) return "";
-  const m = s.match(/\d+/);
-  if(!m) return "";
-  const idx = m.index ?? 0;
-  return s.slice(0, idx) + "{n}" + s.slice(idx + m[0].length);
-}
-
-function inferByKeyPrefix(kv, keyPrefix, keys){
-  const arr = [];
-  for(let i=0;i<keys;i++){
-    arr.push(kv[`${keyPrefix}${i}`] ?? "");
-  }
-  return inferPatternFromSeriesFlexible(arr);
-}
-
-function inferByKeyPrefixWithSuffix(kv, keyPrefix, suffix, keys){
-  const arr = [];
-  for(let i=0;i<keys;i++){
-    arr.push(kv[`${keyPrefix}${i}${suffix}`] ?? "");
-  }
-  return inferPatternFromSeriesFlexible(arr);
-}
-
-function guessStyleFromIni(text){
-  const s = String(text||"");
-  if(/(^|\n)\s*;/.test(s)) return "R";
-  if(/(^|\n)\s*\/\/\s*-\=-/.test(s)) return "P";
-  if(/(^|\n)\s*\/\//.test(s)) return "H";
-  return "H";
-}
-
-/* ---------- auto-center helpers ---------- */
-function firstNumber(raw, fallback){
-  const r = cleanLine(raw);
-  if(!r) return fallback;
-  const first = r.split(",")[0].trim();
-  const n = parseFloat(first);
-  return Number.isFinite(n) ? n : fallback;
-}
-function getAspectRatio(m){
-  const preset = cleanLine(m.ARPreset) || "16:9";
-  let w = firstNumber(m.ARW, 16);
-  let h = firstNumber(m.ARH, 9);
-
-  if(preset !== "custom"){
-    const [pw, ph] = preset.split(":").map(Number);
-    if(Number.isFinite(pw) && Number.isFinite(ph) && ph !== 0){
-      w = pw; h = ph;
-    }
-  }
-  if(!Number.isFinite(w) || !Number.isFinite(h) || h === 0) return 16/9;
-  return w / h;
-}
-function calcAutoColumnStart(keys, m){
-  const colW = firstNumber(m.ColumnWidth, 70);
-  const colS = firstNumber(m.ColumnSpacing, 0);
-  const ar = getAspectRatio(m);
-  const offset = firstNumber(m.CenterOffset, 0);
-
-  const usableWidth = 480 * ar;
-  const columnSum = (colW * keys) + (colS * (keys - 1));
-  return Math.round((usableWidth/2) - (columnSum/2)) + Number(offset || 0);
-}
-
-/* ---------- state ---------- */
-const ALL_MANIA_KEYS = Array.from({length: 18}, (_,i)=>i+1);
-
-function defaultManiaMode(keys){
-  return {
-    ColumnStart: "",
-    ColumnRight: "",
-    ColumnSpacing: "0",
-    ColumnWidth: "70",
-    ColumnLineWidth: "",
-
-    HitPosition: "",
-    LightPosition: "",
-    ScorePosition: "",
-    ComboPosition: "",
-
-    JudgementLine: true,
-    KeysUnderNotes: false,
-    UpsideDown: false,
-
-    BarlineHeight: "",
-    WidthForNoteHeightScale: "",
-
-    StageLeft: "",
-    StageRight: "",
-    StageBottom: "",
-    StageHint: "",
-    StageLight: "",
-    LightingNWidth: "",
-    LightingLWidth: "",
-    LightingN: "",
-    LightingL: "",
-
-    ColourColumnLine: "",
-    ColourBarline: "",
-    ColourJudgementLine: "",
-    ColourKeyWarning: "",
-    ColourHold: "",
-    ColourBreak: "",
-    Colour: {},
-    ColourLight: {},
-
-    AutoColumnStart: true,
-    ARPreset: "16:9",
-    ARW: "16",
-    ARH: "9",
-    CenterOffset: "0",
-
-    // patterns / paths
-    pKey: "",
-    pKeyD: "",
-    pNote: "",
-    pNoteH: "",
-    pNoteL: "",
-    pNoteT: "",
-    WarningArrow: "",
-
-    // hits
-    Hit0: "",
-    Hit50: "",
-    Hit100: "",
-    Hit200: "",
-    Hit300: "",
-    Hit300g: "",
-  };
-}
-
-const state = {
-  activeTab: "mania",
-  exportMania: true,
-
-  style: "H",
-  commentEmpty: false,
-
-  version: "latest",
-
-  general: {
-    Name: "",
-    Author: "",
-    CursorCentre: true,
-    CursorExpand: false,
-    CursorRotate: false,
-    CursorTrailRotate: false,
-    ScorePrefix: "",
-    ScoreOverlap: "0",
-    ComboPrefix: "",
-    ComboOverlap: "0",
-  },
-
-  maniaShared: {
-    enabled: Object.fromEntries(ALL_MANIA_KEYS.map(k => [k, k===4])),
-    open: Object.fromEntries(ALL_MANIA_KEYS.map(k => [k, k===4])),
-  },
-
-  mania: Object.fromEntries(ALL_MANIA_KEYS.map(k => [k, defaultManiaMode(k)])),
-};
-
-/* ---------- path helpers ---------- */
-function pathToId(path){
-  return "p_" + path.replaceAll(".", "__").replaceAll("[","_").replaceAll("]","_");
-}
-function getByPath(obj, path){
-  const parts = path.split(".");
-  let cur = obj;
-  for(const p of parts){
-    if(cur == null) return undefined;
-    cur = cur[p];
-  }
-  return cur;
-}
-function setByPath(obj, path, value){
-  const parts = path.split(".");
-  let cur = obj;
-  for(let i=0;i<parts.length-1;i++){
-    const p = parts[i];
-    if(!(p in cur)) cur[p] = {};
-    cur = cur[p];
-  }
-  cur[parts[parts.length-1]] = value;
-}
-
-/* ---------- UI builders ---------- */
-function escapeHtml(s){
-  return String(s ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#39;");
-}
-function uiRowText(label, path, placeholder=""){
-  const id = pathToId(path);
-  return `
-    <div class="row">
-      <label for="${id}">${label}</label>
-      <input type="text" id="${id}" data-path="${path}" placeholder="${escapeHtml(placeholder)}">
-    </div>
-  `;
-}
-function uiRowNum(label, path, placeholder=""){
-  const id = pathToId(path);
-  return `
-    <div class="row">
-      <label for="${id}">${label}</label>
-      <input type="number" id="${id}" data-path="${path}" placeholder="${escapeHtml(placeholder)}">
-    </div>
-  `;
-}
-function uiRowBool(label, path){
-  const id = pathToId(path);
-  return `
-    <div class="row">
-      <label>${label}</label>
-      <div class="inline">
-        <label class="switch">
-          <input type="checkbox" id="${id}" data-path="${path}">
-          <span class="sw"></span>
-        </label>
-      </div>
-    </div>
-  `;
-}
-function uiRowColor(label, path){
-  const id = pathToId(path);
-  const pickId = id + "_pick";
-  return `
-    <div class="row">
-      <label>${label}</label>
-      <div class="inline">
-        <input type="color" id="${pickId}" data-pick-for="${id}">
-        <input type="text" id="${id}" data-path="${path}" placeholder="255,255,255">
-      </div>
-    </div>
-  `;
-}
-
-/* ---------- Tabs ---------- */
-const TABS = [
-  { key:"mania", title:"Mania", render: renderMania },
-  { key:"preview", title:"Preview", render: renderPreviewOnly },
-];
-
-function setActiveTab(k){
-  state.activeTab = k;
-  renderDockActive();
-  renderActiveTab();
-  saveSoon();
-}
-
-function renderDockActive(){
-  document.querySelectorAll(".icoBtn[data-tab]").forEach(b=>{
-    b.classList.toggle("active", b.dataset.tab === state.activeTab);
-  });
-}
-
-function updateTopSub(){
-  const t = TABS.find(x=>x.key===state.activeTab)?.title ?? "—";
-  $("topSub").textContent = t;
-  $("panelTitle").textContent = t;
-  $("styleBadge").textContent = `style: ${curStyle().name}`;
-}
-
-/* ---------- Panels ---------- */
-function renderActiveTab(){
-  updateTopSub();
-  const tab = TABS.find(t => t.key === state.activeTab) || TABS[0];
-  $("panel").innerHTML = tab.render();
-  hydrateInputsFromState($("panel"));
-  wirePanelListeners($("panel"));
-}
-
-function renderMania(){
-  const pills = ALL_MANIA_KEYS.map(k=>{
-    const on = !!state.maniaShared.enabled[k];
-    return `
-      <span class="kmPill ${on?"on":""}">
-        <span>${k}K</span>
-        <label class="switch">
-          <input type="checkbox" class="kmToggle" data-k="${k}" ${on?"checked":""}>
-          <span class="sw"></span>
-        </label>
-      </span>
-    `;
-  }).join("");
-
-  const blocks = ALL_MANIA_KEYS
-    .filter(k => state.maniaShared.enabled[k])
-    .map(k => renderManiaBlock(k))
-    .join("");
-
-  return `
-    <div class="block open">
-      <button class="blockHead" type="button"><span>[General] meta</span><span class="caret">▸</span></button>
-      <div class="blockBody">
-        ${uiRowText("Name", "general.Name")}
-        ${uiRowText("Author", "general.Author")}
-        <div class="row">
-          <label>Version</label>
-          <input type="text" value="${escapeHtml(state.version)}" readonly>
+  <dialog id="importDialog">
+    <div class="modal">
+      <div class="modalHead">
+        <div>
+          <div class="cardTitle">importar skin.ini</div>
+          <div class="meta"><span>aceita :</span><span>aceita =</span><span>preserva extras</span></div>
         </div>
-
-        <div class="block open">
-          <button class="blockHead" type="button"><span>cursor</span><span class="caret">▸</span></button>
-          <div class="blockBody">
-            ${uiRowBool("CursorCentre", "general.CursorCentre")}
-            ${uiRowBool("CursorExpand", "general.CursorExpand")}
-            ${uiRowBool("CursorRotate", "general.CursorRotate")}
-            ${uiRowBool("CursorTrailRotate", "general.CursorTrailRotate")}
-          </div>
-        </div>
-
-        <div class="block open">
-          <button class="blockHead" type="button"><span>fonts</span><span class="caret">▸</span></button>
-          <div class="blockBody">
-            ${uiRowText("ScorePrefix", "general.ScorePrefix", "score")}
-            ${uiRowNum("ScoreOverlap", "general.ScoreOverlap", "0")}
-            ${uiRowText("ComboPrefix", "general.ComboPrefix", "combo")}
-            ${uiRowNum("ComboOverlap", "general.ComboOverlap", "0")}
-          </div>
+        <div class="previewToolbar">
+          <button class="btn" id="closeImport" type="button">fechar</button>
+          <button class="btn primary" id="applyImport" type="button">apply</button>
         </div>
       </div>
+      <textarea id="importArea" spellcheck="false"></textarea>
+      <div class="warnBox">No import, chaves não suportadas pela UI continuam guardadas e voltam no export da mesma seção.</div>
     </div>
+  </dialog>
 
-    ${!state.exportMania ? `<div class="disabledHint">Mania export is disabled</div>` : ``}
-
-    <div class="block open">
-      <button class="blockHead" type="button"><span>keymodes</span><span class="caret">▸</span></button>
-      <div class="blockBody">
-        <div class="kmRow">${pills}</div>
+  <dialog id="versionDialog">
+    <div class="modal">
+      <div class="modalHead">
+        <div>
+          <div class="cardTitle">version</div>
+          <div class="meta"><span>latest não é o ideal para distribuir skins</span></div>
+        </div>
+        <button class="btn" id="closeVersion" type="button">fechar</button>
+      </div>
+      <div class="grid2">
+        <div>
+          <label class="help" for="versionPick">Version</label>
+          <select id="versionPick">
+            <option value="2.0">2.0</option>
+            <option value="2.1">2.1</option>
+            <option value="2.2">2.2</option>
+            <option value="2.3">2.3</option>
+            <option value="2.4">2.4</option>
+            <option value="2.5">2.5</option>
+            <option value="2.6">2.6</option>
+            <option value="2.7">2.7</option>
+            <option value="latest">latest</option>
+          </select>
+        </div>
+        <div class="okBox">Recursos avançados de mania e personalização completa de stage/notes dependem de v2.5+ na wiki oficial.</div>
       </div>
     </div>
-
-    <div id="maniaBlocks">
-      ${blocks || `<div class="disabledHint">no active mode</div>`}
-    </div>
-  `;
-}
-
-function renderManiaBlock(keys){
-  const open = !!state.maniaShared.open[keys];
-
-  const colourCols = Array.from({length: keys}, (_,i)=>{
-    const uiIndex = i + 1;
-    const path = `mania.${keys}.Colour.${uiIndex}`;
-    return `
-      <div class="row">
-        <label>Colour${uiIndex}</label>
-        <div class="inline">
-          <input type="color" id="${pathToId(path)}_pick" data-pick-for="${pathToId(path)}">
-          <input type="text" id="${pathToId(path)}" data-path="${path}" placeholder="255,255,255">
-        </div>
-      </div>
-    `;
-  }).join("");
-
-  const colourLights = Array.from({length: keys}, (_,i)=>{
-    const uiIndex = i + 1;
-    const path = `mania.${keys}.ColourLight.${uiIndex}`;
-    return `
-      <div class="row">
-        <label>ColourLight${uiIndex}</label>
-        <div class="inline">
-          <input type="color" id="${pathToId(path)}_pick" data-pick-for="${pathToId(path)}">
-          <input type="text" id="${pathToId(path)}" data-path="${path}" placeholder="">
-        </div>
-      </div>
-    `;
-  }).join("");
-
-  const arPresetPath = `mania.${keys}.ARPreset`;
-  const arWPath = `mania.${keys}.ARW`;
-  const arHPath = `mania.${keys}.ARH`;
-  const offPath = `mania.${keys}.CenterOffset`;
-
-  return `
-    <div class="block ${open?"open":""}" data-keys="${keys}">
-      <button class="blockHead" type="button" data-fold="${keys}">
-        <span>${keys}K</span>
-        <span class="caret">▸</span>
-      </button>
-
-      <div class="blockBody">
-        <div class="block open">
-          <button class="blockHead" type="button"><span>layout</span><span class="caret">▸</span></button>
-          <div class="blockBody">
-            ${uiRowBool("Auto ColumnStart", `mania.${keys}.AutoColumnStart`)}
-
-            <div class="row">
-              <label>Aspect ratio</label>
-              <div class="inline">
-                <select id="${pathToId(arPresetPath)}" data-path="${arPresetPath}">
-                  <option value="16:9">16:9</option>
-                  <option value="4:3">4:3</option>
-                  <option value="21:9">21:9</option>
-                  <option value="custom">Custom</option>
-                </select>
-                <input type="number" id="${pathToId(arWPath)}" data-path="${arWPath}" style="max-width:120px" placeholder="16" title="Custom width">
-                <input type="number" id="${pathToId(arHPath)}" data-path="${arHPath}" style="max-width:120px" placeholder="9" title="Custom height">
-                <span style="font-size:12px;color:rgba(233,233,238,.55);font-weight:900;">AR=W/H</span>
-              </div>
-            </div>
-
-            ${uiRowNum("Fine Offset (px)", offPath, "0")}
-
-            ${uiRowNum("ColumnStart", `mania.${keys}.ColumnStart`)}
-            ${uiRowNum("ColumnRight", `mania.${keys}.ColumnRight`)}
-            ${uiRowText("ColumnWidth", `mania.${keys}.ColumnWidth`, "70 or 70,70,70")}
-            ${uiRowText("ColumnSpacing", `mania.${keys}.ColumnSpacing`, "0 or 0,0,0")}
-            ${uiRowText("ColumnLineWidth", `mania.${keys}.ColumnLineWidth`, "")}
-          </div>
-        </div>
-
-        <div class="block open">
-          <button class="blockHead" type="button"><span>positions</span><span class="caret">▸</span></button>
-          <div class="blockBody">
-            ${uiRowNum("HitPosition", `mania.${keys}.HitPosition`)}
-            ${uiRowNum("LightPosition", `mania.${keys}.LightPosition`)}
-            ${uiRowNum("ScorePosition", `mania.${keys}.ScorePosition`)}
-            ${uiRowNum("ComboPosition", `mania.${keys}.ComboPosition`)}
-          </div>
-        </div>
-
-        <div class="block">
-          <button class="blockHead" type="button"><span>toggles</span><span class="caret">▸</span></button>
-          <div class="blockBody">
-            ${uiRowBool("JudgementLine", `mania.${keys}.JudgementLine`)}
-            ${uiRowBool("KeysUnderNotes", `mania.${keys}.KeysUnderNotes`)}
-            ${uiRowBool("UpsideDown", `mania.${keys}.UpsideDown`)}
-          </div>
-        </div>
-
-        <div class="block open">
-          <button class="blockHead" type="button"><span>stage</span><span class="caret">▸</span></button>
-          <div class="blockBody">
-            ${uiRowText("StageLeft", `mania.${keys}.StageLeft`)}
-            ${uiRowText("StageRight", `mania.${keys}.StageRight`)}
-            ${uiRowText("StageBottom", `mania.${keys}.StageBottom`)}
-            ${uiRowText("StageHint", `mania.${keys}.StageHint`)}
-            ${uiRowText("StageLight", `mania.${keys}.StageLight`)}
-
-            ${uiRowNum("LightingNWidth", `mania.${keys}.LightingNWidth`)}
-            ${uiRowNum("LightingLWidth", `mania.${keys}.LightingLWidth`)}
-            ${uiRowText("LightingN", `mania.${keys}.LightingN`)}
-            ${uiRowText("LightingL", `mania.${keys}.LightingL`)}
-          </div>
-        </div>
-
-        <div class="block open">
-          <button class="blockHead" type="button"><span>colours</span><span class="caret">▸</span></button>
-          <div class="blockBody">
-            <div class="grid2">
-              <div>${colourCols}</div>
-              <div>${colourLights}</div>
-            </div>
-
-            ${uiRowColor("ColourColumnLine", `mania.${keys}.ColourColumnLine`)}
-            ${uiRowColor("ColourBarline", `mania.${keys}.ColourBarline`)}
-            ${uiRowColor("ColourJudgementLine", `mania.${keys}.ColourJudgementLine`)}
-            ${uiRowColor("ColourKeyWarning", `mania.${keys}.ColourKeyWarning`)}
-            ${uiRowColor("ColourHold", `mania.${keys}.ColourHold`)}
-            ${uiRowColor("ColourBreak", `mania.${keys}.ColourBreak`)}
-          </div>
-        </div>
-
-        <div class="block open">
-          <button class="blockHead" type="button"><span>paths</span><span class="caret">▸</span></button>
-          <div class="blockBody">
-            ${uiRowText("KeyImage# pattern", `mania.${keys}.pKey`, "e.g. mania/key{n}")}
-            ${uiRowText("KeyImage#D pattern", `mania.${keys}.pKeyD`, "e.g. mania/key{n}d")}
-            ${uiRowText("NoteImage# pattern", `mania.${keys}.pNote`, "e.g. mania/note{n}")}
-            ${uiRowText("NoteImage#H pattern", `mania.${keys}.pNoteH`, "e.g. mania/note{n}h")}
-            ${uiRowText("NoteImage#L pattern", `mania.${keys}.pNoteL`, "e.g. mania/note{n}l")}
-            ${uiRowText("NoteImage#T pattern", `mania.${keys}.pNoteT`, "e.g. mania/note{n}t")}
-            ${uiRowText("WarningArrow", `mania.${keys}.WarningArrow`, "e.g. mania/warning")}
-          </div>
-        </div>
-
-        <div class="block open">
-          <button class="blockHead" type="button"><span>hits (judgements)</span><span class="caret">▸</span></button>
-          <div class="blockBody">
-            ${uiRowText("Hit0",    `mania.${keys}.Hit0`,    "text (path to image)")}
-            ${uiRowText("Hit50",   `mania.${keys}.Hit50`,   "text (path to image)")}
-            ${uiRowText("Hit100",  `mania.${keys}.Hit100`,  "text (path to image)")}
-            ${uiRowText("Hit200",  `mania.${keys}.Hit200`,  "text (path to image)")}
-            ${uiRowText("Hit300",  `mania.${keys}.Hit300`,  "text (path to image)")}
-            ${uiRowText("Hit300g", `mania.${keys}.Hit300g`, "text (path to image)")}
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function renderPreviewOnly(){
-  return `<div class="disabledHint">use the right panel</div>`;
-}
-
-/* ---------- hydration + accordions ---------- */
-function wireAccordions(root){
-  root.querySelectorAll(".blockHead").forEach(head=>{
-    const parent = head.closest(".block");
-    if(!parent) return;
-
-    if(head.dataset.fold){
-      head.addEventListener("click", ()=>{
-        const k = Number(head.dataset.fold);
-        const block = root.querySelector(`.block[data-keys="${k}"]`);
-        if(!block) return;
-        const nowOpen = !block.classList.contains("open");
-        block.classList.toggle("open", nowOpen);
-        state.maniaShared.open[k] = nowOpen;
-        saveSoon();
-      });
-      return;
-    }
-
-    head.addEventListener("click", ()=>{
-      const nowOpen = !parent.classList.contains("open");
-      parent.classList.toggle("open", nowOpen);
-    });
-  });
-}
-
-function bindColorPickers(root){
-  root.querySelectorAll("[data-pick-for]").forEach(pick=>{
-    const txtId = pick.getAttribute("data-pick-for");
-    const txt = document.getElementById(txtId);
-    if(!txt) return;
-
-    const hx = rgbToHex(txt.value);
-    if(hx) pick.value = hx;
-
-    pick.addEventListener("input", ()=>{
-      txt.value = hexToRgb(pick.value);
-      txt.dispatchEvent(new Event("input", {bubbles:true}));
-    });
-
-    txt.addEventListener("input", ()=>{
-      const hx2 = rgbToHex(txt.value);
-      if(hx2) pick.value = hx2;
-    });
-  });
-}
-
-function hydrateInputsFromState(root){
-  root.querySelectorAll("[data-path]").forEach(inp=>{
-    const path = inp.getAttribute("data-path");
-    const v = getByPath(state, path);
-
-    if(inp.type === "checkbox") inp.checked = !!v;
-    else inp.value = (v ?? "");
-  });
-
-  root.querySelectorAll('[data-path$=".AutoColumnStart"]').forEach(chk=>{
-    const path = chk.getAttribute("data-path");
-    const mPath = path.replace(".AutoColumnStart", ".ColumnStart");
-    const col = root.querySelector(`[data-path="${mPath}"]`);
-    if(col){
-      col.disabled = !!chk.checked;
-      col.placeholder = chk.checked ? "auto" : "";
-      if(chk.checked) col.value = "";
-    }
-  });
-
-  bindColorPickers(root);
-  wireAccordions(root);
-}
-
-/* ---------- listeners ---------- */
-function wirePanelListeners(root){
-  root.querySelectorAll("[data-path]").forEach(inp=>{
-    const path = inp.getAttribute("data-path");
-    const handler = ()=>{
-      if(inp.type === "checkbox") setByPath(state, path, !!inp.checked);
-      else setByPath(state, path, inp.value);
-
-      if(path.endsWith(".AutoColumnStart")){
-        const mPath = path.replace(".AutoColumnStart", ".ColumnStart");
-        const col = root.querySelector(`[data-path="${mPath}"]`);
-        if(col){
-          col.disabled = !!inp.checked;
-          col.placeholder = inp.checked ? "auto" : "";
-          if(inp.checked){
-            col.value = "";
-            setByPath(state, mPath, "");
-          }
-        }
-      }
-
-      onAnyChange();
-    };
-    inp.addEventListener("input", handler);
-    inp.addEventListener("change", handler);
-  });
-
-  root.querySelectorAll(".kmToggle").forEach(t=>{
-    t.addEventListener("change", ()=>{
-      const k = Number(t.dataset.k);
-      state.maniaShared.enabled[k] = !!t.checked;
-      state.maniaShared.open[k] = !!t.checked;
-
-      if(!ALL_MANIA_KEYS.some(x=>state.maniaShared.enabled[x])){
-        state.maniaShared.enabled[4]=true;
-        state.maniaShared.open[4]=true;
-      }
-      renderActiveTab();
-      onAnyChange();
-    });
-  });
-}
-
-/* ---------- ini generation ---------- */
-function genIni(){
-  const out = [];
-
-  out.push("[General]");
-  pushKV(out, "Name", state.general.Name);
-  pushKV(out, "Author", state.general.Author);
-  out.push(fmtKV("Version", state.version));
-
-  if(state.style === "P"){
-    out.push("");
-    out.push("// -=- Cursor");
-  }
-
-  out.push(fmtKV("CursorCentre", bool01(!!state.general.CursorCentre)));
-  out.push(fmtKV("CursorExpand", bool01(!!state.general.CursorExpand)));
-  out.push(fmtKV("CursorRotate", bool01(!!state.general.CursorRotate)));
-  out.push(fmtKV("CursorTrailRotate", bool01(!!state.general.CursorTrailRotate)));
-  spacer(out);
-
-  const hasFonts =
-    cleanLine(state.general.ScorePrefix) ||
-    cleanLine(state.general.ComboPrefix) ||
-    cleanLine(state.general.ScoreOverlap) ||
-    cleanLine(state.general.ComboOverlap);
-
-  if(hasFonts){
-    out.push("[Fonts]");
-    if(state.style === "P") out.push("// -=- Score Font");
-    pushKV(out, "ScorePrefix", state.general.ScorePrefix);
-    pushKV(out, "ScoreOverlap", state.general.ScoreOverlap);
-    pushKV(out, "ComboPrefix", state.general.ComboPrefix);
-    pushKV(out, "ComboOverlap", state.general.ComboOverlap);
-    spacer(out);
-  }
-
-  if(state.exportMania){
-    for(const keys of ALL_MANIA_KEYS){
-      if(!state.maniaShared.enabled[keys]) continue;
-      out.push("[Mania]");
-      out.push(...genManiaBlock(keys));
-      spacer(out);
-    }
-  }
-
-  while(out.length && out[out.length-1]==="") out.pop();
-  return out.join("\n");
-}
-
-function genManiaBlock(keys){
-  const m = state.mania[keys] || defaultManiaMode(keys);
-  const lines = [];
-
-  lines.push(fmtKV("Keys", keys));
-  spacer(lines);
-
-  function normalizeCsv(raw, count, fallback){
-    const r = cleanLine(raw);
-    if(!r) return fallback;
-    if(r.includes(",")) return r;
-    return Array.from({length: count}, ()=>r).join(",");
-  }
-
-  if(state.style === "P") lines.push("// -=- Column");
-  lines.push(fmtKV("ColumnWidth", normalizeCsv(m.ColumnWidth, keys, Array.from({length:keys}, ()=>"70").join(","))));
-  lines.push(fmtKV("ColumnSpacing", normalizeCsv(m.ColumnSpacing, Math.max(0,keys-1), Array.from({length:Math.max(0,keys-1)}, ()=>"0").join(","))));
-
-  if(m.AutoColumnStart){
-    lines.push(fmtKV("ColumnStart", String(calcAutoColumnStart(keys, m))));
-  }else{
-    pushKV(lines, "ColumnStart", m.ColumnStart);
-  }
-
-  pushKV(lines, "ColumnRight", m.ColumnRight);
-  lines.push(fmtKV("ColumnLineWidth", normalizeCsv(m.ColumnLineWidth, keys+1, Array.from({length:keys+1}, ()=>"0").join(","))));
-  spacer(lines);
-
-  if(state.style === "P") lines.push("// -=- Position");
-  pushKV(lines, "HitPosition", m.HitPosition);
-  pushKV(lines, "LightPosition", m.LightPosition);
-  pushKV(lines, "ScorePosition", m.ScorePosition);
-  pushKV(lines, "ComboPosition", m.ComboPosition);
-  spacer(lines);
-
-  if(state.style === "P") lines.push("// -=- Toggles");
-  lines.push(fmtKV("JudgementLine", bool01(!!m.JudgementLine)));
-  lines.push(fmtKV("KeysUnderNotes", bool01(!!m.KeysUnderNotes)));
-  lines.push(fmtKV("UpsideDown", bool01(!!m.UpsideDown)));
-  spacer(lines);
-
-  pushKV(lines, "BarlineHeight", m.BarlineHeight);
-  pushKV(lines, "WidthForNoteHeightScale", m.WidthForNoteHeightScale);
-  spacer(lines);
-
-  if(state.style === "P") lines.push("// -=- Stage");
-  header(lines, "stage");
-  pushKV(lines, "StageLeft", m.StageLeft);
-  pushKV(lines, "StageRight", m.StageRight);
-  pushKV(lines, "StageBottom", m.StageBottom);
-  pushKV(lines, "StageHint", m.StageHint);
-  pushKV(lines, "StageLight", m.StageLight);
-  pushKV(lines, "LightingNWidth", m.LightingNWidth);
-  pushKV(lines, "LightingLWidth", m.LightingLWidth);
-  pushKV(lines, "LightingN", m.LightingN);
-  pushKV(lines, "LightingL", m.LightingL);
-  spacer(lines);
-
-  if(state.style === "P") lines.push("// -=- Colors");
-  header(lines, "colours");
-  for(let ui=1; ui<=keys; ui++){
-    const v = cleanLine(m.Colour?.[ui]);
-    if(v) lines.push(fmtKV(`Colour${ui-1}`, v));
-    else pushKV(lines, `Colour${ui-1}`, "");
-  }
-  spacer(lines);
-
-  for(let ui=1; ui<=keys; ui++){
-    const v = cleanLine(m.ColourLight?.[ui]);
-    if(v) lines.push(fmtKV(`ColourLight${ui-1}`, v));
-    else pushKV(lines, `ColourLight${ui-1}`, "");
-  }
-
-  pushKV(lines, "ColourColumnLine", m.ColourColumnLine);
-  pushKV(lines, "ColourBarline", m.ColourBarline);
-  pushKV(lines, "ColourJudgementLine", m.ColourJudgementLine);
-  pushKV(lines, "ColourKeyWarning", m.ColourKeyWarning);
-  pushKV(lines, "ColourHold", m.ColourHold);
-  pushKV(lines, "ColourBreak", m.ColourBreak);
-  spacer(lines);
-
-  if(state.style === "P") lines.push("// -=- Key Image");
-  header(lines, "images");
-
-  const pKey  = m.pKey  || "";
-  const pKeyD = m.pKeyD || "";
-  const pNote = m.pNote || "";
-  const pNoteH= m.pNoteH|| "";
-  const pNoteL= m.pNoteL|| "";
-  const pNoteT= m.pNoteT|| "";
-
-  for(let idx=0; idx<keys; idx++){
-    const n = idx + 1;
-    const v = pat(pKey, n);
-    if(v) lines.push(fmtKV(`KeyImage${idx}`, v));
-    else pushKV(lines, `KeyImage${idx}`, "");
-  }
-  spacer(lines);
-
-  for(let idx=0; idx<keys; idx++){
-    const n = idx + 1;
-    const v = pat(pKeyD, n);
-    if(v) lines.push(fmtKV(`KeyImage${idx}D`, v));
-    else pushKV(lines, `KeyImage${idx}D`, "");
-  }
-  spacer(lines);
-
-  if(state.style === "P") lines.push("// -=- Note Image");
-  for(let idx=0; idx<keys; idx++){
-    const n = idx + 1;
-    const v = pat(pNote, n);
-    if(v) lines.push(fmtKV(`NoteImage${idx}`, v));
-    else pushKV(lines, `NoteImage${idx}`, "");
-  }
-  spacer(lines);
-
-  for(let idx=0; idx<keys; idx++){
-    const n = idx + 1;
-    const v = pat(pNoteH, n);
-    if(v) lines.push(fmtKV(`NoteImage${idx}H`, v));
-    else pushKV(lines, `NoteImage${idx}H`, "");
-  }
-  spacer(lines);
-
-  for(let idx=0; idx<keys; idx++){
-    const n = idx + 1;
-    const v = pat(pNoteL, n);
-    if(v) lines.push(fmtKV(`NoteImage${idx}L`, v));
-    else pushKV(lines, `NoteImage${idx}L`, "");
-  }
-  spacer(lines);
-
-  for(let idx=0; idx<keys; idx++){
-    const n = idx + 1;
-    const v = pat(pNoteT, n);
-    if(v) lines.push(fmtKV(`NoteImage${idx}T`, v));
-    else pushKV(lines, `NoteImage${idx}T`, "");
-  }
-  spacer(lines);
-
-  pushKV(lines, "WarningArrow", m.WarningArrow);
-  spacer(lines);
-
-  if(state.style === "P") lines.push("// -=- Hitburst Image");
-  header(lines, "hits");
-  pushKV(lines, "Hit0", m.Hit0);
-  pushKV(lines, "Hit50", m.Hit50);
-  pushKV(lines, "Hit100", m.Hit100);
-  pushKV(lines, "Hit200", m.Hit200);
-  pushKV(lines, "Hit300", m.Hit300);
-  pushKV(lines, "Hit300g", m.Hit300g);
-
-  while(lines.length && lines[lines.length-1]==="") lines.pop();
-  return lines;
-}
-
-/* ---------- import (ONLY ":" accepted; "=" ignored) ---------- */
-function parseIni(text){
-  const lines = String(text||"").split("\n");
-  const parsed = { General:{}, Fonts:{}, Mania: [], _rawText: String(text||"") };
-
-  let section = "";
-  let curMania = null;
-
-  for(const raw of lines){
-    const line0 = raw.replace(/\r/g,"");
-    const line = line0.trim();
-    if(!line) continue;
-
-    if(line.startsWith("//") || line.startsWith(";")) continue;
-
-    const sec = line.match(/^\[(.+?)\]\s*$/);
-    if(sec){
-      section = sec[1];
-      if(section.toLowerCase() === "mania"){
-        curMania = { Keys:null, kv:{} };
-        parsed.Mania.push(curMania);
-      }else{
-        curMania = null;
-      }
-      continue;
-    }
-
-    // ONLY ":" supported
-    const m = line.match(/^([A-Za-z0-9]+)\s*:\s*(.*)$/);
-    if(!m) continue;
-
-    const key = m[1];
-    const val = unquote((m[2] ?? "").trim());
-
-    const secName = section.toLowerCase();
-    if(secName === "general") parsed.General[key] = val;
-    else if(secName === "fonts") parsed.Fonts[key] = val;
-    else if(secName === "mania" && curMania){
-      curMania.kv[key] = val;
-      if(key === "Keys"){
-        const k = parseInt(val,10);
-        curMania.Keys = Number.isFinite(k) ? k : null;
-      }
-    }
-  }
-
-  return parsed;
-}
-
-function applyParsed(parsed){
-  state.style = guessStyleFromIni(parsed._rawText || "");
-
-  if(parsed.General.Version) state.version = parsed.General.Version;
-  if("Name" in parsed.General) state.general.Name = parsed.General.Name;
-  if("Author" in parsed.General) state.general.Author = parsed.General.Author;
-
-  const cursorKeys = ["CursorCentre","CursorExpand","CursorRotate","CursorTrailRotate"];
-  for(const k of cursorKeys){
-    if(k in parsed.General) state.general[k] = parsed.General[k].trim() === "1";
-  }
-
-  const fontKeys = ["ScorePrefix","ScoreOverlap","ComboPrefix","ComboOverlap"];
-  for(const k of fontKeys){
-    if(k in parsed.Fonts) state.general[k] = parsed.Fonts[k];
-  }
-
-  for(const blk of parsed.Mania){
-    const keys = blk.Keys;
-    if(!keys || keys < 1 || keys > 18) continue;
-
-    state.maniaShared.enabled[keys] = true;
-    state.maniaShared.open[keys] = true;
-
-    const m = state.mania[keys] || defaultManiaMode(keys);
-
-    const direct = [
-      "ColumnStart","ColumnRight","ColumnSpacing","ColumnWidth","ColumnLineWidth",
+  </dialog>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const STORAGE_KEY = "skinini_studio_rebuilt_v1";
+    const ALL_KEYS = Array.from({length:18}, (_,i)=>i+1);
+
+    const SUPPORTED_MANIA_FIELDS = new Set([
+      "Keys","ColumnStart","ColumnRight","ColumnSpacing","ColumnWidth","ColumnLineWidth",
       "HitPosition","LightPosition","ScorePosition","ComboPosition",
       "JudgementLine","KeysUnderNotes","UpsideDown",
       "BarlineHeight","WidthForNoteHeightScale",
+      "LightFramePerSecond","SpecialStyle","ComboBurstStyle","SplitStages","StageSeparation","SeparateScore","NoteBodyStyle",
       "StageLeft","StageRight","StageBottom","StageHint","StageLight",
       "LightingNWidth","LightingLWidth","LightingN","LightingL",
       "ColourColumnLine","ColourBarline","ColourJudgementLine","ColourKeyWarning","ColourHold","ColourBreak",
-      "WarningArrow",
-      "Hit0","Hit50","Hit100","Hit200","Hit300","Hit300g",
-    ];
+      "WarningArrow","Hit0","Hit50","Hit100","Hit200","Hit300","Hit300g"
+    ]);
 
-    for(const k of direct){
-      if(!(k in blk.kv)) continue;
-      if(typeof m[k] === "boolean") m[k] = blk.kv[k].trim() === "1";
-      else m[k] = blk.kv[k];
-    }
-
-    for(let i=0;i<keys;i++){
-      const ck = `Colour${i}`;
-      const lk = `ColourLight${i}`;
-      if(ck in blk.kv) m.Colour[i+1] = blk.kv[ck];
-      if(lk in blk.kv) m.ColourLight[i+1] = blk.kv[lk];
-    }
-
-    // ✅ paths: infer if possible (0-based / 1-based / padded)
-    let pKey  = inferByKeyPrefix(blk.kv, "KeyImage", keys);
-    let pKeyD = inferByKeyPrefixWithSuffix(blk.kv, "KeyImage", "D", keys);
-    let pNote = inferByKeyPrefix(blk.kv, "NoteImage", keys);
-    let pNoteH= inferByKeyPrefixWithSuffix(blk.kv, "NoteImage", "H", keys);
-    let pNoteL= inferByKeyPrefixWithSuffix(blk.kv, "NoteImage", "L", keys);
-    let pNoteT= inferByKeyPrefixWithSuffix(blk.kv, "NoteImage", "T", keys);
-
-    // ✅ fallback: mesmo se não inferir, coloca algo no pattern
-    if(!pKey  && blk.kv["KeyImage0"])    pKey  = fallbackPatternFromSingle(blk.kv["KeyImage0"]);
-    if(!pKeyD && blk.kv["KeyImage0D"])   pKeyD = fallbackPatternFromSingle(blk.kv["KeyImage0D"]);
-    if(!pNote && blk.kv["NoteImage0"])   pNote = fallbackPatternFromSingle(blk.kv["NoteImage0"]);
-    if(!pNoteH&& blk.kv["NoteImage0H"])  pNoteH= fallbackPatternFromSingle(blk.kv["NoteImage0H"]);
-    if(!pNoteL&& blk.kv["NoteImage0L"])  pNoteL= fallbackPatternFromSingle(blk.kv["NoteImage0L"]);
-    if(!pNoteT&& blk.kv["NoteImage0T"])  pNoteT= fallbackPatternFromSingle(blk.kv["NoteImage0T"]);
-
-    // aplica (não deixa vazio se tiver como)
-    if(pKey)   m.pKey = pKey;
-    if(pKeyD)  m.pKeyD = pKeyD;
-    if(pNote)  m.pNote = pNote;
-    if(pNoteH) m.pNoteH = pNoteH;
-    if(pNoteL) m.pNoteL = pNoteL;
-    if(pNoteT) m.pNoteT = pNoteT;
-
-    m.AutoColumnStart = isBlank(m.ColumnStart);
-
-    state.mania[keys] = m;
-  }
-
-  saveSoon(true);
-  syncDockToggles();
-  renderDockActive();
-  updateModeBadge();
-  renderActiveTab();
-}
-
-/* ---------- save/load ---------- */
-function saveState(){
-  try{
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    $("savePulse").textContent = "Saved";
-    setTimeout(()=>{ $("savePulse").textContent="—"; }, 700);
-  }catch(e){
-    $("savePulse").textContent = "ERR";
-  }
-}
-
-function loadState(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw) return;
-    const s = JSON.parse(raw);
-    if(!s) return;
-
-    state.activeTab = s.activeTab ?? state.activeTab;
-
-    state.exportMania = (s.exportMania ?? true) ? true : false;
-    state.style = (s.style === "R" ? "R" : (s.style === "P" ? "P" : "H"));
-    state.commentEmpty = (s.commentEmpty ?? false) ? true : false;
-    state.version = s.version ?? "latest";
-
-    Object.assign(state.general, s.general || {});
-
-    if(s.maniaShared){
-      for(const k of ALL_MANIA_KEYS){
-        state.maniaShared.enabled[k] = !!s.maniaShared.enabled?.[k];
-        state.maniaShared.open[k] = !!s.maniaShared.open?.[k];
+    const STYLE_PRESETS = {
+      clean: {
+        name: "clean",
+        comment: "//",
+        sectionHeader(title){ return [`// ${title}`]; },
+        kv(key, value){ return `${key}: ${value}`; }
+      },
+      boxed: {
+        name: "boxed",
+        comment: ";",
+        sectionHeader(title){ const t = String(title).toUpperCase(); return [`;====================`, `; ${t}`, `;====================`]; },
+        kv(key, value){ return `${key.padEnd(24, " ")} : ${value}`; }
+      },
+      parser: {
+        name: "parser",
+        comment: "//",
+        sectionHeader(title){ return [`// -=- ${title}`]; },
+        kv(key, value){ return `${key}: ${value}`; }
       }
-      if(!ALL_MANIA_KEYS.some(k=>state.maniaShared.enabled[k])){
-        state.maniaShared.enabled[4]=true;
-        state.maniaShared.open[4]=true;
+    };
+
+    function defaultGeneral(){
+      return {
+        Name:"",
+        Author:"",
+        Version:"2.7",
+        CursorCentre:true,
+        CursorExpand:false,
+        CursorRotate:false,
+        CursorTrailRotate:false,
+        ScorePrefix:"score",
+        ScoreOverlap:"0",
+        ComboPrefix:"combo",
+        ComboOverlap:"0",
+        extra:{}
+      };
+    }
+
+    function defaultMania(keys){
+      return {
+        Keys: keys,
+        ColumnStart:"",
+        ColumnRight:"",
+        ColumnSpacing:"0",
+        ColumnWidth:"70",
+        ColumnLineWidth:"",
+        HitPosition:"",
+        LightPosition:"",
+        ScorePosition:"",
+        ComboPosition:"",
+        JudgementLine:true,
+        KeysUnderNotes:false,
+        UpsideDown:false,
+        BarlineHeight:"",
+        WidthForNoteHeightScale:"",
+        LightFramePerSecond:"",
+        SpecialStyle:"",
+        ComboBurstStyle:"",
+        SplitStages:false,
+        StageSeparation:"",
+        SeparateScore:false,
+        NoteBodyStyle:"",
+        StageLeft:"",
+        StageRight:"",
+        StageBottom:"",
+        StageHint:"",
+        StageLight:"",
+        LightingNWidth:"",
+        LightingLWidth:"",
+        LightingN:"",
+        LightingL:"",
+        ColourColumnLine:"",
+        ColourBarline:"",
+        ColourJudgementLine:"",
+        ColourKeyWarning:"",
+        ColourHold:"",
+        ColourBreak:"",
+        WarningArrow:"",
+        Hit0:"",
+        Hit50:"",
+        Hit100:"",
+        Hit200:"",
+        Hit300:"",
+        Hit300g:"",
+        AutoColumnStart:true,
+        ARPreset:"16:9",
+        ARW:"16",
+        ARH:"9",
+        CenterOffset:"0",
+        pKey:"",
+        pKeyD:"",
+        pNote:"",
+        pNoteH:"",
+        pNoteL:"",
+        pNoteT:"",
+        flipKeyAll:false,
+        flipNoteAll:false,
+        keyFlip:{},
+        keyFlipD:{},
+        noteFlip:{},
+        noteFlipH:{},
+        noteFlipL:{},
+        noteFlipT:{},
+        Colour:{},
+        ColourLight:{},
+        extra:{}
+      };
+    }
+
+    const state = {
+      uiTab:"editor",
+      style:"clean",
+      commentEmpty:false,
+      rain:true,
+      selectedKeys:4,
+      enabled:Object.fromEntries(ALL_KEYS.map(k=>[k,k===4])),
+      general:defaultGeneral(),
+      mania:Object.fromEntries(ALL_KEYS.map(k=>[k, defaultMania(k)]))
+    };
+
+    function clean(v){ return String(v ?? "").replace(/\r/g, "").trim(); }
+    function cleanEnd(v){ return String(v ?? "").replace(/\r/g, "").trimEnd(); }
+    function isBlank(v){ return clean(v) === ""; }
+    function bool01(v){ return v ? "1" : "0"; }
+    function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+    function debounce(fn, ms){ let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms); }; }
+    function escapeHtml(s){ return String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;"); }
+    function currentStyle(){ return STYLE_PRESETS[state.style] || STYLE_PRESETS.clean; }
+    function quoteIfNeeded(value){ const s = cleanEnd(value); return /\s/.test(s) && !/^".*"$/.test(s) ? `"${s}"` : s; }
+    function rgbToHex(rgb){ const m = String(rgb||"").match(/^\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*$/); if(!m) return null; return "#" + [m[1],m[2],m[3]].map(n=>clamp(parseInt(n,10),0,255).toString(16).padStart(2,"0")).join(""); }
+    function hexToRgb(hex){ const h = String(hex||"").replace("#", ""); if(!/^[\da-fA-F]{6}$/.test(h)) return ""; return `${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)}`; }
+    function pat(pattern, n){ const p = cleanEnd(pattern); return p ? p.replaceAll("{n}", String(n)) : ""; }
+    function firstNumber(raw, fallback){ const f = String(raw ?? "").split(",")[0].trim(); const n = Number(f); return Number.isFinite(n) ? n : fallback; }
+
+    function getAspectRatio(m){
+      if(m.ARPreset !== "custom"){
+        const [w,h] = String(m.ARPreset || "16:9").split(":").map(Number);
+        return Number.isFinite(w) && Number.isFinite(h) && h !== 0 ? w / h : 16/9;
+      }
+      const w = firstNumber(m.ARW, 16);
+      const h = firstNumber(m.ARH, 9);
+      return h === 0 ? 16/9 : w / h;
+    }
+
+    function calcAutoColumnStart(keys, m){
+      const colW = firstNumber(m.ColumnWidth, 70);
+      const colS = firstNumber(m.ColumnSpacing, 0);
+      const ar = getAspectRatio(m);
+      const offset = firstNumber(m.CenterOffset, 0);
+      const usableWidth = 480 * ar;
+      const columnSum = (colW * keys) + (colS * Math.max(0, keys - 1));
+      return Math.round((usableWidth / 2) - (columnSum / 2) + offset);
+    }
+
+    function fmtKV(key, value){ return currentStyle().kv(key, quoteIfNeeded(value)); }
+    function addKV(lines, key, value){
+      const v = cleanEnd(value);
+      if(v !== "") lines.push(fmtKV(key, v));
+      else if(state.commentEmpty) lines.push(`${currentStyle().comment} ${key}:`);
+    }
+
+    function normalizeCsv(raw, count, fallback){
+      const r = cleanEnd(raw);
+      if(!r) return fallback;
+      if(r.includes(",")) return r;
+      return Array.from({length: count}, ()=>r).join(",");
+    }
+
+    function inferPattern(values){
+      const vals = values.map(cleanEnd).filter(Boolean);
+      if(vals.length < 2) return "";
+      let pref = vals[0], suf = vals[0];
+      for(const v of vals){
+        let i = 0; while(i < pref.length && i < v.length && pref[i] === v[i]) i++; pref = pref.slice(0, i);
+      }
+      for(const v of vals){
+        let i = 0; while(i < suf.length && i < v.length && suf[suf.length - 1 - i] === v[v.length - 1 - i]) i++; suf = suf.slice(suf.length - i);
+      }
+      const mid = vals[0].slice(pref.length, vals[0].length - suf.length);
+      if(!/^\d+$/.test(mid)) return "";
+      const width = mid.length;
+      for(const start of [0,1]){
+        let ok = true;
+        for(let i=0;i<vals.length;i++){
+          const v = vals[i];
+          const inner = v.slice(pref.length, v.length - suf.length);
+          if(inner !== String(start + i).padStart(width, "0")){ ok = false; break; }
+        }
+        if(ok) return `${pref}{n}${suf}`;
+      }
+      return "";
+    }
+
+    function inferFromKV(kv, base, keys, suffix=""){
+      const arr = Array.from({length:keys}, (_,i)=>kv[`${base}${i}${suffix}`] ?? "");
+      return inferPattern(arr) || fallbackPattern(arr[0]);
+    }
+
+    function fallbackPattern(sample){
+      const s = cleanEnd(sample);
+      if(!s) return "";
+      const m = s.match(/\d+/);
+      if(!m) return "";
+      return s.slice(0, m.index) + "{n}" + s.slice((m.index || 0) + m[0].length);
+    }
+
+    function syncHeader(){
+      $("styleState").textContent = `style: ${state.style}`;
+      $("versionState").textContent = `version: ${state.general.Version}`;
+      const activeCount = ALL_KEYS.filter(k=>state.enabled[k]).length;
+      $("modeCountText").textContent = `${activeCount} modo${activeCount === 1 ? '' : 's'} ativo${activeCount === 1 ? '' : 's'}`;
+      $("selectedModeText").textContent = `${state.selectedKeys}K`;
+      $("toggleCommentEmpty").textContent = `comment empty: ${state.commentEmpty ? 'on' : 'off'}`;
+      $("rainToggle").textContent = `rain: ${state.rain ? 'on' : 'off'}`;
+      $("toggleRainButton").textContent = `rain fx: ${state.rain ? 'on' : 'off'}`;
+    }
+
+    function buildRow(label, html, hint=""){
+      return `<div class="row"><label>${label}${hint ? `<div class="help">${hint}</div>` : ""}</label><div>${html}</div></div>`;
+    }
+
+    function inputText(id, value, placeholder=""){ return `<input type="text" data-bind="${id}" value="${escapeHtml(value)}" placeholder="${escapeHtml(placeholder)}">`; }
+    function inputNum(id, value, placeholder=""){ return `<input type="number" data-bind="${id}" value="${escapeHtml(value)}" placeholder="${escapeHtml(placeholder)}">`; }
+    function inputCheck(id, checked){ return `<label class="inline"><input type="checkbox" data-bind="${id}" ${checked ? 'checked' : ''}><span>${checked ? 'on' : 'off'}</span></label>`; }
+    function colorPair(id, value){ const hx = rgbToHex(value) || '#ffffff'; return `<div class="inline"><input type="color" data-color="${id}" value="${hx}"><input type="text" data-bind="${id}" value="${escapeHtml(value)}" placeholder="255,255,255"></div>`; }
+
+    function sectionTemplate(id, title, body, open=true){
+      return `<section class="sectionBlock ${open ? '' : 'closed'}" id="${id}">
+        <button type="button" class="sectionHead" data-toggle-section="${id}">
+          <span>${title}</span><span>${open ? '▾' : '▸'}</span>
+        </button>
+        <div class="sectionBody">${body}</div>
+      </section>`;
+    }
+
+    function renderEditor(){
+      const g = state.general;
+      const m = state.mania[state.selectedKeys];
+      const activeModes = ALL_KEYS.map(k=>`<label class="kmItem"><span>${k}K</span><span class="inline"><input type="checkbox" data-mode-enable="${k}" ${state.enabled[k] ? 'checked' : ''}><button type="button" class="btn ${state.selectedKeys === k ? 'active' : ''}" data-mode-select="${k}">edit</button></span></label>`).join('');
+
+      const general = sectionTemplate("generalSection", "general + fonts", [
+        buildRow("Name", inputText("general.Name", g.Name)),
+        buildRow("Author", inputText("general.Author", g.Author)),
+        buildRow("Version", `<div class="inline">${inputText("general.Version", g.Version)}<button class="btn" type="button" id="quickVersion">pick</button></div>`, "na wiki, latest não é o melhor pra distribuir skins"),
+        buildRow("CursorCentre", inputCheck("general.CursorCentre", g.CursorCentre)),
+        buildRow("CursorExpand", inputCheck("general.CursorExpand", g.CursorExpand)),
+        buildRow("CursorRotate", inputCheck("general.CursorRotate", g.CursorRotate)),
+        buildRow("CursorTrailRotate", inputCheck("general.CursorTrailRotate", g.CursorTrailRotate)),
+        buildRow("ScorePrefix", inputText("general.ScorePrefix", g.ScorePrefix)),
+        buildRow("ScoreOverlap", inputNum("general.ScoreOverlap", g.ScoreOverlap)),
+        buildRow("ComboPrefix", inputText("general.ComboPrefix", g.ComboPrefix)),
+        buildRow("ComboOverlap", inputNum("general.ComboOverlap", g.ComboOverlap))
+      ].join(''));
+
+      const modes = sectionTemplate("modesSection", "keymodes", `<div class="kmGrid">${activeModes}</div>`, true);
+
+      const colorsColumns = Array.from({length:state.selectedKeys}, (_,i)=> buildRow(`Colour${i}`, colorPair(`mania.${state.selectedKeys}.Colour.${i+1}`, m.Colour[i+1] || ""))).join('');
+      const colorsLights = Array.from({length:state.selectedKeys}, (_,i)=> buildRow(`ColourLight${i}`, colorPair(`mania.${state.selectedKeys}.ColourLight.${i+1}`, m.ColourLight[i+1] || ""))).join('');
+      const keyFlips = Array.from({length:state.selectedKeys}, (_,i)=> buildRow(`KeyFlipWhenUpsideDown${i}`, inputCheck(`mania.${state.selectedKeys}.keyFlip.${i}`, !!m.keyFlip[i]))).join('');
+      const keyFlipsD = Array.from({length:state.selectedKeys}, (_,i)=> buildRow(`KeyFlipWhenUpsideDown${i}D`, inputCheck(`mania.${state.selectedKeys}.keyFlipD.${i}`, !!m.keyFlipD[i]))).join('');
+      const noteFlips = Array.from({length:state.selectedKeys}, (_,i)=> buildRow(`NoteFlipWhenUpsideDown${i}`, inputCheck(`mania.${state.selectedKeys}.noteFlip.${i}`, !!m.noteFlip[i]))).join('');
+      const noteFlipsH = Array.from({length:state.selectedKeys}, (_,i)=> buildRow(`NoteFlipWhenUpsideDown${i}H`, inputCheck(`mania.${state.selectedKeys}.noteFlipH.${i}`, !!m.noteFlipH[i]))).join('');
+      const noteFlipsL = Array.from({length:state.selectedKeys}, (_,i)=> buildRow(`NoteFlipWhenUpsideDown${i}L`, inputCheck(`mania.${state.selectedKeys}.noteFlipL.${i}`, !!m.noteFlipL[i]))).join('');
+      const noteFlipsT = Array.from({length:state.selectedKeys}, (_,i)=> buildRow(`NoteFlipWhenUpsideDown${i}T`, inputCheck(`mania.${state.selectedKeys}.noteFlipT.${i}`, !!m.noteFlipT[i]))).join('');
+
+      const mania = sectionTemplate("maniaSection", `mania ${state.selectedKeys}K`, [
+        sectionTemplate(`layout-${state.selectedKeys}`, "layout", [
+          buildRow("Auto ColumnStart", inputCheck(`mania.${state.selectedKeys}.AutoColumnStart`, m.AutoColumnStart)),
+          buildRow("Aspect Ratio", `<div class="inline"><select data-bind="mania.${state.selectedKeys}.ARPreset"><option value="16:9" ${m.ARPreset==='16:9'?'selected':''}>16:9</option><option value="4:3" ${m.ARPreset==='4:3'?'selected':''}>4:3</option><option value="21:9" ${m.ARPreset==='21:9'?'selected':''}>21:9</option><option value="custom" ${m.ARPreset==='custom'?'selected':''}>custom</option></select>${inputNum(`mania.${state.selectedKeys}.ARW`, m.ARW, '16')}${inputNum(`mania.${state.selectedKeys}.ARH`, m.ARH, '9')}</div>`),
+          buildRow("CenterOffset", inputNum(`mania.${state.selectedKeys}.CenterOffset`, m.CenterOffset, '0')),
+          buildRow("ColumnStart", inputNum(`mania.${state.selectedKeys}.ColumnStart`, m.ColumnStart)),
+          buildRow("ColumnRight", inputNum(`mania.${state.selectedKeys}.ColumnRight`, m.ColumnRight)),
+          buildRow("ColumnWidth", inputText(`mania.${state.selectedKeys}.ColumnWidth`, m.ColumnWidth, '70 or 70,70,70')),
+          buildRow("ColumnSpacing", inputText(`mania.${state.selectedKeys}.ColumnSpacing`, m.ColumnSpacing, '0 or 0,0,0')),
+          buildRow("ColumnLineWidth", inputText(`mania.${state.selectedKeys}.ColumnLineWidth`, m.ColumnLineWidth))
+        ].join('')),
+        sectionTemplate(`pos-${state.selectedKeys}`, "positions", [
+          buildRow("HitPosition", inputNum(`mania.${state.selectedKeys}.HitPosition`, m.HitPosition)),
+          buildRow("LightPosition", inputNum(`mania.${state.selectedKeys}.LightPosition`, m.LightPosition)),
+          buildRow("ScorePosition", inputNum(`mania.${state.selectedKeys}.ScorePosition`, m.ScorePosition)),
+          buildRow("ComboPosition", inputNum(`mania.${state.selectedKeys}.ComboPosition`, m.ComboPosition))
+        ].join('')),
+        sectionTemplate(`tog-${state.selectedKeys}`, "toggles + extras", [
+          buildRow("JudgementLine", inputCheck(`mania.${state.selectedKeys}.JudgementLine`, m.JudgementLine)),
+          buildRow("KeysUnderNotes", inputCheck(`mania.${state.selectedKeys}.KeysUnderNotes`, m.KeysUnderNotes)),
+          buildRow("UpsideDown", inputCheck(`mania.${state.selectedKeys}.UpsideDown`, m.UpsideDown)),
+          buildRow("SplitStages", inputCheck(`mania.${state.selectedKeys}.SplitStages`, m.SplitStages)),
+          buildRow("SeparateScore", inputCheck(`mania.${state.selectedKeys}.SeparateScore`, m.SeparateScore)),
+          buildRow("BarlineHeight", inputNum(`mania.${state.selectedKeys}.BarlineHeight`, m.BarlineHeight)),
+          buildRow("WidthForNoteHeightScale", inputNum(`mania.${state.selectedKeys}.WidthForNoteHeightScale`, m.WidthForNoteHeightScale)),
+          buildRow("LightFramePerSecond", inputNum(`mania.${state.selectedKeys}.LightFramePerSecond`, m.LightFramePerSecond)),
+          buildRow("SpecialStyle", inputNum(`mania.${state.selectedKeys}.SpecialStyle`, m.SpecialStyle)),
+          buildRow("ComboBurstStyle", inputNum(`mania.${state.selectedKeys}.ComboBurstStyle`, m.ComboBurstStyle)),
+          buildRow("StageSeparation", inputNum(`mania.${state.selectedKeys}.StageSeparation`, m.StageSeparation)),
+          buildRow("NoteBodyStyle", inputNum(`mania.${state.selectedKeys}.NoteBodyStyle`, m.NoteBodyStyle))
+        ].join(''), false),
+        sectionTemplate(`stage-${state.selectedKeys}`, "stage + lighting", [
+          buildRow("StageLeft", inputText(`mania.${state.selectedKeys}.StageLeft`, m.StageLeft)),
+          buildRow("StageRight", inputText(`mania.${state.selectedKeys}.StageRight`, m.StageRight)),
+          buildRow("StageBottom", inputText(`mania.${state.selectedKeys}.StageBottom`, m.StageBottom)),
+          buildRow("StageHint", inputText(`mania.${state.selectedKeys}.StageHint`, m.StageHint)),
+          buildRow("StageLight", inputText(`mania.${state.selectedKeys}.StageLight`, m.StageLight)),
+          buildRow("LightingNWidth", inputNum(`mania.${state.selectedKeys}.LightingNWidth`, m.LightingNWidth)),
+          buildRow("LightingLWidth", inputNum(`mania.${state.selectedKeys}.LightingLWidth`, m.LightingLWidth)),
+          buildRow("LightingN", inputText(`mania.${state.selectedKeys}.LightingN`, m.LightingN)),
+          buildRow("LightingL", inputText(`mania.${state.selectedKeys}.LightingL`, m.LightingL))
+        ].join(''), false),
+        sectionTemplate(`colors-${state.selectedKeys}`, "colors", `<div class="grid2"><div>${colorsColumns}</div><div>${colorsLights}</div></div>${[
+          buildRow("ColourColumnLine", colorPair(`mania.${state.selectedKeys}.ColourColumnLine`, m.ColourColumnLine)),
+          buildRow("ColourBarline", colorPair(`mania.${state.selectedKeys}.ColourBarline`, m.ColourBarline)),
+          buildRow("ColourJudgementLine", colorPair(`mania.${state.selectedKeys}.ColourJudgementLine`, m.ColourJudgementLine)),
+          buildRow("ColourKeyWarning", colorPair(`mania.${state.selectedKeys}.ColourKeyWarning`, m.ColourKeyWarning)),
+          buildRow("ColourHold", colorPair(`mania.${state.selectedKeys}.ColourHold`, m.ColourHold)),
+          buildRow("ColourBreak", colorPair(`mania.${state.selectedKeys}.ColourBreak`, m.ColourBreak))
+        ].join('')}`, false),
+        sectionTemplate(`paths-${state.selectedKeys}`, "image patterns + hits", [
+          buildRow("KeyImage#", inputText(`mania.${state.selectedKeys}.pKey`, m.pKey, 'mania/key{n}')),
+          buildRow("KeyImage#D", inputText(`mania.${state.selectedKeys}.pKeyD`, m.pKeyD, 'mania/key{n}d')),
+          buildRow("NoteImage#", inputText(`mania.${state.selectedKeys}.pNote`, m.pNote, 'mania/note{n}')),
+          buildRow("NoteImage#H", inputText(`mania.${state.selectedKeys}.pNoteH`, m.pNoteH, 'mania/note{n}h')),
+          buildRow("NoteImage#L", inputText(`mania.${state.selectedKeys}.pNoteL`, m.pNoteL, 'mania/note{n}l')),
+          buildRow("NoteImage#T", inputText(`mania.${state.selectedKeys}.pNoteT`, m.pNoteT, 'mania/note{n}t')),
+          buildRow("WarningArrow", inputText(`mania.${state.selectedKeys}.WarningArrow`, m.WarningArrow)),
+          buildRow("Hit0", inputText(`mania.${state.selectedKeys}.Hit0`, m.Hit0)),
+          buildRow("Hit50", inputText(`mania.${state.selectedKeys}.Hit50`, m.Hit50)),
+          buildRow("Hit100", inputText(`mania.${state.selectedKeys}.Hit100`, m.Hit100)),
+          buildRow("Hit200", inputText(`mania.${state.selectedKeys}.Hit200`, m.Hit200)),
+          buildRow("Hit300", inputText(`mania.${state.selectedKeys}.Hit300`, m.Hit300)),
+          buildRow("Hit300g", inputText(`mania.${state.selectedKeys}.Hit300g`, m.Hit300g))
+        ].join(''), false),
+        sectionTemplate(`flip-${state.selectedKeys}`, "flip when upside down", [
+          buildRow("KeyFlipWhenUpsideDown", inputCheck(`mania.${state.selectedKeys}.flipKeyAll`, m.flipKeyAll)),
+          buildRow("NoteFlipWhenUpsideDown", inputCheck(`mania.${state.selectedKeys}.flipNoteAll`, m.flipNoteAll)),
+          `<div class="grid2"><div>${keyFlips}${keyFlipsD}</div><div>${noteFlips}${noteFlipsH}${noteFlipsL}${noteFlipsT}</div></div>`
+        ].join(''), false),
+        Object.keys(m.extra).length ? `<div class="warnBox">extras preservados neste modo: ${Object.keys(m.extra).join(', ')}</div>` : ''
+      ].join(''));
+
+      $("editorPanel").innerHTML = `${general}${modes}${mania}`;
+      bindEditor();
+      syncHeader();
+      updatePreview();
+    }
+
+    function pathGet(path){
+      return path.split('.').reduce((acc, key)=> acc?.[key], state);
+    }
+    function pathSet(path, value){
+      const parts = path.split('.');
+      let cur = state;
+      for(let i=0;i<parts.length-1;i++) cur = cur[parts[i]];
+      cur[parts[parts.length-1]] = value;
+    }
+
+    function bindEditor(){
+      document.querySelectorAll('[data-toggle-section]').forEach(btn=>{
+        btn.onclick = () => {
+          const section = $(btn.dataset.toggleSection);
+          if(!section) return;
+          section.classList.toggle('closed');
+          btn.lastElementChild.textContent = section.classList.contains('closed') ? '▸' : '▾';
+        };
+      });
+
+      document.querySelectorAll('[data-bind]').forEach(el=>{
+        el.oninput = el.onchange = () => {
+          const path = el.dataset.bind;
+          const current = pathGet(path);
+          const next = el.type === 'checkbox' ? !!el.checked : el.value;
+          pathSet(path, typeof current === 'boolean' ? !!next : next);
+          if(path.endsWith('.AutoColumnStart') && next){
+            const base = path.replace('.AutoColumnStart', '.ColumnStart');
+            pathSet(base, '');
+          }
+          if(path === 'general.Version') state.general.Version = cleanEnd(state.general.Version) || '2.7';
+          saveSoon();
+          syncHeader();
+          updatePreview();
+          if(path.includes(`mania.${state.selectedKeys}`) || path.startsWith('general.')) renderEditor();
+        };
+      });
+
+      document.querySelectorAll('[data-color]').forEach(el=>{
+        el.oninput = () => {
+          pathSet(el.dataset.color, hexToRgb(el.value));
+          saveSoon();
+          updatePreview();
+          renderEditor();
+        };
+      });
+
+      document.querySelectorAll('[data-mode-enable]').forEach(el=>{
+        el.onchange = () => {
+          const k = Number(el.dataset.modeEnable);
+          state.enabled[k] = !!el.checked;
+          if(!ALL_KEYS.some(n=>state.enabled[n])) state.enabled[4] = true;
+          if(!state.enabled[state.selectedKeys]) state.selectedKeys = ALL_KEYS.find(n=>state.enabled[n]) || 4;
+          saveSoon();
+          renderEditor();
+        };
+      });
+
+      document.querySelectorAll('[data-mode-select]').forEach(el=>{
+        el.onclick = () => {
+          state.selectedKeys = Number(el.dataset.modeSelect);
+          renderEditor();
+        };
+      });
+
+      $("quickVersion")?.addEventListener('click', ()=>{
+        $("versionPick").value = state.general.Version;
+        $("versionDialog").showModal();
+      });
+    }
+
+    function pushHeader(lines, title){
+      lines.push(...currentStyle().sectionHeader(title));
+    }
+
+    function generateGeneral(lines){
+      lines.push('[General]');
+      addKV(lines, 'Name', state.general.Name);
+      addKV(lines, 'Author', state.general.Author);
+      lines.push(fmtKV('Version', state.general.Version || '2.7'));
+      addKV(lines, 'CursorCentre', bool01(!!state.general.CursorCentre));
+      addKV(lines, 'CursorExpand', bool01(!!state.general.CursorExpand));
+      addKV(lines, 'CursorRotate', bool01(!!state.general.CursorRotate));
+      addKV(lines, 'CursorTrailRotate', bool01(!!state.general.CursorTrailRotate));
+      for(const [key,val] of Object.entries(state.general.extra)) addKV(lines, key, val);
+      lines.push('');
+
+      const fontFields = ['ScorePrefix','ScoreOverlap','ComboPrefix','ComboOverlap'];
+      const hasFonts = fontFields.some(k=>!isBlank(state.general[k])) || Object.keys(state.general.extra).some(k=>k.startsWith('HitCircle'));
+      if(hasFonts){
+        lines.push('[Fonts]');
+        addKV(lines, 'ScorePrefix', state.general.ScorePrefix);
+        addKV(lines, 'ScoreOverlap', state.general.ScoreOverlap);
+        addKV(lines, 'ComboPrefix', state.general.ComboPrefix);
+        addKV(lines, 'ComboOverlap', state.general.ComboOverlap);
+        lines.push('');
       }
     }
-    if(s.mania){
-      for(const k of ALL_MANIA_KEYS){
-        if(s.mania[k]) state.mania[k] = { ...defaultManiaMode(k), ...s.mania[k] };
+
+    function generateMania(lines, keys){
+      const m = state.mania[keys];
+      lines.push('[Mania]');
+      addKV(lines, 'Keys', String(keys));
+      lines.push('');
+      if(state.style !== 'clean') pushHeader(lines, `mania ${keys}k layout`);
+      lines.push(fmtKV('ColumnWidth', normalizeCsv(m.ColumnWidth, keys, Array.from({length:keys}, ()=> '70').join(','))));
+      lines.push(fmtKV('ColumnSpacing', normalizeCsv(m.ColumnSpacing, Math.max(0, keys-1), Array.from({length:Math.max(0, keys-1)}, ()=> '0').join(','))));
+      lines.push(fmtKV('ColumnStart', m.AutoColumnStart ? String(calcAutoColumnStart(keys, m)) : cleanEnd(m.ColumnStart)));
+      addKV(lines, 'ColumnRight', m.ColumnRight);
+      addKV(lines, 'ColumnLineWidth', normalizeCsv(m.ColumnLineWidth, keys + 1, Array.from({length:keys + 1}, ()=> '0').join(',')));
+      lines.push('');
+
+      if(state.style !== 'clean') pushHeader(lines, `mania ${keys}k position`);
+      ['HitPosition','LightPosition','ScorePosition','ComboPosition'].forEach(k => addKV(lines, k, m[k]));
+      lines.push('');
+
+      if(state.style !== 'clean') pushHeader(lines, `mania ${keys}k toggles`);
+      addKV(lines, 'JudgementLine', bool01(!!m.JudgementLine));
+      addKV(lines, 'KeysUnderNotes', bool01(!!m.KeysUnderNotes));
+      addKV(lines, 'UpsideDown', bool01(!!m.UpsideDown));
+      addKV(lines, 'SplitStages', bool01(!!m.SplitStages));
+      addKV(lines, 'SeparateScore', bool01(!!m.SeparateScore));
+      ['BarlineHeight','WidthForNoteHeightScale','LightFramePerSecond','SpecialStyle','ComboBurstStyle','StageSeparation','NoteBodyStyle'].forEach(k=>addKV(lines, k, m[k]));
+      lines.push('');
+
+      if(state.style !== 'clean') pushHeader(lines, `mania ${keys}k stage`);
+      ['StageLeft','StageRight','StageBottom','StageHint','StageLight','LightingNWidth','LightingLWidth','LightingN','LightingL'].forEach(k=>addKV(lines, k, m[k]));
+      lines.push('');
+
+      if(state.style !== 'clean') pushHeader(lines, `mania ${keys}k colors`);
+      for(let i=0;i<keys;i++) addKV(lines, `Colour${i}`, m.Colour[i+1] || '');
+      for(let i=0;i<keys;i++) addKV(lines, `ColourLight${i}`, m.ColourLight[i+1] || '');
+      ['ColourColumnLine','ColourBarline','ColourJudgementLine','ColourKeyWarning','ColourHold','ColourBreak'].forEach(k=>addKV(lines, k, m[k]));
+      lines.push('');
+
+      if(state.style !== 'clean') pushHeader(lines, `mania ${keys}k images`);
+      for(let i=0;i<keys;i++) addKV(lines, `KeyImage${i}`, pat(m.pKey, i+1));
+      for(let i=0;i<keys;i++) addKV(lines, `KeyImage${i}D`, pat(m.pKeyD, i+1));
+      for(let i=0;i<keys;i++) addKV(lines, `NoteImage${i}`, pat(m.pNote, i+1));
+      for(let i=0;i<keys;i++) addKV(lines, `NoteImage${i}H`, pat(m.pNoteH, i+1));
+      for(let i=0;i<keys;i++) addKV(lines, `NoteImage${i}L`, pat(m.pNoteL, i+1));
+      for(let i=0;i<keys;i++) addKV(lines, `NoteImage${i}T`, pat(m.pNoteT, i+1));
+      addKV(lines, 'WarningArrow', m.WarningArrow);
+      lines.push('');
+
+      if(state.style !== 'clean') pushHeader(lines, `mania ${keys}k flip`);
+      addKV(lines, 'KeyFlipWhenUpsideDown', bool01(!!m.flipKeyAll));
+      addKV(lines, 'NoteFlipWhenUpsideDown', bool01(!!m.flipNoteAll));
+      for(let i=0;i<keys;i++) addKV(lines, `KeyFlipWhenUpsideDown${i}`, bool01(!!m.keyFlip[i]));
+      for(let i=0;i<keys;i++) addKV(lines, `KeyFlipWhenUpsideDown${i}D`, bool01(!!m.keyFlipD[i]));
+      for(let i=0;i<keys;i++) addKV(lines, `NoteFlipWhenUpsideDown${i}`, bool01(!!m.noteFlip[i]));
+      for(let i=0;i<keys;i++) addKV(lines, `NoteFlipWhenUpsideDown${i}H`, bool01(!!m.noteFlipH[i]));
+      for(let i=0;i<keys;i++) addKV(lines, `NoteFlipWhenUpsideDown${i}L`, bool01(!!m.noteFlipL[i]));
+      for(let i=0;i<keys;i++) addKV(lines, `NoteFlipWhenUpsideDown${i}T`, bool01(!!m.noteFlipT[i]));
+      lines.push('');
+
+      if(state.style !== 'clean') pushHeader(lines, `mania ${keys}k hits`);
+      ['Hit0','Hit50','Hit100','Hit200','Hit300','Hit300g'].forEach(k=>addKV(lines, k, m[k]));
+      for(const [key,val] of Object.entries(m.extra)) addKV(lines, key, val);
+      lines.push('');
+    }
+
+    function genIni(){
+      const lines = [];
+      generateGeneral(lines);
+      for(const keys of ALL_KEYS) if(state.enabled[keys]) generateMania(lines, keys);
+      while(lines.length && lines[lines.length - 1] === '') lines.pop();
+      return lines.join('\n');
+    }
+
+    function parseIni(text){
+      const lines = String(text || '').split(/\n/);
+      const parsed = { general:{}, fonts:{}, mania:[], commentsStyle:'clean' };
+      let section = '';
+      let currentMania = null;
+
+      for(const rawLine of lines){
+        const line = rawLine.replace(/\r/g, '');
+        const trimmed = line.trim();
+        if(!trimmed) continue;
+        if(trimmed.startsWith('//')){ if(trimmed.includes('-=-')) parsed.commentsStyle = 'parser'; else parsed.commentsStyle = 'clean'; continue; }
+        if(trimmed.startsWith(';')){ parsed.commentsStyle = 'boxed'; continue; }
+        const sec = trimmed.match(/^\[(.+?)\]$/);
+        if(sec){
+          section = sec[1];
+          currentMania = section.toLowerCase() === 'mania' ? { kv:{}, extra:{} } : null;
+          if(currentMania) parsed.mania.push(currentMania);
+          continue;
+        }
+        const kv = trimmed.match(/^([A-Za-z0-9]+)\s*[:=]\s*(.*)$/);
+        if(!kv) continue;
+        const key = kv[1];
+        const val = kv[2].trim().replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1');
+        const secLower = section.toLowerCase();
+        if(secLower === 'general') parsed.general[key] = val;
+        else if(secLower === 'fonts') parsed.fonts[key] = val;
+        else if(secLower === 'mania' && currentMania){
+          currentMania.kv[key] = val;
+          if(key === 'Keys') currentMania.Keys = Number(val);
+        }
+      }
+      return parsed;
+    }
+
+    function applyParsed(parsed){
+      state.style = parsed.commentsStyle || 'clean';
+      state.general = defaultGeneral();
+      for(const k of ALL_KEYS){ state.enabled[k] = false; state.mania[k] = defaultMania(k); }
+
+      for(const [key,val] of Object.entries(parsed.general)){
+        if(key in state.general) state.general[key] = typeof state.general[key] === 'boolean' ? val === '1' : val;
+        else state.general.extra[key] = val;
+      }
+      for(const [key,val] of Object.entries(parsed.fonts)){
+        if(key in state.general) state.general[key] = val;
+        else state.general.extra[key] = val;
+      }
+
+      for(const block of parsed.mania){
+        const keys = Number(block.Keys);
+        if(!Number.isFinite(keys) || keys < 1 || keys > 18) continue;
+        state.enabled[keys] = true;
+        const m = defaultMania(keys);
+        const kv = block.kv;
+        for(const [key,val] of Object.entries(kv)){
+          if(key in m){
+            if(typeof m[key] === 'boolean') m[key] = val === '1';
+            else m[key] = val;
+            continue;
+          }
+          if(/^Colour\d+$/.test(key)){
+            const idx = Number(key.replace('Colour',''));
+            m.Colour[idx + 1] = val;
+            continue;
+          }
+          if(/^ColourLight\d+$/.test(key)){
+            const idx = Number(key.replace('ColourLight',''));
+            m.ColourLight[idx + 1] = val;
+            continue;
+          }
+          if(/^KeyFlipWhenUpsideDown\d+D$/.test(key)){
+            const idx = Number(key.match(/\d+/)[0]);
+            m.keyFlipD[idx] = val === '1';
+            continue;
+          }
+          if(/^KeyFlipWhenUpsideDown\d+$/.test(key)){
+            const idx = Number(key.match(/\d+/)[0]);
+            m.keyFlip[idx] = val === '1';
+            continue;
+          }
+          if(/^NoteFlipWhenUpsideDown\d+H$/.test(key)){
+            const idx = Number(key.match(/\d+/)[0]);
+            m.noteFlipH[idx] = val === '1';
+            continue;
+          }
+          if(/^NoteFlipWhenUpsideDown\d+L$/.test(key)){
+            const idx = Number(key.match(/\d+/)[0]);
+            m.noteFlipL[idx] = val === '1';
+            continue;
+          }
+          if(/^NoteFlipWhenUpsideDown\d+T$/.test(key)){
+            const idx = Number(key.match(/\d+/)[0]);
+            m.noteFlipT[idx] = val === '1';
+            continue;
+          }
+          if(/^NoteFlipWhenUpsideDown\d+$/.test(key)){
+            const idx = Number(key.match(/\d+/)[0]);
+            m.noteFlip[idx] = val === '1';
+            continue;
+          }
+          if(key === 'KeyFlipWhenUpsideDown'){ m.flipKeyAll = val === '1'; continue; }
+          if(key === 'NoteFlipWhenUpsideDown'){ m.flipNoteAll = val === '1'; continue; }
+          m.extra[key] = val;
+        }
+
+        m.pKey = inferFromKV(kv, 'KeyImage', keys, '');
+        m.pKeyD = inferFromKV(kv, 'KeyImage', keys, 'D');
+        m.pNote = inferFromKV(kv, 'NoteImage', keys, '');
+        m.pNoteH = inferFromKV(kv, 'NoteImage', keys, 'H');
+        m.pNoteL = inferFromKV(kv, 'NoteImage', keys, 'L');
+        m.pNoteT = inferFromKV(kv, 'NoteImage', keys, 'T');
+        m.AutoColumnStart = isBlank(m.ColumnStart);
+        state.mania[keys] = m;
+      }
+
+      if(!ALL_KEYS.some(k=>state.enabled[k])) state.enabled[4] = true;
+      state.selectedKeys = ALL_KEYS.find(k=>state.enabled[k]) || 4;
+      if(isBlank(state.general.Version)) state.general.Version = '2.7';
+      saveSoon();
+      renderEditor();
+    }
+
+    function runDiagnostics(){
+      const messages = [];
+      const versionNum = state.general.Version === 'latest' ? 99 : Number(state.general.Version || 0);
+      const uses25 = ALL_KEYS.some(keys=>{
+        if(!state.enabled[keys]) return false;
+        const m = state.mania[keys];
+        return [m.StageLeft,m.StageRight,m.StageBottom,m.StageHint,m.StageLight,m.LightingN,m.LightingL,m.LightFramePerSecond,m.flipKeyAll,m.flipNoteAll].some(v=> (typeof v === 'boolean' ? v : !isBlank(v)))
+          || Object.keys(m.keyFlip).length || Object.keys(m.keyFlipD).length || Object.keys(m.noteFlip).length || Object.keys(m.noteFlipH).length || Object.keys(m.noteFlipL).length || Object.keys(m.noteFlipT).length;
+      });
+      if(uses25 && versionNum < 2.5) messages.push({type:'warn', title:'Version baixa para recursos de mania', text:'A wiki indica que a personalização completa de osu!mania e flips depende de v2.5+.'});
+      if(state.general.Version === 'latest') messages.push({type:'warn', title:'Version: latest', text:'Funciona, mas não é a melhor opção para distribuir skins; prefira uma versão fixa.'});
+      for(const keys of ALL_KEYS){
+        if(!state.enabled[keys]) continue;
+        const m = state.mania[keys];
+        if(m.AutoColumnStart) messages.push({type:'ok', title:`${keys}K usa Auto ColumnStart`, text:`Valor calculado atual: ${calcAutoColumnStart(keys, m)}`});
+        if(Object.keys(m.extra).length) messages.push({type:'ok', title:`${keys}K preserva chaves extras`, text:Object.keys(m.extra).join(', ')});
+      }
+      if(!messages.length) messages.push({type:'ok', title:'Sem alertas críticos', text:'O arquivo parece consistente para exportação.'});
+      $("diagnostics").innerHTML = messages.map(msg => `<div class="diagItem"><b>${escapeHtml(msg.title)}</b><br><span>${escapeHtml(msg.text)}</span></div>`).join('');
+    }
+
+    function updatePreview(){
+      const text = genIni();
+      $("preview").value = text;
+      $("previewMeta").textContent = `${text.split(/\n/).length} linhas`;
+      runDiagnostics();
+    }
+
+    function saveState(){
+      try{
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        $("saveState").textContent = 'autosave: saved';
+        setTimeout(()=> $("saveState").textContent = 'autosave: idle', 900);
+      }catch(err){
+        $("saveState").textContent = 'autosave: error';
       }
     }
-  }catch(e){}
-}
+    const saveSoon = debounce(saveState, 250);
 
-const saveSoon = debounce((force=false)=>{
-  saveState();
-  if(force) updatePreview();
-}, 300);
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return;
+        const data = JSON.parse(raw);
+        if(!data) return;
+        Object.assign(state, data);
+        state.general = {...defaultGeneral(), ...(data.general || {})};
+        for(const k of ALL_KEYS) state.mania[k] = {...defaultMania(k), ...(data.mania?.[k] || {})};
+      }catch(err){}
+    }
 
-const previewSoon = debounce(()=> updatePreview(), 70);
+    function downloadIni(){
+      const blob = new Blob([genIni()], {type:'text/plain;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'skin.ini';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
 
-function onAnyChange(){
-  previewSoon();
-  saveSoon();
-  updateModeBadge();
-  updateTopSub();
-}
+    async function copyIni(){
+      await navigator.clipboard.writeText(genIni());
+      $("saveState").textContent = 'autosave: copied';
+      setTimeout(()=> $("saveState").textContent = 'autosave: idle', 900);
+    }
 
-/* ---------- actions ---------- */
-function updatePreview(){
-  $("preview").value = genIni();
-}
+    function resetAll(){
+      if(!confirm('resetar editor e apagar autosave?')) return;
+      localStorage.removeItem(STORAGE_KEY);
+      location.reload();
+    }
 
-function downloadIni(){
-  const text = $("preview").value || genIni();
-  const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "skin.ini";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
+    function setTab(tab){
+      state.uiTab = tab;
+      $("tabEditor").classList.toggle('active', tab === 'editor');
+      $("tabImport").classList.toggle('active', tab === 'import');
+      $("tabAbout").classList.toggle('active', tab === 'about');
+      if(tab === 'import') $("importDialog").showModal();
+      if(tab === 'about'){
+        $("diagnostics").innerHTML = `
+          <div class="diagItem"><b>Import mais robusto</b><br><span>Aceita linhas com : ou =.</span></div>
+          <div class="diagItem"><b>Preservação de extras</b><br><span>Chaves fora da UI continuam guardadas na seção correta.</span></div>
+          <div class="diagItem"><b>Mania expandido</b><br><span>Inclui campos extras como SplitStages, SeparateScore, LightFramePerSecond, NoteBodyStyle e flips por coluna.</span></div>
+        `;
+      } else runDiagnostics();
+    }
 
-async function copyIni(){
-  try{
-    await navigator.clipboard.writeText($("preview").value || genIni());
-    $("savePulse").textContent = "Copied";
-    setTimeout(()=>{ $("savePulse").textContent="—"; }, 800);
-  }catch(e){
-    $("savePulse").textContent = "NoCopy";
-    setTimeout(()=>{ $("savePulse").textContent="—"; }, 800);
-  }
-}
+    function initClock(){
+      const format = new Intl.DateTimeFormat('pt-BR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+      const formatDate = new Intl.DateTimeFormat('pt-BR', { weekday:'long', year:'numeric', month:'2-digit', day:'2-digit' });
+      const tick = ()=>{
+        const now = new Date();
+        $("clockText").textContent = format.format(now);
+        $("clockDate").textContent = formatDate.format(now);
+      };
+      tick();
+      setInterval(tick, 1000);
+    }
 
-function wipeAll(){
-  if(!confirm("Full reset + clear autosave?")) return;
-  try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
-  location.reload();
-}
+    function initRain(){
+      const canvas = $("rainCanvas");
+      const ctx = canvas.getContext('2d');
+      let drops = [];
+      let raf = 0;
 
-function updateModeBadge(){
-  const parts = ["GENERAL"];
-  if(state.exportMania) parts.push("MANIA");
-  $("modeBadge").textContent = "export: " + parts.join("+");
-}
+      function resize(){
+        canvas.width = innerWidth * devicePixelRatio;
+        canvas.height = innerHeight * devicePixelRatio;
+        canvas.style.width = innerWidth + 'px';
+        canvas.style.height = innerHeight + 'px';
+        ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+        drops = Array.from({length: Math.floor(innerWidth / 18)}, ()=>( {
+          x: Math.random() * innerWidth,
+          y: Math.random() * innerHeight,
+          len: 10 + Math.random() * 18,
+          speed: 3 + Math.random() * 5,
+          alpha: .08 + Math.random() * .18
+        }));
+      }
 
-/* ---------- dock toggles ---------- */
-function syncDockToggles(){
-  $("togMania").classList.toggle("active", state.exportMania);
-  $("styleH").classList.toggle("active", state.style === "H");
-  $("styleR").classList.toggle("active", state.style === "R");
-  $("styleP").classList.toggle("active", state.style === "P");
-  $("togCommentEmpty").classList.toggle("active", state.commentEmpty);
-}
+      function frame(){
+        ctx.clearRect(0,0,innerWidth,innerHeight);
+        if(state.rain){
+          for(const d of drops){
+            ctx.strokeStyle = `rgba(255,255,255,${d.alpha})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(d.x, d.y);
+            ctx.lineTo(d.x - 3, d.y + d.len);
+            ctx.stroke();
+            d.y += d.speed;
+            d.x -= .5;
+            if(d.y > innerHeight + 20 || d.x < -20){
+              d.x = Math.random() * innerWidth + 20;
+              d.y = -20;
+            }
+          }
+        }
+        raf = requestAnimationFrame(frame);
+      }
 
-/* ---------- wire top-level ---------- */
-document.querySelectorAll(".icoBtn[data-tab]").forEach(b=>{
-  b.addEventListener("click", ()=> setActiveTab(b.dataset.tab));
-});
+      resize();
+      addEventListener('resize', resize);
+      frame();
+      return ()=> cancelAnimationFrame(raf);
+    }
 
-$("downloadIni").addEventListener("click", downloadIni);
-$("copyIni").addEventListener("click", copyIni);
-$("wipeAll").addEventListener("click", wipeAll);
-$("refresh").addEventListener("click", updatePreview);
-$("selectAll").addEventListener("click", ()=>{
-  $("preview").focus();
-  $("preview").select();
-});
+    function wireGlobal(){
+      $("refreshPreview").onclick = updatePreview;
+      $("downloadIni").onclick = downloadIni;
+      $("copyIni").onclick = ()=> copyIni().catch(()=>{});
+      $("selectAll").onclick = ()=>{ $("preview").focus(); $("preview").select(); };
+      $("runChecks").onclick = runDiagnostics;
+      $("resetAll").onclick = resetAll;
+      $("toggleCommentEmpty").onclick = ()=>{ state.commentEmpty = !state.commentEmpty; renderEditor(); saveSoon(); };
+      $("rainToggle").onclick = $("toggleRainButton").onclick = ()=>{ state.rain = !state.rain; syncHeader(); saveSoon(); };
+      $("openImport").onclick = ()=>{ $("importArea").value = genIni(); $("importDialog").showModal(); setTab('import'); };
+      $("closeImport").onclick = ()=> $("importDialog").close();
+      $("applyImport").onclick = ()=>{ applyParsed(parseIni($("importArea").value)); $("importDialog").close(); setTab('editor'); };
+      $("openVersion").onclick = ()=>{ $("versionPick").value = state.general.Version; $("versionDialog").showModal(); };
+      $("closeVersion").onclick = ()=> $("versionDialog").close();
+      $("versionPick").onchange = ()=>{ state.general.Version = $("versionPick").value; $("versionDialog").close(); renderEditor(); saveSoon(); };
+      $("tabEditor").onclick = ()=> setTab('editor');
+      $("tabImport").onclick = ()=> { $("importArea").value = genIni(); setTab('import'); };
+      $("tabAbout").onclick = ()=> setTab('about');
+      document.querySelectorAll('[data-focus]').forEach(btn=> btn.onclick = ()=> $(btn.dataset.focus)?.scrollIntoView({behavior:'smooth', block:'start'}));
+      addEventListener('keydown', (e)=>{
+        if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's'){
+          e.preventDefault();
+          downloadIni();
+        }
+      });
+    }
 
-$("togMania").addEventListener("click", ()=>{
-  state.exportMania = !state.exportMania;
-  syncDockToggles();
-  onAnyChange();
-  if(state.activeTab === "mania") renderActiveTab();
-});
+    function initIntro(){ setTimeout(()=> $("intro").classList.add('hide'), 900); }
 
-$("styleH").addEventListener("click", ()=>{
-  state.style = "H";
-  syncDockToggles();
-  onAnyChange();
-});
-$("styleR").addEventListener("click", ()=>{
-  state.style = "R";
-  syncDockToggles();
-  onAnyChange();
-});
-$("styleP").addEventListener("click", ()=>{
-  state.style = "P";
-  syncDockToggles();
-  onAnyChange();
-});
-
-$("togCommentEmpty").addEventListener("click", ()=>{
-  state.commentEmpty = !state.commentEmpty;
-  syncDockToggles();
-  onAnyChange();
-});
-
-$("verBtn").addEventListener("click", ()=>{
-  $("versionPick").value = state.version;
-  $("verDlg").showModal();
-});
-$("versionPick").addEventListener("change", ()=>{
-  state.version = $("versionPick").value;
-  onAnyChange();
-  renderActiveTab();
-});
-
-$("importOpen").addEventListener("click", ()=>{
-  $("importArea").value = $("preview").value || "";
-  $("importDlg").showModal();
-});
-$("importApply").addEventListener("click", ()=>{
-  const raw = $("importArea").value || "";
-  const parsed = parseIni(raw);
-  applyParsed(parsed);
-  $("importDlg").close();
-});
-
-/* ---------- init ---------- */
-loadState();
-syncDockToggles();
-renderDockActive();
-updateModeBadge();
-renderActiveTab();
-updatePreview();
-</script>
+    loadState();
+    initClock();
+    initRain();
+    wireGlobal();
+    renderEditor();
+    initIntro();
+  </script>
 </body>
 </html>
