@@ -1,1383 +1,5895 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>skin.ini studio rebuilt</title>
-  <style>
-    @font-face{
-      font-family:"font";
-      src:url("../fonts/font.otf") format("opentype");
-      font-weight:normal;
-      font-style:normal;
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>skin.ini browser editor</title>
+<style>
 
-    :root{
-      --bg:#0b0c0f;
-      --panel:rgba(255,255,255,.05);
-      --panel-2:rgba(255,255,255,.03);
-      --border:rgba(255,255,255,.12);
-      --border-2:rgba(255,255,255,.18);
-      --text:#e8e8e8;
-      --muted:rgba(232,232,232,.60);
-      --muted-2:rgba(232,232,232,.42);
-      --radius:10px;
-      --shadow:0 16px 34px rgba(0,0,0,.34);
-      --ok:#d7f5d4;
-      --warn:#ffe3b0;
-      color-scheme:dark;
-    }
+:root{
+  --bg:#0b0c0f;
+  --bg2:#11131a;
+  --panel:rgba(255,255,255,.05);
+  --panel-2:rgba(255,255,255,.03);
+  --panel-3:rgba(255,255,255,.02);
+  --border:rgba(255,255,255,.12);
+  --border-2:rgba(255,255,255,.20);
+  --text:#e8e8e8;
+  --muted:rgba(232,232,232,.62);
+  --muted-2:rgba(232,232,232,.40);
+  --accent:#cdd7ff;
+  --accent-2:#98adff;
+  --good:#b7ffcb;
+  --warn:#ffd8a8;
+  --bad:#ffb6b6;
+  --shadow:0 18px 40px rgba(0,0,0,.34);
+  --radius:14px;
+  --sidebar:280px;
+  --preview:430px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:
+    linear-gradient(rgba(0,0,0,.72), rgba(0,0,0,.72)),
+    url("https://media.discordapp.net/attachments/1473364920291557406/1479978239710597243/7.jpg?ex=69ae00a5&is=69acaf25&hm=a6042d5d44fd1c7f0f6c81061b05d708f86ec02fe29b4327d794ac480bbad284&=&format=webp&width=1463&height=822");
+  background-position:center;
+  background-size:cover;
+  background-repeat:no-repeat;
+  background-attachment:fixed;
+  color:var(--text);
+  font:14px/1.55 Inter, ui-sans-serif, system-ui, sans-serif;
+  overflow:hidden;
+}
+button,input,select,textarea{font:inherit}
+a{color:inherit;text-decoration:none}
+.hidden{display:none !important}
+.app{
+  height:100%;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+}
+.topbar{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:14px;
+  padding:12px 14px;
+  border-bottom:1px solid var(--border);
+  background:rgba(0,0,0,.34);
+  backdrop-filter:blur(10px);
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+}
+.brandMark{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:rgba(0,0,0,.18);
+  box-shadow:var(--shadow);
+  object-fit:cover;
+}
+.brandText{
+  min-width:0;
+}
+.brandText b{
+  display:block;
+  font-size:14px;
+  letter-spacing:.2px;
+}
+.brandText span{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.browserTabs{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+  overflow:auto;
+  padding-bottom:2px;
+}
+.browserTab{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border:1px solid var(--border);
+  border-radius:999px;
+  background:rgba(255,255,255,.03);
+  color:var(--muted);
+  cursor:pointer;
+  transition:.18s ease;
+}
+.browserTab:hover{
+  color:var(--text);
+  background:rgba(255,255,255,.08);
+  border-color:var(--border-2);
+}
+.browserTab.active{
+  color:var(--text);
+  background:rgba(255,255,255,.10);
+  border-color:var(--border-2);
+}
+.actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.btn{
+  cursor:pointer;
+  padding:8px 12px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.04);
+  color:var(--muted);
+  transition:.18s ease;
+}
+.btn:hover{
+  color:var(--text);
+  border-color:var(--border-2);
+  background:rgba(255,255,255,.10);
+  transform:translateY(-1px);
+}
+.btn.primary{
+  color:var(--text);
+  background:rgba(255,255,255,.12);
+}
+.statusPill{
+  padding:7px 10px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.04);
+  color:var(--muted);
+  font-size:12px;
+}
+.workspace{
+  min-height:0;
+  display:grid;
+  grid-template-columns:var(--sidebar) 1fr var(--preview);
+}
+.sidebar{
+  border-right:1px solid var(--border);
+  background:rgba(0,0,0,.26);
+  backdrop-filter:blur(8px);
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+}
+.sideTop{
+  padding:12px;
+  border-bottom:1px solid var(--border);
+  display:grid;
+  gap:10px;
+}
+.searchWrap{
+  position:relative;
+}
+.search{
+  width:100%;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.04);
+  color:var(--text);
+  outline:none;
+}
+.search:focus{
+  border-color:var(--border-2);
+  box-shadow:0 0 0 1px rgba(255,255,255,.06);
+}
+.sideGroup{
+  padding:10px 12px 14px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.sideGroupTitle{
+  font-size:11px;
+  color:var(--muted-2);
+  letter-spacing:.7px;
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+.navList{
+  display:grid;
+  gap:6px;
+}
+.navBtn{
+  width:100%;
+  text-align:left;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:9px 10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);
+  color:var(--muted);
+  cursor:pointer;
+  transition:.18s ease;
+}
+.navBtn:hover,
+.navBtn.active{
+  color:var(--text);
+  background:rgba(255,255,255,.08);
+  border-color:var(--border-2);
+}
+.navMeta{
+  font-size:11px;
+  color:var(--muted-2);
+}
+.modeGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+}
+.modeCard{
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;
+  padding:9px 10px;
+  background:rgba(255,255,255,.03);
+  display:grid;
+  gap:6px;
+}
+.modeCardTop{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:6px;
+}
+.modeCardTop b{font-size:12px}
+.modeCardTop span{
+  font-size:11px;
+  color:var(--muted-2);
+}
+.modeCard button{
+  width:100%;
+}
+.main{
+  min-height:0;
+  background:rgba(255,255,255,.02);
+  display:flex;
+  flex-direction:column;
+}
+.mainHead{
+  padding:12px 14px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  align-items:center;
+  background:rgba(0,0,0,.22);
+  backdrop-filter:blur(8px);
+}
+.mainHeadTitle b{
+  display:block;
+  font-size:15px;
+}
+.mainHeadTitle span{
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+}
+.mainHeadTools{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.pageWrap{
+  min-height:0;
+  overflow:auto;
+  padding:14px;
+}
+.page{
+  display:none;
+  grid-template-columns:1fr;
+  gap:12px;
+}
+.page.active{
+  display:grid;
+}
+.panel{
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  background:var(--panel);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.panelHead{
+  padding:11px 14px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  background:rgba(0,0,0,.20);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.panelHead b{font-size:14px}
+.panelHead span{
+  color:var(--muted);
+  font-size:12px;
+}
+.panelBody{
+  padding:14px;
+  display:grid;
+  gap:10px;
+}
+.row{
+  display:grid;
+  grid-template-columns:180px 1fr;
+  gap:10px;
+  align-items:start;
+}
+.rowLabel{
+  display:grid;
+  gap:4px;
+}
+.rowLabel b{
+  font-size:13px;
+}
+.rowLabel span{
+  color:var(--muted);
+  font-size:11px;
+}
+.field,
+.select,
+.area{
+  width:100%;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.03);
+  color:var(--text);
+  padding:10px 12px;
+  outline:none;
+}
+.field:focus,
+.select:focus,
+.area:focus{
+  border-color:var(--border-2);
+  box-shadow:0 0 0 1px rgba(255,255,255,.06);
+}
+.area{
+  min-height:160px;
+  resize:vertical;
+  font:13px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.switch{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  user-select:none;
+}
+.switch input{accent-color:#fff}
+.inline{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.grid3{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.grid4{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+.hint{
+  color:var(--muted-2);
+  font-size:11px;
+}
+.preview{
+  min-height:0;
+  border-left:1px solid var(--border);
+  background:rgba(0,0,0,.24);
+  backdrop-filter:blur(8px);
+  display:flex;
+  flex-direction:column;
+}
+.previewHead{
+  padding:12px 14px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  background:rgba(0,0,0,.22);
+}
+.previewBody{
+  min-height:0;
+  overflow:auto;
+  padding:12px;
+  display:grid;
+  gap:12px;
+}
+.code{
+  min-height:340px;
+  resize:vertical;
+  width:100%;
+  border-radius:14px;
+  border:1px solid var(--border);
+  background:rgba(0,0,0,.28);
+  color:var(--text);
+  padding:12px 14px;
+  font:13px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  outline:none;
+}
+.diagList{
+  display:grid;
+  gap:8px;
+}
+.diag{
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+  padding:10px 12px;
+  background:rgba(255,255,255,.03);
+}
+.diag.good{color:var(--good)}
+.diag.warn{color:var(--warn)}
+.diag.bad{color:var(--bad)}
+.diag b{
+  display:block;
+  margin-bottom:2px;
+  color:var(--text);
+}
+.commandTable{
+  display:grid;
+  gap:6px;
+}
+.commandItem{
+  display:grid;
+  grid-template-columns:180px 1fr 90px;
+  gap:10px;
+  align-items:start;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+  padding:10px 12px;
+  background:rgba(255,255,255,.03);
+}
+.commandItem code{
+  font:12px/1.4 ui-monospace, monospace;
+  color:var(--accent);
+}
+.commandItem span{
+  color:var(--muted);
+  font-size:12px;
+}
+.commandTag{
+  justify-self:end;
+  font-size:11px;
+  color:var(--muted-2);
+}
+.footer{
+  padding:10px 14px;
+  border-top:1px solid var(--border);
+  background:rgba(0,0,0,.26);
+  color:var(--muted-2);
+  font-size:12px;
+}
+dialog{
+  width:min(980px, calc(100% - 24px));
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:rgba(10,10,12,.94);
+  color:var(--text);
+  box-shadow:0 20px 60px rgba(0,0,0,.55);
+  padding:0;
+}
+dialog::backdrop{
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(4px);
+}
+.modal{
+  padding:14px;
+  display:grid;
+  gap:12px;
+}
+.modalHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.kvStack{
+  display:grid;
+  gap:8px;
+}
+.modeSelectBar{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.badge{
+  padding:6px 9px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.03);
+  color:var(--muted);
+  font-size:12px;
+}
+.colourGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.colorRow{
+  display:grid;
+  grid-template-columns:130px 1fr;
+  gap:8px;
+  align-items:center;
+}
+.small{
+  font-size:12px;
+}
+@media (max-width: 1280px){
+  .workspace{grid-template-columns:260px 1fr 380px}
+}
+@media (max-width: 1080px){
+  body{overflow:auto}
+  .app{height:auto;min-height:100%}
+  .workspace{grid-template-columns:1fr}
+  .preview{border-left:0;border-top:1px solid var(--border)}
+  .sidebar{border-right:0;border-bottom:1px solid var(--border)}
+  .mainHead{position:sticky;top:0;z-index:3}
+}
+@media (max-width: 720px){
+  .topbar{grid-template-columns:1fr}
+  .row{grid-template-columns:1fr}
+  .grid2,.grid3,.grid4,.colourGrid{grid-template-columns:1fr}
+  .commandItem{grid-template-columns:1fr}
+  .commandTag{justify-self:start}
+}
 
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; min-height:100%; }
-
-    body{
-      margin:0;
-      position:relative;
-      background-color:var(--bg);
-      background-image:
-        linear-gradient(rgba(0,0,0,.60), rgba(0,0,0,.60)),
-        url("https://media.discordapp.net/attachments/1473364920291557406/1479978239710597243/7.jpg?ex=69ae00a5&is=69acaf25&hm=a6042d5d44fd1c7f0f6c81061b05d708f86ec02fe29b4327d794ac480bbad284&=&format=webp&width=1463&height=822");
-      background-position:center center;
-      background-size:cover;
-      background-repeat:no-repeat;
-      background-attachment:fixed;
-      color:var(--text);
-      font:16px/1.6 "font", ui-monospace, monospace;
-      overflow:hidden;
-    }
-
-    a{ color:inherit; text-decoration:none; }
-
-    #rainCanvas{
-      position:fixed;
-      inset:0;
-      z-index:2;
-      pointer-events:none;
-      background:transparent;
-    }
-
-    #clockBox{
-      position:fixed;
-      top:14px;
-      left:14px;
-      z-index:9998;
-      padding:8px 12px;
-      border:1px solid var(--border);
-      border-radius:12px;
-      background:rgba(0,0,0,.28);
-      backdrop-filter:blur(8px);
-      color:var(--text);
-      font-size:12px;
-      line-height:1.4;
-      box-shadow:0 8px 20px rgba(0,0,0,.25);
-    }
-
-    #rainToggle{
-      margin-top:6px;
-      display:inline-block;
-      font-size:11px;
-      cursor:pointer;
-      border:1px solid var(--border);
-      border-radius:8px;
-      padding:4px 8px;
-      background:rgba(0,0,0,.25);
-      color:var(--muted);
-      transition:color .2s ease, background .2s ease, border-color .2s ease, transform .2s ease;
-      user-select:none;
-    }
-    #rainToggle:hover{
-      color:var(--text);
-      background:rgba(255,255,255,.08);
-      border-color:rgba(255,255,255,.20);
-      transform:translateY(-1px);
-    }
-
-    .container{
-      position:relative;
-      z-index:3;
-      height:100%;
-      max-width:1500px;
-      margin:0 auto;
-      padding:20px;
-      display:flex;
-      flex-direction:column;
-      gap:16px;
-    }
-
-    .top{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-      padding:14px 16px;
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      background:var(--panel);
-      backdrop-filter:blur(8px);
-      animation:fadeUp .7s ease both;
-    }
-
-    .brand{ display:flex; align-items:center; gap:12px; min-width:0; }
-    .logo{
-      width:64px; height:64px;
-      border:1px solid var(--border);
-      border-radius:12px;
-      background:rgba(0,0,0,.25);
-      display:grid; place-items:center;
-      color:var(--muted);
-      font-weight:800;
-      overflow:hidden;
-      transition:transform .35s ease, box-shadow .35s ease;
-      flex:0 0 auto;
-    }
-    .logo:hover{ transform:translateY(-2px) scale(1.03); box-shadow:0 10px 22px rgba(0,0,0,.28); }
-    .logo img{ width:100%; height:100%; display:block; object-fit:cover; }
-    .title{ font-weight:800; letter-spacing:.3px; font-size:18px; }
-    .sub{ color:var(--muted); font-size:12px; margin-top:2px; }
-
-    .nav{ display:flex; gap:8px; flex-wrap:wrap; }
-    .btn, .small, select, input, textarea, button{ font:inherit; }
-
-    .btn, .small{
-      padding:9px 13px;
-      border:1px solid var(--border);
-      border-radius:10px;
-      background:rgba(0,0,0,.18);
-      color:var(--muted);
-      font-weight:700;
-      transition:transform .25s ease, color .25s ease, border-color .25s ease, background .25s ease, box-shadow .25s ease;
-      animation:btnFloat 6s ease-in-out infinite;
-      cursor:pointer;
-    }
-    .btn:hover, .small:hover{
-      color:var(--text);
-      border-color:rgba(255,255,255,.24);
-      background:rgba(255,255,255,.08);
-      transform:translateY(-3px) scale(1.03);
-      box-shadow:0 10px 24px rgba(0,0,0,.30);
-    }
-    .btn.active{ color:var(--text); border-color:rgba(255,255,255,.22); background:rgba(255,255,255,.06); }
-    .btn.primary{ color:var(--text); border-color:rgba(255,255,255,.22); background:rgba(255,255,255,.10); }
-
-    .hero{
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      background:rgba(255,255,255,.03);
-      backdrop-filter:blur(8px);
-      padding:14px 18px;
-      animation:fadeUp .7s ease both;
-      display:flex;
-      justify-content:space-between;
-      gap:16px;
-      align-items:flex-start;
-      flex-wrap:wrap;
-    }
-    .hero h1{ margin:0 0 6px; font-size:18px; }
-    .hero p{ margin:0; color:var(--muted); max-width:900px; }
-    .heroStats{ display:flex; flex-wrap:wrap; gap:8px; }
-    .pill{
-      padding:7px 10px;
-      border-radius:999px;
-      border:1px solid var(--border);
-      background:rgba(0,0,0,.16);
-      color:var(--muted);
-      font-size:12px;
-      white-space:nowrap;
-    }
-
-    .workspace{
-      min-height:0;
-      display:grid;
-      grid-template-columns: 360px minmax(0,1fr) 480px;
-      gap:12px;
-      flex:1;
-    }
-
-    .card{
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      background:rgba(255,255,255,.03);
-      backdrop-filter:blur(8px);
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-      min-height:0;
-      transition:transform .3s ease, border-color .3s ease, box-shadow .3s ease, background .3s ease;
-      animation:cardEntrance .6s ease both;
-    }
-    .card:hover{ border-color:rgba(255,255,255,.20); box-shadow:0 16px 34px rgba(0,0,0,.24); background:rgba(255,255,255,.05); }
-
-    .cardHead{
-      padding:12px 14px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      background:rgba(0,0,0,.14);
-      position:sticky;
-      top:0;
-      z-index:1;
-      backdrop-filter:blur(10px);
-    }
-    .cardTitle{ font-weight:800; font-size:15px; line-height:1.45; }
-    .meta{ color:var(--muted); font-size:12px; display:flex; gap:10px; flex-wrap:wrap; }
-    .cardBody{ flex:1; min-height:0; padding:14px; overflow:auto; display:flex; flex-direction:column; gap:12px; }
-
-    .sideList{ display:flex; flex-direction:column; gap:10px; }
-    .homeCard{ position:relative; overflow:hidden; isolation:isolate; }
-    .homeCard::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      background-image:var(--card-bg);
-      background-position:center;
-      background-size:cover;
-      background-repeat:no-repeat;
-      opacity:var(--card-opacity,.18);
-      filter:blur(var(--card-blur,8px));
-      transform:scale(1.08);
-      transition:opacity .3s ease, filter .3s ease, transform .35s ease;
-      z-index:0;
-    }
-    .homeCard::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.45));
-      z-index:0;
-    }
-    .homeCard .cardBody{ position:relative; z-index:1; min-height:auto; align-items:flex-start; text-align:left; }
-    .homeCard:hover::before{
-      opacity:calc(var(--card-opacity,.18) + .08);
-      filter:blur(calc(var(--card-blur,8px) - 2px));
-      transform:scale(1.12);
-    }
-
-    .stack{ display:flex; flex-direction:column; gap:10px; }
-    .sectionBlock{
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:12px;
-      background:rgba(0,0,0,.14);
-      overflow:hidden;
-    }
-    .sectionHead{
-      width:100%; border:0; background:rgba(255,255,255,.03); color:var(--text);
-      padding:12px 13px; text-align:left; display:flex; justify-content:space-between; gap:10px; align-items:center;
-      cursor:pointer; font-weight:800;
-    }
-    .sectionHead:hover{ background:rgba(255,255,255,.05); }
-    .sectionBody{ padding:12px; display:grid; gap:10px; }
-    .sectionBlock.closed .sectionBody{ display:none; }
-
-    .row{ display:grid; grid-template-columns: 170px 1fr; gap:10px; align-items:center; }
-    .row > label{ color:var(--muted); font-size:12px; }
-    .help{ color:var(--muted-2); font-size:11px; }
-
-    input[type="text"], input[type="number"], select, textarea{
-      width:100%;
-      border:1px solid var(--border);
-      border-radius:10px;
-      background:rgba(0,0,0,.20);
-      color:var(--text);
-      padding:10px 12px;
-      outline:none;
-    }
-    input:focus, select:focus, textarea:focus{ border-color:var(--border-2); box-shadow:0 0 0 1px rgba(255,255,255,.06); }
-    textarea{ min-height:240px; resize:vertical; }
-    select{ background:rgba(0,0,0,.28); }
-    input[type="color"]{
-      width:48px; height:40px; padding:0; border-radius:10px; border:1px solid var(--border); background:transparent;
-    }
-    input[type="checkbox"]{ accent-color:#fff; }
-
-    .inline{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-    .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    .grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
-
-    .kmGrid{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
-    .kmItem{
-      padding:10px;
-      border:1px solid var(--border);
-      border-radius:10px;
-      background:rgba(0,0,0,.14);
-      display:flex; align-items:center; justify-content:space-between; gap:8px;
-      font-size:12px;
-    }
-
-    .warnBox, .okBox{
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:12px;
-      padding:10px 12px;
-      font-size:12px;
-      background:rgba(0,0,0,.18);
-    }
-    .warnBox{ color:var(--warn); }
-    .okBox{ color:var(--ok); }
-
-    .previewToolbar{ display:flex; gap:8px; flex-wrap:wrap; }
-    #preview{
-      flex:1;
-      min-height:0;
-      resize:none;
-      white-space:pre;
-      font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size:13px;
-      line-height:1.5;
-    }
-
-    .diagnostics{ display:flex; flex-direction:column; gap:8px; }
-    .diagItem{
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:10px;
-      background:rgba(0,0,0,.16);
-      padding:10px 12px;
-      font-size:12px;
-    }
-    .diagItem b{ color:var(--text); }
-    .diagItem span{ color:var(--muted); }
-
-    .footer{ margin:4px 0 0; color:rgba(232,232,232,.35); font-size:12px; }
-    .kbd{ padding:2px 6px; border-radius:8px; border:1px solid var(--border); background:rgba(0,0,0,.18); color:var(--text); }
-
-    dialog{
-      width:min(1000px, calc(100% - 24px));
-      border:1px solid var(--border);
-      border-radius:14px;
-      background:rgba(8,8,10,.92);
-      color:var(--text);
-      box-shadow:0 20px 60px rgba(0,0,0,.55);
-      padding:0;
-    }
-    dialog::backdrop{ background:rgba(0,0,0,.55); backdrop-filter:blur(3px); }
-    .modal{ padding:14px; display:flex; flex-direction:column; gap:12px; }
-    .modalHead{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
-
-    #intro{
-      position:fixed;
-      inset:0;
-      background:#000;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      z-index:9999;
-      opacity:1;
-      visibility:visible;
-      transition:opacity .2s ease, visibility .2s ease;
-    }
-    #intro.hide{ opacity:0; visibility:hidden; pointer-events:none; }
-    .introText{
-      color:#fff;
-      font-size:clamp(12px, 1vw, 21px);
-      font-weight:800;
-      letter-spacing:2px;
-      opacity:0;
-      transform:translateY(10px);
-      animation:introTextShow 2s ease forwards;
-    }
-
-    @media (max-width:1280px){
-      .workspace{ grid-template-columns:320px minmax(0,1fr); }
-      .previewCard{ grid-column:1 / -1; min-height:380px; }
-    }
-    @media (max-width:900px){
-      body{ overflow:auto; }
-      .container{ height:auto; }
-      .workspace{ grid-template-columns:1fr; }
-      .row{ grid-template-columns:1fr; }
-      .grid2,.grid3,.kmGrid{ grid-template-columns:1fr; }
-      #clockBox{ position:static; width:fit-content; margin:12px; }
-    }
-
-    @keyframes introTextShow{ to{ opacity:1; transform:translateY(0); } }
-    @keyframes btnFloat{ 0%{ transform:translateY(0); } 50%{ transform:translateY(-2px); } 100%{ transform:translateY(0); } }
-    @keyframes fadeUp{ from{ opacity:0; transform:translateY(12px); } to{ opacity:1; transform:translateY(0); } }
-    @keyframes cardEntrance{ from{ opacity:0; transform:translateY(18px); } to{ opacity:1; transform:translateY(0); } }
-  </style>
+</style>
 </head>
 <body>
-  <div id="intro"><div class="introText">skin.ini studio rebuilt</div></div>
-  <canvas id="rainCanvas"></canvas>
 
-  <div id="clockBox">
-    <div id="clockText">--:--:--</div>
-    <div id="clockDate">----</div>
-    <div id="rainToggle">rain: on</div>
-  </div>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <img class="brandMark" alt="logo" src="https://i.pinimg.com/originals/da/b4/cb/dab4cbf31e4e8d7688b0e830d5d640f1.gif">
+      <div class="brandText">
+        <b>skin.ini browser editor</b>
+        <span>single file · browser style · osu!mania focused</span>
+      </div>
+    </div>
 
-  <div class="container">
-    <header class="top">
-      <div class="brand">
-        <div class="logo">
-          <img alt="logo" src="https://i.pinimg.com/originals/da/b4/cb/dab4cbf31e4e8d7688b0e830d5d640f1.gif">
+    <div class="browserTabs" id="browserTabs"></div>
+
+    <div class="actions">
+      <span class="statusPill" id="pagePill">page: overview</span>
+      <span class="statusPill" id="modePill">mode: 4K</span>
+      <span class="statusPill" id="savePill">saved</span>
+      <button class="btn" id="refreshBtn">Refresh</button>
+      <button class="btn" id="copyBtn">Copy</button>
+      <button class="btn primary" id="downloadBtn">Download</button>
+    </div>
+  </header>
+
+  <section class="workspace">
+    <aside class="sidebar">
+      <div class="sideTop">
+        <div class="searchWrap">
+          <input class="search" id="searchBox" placeholder="Search commands, pages, fields">
         </div>
-        <div>
-          <div class="title">skin.ini studio rebuilt</div>
-          <div class="sub" id="topSub">editor completo para osu!mania skin.ini</div>
+        <div class="inline">
+          <button class="btn small" id="openImportBtn">Import</button>
+          <button class="btn small" id="importStrictBtn">Paste</button>
+          <button class="btn small" id="resetBtn">Reset</button>
         </div>
       </div>
 
-      <nav class="nav">
-        <button class="btn active" id="tabEditor">editor</button>
-        <button class="btn" id="tabImport">import</button>
-        <button class="btn" id="tabAbout">wiki notes</button>
-      </nav>
-    </header>
+      <div class="sideGroup">
+        <div class="sideGroupTitle">Pages</div>
+        <div class="navList" id="navList"></div>
+      </div>
 
-    <section class="hero">
+      <div class="sideGroup">
+        <div class="sideGroupTitle">Keymodes</div>
+        <div class="modeGrid" id="modeGrid"></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="mainHead">
+        <div class="mainHeadTitle">
+          <b id="mainTitle">Overview</b>
+          <span id="mainNote">Project controls and quick status</span>
+        </div>
+        <div class="mainHeadTools">
+          <button class="btn small" id="selectBtn">Select preview</button>
+        </div>
+      </div>
+      <div class="pageWrap" id="pages"></div>
+    </main>
+
+    <aside class="preview">
+      <div class="previewHead">
+        <div>
+          <b>skin.ini preview</b>
+          <div class="hint" id="lineCount">0 lines</div>
+        </div>
+      </div>
+      <div class="previewBody">
+        <textarea class="code" id="previewArea" readonly spellcheck="false"></textarea>
+        <div class="diagList" id="diagList"></div>
+      </div>
+    </aside>
+  </section>
+
+  <footer class="footer">
+    strict import uses only key: value · unknown mania commands are preserved in export · Ctrl+S downloads skin.ini
+  </footer>
+</div>
+
+<dialog id="importDialog">
+  <div class="modal">
+    <div class="modalHead">
       <div>
-        <h1>editor refeito com import melhor, preservação de chaves extras e cobertura maior de mania</h1>
-        <p>Suporta <span class="kbd">:</span> e <span class="kbd">=</span> no import, mantém linhas desconhecidas por seção, alerta sobre recursos que pedem <span class="kbd">Version &gt;= 2.5</span> e gera seções <span class="kbd">[Mania]</span> por keycount.</p>
+        <b>Import skin.ini</b>
+        <div class="hint">Only key: value lines are read</div>
       </div>
-      <div class="heroStats">
-        <span class="pill" id="saveState">autosave: idle</span>
-        <span class="pill" id="styleState">style: clean</span>
-        <span class="pill" id="versionState">version: latest</span>
+      <div class="inline">
+        <button class="btn small" id="closeImportBtn" type="button">Close</button>
+        <button class="btn primary small" id="applyImportBtn" type="button">Apply</button>
       </div>
-    </section>
-
-    <section class="workspace">
-      <aside class="card homeCard" style="--card-bg:url('https://i.pinimg.com/originals/f5/93/a4/f593a4f4932080fb7b43c6ae96d1a73d.gif'); --card-opacity:.14; --card-blur:10px;">
-        <div class="cardHead">
-          <div>
-            <div class="cardTitle">navegação</div>
-            <div class="meta"><span>seções</span><span>ações</span></div>
-          </div>
-        </div>
-        <div class="cardBody sideList">
-          <button class="small" data-focus="generalSection">general + fonts</button>
-          <button class="small" data-focus="modesSection">keymodes</button>
-          <button class="small" data-focus="maniaSection">mania selected</button>
-          <button class="small" data-focus="previewCard">preview</button>
-          <button class="small" id="toggleCommentEmpty">comment empty: off</button>
-          <button class="small" id="toggleRainButton">rain fx: on</button>
-          <button class="small" id="openImport">abrir import</button>
-          <button class="small" id="openVersion">version</button>
-          <button class="small" id="resetAll">reset</button>
-          <div class="footer">atalhos: <span class="kbd">Ctrl+S</span> baixar • <span class="kbd">Ctrl+C</span> copiar preview selecionado</div>
-        </div>
-      </aside>
-
-      <main class="card" id="editorCard">
-        <div class="cardHead">
-          <div>
-            <div class="cardTitle">editor</div>
-            <div class="meta"><span id="selectedModeText">4K</span><span id="modeCountText">1 modo ativo</span></div>
-          </div>
-          <div class="previewToolbar">
-            <button class="btn" id="refreshPreview">refresh</button>
-            <button class="btn" id="copyIni">copy</button>
-            <button class="btn primary" id="downloadIni">download</button>
-          </div>
-        </div>
-        <div class="cardBody stack" id="editorPanel"></div>
-      </main>
-
-      <section class="card previewCard" id="previewCard">
-        <div class="cardHead">
-          <div>
-            <div class="cardTitle">preview + diagnostics</div>
-            <div class="meta"><span>skin.ini</span><span id="previewMeta">0 linhas</span></div>
-          </div>
-          <div class="previewToolbar">
-            <button class="btn" id="selectAll">select</button>
-            <button class="btn" id="runChecks">checks</button>
-          </div>
-        </div>
-        <div class="cardBody">
-          <textarea id="preview" readonly spellcheck="false"></textarea>
-          <div class="diagnostics" id="diagnostics"></div>
-        </div>
-      </section>
-    </section>
+    </div>
+    <textarea class="area" id="importArea" spellcheck="false" placeholder="[General]
+Name: ...
+[Mania]
+Keys: 4"></textarea>
   </div>
+</dialog>
 
-  <dialog id="importDialog">
-    <div class="modal">
-      <div class="modalHead">
-        <div>
-          <div class="cardTitle">importar skin.ini</div>
-          <div class="meta"><span>aceita :</span><span>aceita =</span><span>preserva extras</span></div>
-        </div>
-        <div class="previewToolbar">
-          <button class="btn" id="closeImport" type="button">fechar</button>
-          <button class="btn primary" id="applyImport" type="button">apply</button>
-        </div>
+<script>
+
+const $ = (id) => document.getElementById(id);
+const STORAGE_KEY = "skinini_browser_compact_v1";
+const ALL_KEYS = Array.from({length:18}, (_,i)=>i+1);
+
+const PAGES = [
+  { key:"overview", title:"Overview", note:"Project controls and quick status" },
+  { key:"general", title:"General", note:"Name, author, version and cursor options" },
+  { key:"fonts", title:"Fonts", note:"Font prefixes and overlaps" },
+  { key:"layout", title:"Layout", note:"Columns, start and positions" },
+  { key:"stage", title:"Stage", note:"Stage and lighting images" },
+  { key:"colours", title:"Colours", note:"Columns and line colours" },
+  { key:"images", title:"Images", note:"Key and note image patterns" },
+  { key:"hits", title:"Hits", note:"Hitburst image paths" },
+  { key:"flip", title:"Flip", note:"Upside-down flip switches" },
+  { key:"advanced", title:"Advanced", note:"Special mania commands and extras" },
+  { key:"commands", title:"Commands", note:"Command browser" }
+];
+
+const COMMANDS = [
+  ["Name","[General] Skin name","general"],
+  ["Author","[General] Skin author","general"],
+  ["Version","[General] Skin version","general"],
+  ["CursorCentre","Center cursor sprite","general"],
+  ["CursorExpand","Expand cursor on click","general"],
+  ["CursorRotate","Rotate cursor","general"],
+  ["CursorTrailRotate","Rotate cursor trail","general"],
+  ["ScorePrefix","Score image prefix","fonts"],
+  ["ScoreOverlap","Score digit overlap","fonts"],
+  ["ComboPrefix","Combo image prefix","fonts"],
+  ["ComboOverlap","Combo digit overlap","fonts"],
+  ["Keys","Mania keycount section","layout"],
+  ["ColumnStart","Column x start","layout"],
+  ["ColumnRight","Right padding","layout"],
+  ["ColumnSpacing","Space between columns","layout"],
+  ["ColumnWidth","Column widths","layout"],
+  ["ColumnLineWidth","Line widths","layout"],
+  ["HitPosition","Hit position y","layout"],
+  ["LightPosition","Light position y","layout"],
+  ["ScorePosition","Score position y","layout"],
+  ["ComboPosition","Combo position y","layout"],
+  ["JudgementLine","Show judgement line","advanced"],
+  ["KeysUnderNotes","Draw keys under notes","advanced"],
+  ["UpsideDown","Invert playfield","advanced"],
+  ["BarlineHeight","Barline height","advanced"],
+  ["WidthForNoteHeightScale","Scale note body using width","advanced"],
+  ["LightFramePerSecond","Stage light fps","advanced"],
+  ["SpecialStyle","Special style","advanced"],
+  ["ComboBurstStyle","Combo burst style","advanced"],
+  ["SplitStages","Split stages","advanced"],
+  ["StageSeparation","Stage separation","advanced"],
+  ["SeparateScore","Separate score position","advanced"],
+  ["NoteBodyStyle","Hold body style","advanced"],
+  ["StageLeft","Stage left sprite","stage"],
+  ["StageRight","Stage right sprite","stage"],
+  ["StageBottom","Stage bottom sprite","stage"],
+  ["StageHint","Stage hint sprite","stage"],
+  ["StageLight","Stage light sprite","stage"],
+  ["LightingNWidth","Normal light width","stage"],
+  ["LightingLWidth","Long note light width","stage"],
+  ["LightingN","Normal light sprite","stage"],
+  ["LightingL","Long note light sprite","stage"],
+  ["Colour0..17","Column colours","colours"],
+  ["ColourLight0..17","Column light colours","colours"],
+  ["ColourColumnLine","Column line colour","colours"],
+  ["ColourBarline","Barline colour","colours"],
+  ["ColourJudgementLine","Judgement line colour","colours"],
+  ["ColourKeyWarning","Key warning colour","colours"],
+  ["ColourHold","Hold colour","colours"],
+  ["ColourBreak","Break colour","colours"],
+  ["KeyImage0..17","Key images","images"],
+  ["KeyImage0D..17D","Pressed key images","images"],
+  ["NoteImage0..17","Tap note images","images"],
+  ["NoteImage0H..17H","Head note images","images"],
+  ["NoteImage0L..17L","Body note images","images"],
+  ["NoteImage0T..17T","Tail note images","images"],
+  ["WarningArrow","Warning arrow image","images"],
+  ["Hit0","Miss image","hits"],
+  ["Hit50","50 image","hits"],
+  ["Hit100","100 image","hits"],
+  ["Hit200","200 image","hits"],
+  ["Hit300","300 image","hits"],
+  ["Hit300g","geki image","hits"],
+  ["KeyFlipWhenUpsideDown","Flip all key images","flip"],
+  ["NoteFlipWhenUpsideDown","Flip all note images","flip"],
+  ["KeyFlipWhenUpsideDown0..17","Flip key image by column","flip"],
+  ["KeyFlipWhenUpsideDown0D..17D","Flip key pressed image by column","flip"],
+  ["NoteFlipWhenUpsideDown0..17","Flip note image by column","flip"],
+  ["NoteFlipWhenUpsideDown0H..17H","Flip head image by column","flip"],
+  ["NoteFlipWhenUpsideDown0L..17L","Flip body image by column","flip"],
+  ["NoteFlipWhenUpsideDown0T..17T","Flip tail image by column","flip"]
+];
+
+function blank(v){ return String(v ?? "").trim() === ""; }
+function clean(v){ return String(v ?? "").replace(/\r/g,"").trim(); }
+function cleanEnd(v){ return String(v ?? "").replace(/\r/g,"").trimEnd(); }
+function bool01(v){ return v ? "1" : "0"; }
+function debounce(fn, ms){
+  let t = null;
+  return (...args)=>{
+    clearTimeout(t);
+    t = setTimeout(()=>fn(...args), ms);
+  };
+}
+function rgbToHex(rgb){
+  const m = String(rgb || "").match(/^\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*$/);
+  if(!m) return "#ffffff";
+  const vals = [m[1],m[2],m[3]].map(n=>Math.max(0, Math.min(255, parseInt(n,10))));
+  return "#" + vals.map(n=>n.toString(16).padStart(2,"0")).join("");
+}
+function hexToRgb(hex){
+  const h = String(hex || "").replace("#","").trim();
+  if(!/^[0-9a-fA-F]{6}$/.test(h)) return "";
+  const r = parseInt(h.slice(0,2),16);
+  const g = parseInt(h.slice(2,4),16);
+  const b = parseInt(h.slice(4,6),16);
+  return `${r},${g},${b}`;
+}
+function padCsv(raw, count, fallback){
+  const s = cleanEnd(raw);
+  if(!s) return fallback;
+  if(s.includes(",")) return s;
+  return Array.from({length: count}, ()=>s).join(",");
+}
+function pattern(pattern, n){
+  const p = cleanEnd(pattern);
+  return p ? p.replaceAll("{n}", String(n)) : "";
+}
+function firstNumber(raw, fallback){
+  const first = String(raw ?? "").split(",")[0].trim();
+  const n = Number(first);
+  return Number.isFinite(n) ? n : fallback;
+}
+function inferPattern(values){
+  const vals = values.map(v=>cleanEnd(v)).filter(Boolean);
+  if(vals.length < 2) return "";
+  let pref = vals[0];
+  for(const v of vals){
+    let i=0;
+    while(i<pref.length && i<v.length && pref[i]===v[i]) i++;
+    pref = pref.slice(0,i);
+  }
+  let suf = vals[0];
+  for(const v of vals){
+    let i=0;
+    while(i<suf.length && i<v.length && suf[suf.length-1-i]===v[v.length-1-i]) i++;
+    suf = suf.slice(suf.length-i);
+  }
+  const inner = vals[0].slice(pref.length, vals[0].length - suf.length);
+  if(!/^\d+$/.test(inner)) return "";
+  const width = inner.length;
+  for(const start of [0,1]){
+    let ok = true;
+    for(let i=0;i<vals.length;i++){
+      const mid = vals[i].slice(pref.length, vals[i].length - suf.length);
+      if(mid !== String(start+i).padStart(width,"0")){ ok = false; break; }
+    }
+    if(ok) return `${pref}{n}${suf}`;
+  }
+  return "";
+}
+function fallbackPattern(sample){
+  const s = cleanEnd(sample);
+  if(!s) return "";
+  const m = s.match(/\d+/);
+  if(!m) return "";
+  const idx = m.index ?? 0;
+  return s.slice(0, idx) + "{n}" + s.slice(idx + m[0].length);
+}
+function inferBy(kv, base, keys, suffix=""){
+  const arr = Array.from({length:keys}, (_,i)=>kv[`${base}${i}${suffix}`] ?? "");
+  return inferPattern(arr) || fallbackPattern(arr[0]);
+}
+function getAspectRatio(m){
+  if(m.ARPreset !== "custom"){
+    const [w,h] = String(m.ARPreset || "16:9").split(":").map(Number);
+    if(Number.isFinite(w) && Number.isFinite(h) && h !== 0) return w / h;
+  }
+  const w = firstNumber(m.ARW, 16);
+  const h = firstNumber(m.ARH, 9);
+  return h === 0 ? 16/9 : w/h;
+}
+function calcAutoColumnStart(keys, m){
+  const colW = firstNumber(m.ColumnWidth, 70);
+  const colS = firstNumber(m.ColumnSpacing, 0);
+  const ar = getAspectRatio(m);
+  const offset = firstNumber(m.CenterOffset, 0);
+  const width = 480 * ar;
+  const total = (colW * keys) + (colS * Math.max(0, keys - 1));
+  return Math.round((width / 2) - (total / 2) + offset);
+}
+function defaultGeneral(){
+  return {
+    Name:"",
+    Author:"",
+    Version:"2.7",
+    CursorCentre:true,
+    CursorExpand:false,
+    CursorRotate:false,
+    CursorTrailRotate:false,
+    ScorePrefix:"score",
+    ScoreOverlap:"0",
+    ComboPrefix:"combo",
+    ComboOverlap:"0",
+    extra:{}
+  };
+}
+function defaultMania(keys){
+  return {
+    Keys:keys,
+    ColumnStart:"",
+    ColumnRight:"",
+    ColumnSpacing:"0",
+    ColumnWidth:"70",
+    ColumnLineWidth:"",
+    HitPosition:"",
+    LightPosition:"",
+    ScorePosition:"",
+    ComboPosition:"",
+    JudgementLine:true,
+    KeysUnderNotes:false,
+    UpsideDown:false,
+    BarlineHeight:"",
+    WidthForNoteHeightScale:"",
+    LightFramePerSecond:"",
+    SpecialStyle:"",
+    ComboBurstStyle:"",
+    SplitStages:false,
+    StageSeparation:"",
+    SeparateScore:false,
+    NoteBodyStyle:"",
+    StageLeft:"",
+    StageRight:"",
+    StageBottom:"",
+    StageHint:"",
+    StageLight:"",
+    LightingNWidth:"",
+    LightingLWidth:"",
+    LightingN:"",
+    LightingL:"",
+    ColourColumnLine:"",
+    ColourBarline:"",
+    ColourJudgementLine:"",
+    ColourKeyWarning:"",
+    ColourHold:"",
+    ColourBreak:"",
+    Colour:{},
+    ColourLight:{},
+    pKey:"",
+    pKeyD:"",
+    pNote:"",
+    pNoteH:"",
+    pNoteL:"",
+    pNoteT:"",
+    WarningArrow:"",
+    Hit0:"",
+    Hit50:"",
+    Hit100:"",
+    Hit200:"",
+    Hit300:"",
+    Hit300g:"",
+    flipKeyAll:false,
+    flipNoteAll:false,
+    keyFlip:{},
+    keyFlipD:{},
+    noteFlip:{},
+    noteFlipH:{},
+    noteFlipL:{},
+    noteFlipT:{},
+    AutoColumnStart:true,
+    ARPreset:"16:9",
+    ARW:"16",
+    ARH:"9",
+    CenterOffset:"0",
+    extra:{}
+  };
+}
+
+const state = {
+  page:"overview",
+  selectedKeys:4,
+  enabled:Object.fromEntries(ALL_KEYS.map(k=>[k, k===4])),
+  general:defaultGeneral(),
+  mania:Object.fromEntries(ALL_KEYS.map(k=>[k, defaultMania(k)]))
+};
+
+function pathGet(path){
+  return path.split(".").reduce((acc,key)=>acc?.[key], state);
+}
+function pathSet(path, value){
+  const parts = path.split(".");
+  let cur = state;
+  for(let i=0;i<parts.length-1;i++) cur = cur[parts[i]];
+  cur[parts[parts.length-1]] = value;
+}
+
+function row(label, desc, input){
+  return `
+    <div class="row" data-search-scope="${label} ${desc}">
+      <div class="rowLabel">
+        <b>${label}</b>
+        <span>${desc}</span>
       </div>
-      <textarea id="importArea" spellcheck="false"></textarea>
-      <div class="warnBox">No import, chaves não suportadas pela UI continuam guardadas e voltam no export da mesma seção.</div>
+      <div>${input}</div>
     </div>
-  </dialog>
+  `;
+}
+function text(path, placeholder=""){
+  const value = pathGet(path) ?? "";
+  return `<input class="field" data-bind="${path}" value="${String(value).replaceAll('"',"&quot;")}" placeholder="${placeholder}">`;
+}
+function numberField(path, placeholder=""){
+  const value = pathGet(path) ?? "";
+  return `<input class="field" type="number" data-bind="${path}" value="${String(value).replaceAll('"',"&quot;")}" placeholder="${placeholder}">`;
+}
+function area(path, placeholder=""){
+  const value = pathGet(path) ?? "";
+  return `<textarea class="area" data-bind="${path}" placeholder="${placeholder}">${String(value).replaceAll("<","&lt;")}</textarea>`;
+}
+function boolField(path){
+  const value = !!pathGet(path);
+  return `<label class="switch"><input type="checkbox" data-bind="${path}" ${value ? "checked" : ""}><span>${value ? "On" : "Off"}</span></label>`;
+}
+function colourField(path){
+  const value = pathGet(path) ?? "";
+  return `
+    <div class="inline">
+      <input class="field" style="width:56px;padding:2px" type="color" data-colour="${path}" value="${rgbToHex(value)}">
+      <input class="field" data-bind="${path}" value="${String(value).replaceAll('"',"&quot;")}" placeholder="255,255,255">
+    </div>
+  `;
+}
+function selectField(path, options){
+  const value = pathGet(path);
+  return `
+    <select class="select" data-bind="${path}">
+      ${options.map(([v,l])=>`<option value="${v}" ${String(value)===String(v) ? "selected" : ""}>${l}</option>`).join("")}
+    </select>
+  `;
+}
 
-  <dialog id="versionDialog">
-    <div class="modal">
-      <div class="modalHead">
-        <div>
-          <div class="cardTitle">version</div>
-          <div class="meta"><span>latest não é o ideal para distribuir skins</span></div>
-        </div>
-        <button class="btn" id="closeVersion" type="button">fechar</button>
+function renderTabs(){
+  $("browserTabs").innerHTML = PAGES.map(p=>`
+    <button class="browserTab ${state.page===p.key ? "active" : ""}" data-page="${p.key}">
+      <span>${p.title}</span>
+    </button>
+  `).join("");
+}
+function renderSidebarNav(){
+  $("navList").innerHTML = PAGES.map(p=>`
+    <button class="navBtn ${state.page===p.key ? "active" : ""}" data-page="${p.key}">
+      <span>${p.title}</span>
+      <span class="navMeta">${p.note}</span>
+    </button>
+  `).join("");
+}
+function renderModes(){
+  $("modeGrid").innerHTML = ALL_KEYS.map(k=>`
+    <div class="modeCard">
+      <div class="modeCardTop">
+        <b>${k}K</b>
+        <span>${state.selectedKeys===k ? "selected" : "mode"}</span>
       </div>
-      <div class="grid2">
-        <div>
-          <label class="help" for="versionPick">Version</label>
-          <select id="versionPick">
-            <option value="2.0">2.0</option>
-            <option value="2.1">2.1</option>
-            <option value="2.2">2.2</option>
-            <option value="2.3">2.3</option>
-            <option value="2.4">2.4</option>
-            <option value="2.5">2.5</option>
-            <option value="2.6">2.6</option>
-            <option value="2.7">2.7</option>
-            <option value="latest">latest</option>
-          </select>
-        </div>
-        <div class="okBox">Recursos avançados de mania e personalização completa de stage/notes dependem de v2.5+ na wiki oficial.</div>
+      <div class="inline">
+        <label class="switch small"><input type="checkbox" data-mode-enable="${k}" ${state.enabled[k] ? "checked" : ""}><span>${state.enabled[k] ? "On" : "Off"}</span></label>
+        <button class="btn small ${state.selectedKeys===k ? "primary" : ""}" data-mode-select="${k}">Open</button>
       </div>
     </div>
-  </dialog>
+  `).join("");
+}
+function renderHeader(){
+  const p = PAGES.find(x=>x.key===state.page) || PAGES[0];
+  $("mainTitle").textContent = p.title;
+  $("mainNote").textContent = p.note;
+  $("pagePill").textContent = `page: ${p.key}`;
+  $("modePill").textContent = `mode: ${state.selectedKeys}K`;
+  $("savePill").textContent = "saved";
+}
+function renderPage(){
+  const m = state.mania[state.selectedKeys];
+  const pages = [];
 
-  <script>
-    const $ = (id) => document.getElementById(id);
-    const STORAGE_KEY = "skinini_studio_rebuilt_v1";
-    const ALL_KEYS = Array.from({length:18}, (_,i)=>i+1);
+  pages.push({
+    key:"overview",
+    html:`
+      <div class="panel">
+        <div class="panelHead"><b>Project</b><span>Quick actions and project status</span></div>
+        <div class="panelBody">
+          ${row("Name","Skin display name", text("general.Name","skin name"))}
+          ${row("Author","Skin author", text("general.Author","author"))}
+          ${row("Version","Fixed version recommended", selectField("general.Version", [["2.0","2.0"],["2.5","2.5"],["2.6","2.6"],["2.7","2.7"],["latest","latest"]]))}
+          <div class="grid3">
+            <div class="panel">
+              <div class="panelHead"><b>Enabled keymodes</b><span>${ALL_KEYS.filter(k=>state.enabled[k]).length} active</span></div>
+              <div class="panelBody"><div class="hint">${ALL_KEYS.filter(k=>state.enabled[k]).map(k=>`${k}K`).join(", ") || "none"}</div></div>
+            </div>
+            <div class="panel">
+              <div class="panelHead"><b>Selected mode</b><span>Editor target</span></div>
+              <div class="panelBody"><div class="hint">${state.selectedKeys}K</div></div>
+            </div>
+            <div class="panel">
+              <div class="panelHead"><b>Auto ColumnStart</b><span>Calculated value</span></div>
+              <div class="panelBody"><div class="hint">${m.AutoColumnStart ? calcAutoColumnStart(state.selectedKeys, m) : cleanEnd(m.ColumnStart) || "manual empty"}</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panelHead"><b>Search result</b><span>Filters commands and fields</span></div>
+        <div class="panelBody">
+          <div class="hint">Use the search box in the left sidebar to filter commands, rows and command browser entries.</div>
+        </div>
+      </div>
+    `
+  });
 
-    const SUPPORTED_MANIA_FIELDS = new Set([
-      "Keys","ColumnStart","ColumnRight","ColumnSpacing","ColumnWidth","ColumnLineWidth",
-      "HitPosition","LightPosition","ScorePosition","ComboPosition",
-      "JudgementLine","KeysUnderNotes","UpsideDown",
-      "BarlineHeight","WidthForNoteHeightScale",
-      "LightFramePerSecond","SpecialStyle","ComboBurstStyle","SplitStages","StageSeparation","SeparateScore","NoteBodyStyle",
-      "StageLeft","StageRight","StageBottom","StageHint","StageLight",
-      "LightingNWidth","LightingLWidth","LightingN","LightingL",
-      "ColourColumnLine","ColourBarline","ColourJudgementLine","ColourKeyWarning","ColourHold","ColourBreak",
-      "WarningArrow","Hit0","Hit50","Hit100","Hit200","Hit300","Hit300g"
-    ]);
+  pages.push({
+    key:"general",
+    html:`
+      <div class="panel">
+        <div class="panelHead"><b>General</b><span>Core skin metadata</span></div>
+        <div class="panelBody">
+          ${row("Name","Skin name", text("general.Name","skin name"))}
+          ${row("Author","Skin author", text("general.Author","author"))}
+          ${row("Version","Use a fixed version for distribution", selectField("general.Version", [["2.0","2.0"],["2.5","2.5"],["2.6","2.6"],["2.7","2.7"],["latest","latest"]]))}
+          ${row("CursorCentre","Center cursor sprite", boolField("general.CursorCentre"))}
+          ${row("CursorExpand","Expand cursor on click", boolField("general.CursorExpand"))}
+          ${row("CursorRotate","Rotate cursor", boolField("general.CursorRotate"))}
+          ${row("CursorTrailRotate","Rotate cursor trail", boolField("general.CursorTrailRotate"))}
+        </div>
+      </div>
+    `
+  });
 
-    const STYLE_PRESETS = {
-      clean: {
-        name: "clean",
-        comment: "//",
-        sectionHeader(title){ return [`// ${title}`]; },
-        kv(key, value){ return `${key}: ${value}`; }
-      },
-      boxed: {
-        name: "boxed",
-        comment: ";",
-        sectionHeader(title){ const t = String(title).toUpperCase(); return [`;====================`, `; ${t}`, `;====================`]; },
-        kv(key, value){ return `${key.padEnd(24, " ")} : ${value}`; }
-      },
-      parser: {
-        name: "parser",
-        comment: "//",
-        sectionHeader(title){ return [`// -=- ${title}`]; },
-        kv(key, value){ return `${key}: ${value}`; }
-      }
-    };
+  pages.push({
+    key:"fonts",
+    html:`
+      <div class="panel">
+        <div class="panelHead"><b>Fonts</b><span>Score and combo prefixes</span></div>
+        <div class="panelBody">
+          ${row("ScorePrefix","Prefix for score images", text("general.ScorePrefix","score"))}
+          ${row("ScoreOverlap","Digit overlap", numberField("general.ScoreOverlap","0"))}
+          ${row("ComboPrefix","Prefix for combo images", text("general.ComboPrefix","combo"))}
+          ${row("ComboOverlap","Digit overlap", numberField("general.ComboOverlap","0"))}
+        </div>
+      </div>
+    `
+  });
 
-    function defaultGeneral(){
-      return {
-        Name:"",
-        Author:"",
-        Version:"2.7",
-        CursorCentre:true,
-        CursorExpand:false,
-        CursorRotate:false,
-        CursorTrailRotate:false,
-        ScorePrefix:"score",
-        ScoreOverlap:"0",
-        ComboPrefix:"combo",
-        ComboOverlap:"0",
-        extra:{}
-      };
-    }
+  pages.push({
+    key:"layout",
+    html:`
+      <div class="panel">
+        <div class="panelHead"><b>Layout</b><span>${state.selectedKeys}K playfield</span></div>
+        <div class="panelBody">
+          ${row("AutoColumnStart","Calculate ColumnStart", boolField(`mania.${state.selectedKeys}.AutoColumnStart`))}
+          ${row("Aspect Ratio","Used by auto centering", selectField(`mania.${state.selectedKeys}.ARPreset`, [["16:9","16:9"],["4:3","4:3"],["21:9","21:9"],["custom","custom"]]))}
+          ${row("Custom AR Width","Used when custom AR is selected", numberField(`mania.${state.selectedKeys}.ARW`,"16"))}
+          ${row("Custom AR Height","Used when custom AR is selected", numberField(`mania.${state.selectedKeys}.ARH`,"9"))}
+          ${row("CenterOffset","Extra offset for auto centering", numberField(`mania.${state.selectedKeys}.CenterOffset`,"0"))}
+          ${row("ColumnStart","Left start x", numberField(`mania.${state.selectedKeys}.ColumnStart`))}
+          ${row("ColumnRight","Right side spacing", numberField(`mania.${state.selectedKeys}.ColumnRight`))}
+          ${row("ColumnWidth","Single value or csv", text(`mania.${state.selectedKeys}.ColumnWidth`,"70 or 70,70,70"))}
+          ${row("ColumnSpacing","Single value or csv", text(`mania.${state.selectedKeys}.ColumnSpacing`,"0 or 0,0,0"))}
+          ${row("ColumnLineWidth","Line widths csv", text(`mania.${state.selectedKeys}.ColumnLineWidth`,"0,0,0,0,0"))}
+          ${row("HitPosition","Hit line position", numberField(`mania.${state.selectedKeys}.HitPosition`))}
+          ${row("LightPosition","Stage light position", numberField(`mania.${state.selectedKeys}.LightPosition`))}
+          ${row("ScorePosition","Score position", numberField(`mania.${state.selectedKeys}.ScorePosition`))}
+          ${row("ComboPosition","Combo position", numberField(`mania.${state.selectedKeys}.ComboPosition`))}
+        </div>
+      </div>
+    `
+  });
 
-    function defaultMania(keys){
-      return {
-        Keys: keys,
-        ColumnStart:"",
-        ColumnRight:"",
-        ColumnSpacing:"0",
-        ColumnWidth:"70",
-        ColumnLineWidth:"",
-        HitPosition:"",
-        LightPosition:"",
-        ScorePosition:"",
-        ComboPosition:"",
-        JudgementLine:true,
-        KeysUnderNotes:false,
-        UpsideDown:false,
-        BarlineHeight:"",
-        WidthForNoteHeightScale:"",
-        LightFramePerSecond:"",
-        SpecialStyle:"",
-        ComboBurstStyle:"",
-        SplitStages:false,
-        StageSeparation:"",
-        SeparateScore:false,
-        NoteBodyStyle:"",
-        StageLeft:"",
-        StageRight:"",
-        StageBottom:"",
-        StageHint:"",
-        StageLight:"",
-        LightingNWidth:"",
-        LightingLWidth:"",
-        LightingN:"",
-        LightingL:"",
-        ColourColumnLine:"",
-        ColourBarline:"",
-        ColourJudgementLine:"",
-        ColourKeyWarning:"",
-        ColourHold:"",
-        ColourBreak:"",
-        WarningArrow:"",
-        Hit0:"",
-        Hit50:"",
-        Hit100:"",
-        Hit200:"",
-        Hit300:"",
-        Hit300g:"",
-        AutoColumnStart:true,
-        ARPreset:"16:9",
-        ARW:"16",
-        ARH:"9",
-        CenterOffset:"0",
-        pKey:"",
-        pKeyD:"",
-        pNote:"",
-        pNoteH:"",
-        pNoteL:"",
-        pNoteT:"",
-        flipKeyAll:false,
-        flipNoteAll:false,
-        keyFlip:{},
-        keyFlipD:{},
-        noteFlip:{},
-        noteFlipH:{},
-        noteFlipL:{},
-        noteFlipT:{},
-        Colour:{},
-        ColourLight:{},
-        extra:{}
-      };
-    }
+  pages.push({
+    key:"stage",
+    html:`
+      <div class="panel">
+        <div class="panelHead"><b>Stage</b><span>Stage and lighting sprites</span></div>
+        <div class="panelBody">
+          ${row("StageLeft","Left stage image", text(`mania.${state.selectedKeys}.StageLeft`))}
+          ${row("StageRight","Right stage image", text(`mania.${state.selectedKeys}.StageRight`))}
+          ${row("StageBottom","Bottom stage image", text(`mania.${state.selectedKeys}.StageBottom`))}
+          ${row("StageHint","Stage hint image", text(`mania.${state.selectedKeys}.StageHint`))}
+          ${row("StageLight","Stage light image", text(`mania.${state.selectedKeys}.StageLight`))}
+          ${row("LightingNWidth","Normal light width", numberField(`mania.${state.selectedKeys}.LightingNWidth`))}
+          ${row("LightingLWidth","Long note light width", numberField(`mania.${state.selectedKeys}.LightingLWidth`))}
+          ${row("LightingN","Normal light image", text(`mania.${state.selectedKeys}.LightingN`))}
+          ${row("LightingL","Long note light image", text(`mania.${state.selectedKeys}.LightingL`))}
+        </div>
+      </div>
+    `
+  });
 
-    const state = {
-      uiTab:"editor",
-      style:"clean",
-      commentEmpty:false,
-      rain:true,
-      selectedKeys:4,
-      enabled:Object.fromEntries(ALL_KEYS.map(k=>[k,k===4])),
-      general:defaultGeneral(),
-      mania:Object.fromEntries(ALL_KEYS.map(k=>[k, defaultMania(k)]))
-    };
+  const colourLeft = Array.from({length: state.selectedKeys}, (_,i)=>`
+    <div class="colorRow">
+      <div class="hint">Colour${i}</div>
+      ${colourField(`mania.${state.selectedKeys}.Colour.${i+1}`)}
+    </div>
+  `).join("");
+  const colourRight = Array.from({length: state.selectedKeys}, (_,i)=>`
+    <div class="colorRow">
+      <div class="hint">ColourLight${i}</div>
+      ${colourField(`mania.${state.selectedKeys}.ColourLight.${i+1}`)}
+    </div>
+  `).join("");
 
-    function clean(v){ return String(v ?? "").replace(/\r/g, "").trim(); }
-    function cleanEnd(v){ return String(v ?? "").replace(/\r/g, "").trimEnd(); }
-    function isBlank(v){ return clean(v) === ""; }
-    function bool01(v){ return v ? "1" : "0"; }
-    function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
-    function debounce(fn, ms){ let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms); }; }
-    function escapeHtml(s){ return String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;"); }
-    function currentStyle(){ return STYLE_PRESETS[state.style] || STYLE_PRESETS.clean; }
-    function quoteIfNeeded(value){ const s = cleanEnd(value); return /\s/.test(s) && !/^".*"$/.test(s) ? `"${s}"` : s; }
-    function rgbToHex(rgb){ const m = String(rgb||"").match(/^\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*$/); if(!m) return null; return "#" + [m[1],m[2],m[3]].map(n=>clamp(parseInt(n,10),0,255).toString(16).padStart(2,"0")).join(""); }
-    function hexToRgb(hex){ const h = String(hex||"").replace("#", ""); if(!/^[\da-fA-F]{6}$/.test(h)) return ""; return `${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)}`; }
-    function pat(pattern, n){ const p = cleanEnd(pattern); return p ? p.replaceAll("{n}", String(n)) : ""; }
-    function firstNumber(raw, fallback){ const f = String(raw ?? "").split(",")[0].trim(); const n = Number(f); return Number.isFinite(n) ? n : fallback; }
+  pages.push({
+    key:"colours",
+    html:`
+      <div class="panel">
+        <div class="panelHead"><b>Colours</b><span>${state.selectedKeys}K palette</span></div>
+        <div class="panelBody">
+          <div class="colourGrid">
+            <div class="panel"><div class="panelHead"><b>Columns</b><span>Colour0..</span></div><div class="panelBody">${colourLeft}</div></div>
+            <div class="panel"><div class="panelHead"><b>Lights</b><span>ColourLight0..</span></div><div class="panelBody">${colourRight}</div></div>
+          </div>
+          ${row("ColourColumnLine","Column line colour", colourField(`mania.${state.selectedKeys}.ColourColumnLine`))}
+          ${row("ColourBarline","Barline colour", colourField(`mania.${state.selectedKeys}.ColourBarline`))}
+          ${row("ColourJudgementLine","Judgement line colour", colourField(`mania.${state.selectedKeys}.ColourJudgementLine`))}
+          ${row("ColourKeyWarning","Warning colour", colourField(`mania.${state.selectedKeys}.ColourKeyWarning`))}
+          ${row("ColourHold","Hold colour", colourField(`mania.${state.selectedKeys}.ColourHold`))}
+          ${row("ColourBreak","Break colour", colourField(`mania.${state.selectedKeys}.ColourBreak`))}
+        </div>
+      </div>
+    `
+  });
 
-    function getAspectRatio(m){
-      if(m.ARPreset !== "custom"){
-        const [w,h] = String(m.ARPreset || "16:9").split(":").map(Number);
-        return Number.isFinite(w) && Number.isFinite(h) && h !== 0 ? w / h : 16/9;
-      }
-      const w = firstNumber(m.ARW, 16);
-      const h = firstNumber(m.ARH, 9);
-      return h === 0 ? 16/9 : w / h;
-    }
+  pages.push({
+    key:"images",
+    html:`
+      <div class="panel">
+        <div class="panelHead"><b>Images</b><span>Use {n} for pattern slots</span></div>
+        <div class="panelBody">
+          ${row("KeyImage#","Pattern for key images", text(`mania.${state.selectedKeys}.pKey`,"mania/key{n}"))}
+          ${row("KeyImage#D","Pattern for pressed key images", text(`mania.${state.selectedKeys}.pKeyD`,"mania/key{n}d"))}
+          ${row("NoteImage#","Pattern for tap note images", text(`mania.${state.selectedKeys}.pNote`,"mania/note{n}"))}
+          ${row("NoteImage#H","Pattern for hold head images", text(`mania.${state.selectedKeys}.pNoteH`,"mania/note{n}h"))}
+          ${row("NoteImage#L","Pattern for hold body images", text(`mania.${state.selectedKeys}.pNoteL`,"mania/note{n}l"))}
+          ${row("NoteImage#T","Pattern for hold tail images", text(`mania.${state.selectedKeys}.pNoteT`,"mania/note{n}t"))}
+          ${row("WarningArrow","Warning arrow image", text(`mania.${state.selectedKeys}.WarningArrow`))}
+        </div>
+      </div>
+    `
+  });
 
-    function calcAutoColumnStart(keys, m){
-      const colW = firstNumber(m.ColumnWidth, 70);
-      const colS = firstNumber(m.ColumnSpacing, 0);
-      const ar = getAspectRatio(m);
-      const offset = firstNumber(m.CenterOffset, 0);
-      const usableWidth = 480 * ar;
-      const columnSum = (colW * keys) + (colS * Math.max(0, keys - 1));
-      return Math.round((usableWidth / 2) - (columnSum / 2) + offset);
-    }
+  pages.push({
+    key:"hits",
+    html:`
+      <div class="panel">
+        <div class="panelHead"><b>Hits</b><span>Hitburst image paths</span></div>
+        <div class="panelBody">
+          ${row("Hit0","Miss image path", text(`mania.${state.selectedKeys}.Hit0`))}
+          ${row("Hit50","50 image path", text(`mania.${state.selectedKeys}.Hit50`))}
+          ${row("Hit100","100 image path", text(`mania.${state.selectedKeys}.Hit100`))}
+          ${row("Hit200","200 image path", text(`mania.${state.selectedKeys}.Hit200`))}
+          ${row("Hit300","300 image path", text(`mania.${state.selectedKeys}.Hit300`))}
+          ${row("Hit300g","Geki image path", text(`mania.${state.selectedKeys}.Hit300g`))}
+        </div>
+      </div>
+    `
+  });
 
-    function fmtKV(key, value){ return currentStyle().kv(key, quoteIfNeeded(value)); }
-    function addKV(lines, key, value){
-      const v = cleanEnd(value);
-      if(v !== "") lines.push(fmtKV(key, v));
-      else if(state.commentEmpty) lines.push(`${currentStyle().comment} ${key}:`);
-    }
+  const flipLeft = Array.from({length: state.selectedKeys}, (_,i)=>`
+    ${row(`KeyFlipWhenUpsideDown${i}`,"Flip key image by column", boolField(`mania.${state.selectedKeys}.keyFlip.${i}`))}
+    ${row(`KeyFlipWhenUpsideDown${i}D`,"Flip pressed key image by column", boolField(`mania.${state.selectedKeys}.keyFlipD.${i}`))}
+  `).join("");
+  const flipRight = Array.from({length: state.selectedKeys}, (_,i)=>`
+    ${row(`NoteFlipWhenUpsideDown${i}`,"Flip note image by column", boolField(`mania.${state.selectedKeys}.noteFlip.${i}`))}
+    ${row(`NoteFlipWhenUpsideDown${i}H`,"Flip head image by column", boolField(`mania.${state.selectedKeys}.noteFlipH.${i}`))}
+    ${row(`NoteFlipWhenUpsideDown${i}L`,"Flip body image by column", boolField(`mania.${state.selectedKeys}.noteFlipL.${i}`))}
+    ${row(`NoteFlipWhenUpsideDown${i}T`,"Flip tail image by column", boolField(`mania.${state.selectedKeys}.noteFlipT.${i}`))}
+  `).join("");
 
-    function normalizeCsv(raw, count, fallback){
-      const r = cleanEnd(raw);
-      if(!r) return fallback;
-      if(r.includes(",")) return r;
-      return Array.from({length: count}, ()=>r).join(",");
-    }
+  pages.push({
+    key:"flip",
+    html:`
+      <div class="panel">
+        <div class="panelHead"><b>Flip</b><span>Upside-down image overrides</span></div>
+        <div class="panelBody">
+          ${row("KeyFlipWhenUpsideDown","Flip all key images", boolField(`mania.${state.selectedKeys}.flipKeyAll`))}
+          ${row("NoteFlipWhenUpsideDown","Flip all note images", boolField(`mania.${state.selectedKeys}.flipNoteAll`))}
+          <div class="grid2">
+            <div class="panel"><div class="panelHead"><b>Keys</b><span>Per column</span></div><div class="panelBody">${flipLeft}</div></div>
+            <div class="panel"><div class="panelHead"><b>Notes</b><span>Per column</span></div><div class="panelBody">${flipRight}</div></div>
+          </div>
+        </div>
+      </div>
+    `
+  });
 
-    function inferPattern(values){
-      const vals = values.map(cleanEnd).filter(Boolean);
-      if(vals.length < 2) return "";
-      let pref = vals[0], suf = vals[0];
-      for(const v of vals){
-        let i = 0; while(i < pref.length && i < v.length && pref[i] === v[i]) i++; pref = pref.slice(0, i);
-      }
-      for(const v of vals){
-        let i = 0; while(i < suf.length && i < v.length && suf[suf.length - 1 - i] === v[v.length - 1 - i]) i++; suf = suf.slice(suf.length - i);
-      }
-      const mid = vals[0].slice(pref.length, vals[0].length - suf.length);
-      if(!/^\d+$/.test(mid)) return "";
-      const width = mid.length;
-      for(const start of [0,1]){
-        let ok = true;
-        for(let i=0;i<vals.length;i++){
-          const v = vals[i];
-          const inner = v.slice(pref.length, v.length - suf.length);
-          if(inner !== String(start + i).padStart(width, "0")){ ok = false; break; }
-        }
-        if(ok) return `${pref}{n}${suf}`;
-      }
-      return "";
-    }
+  pages.push({
+    key:"advanced",
+    html:`
+      <div class="panel">
+        <div class="panelHead"><b>Advanced</b><span>Additional mania commands</span></div>
+        <div class="panelBody">
+          ${row("JudgementLine","Show judgement line", boolField(`mania.${state.selectedKeys}.JudgementLine`))}
+          ${row("KeysUnderNotes","Draw keys under notes", boolField(`mania.${state.selectedKeys}.KeysUnderNotes`))}
+          ${row("UpsideDown","Invert playfield", boolField(`mania.${state.selectedKeys}.UpsideDown`))}
+          ${row("BarlineHeight","Barline height", numberField(`mania.${state.selectedKeys}.BarlineHeight`))}
+          ${row("WidthForNoteHeightScale","Width scale for note body", numberField(`mania.${state.selectedKeys}.WidthForNoteHeightScale`))}
+          ${row("LightFramePerSecond","Stage light fps", numberField(`mania.${state.selectedKeys}.LightFramePerSecond`))}
+          ${row("SpecialStyle","Special style", numberField(`mania.${state.selectedKeys}.SpecialStyle`))}
+          ${row("ComboBurstStyle","Combo burst style", numberField(`mania.${state.selectedKeys}.ComboBurstStyle`))}
+          ${row("SplitStages","Split stages", boolField(`mania.${state.selectedKeys}.SplitStages`))}
+          ${row("StageSeparation","Stage separation", numberField(`mania.${state.selectedKeys}.StageSeparation`))}
+          ${row("SeparateScore","Separate score", boolField(`mania.${state.selectedKeys}.SeparateScore`))}
+          ${row("NoteBodyStyle","Hold body style", numberField(`mania.${state.selectedKeys}.NoteBodyStyle`))}
+          ${row("Extra commands","Unknown lines preserved in export", area(`mania.${state.selectedKeys}.extraText`,"One key: value per line"))}
+        </div>
+      </div>
+    `
+  });
 
-    function inferFromKV(kv, base, keys, suffix=""){
-      const arr = Array.from({length:keys}, (_,i)=>kv[`${base}${i}${suffix}`] ?? "");
-      return inferPattern(arr) || fallbackPattern(arr[0]);
-    }
+  pages.push({
+    key:"commands",
+    html:`
+      <div class="panel">
+        <div class="panelHead"><b>Command browser</b><span>Quick lookup</span></div>
+        <div class="panelBody">
+          <div class="commandTable" id="commandTable">
+            ${COMMANDS.map(([cmd,desc,page])=>`
+              <div class="commandItem" data-command-search="${cmd} ${desc} ${page}">
+                <code>${cmd}</code>
+                <span>${desc}</span>
+                <div class="commandTag">${page}</div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      </div>
+    `
+  });
 
-    function fallbackPattern(sample){
-      const s = cleanEnd(sample);
-      if(!s) return "";
-      const m = s.match(/\d+/);
-      if(!m) return "";
-      return s.slice(0, m.index) + "{n}" + s.slice((m.index || 0) + m[0].length);
-    }
+  $("pages").innerHTML = pages.map(p=>`
+    <section class="page ${state.page===p.key ? "active" : ""}" data-page-wrap="${p.key}">
+      ${p.html}
+    </section>
+  `).join("");
+  bindInputs();
+  applySearchFilter();
+}
 
-    function syncHeader(){
-      $("styleState").textContent = `style: ${state.style}`;
-      $("versionState").textContent = `version: ${state.general.Version}`;
-      const activeCount = ALL_KEYS.filter(k=>state.enabled[k]).length;
-      $("modeCountText").textContent = `${activeCount} modo${activeCount === 1 ? '' : 's'} ativo${activeCount === 1 ? '' : 's'}`;
-      $("selectedModeText").textContent = `${state.selectedKeys}K`;
-      $("toggleCommentEmpty").textContent = `comment empty: ${state.commentEmpty ? 'on' : 'off'}`;
-      $("rainToggle").textContent = `rain: ${state.rain ? 'on' : 'off'}`;
-      $("toggleRainButton").textContent = `rain fx: ${state.rain ? 'on' : 'off'}`;
-    }
+function renderAll(){
+  renderTabs();
+  renderSidebarNav();
+  renderModes();
+  renderHeader();
+  renderPage();
+  updatePreview();
+}
 
-    function buildRow(label, html, hint=""){
-      return `<div class="row"><label>${label}${hint ? `<div class="help">${hint}</div>` : ""}</label><div>${html}</div></div>`;
-    }
-
-    function inputText(id, value, placeholder=""){ return `<input type="text" data-bind="${id}" value="${escapeHtml(value)}" placeholder="${escapeHtml(placeholder)}">`; }
-    function inputNum(id, value, placeholder=""){ return `<input type="number" data-bind="${id}" value="${escapeHtml(value)}" placeholder="${escapeHtml(placeholder)}">`; }
-    function inputCheck(id, checked){ return `<label class="inline"><input type="checkbox" data-bind="${id}" ${checked ? 'checked' : ''}><span>${checked ? 'on' : 'off'}</span></label>`; }
-    function colorPair(id, value){ const hx = rgbToHex(value) || '#ffffff'; return `<div class="inline"><input type="color" data-color="${id}" value="${hx}"><input type="text" data-bind="${id}" value="${escapeHtml(value)}" placeholder="255,255,255"></div>`; }
-
-    function sectionTemplate(id, title, body, open=true){
-      return `<section class="sectionBlock ${open ? '' : 'closed'}" id="${id}">
-        <button type="button" class="sectionHead" data-toggle-section="${id}">
-          <span>${title}</span><span>${open ? '▾' : '▸'}</span>
-        </button>
-        <div class="sectionBody">${body}</div>
-      </section>`;
-    }
-
-    function renderEditor(){
-      const g = state.general;
-      const m = state.mania[state.selectedKeys];
-      const activeModes = ALL_KEYS.map(k=>`<label class="kmItem"><span>${k}K</span><span class="inline"><input type="checkbox" data-mode-enable="${k}" ${state.enabled[k] ? 'checked' : ''}><button type="button" class="btn ${state.selectedKeys === k ? 'active' : ''}" data-mode-select="${k}">edit</button></span></label>`).join('');
-
-      const general = sectionTemplate("generalSection", "general + fonts", [
-        buildRow("Name", inputText("general.Name", g.Name)),
-        buildRow("Author", inputText("general.Author", g.Author)),
-        buildRow("Version", `<div class="inline">${inputText("general.Version", g.Version)}<button class="btn" type="button" id="quickVersion">pick</button></div>`, "na wiki, latest não é o melhor pra distribuir skins"),
-        buildRow("CursorCentre", inputCheck("general.CursorCentre", g.CursorCentre)),
-        buildRow("CursorExpand", inputCheck("general.CursorExpand", g.CursorExpand)),
-        buildRow("CursorRotate", inputCheck("general.CursorRotate", g.CursorRotate)),
-        buildRow("CursorTrailRotate", inputCheck("general.CursorTrailRotate", g.CursorTrailRotate)),
-        buildRow("ScorePrefix", inputText("general.ScorePrefix", g.ScorePrefix)),
-        buildRow("ScoreOverlap", inputNum("general.ScoreOverlap", g.ScoreOverlap)),
-        buildRow("ComboPrefix", inputText("general.ComboPrefix", g.ComboPrefix)),
-        buildRow("ComboOverlap", inputNum("general.ComboOverlap", g.ComboOverlap))
-      ].join(''));
-
-      const modes = sectionTemplate("modesSection", "keymodes", `<div class="kmGrid">${activeModes}</div>`, true);
-
-      const colorsColumns = Array.from({length:state.selectedKeys}, (_,i)=> buildRow(`Colour${i}`, colorPair(`mania.${state.selectedKeys}.Colour.${i+1}`, m.Colour[i+1] || ""))).join('');
-      const colorsLights = Array.from({length:state.selectedKeys}, (_,i)=> buildRow(`ColourLight${i}`, colorPair(`mania.${state.selectedKeys}.ColourLight.${i+1}`, m.ColourLight[i+1] || ""))).join('');
-      const keyFlips = Array.from({length:state.selectedKeys}, (_,i)=> buildRow(`KeyFlipWhenUpsideDown${i}`, inputCheck(`mania.${state.selectedKeys}.keyFlip.${i}`, !!m.keyFlip[i]))).join('');
-      const keyFlipsD = Array.from({length:state.selectedKeys}, (_,i)=> buildRow(`KeyFlipWhenUpsideDown${i}D`, inputCheck(`mania.${state.selectedKeys}.keyFlipD.${i}`, !!m.keyFlipD[i]))).join('');
-      const noteFlips = Array.from({length:state.selectedKeys}, (_,i)=> buildRow(`NoteFlipWhenUpsideDown${i}`, inputCheck(`mania.${state.selectedKeys}.noteFlip.${i}`, !!m.noteFlip[i]))).join('');
-      const noteFlipsH = Array.from({length:state.selectedKeys}, (_,i)=> buildRow(`NoteFlipWhenUpsideDown${i}H`, inputCheck(`mania.${state.selectedKeys}.noteFlipH.${i}`, !!m.noteFlipH[i]))).join('');
-      const noteFlipsL = Array.from({length:state.selectedKeys}, (_,i)=> buildRow(`NoteFlipWhenUpsideDown${i}L`, inputCheck(`mania.${state.selectedKeys}.noteFlipL.${i}`, !!m.noteFlipL[i]))).join('');
-      const noteFlipsT = Array.from({length:state.selectedKeys}, (_,i)=> buildRow(`NoteFlipWhenUpsideDown${i}T`, inputCheck(`mania.${state.selectedKeys}.noteFlipT.${i}`, !!m.noteFlipT[i]))).join('');
-
-      const mania = sectionTemplate("maniaSection", `mania ${state.selectedKeys}K`, [
-        sectionTemplate(`layout-${state.selectedKeys}`, "layout", [
-          buildRow("Auto ColumnStart", inputCheck(`mania.${state.selectedKeys}.AutoColumnStart`, m.AutoColumnStart)),
-          buildRow("Aspect Ratio", `<div class="inline"><select data-bind="mania.${state.selectedKeys}.ARPreset"><option value="16:9" ${m.ARPreset==='16:9'?'selected':''}>16:9</option><option value="4:3" ${m.ARPreset==='4:3'?'selected':''}>4:3</option><option value="21:9" ${m.ARPreset==='21:9'?'selected':''}>21:9</option><option value="custom" ${m.ARPreset==='custom'?'selected':''}>custom</option></select>${inputNum(`mania.${state.selectedKeys}.ARW`, m.ARW, '16')}${inputNum(`mania.${state.selectedKeys}.ARH`, m.ARH, '9')}</div>`),
-          buildRow("CenterOffset", inputNum(`mania.${state.selectedKeys}.CenterOffset`, m.CenterOffset, '0')),
-          buildRow("ColumnStart", inputNum(`mania.${state.selectedKeys}.ColumnStart`, m.ColumnStart)),
-          buildRow("ColumnRight", inputNum(`mania.${state.selectedKeys}.ColumnRight`, m.ColumnRight)),
-          buildRow("ColumnWidth", inputText(`mania.${state.selectedKeys}.ColumnWidth`, m.ColumnWidth, '70 or 70,70,70')),
-          buildRow("ColumnSpacing", inputText(`mania.${state.selectedKeys}.ColumnSpacing`, m.ColumnSpacing, '0 or 0,0,0')),
-          buildRow("ColumnLineWidth", inputText(`mania.${state.selectedKeys}.ColumnLineWidth`, m.ColumnLineWidth))
-        ].join('')),
-        sectionTemplate(`pos-${state.selectedKeys}`, "positions", [
-          buildRow("HitPosition", inputNum(`mania.${state.selectedKeys}.HitPosition`, m.HitPosition)),
-          buildRow("LightPosition", inputNum(`mania.${state.selectedKeys}.LightPosition`, m.LightPosition)),
-          buildRow("ScorePosition", inputNum(`mania.${state.selectedKeys}.ScorePosition`, m.ScorePosition)),
-          buildRow("ComboPosition", inputNum(`mania.${state.selectedKeys}.ComboPosition`, m.ComboPosition))
-        ].join('')),
-        sectionTemplate(`tog-${state.selectedKeys}`, "toggles + extras", [
-          buildRow("JudgementLine", inputCheck(`mania.${state.selectedKeys}.JudgementLine`, m.JudgementLine)),
-          buildRow("KeysUnderNotes", inputCheck(`mania.${state.selectedKeys}.KeysUnderNotes`, m.KeysUnderNotes)),
-          buildRow("UpsideDown", inputCheck(`mania.${state.selectedKeys}.UpsideDown`, m.UpsideDown)),
-          buildRow("SplitStages", inputCheck(`mania.${state.selectedKeys}.SplitStages`, m.SplitStages)),
-          buildRow("SeparateScore", inputCheck(`mania.${state.selectedKeys}.SeparateScore`, m.SeparateScore)),
-          buildRow("BarlineHeight", inputNum(`mania.${state.selectedKeys}.BarlineHeight`, m.BarlineHeight)),
-          buildRow("WidthForNoteHeightScale", inputNum(`mania.${state.selectedKeys}.WidthForNoteHeightScale`, m.WidthForNoteHeightScale)),
-          buildRow("LightFramePerSecond", inputNum(`mania.${state.selectedKeys}.LightFramePerSecond`, m.LightFramePerSecond)),
-          buildRow("SpecialStyle", inputNum(`mania.${state.selectedKeys}.SpecialStyle`, m.SpecialStyle)),
-          buildRow("ComboBurstStyle", inputNum(`mania.${state.selectedKeys}.ComboBurstStyle`, m.ComboBurstStyle)),
-          buildRow("StageSeparation", inputNum(`mania.${state.selectedKeys}.StageSeparation`, m.StageSeparation)),
-          buildRow("NoteBodyStyle", inputNum(`mania.${state.selectedKeys}.NoteBodyStyle`, m.NoteBodyStyle))
-        ].join(''), false),
-        sectionTemplate(`stage-${state.selectedKeys}`, "stage + lighting", [
-          buildRow("StageLeft", inputText(`mania.${state.selectedKeys}.StageLeft`, m.StageLeft)),
-          buildRow("StageRight", inputText(`mania.${state.selectedKeys}.StageRight`, m.StageRight)),
-          buildRow("StageBottom", inputText(`mania.${state.selectedKeys}.StageBottom`, m.StageBottom)),
-          buildRow("StageHint", inputText(`mania.${state.selectedKeys}.StageHint`, m.StageHint)),
-          buildRow("StageLight", inputText(`mania.${state.selectedKeys}.StageLight`, m.StageLight)),
-          buildRow("LightingNWidth", inputNum(`mania.${state.selectedKeys}.LightingNWidth`, m.LightingNWidth)),
-          buildRow("LightingLWidth", inputNum(`mania.${state.selectedKeys}.LightingLWidth`, m.LightingLWidth)),
-          buildRow("LightingN", inputText(`mania.${state.selectedKeys}.LightingN`, m.LightingN)),
-          buildRow("LightingL", inputText(`mania.${state.selectedKeys}.LightingL`, m.LightingL))
-        ].join(''), false),
-        sectionTemplate(`colors-${state.selectedKeys}`, "colors", `<div class="grid2"><div>${colorsColumns}</div><div>${colorsLights}</div></div>${[
-          buildRow("ColourColumnLine", colorPair(`mania.${state.selectedKeys}.ColourColumnLine`, m.ColourColumnLine)),
-          buildRow("ColourBarline", colorPair(`mania.${state.selectedKeys}.ColourBarline`, m.ColourBarline)),
-          buildRow("ColourJudgementLine", colorPair(`mania.${state.selectedKeys}.ColourJudgementLine`, m.ColourJudgementLine)),
-          buildRow("ColourKeyWarning", colorPair(`mania.${state.selectedKeys}.ColourKeyWarning`, m.ColourKeyWarning)),
-          buildRow("ColourHold", colorPair(`mania.${state.selectedKeys}.ColourHold`, m.ColourHold)),
-          buildRow("ColourBreak", colorPair(`mania.${state.selectedKeys}.ColourBreak`, m.ColourBreak))
-        ].join('')}`, false),
-        sectionTemplate(`paths-${state.selectedKeys}`, "image patterns + hits", [
-          buildRow("KeyImage#", inputText(`mania.${state.selectedKeys}.pKey`, m.pKey, 'mania/key{n}')),
-          buildRow("KeyImage#D", inputText(`mania.${state.selectedKeys}.pKeyD`, m.pKeyD, 'mania/key{n}d')),
-          buildRow("NoteImage#", inputText(`mania.${state.selectedKeys}.pNote`, m.pNote, 'mania/note{n}')),
-          buildRow("NoteImage#H", inputText(`mania.${state.selectedKeys}.pNoteH`, m.pNoteH, 'mania/note{n}h')),
-          buildRow("NoteImage#L", inputText(`mania.${state.selectedKeys}.pNoteL`, m.pNoteL, 'mania/note{n}l')),
-          buildRow("NoteImage#T", inputText(`mania.${state.selectedKeys}.pNoteT`, m.pNoteT, 'mania/note{n}t')),
-          buildRow("WarningArrow", inputText(`mania.${state.selectedKeys}.WarningArrow`, m.WarningArrow)),
-          buildRow("Hit0", inputText(`mania.${state.selectedKeys}.Hit0`, m.Hit0)),
-          buildRow("Hit50", inputText(`mania.${state.selectedKeys}.Hit50`, m.Hit50)),
-          buildRow("Hit100", inputText(`mania.${state.selectedKeys}.Hit100`, m.Hit100)),
-          buildRow("Hit200", inputText(`mania.${state.selectedKeys}.Hit200`, m.Hit200)),
-          buildRow("Hit300", inputText(`mania.${state.selectedKeys}.Hit300`, m.Hit300)),
-          buildRow("Hit300g", inputText(`mania.${state.selectedKeys}.Hit300g`, m.Hit300g))
-        ].join(''), false),
-        sectionTemplate(`flip-${state.selectedKeys}`, "flip when upside down", [
-          buildRow("KeyFlipWhenUpsideDown", inputCheck(`mania.${state.selectedKeys}.flipKeyAll`, m.flipKeyAll)),
-          buildRow("NoteFlipWhenUpsideDown", inputCheck(`mania.${state.selectedKeys}.flipNoteAll`, m.flipNoteAll)),
-          `<div class="grid2"><div>${keyFlips}${keyFlipsD}</div><div>${noteFlips}${noteFlipsH}${noteFlipsL}${noteFlipsT}</div></div>`
-        ].join(''), false),
-        Object.keys(m.extra).length ? `<div class="warnBox">extras preservados neste modo: ${Object.keys(m.extra).join(', ')}</div>` : ''
-      ].join(''));
-
-      $("editorPanel").innerHTML = `${general}${modes}${mania}`;
-      bindEditor();
-      syncHeader();
-      updatePreview();
-    }
-
-    function pathGet(path){
-      return path.split('.').reduce((acc, key)=> acc?.[key], state);
-    }
-    function pathSet(path, value){
-      const parts = path.split('.');
-      let cur = state;
-      for(let i=0;i<parts.length-1;i++) cur = cur[parts[i]];
-      cur[parts[parts.length-1]] = value;
-    }
-
-    function bindEditor(){
-      document.querySelectorAll('[data-toggle-section]').forEach(btn=>{
-        btn.onclick = () => {
-          const section = $(btn.dataset.toggleSection);
-          if(!section) return;
-          section.classList.toggle('closed');
-          btn.lastElementChild.textContent = section.classList.contains('closed') ? '▸' : '▾';
-        };
-      });
-
-      document.querySelectorAll('[data-bind]').forEach(el=>{
-        el.oninput = el.onchange = () => {
-          const path = el.dataset.bind;
-          const current = pathGet(path);
-          const next = el.type === 'checkbox' ? !!el.checked : el.value;
-          pathSet(path, typeof current === 'boolean' ? !!next : next);
-          if(path.endsWith('.AutoColumnStart') && next){
-            const base = path.replace('.AutoColumnStart', '.ColumnStart');
-            pathSet(base, '');
-          }
-          if(path === 'general.Version') state.general.Version = cleanEnd(state.general.Version) || '2.7';
-          saveSoon();
-          syncHeader();
-          updatePreview();
-          if(path.includes(`mania.${state.selectedKeys}`) || path.startsWith('general.')) renderEditor();
-        };
-      });
-
-      document.querySelectorAll('[data-color]').forEach(el=>{
-        el.oninput = () => {
-          pathSet(el.dataset.color, hexToRgb(el.value));
-          saveSoon();
-          updatePreview();
-          renderEditor();
-        };
-      });
-
-      document.querySelectorAll('[data-mode-enable]').forEach(el=>{
-        el.onchange = () => {
-          const k = Number(el.dataset.modeEnable);
-          state.enabled[k] = !!el.checked;
-          if(!ALL_KEYS.some(n=>state.enabled[n])) state.enabled[4] = true;
-          if(!state.enabled[state.selectedKeys]) state.selectedKeys = ALL_KEYS.find(n=>state.enabled[n]) || 4;
-          saveSoon();
-          renderEditor();
-        };
-      });
-
-      document.querySelectorAll('[data-mode-select]').forEach(el=>{
-        el.onclick = () => {
-          state.selectedKeys = Number(el.dataset.modeSelect);
-          renderEditor();
-        };
-      });
-
-      $("quickVersion")?.addEventListener('click', ()=>{
-        $("versionPick").value = state.general.Version;
-        $("versionDialog").showModal();
-      });
-    }
-
-    function pushHeader(lines, title){
-      lines.push(...currentStyle().sectionHeader(title));
-    }
-
-    function generateGeneral(lines){
-      lines.push('[General]');
-      addKV(lines, 'Name', state.general.Name);
-      addKV(lines, 'Author', state.general.Author);
-      lines.push(fmtKV('Version', state.general.Version || '2.7'));
-      addKV(lines, 'CursorCentre', bool01(!!state.general.CursorCentre));
-      addKV(lines, 'CursorExpand', bool01(!!state.general.CursorExpand));
-      addKV(lines, 'CursorRotate', bool01(!!state.general.CursorRotate));
-      addKV(lines, 'CursorTrailRotate', bool01(!!state.general.CursorTrailRotate));
-      for(const [key,val] of Object.entries(state.general.extra)) addKV(lines, key, val);
-      lines.push('');
-
-      const fontFields = ['ScorePrefix','ScoreOverlap','ComboPrefix','ComboOverlap'];
-      const hasFonts = fontFields.some(k=>!isBlank(state.general[k])) || Object.keys(state.general.extra).some(k=>k.startsWith('HitCircle'));
-      if(hasFonts){
-        lines.push('[Fonts]');
-        addKV(lines, 'ScorePrefix', state.general.ScorePrefix);
-        addKV(lines, 'ScoreOverlap', state.general.ScoreOverlap);
-        addKV(lines, 'ComboPrefix', state.general.ComboPrefix);
-        addKV(lines, 'ComboOverlap', state.general.ComboOverlap);
-        lines.push('');
-      }
-    }
-
-    function generateMania(lines, keys){
-      const m = state.mania[keys];
-      lines.push('[Mania]');
-      addKV(lines, 'Keys', String(keys));
-      lines.push('');
-      if(state.style !== 'clean') pushHeader(lines, `mania ${keys}k layout`);
-      lines.push(fmtKV('ColumnWidth', normalizeCsv(m.ColumnWidth, keys, Array.from({length:keys}, ()=> '70').join(','))));
-      lines.push(fmtKV('ColumnSpacing', normalizeCsv(m.ColumnSpacing, Math.max(0, keys-1), Array.from({length:Math.max(0, keys-1)}, ()=> '0').join(','))));
-      lines.push(fmtKV('ColumnStart', m.AutoColumnStart ? String(calcAutoColumnStart(keys, m)) : cleanEnd(m.ColumnStart)));
-      addKV(lines, 'ColumnRight', m.ColumnRight);
-      addKV(lines, 'ColumnLineWidth', normalizeCsv(m.ColumnLineWidth, keys + 1, Array.from({length:keys + 1}, ()=> '0').join(',')));
-      lines.push('');
-
-      if(state.style !== 'clean') pushHeader(lines, `mania ${keys}k position`);
-      ['HitPosition','LightPosition','ScorePosition','ComboPosition'].forEach(k => addKV(lines, k, m[k]));
-      lines.push('');
-
-      if(state.style !== 'clean') pushHeader(lines, `mania ${keys}k toggles`);
-      addKV(lines, 'JudgementLine', bool01(!!m.JudgementLine));
-      addKV(lines, 'KeysUnderNotes', bool01(!!m.KeysUnderNotes));
-      addKV(lines, 'UpsideDown', bool01(!!m.UpsideDown));
-      addKV(lines, 'SplitStages', bool01(!!m.SplitStages));
-      addKV(lines, 'SeparateScore', bool01(!!m.SeparateScore));
-      ['BarlineHeight','WidthForNoteHeightScale','LightFramePerSecond','SpecialStyle','ComboBurstStyle','StageSeparation','NoteBodyStyle'].forEach(k=>addKV(lines, k, m[k]));
-      lines.push('');
-
-      if(state.style !== 'clean') pushHeader(lines, `mania ${keys}k stage`);
-      ['StageLeft','StageRight','StageBottom','StageHint','StageLight','LightingNWidth','LightingLWidth','LightingN','LightingL'].forEach(k=>addKV(lines, k, m[k]));
-      lines.push('');
-
-      if(state.style !== 'clean') pushHeader(lines, `mania ${keys}k colors`);
-      for(let i=0;i<keys;i++) addKV(lines, `Colour${i}`, m.Colour[i+1] || '');
-      for(let i=0;i<keys;i++) addKV(lines, `ColourLight${i}`, m.ColourLight[i+1] || '');
-      ['ColourColumnLine','ColourBarline','ColourJudgementLine','ColourKeyWarning','ColourHold','ColourBreak'].forEach(k=>addKV(lines, k, m[k]));
-      lines.push('');
-
-      if(state.style !== 'clean') pushHeader(lines, `mania ${keys}k images`);
-      for(let i=0;i<keys;i++) addKV(lines, `KeyImage${i}`, pat(m.pKey, i+1));
-      for(let i=0;i<keys;i++) addKV(lines, `KeyImage${i}D`, pat(m.pKeyD, i+1));
-      for(let i=0;i<keys;i++) addKV(lines, `NoteImage${i}`, pat(m.pNote, i+1));
-      for(let i=0;i<keys;i++) addKV(lines, `NoteImage${i}H`, pat(m.pNoteH, i+1));
-      for(let i=0;i<keys;i++) addKV(lines, `NoteImage${i}L`, pat(m.pNoteL, i+1));
-      for(let i=0;i<keys;i++) addKV(lines, `NoteImage${i}T`, pat(m.pNoteT, i+1));
-      addKV(lines, 'WarningArrow', m.WarningArrow);
-      lines.push('');
-
-      if(state.style !== 'clean') pushHeader(lines, `mania ${keys}k flip`);
-      addKV(lines, 'KeyFlipWhenUpsideDown', bool01(!!m.flipKeyAll));
-      addKV(lines, 'NoteFlipWhenUpsideDown', bool01(!!m.flipNoteAll));
-      for(let i=0;i<keys;i++) addKV(lines, `KeyFlipWhenUpsideDown${i}`, bool01(!!m.keyFlip[i]));
-      for(let i=0;i<keys;i++) addKV(lines, `KeyFlipWhenUpsideDown${i}D`, bool01(!!m.keyFlipD[i]));
-      for(let i=0;i<keys;i++) addKV(lines, `NoteFlipWhenUpsideDown${i}`, bool01(!!m.noteFlip[i]));
-      for(let i=0;i<keys;i++) addKV(lines, `NoteFlipWhenUpsideDown${i}H`, bool01(!!m.noteFlipH[i]));
-      for(let i=0;i<keys;i++) addKV(lines, `NoteFlipWhenUpsideDown${i}L`, bool01(!!m.noteFlipL[i]));
-      for(let i=0;i<keys;i++) addKV(lines, `NoteFlipWhenUpsideDown${i}T`, bool01(!!m.noteFlipT[i]));
-      lines.push('');
-
-      if(state.style !== 'clean') pushHeader(lines, `mania ${keys}k hits`);
-      ['Hit0','Hit50','Hit100','Hit200','Hit300','Hit300g'].forEach(k=>addKV(lines, k, m[k]));
-      for(const [key,val] of Object.entries(m.extra)) addKV(lines, key, val);
-      lines.push('');
-    }
-
-    function genIni(){
-      const lines = [];
-      generateGeneral(lines);
-      for(const keys of ALL_KEYS) if(state.enabled[keys]) generateMania(lines, keys);
-      while(lines.length && lines[lines.length - 1] === '') lines.pop();
-      return lines.join('\n');
-    }
-
-    function parseIni(text){
-      const lines = String(text || '').split(/\n/);
-      const parsed = { general:{}, fonts:{}, mania:[], commentsStyle:'clean' };
-      let section = '';
-      let currentMania = null;
-
-      for(const rawLine of lines){
-        const line = rawLine.replace(/\r/g, '');
-        const trimmed = line.trim();
-        if(!trimmed) continue;
-        if(trimmed.startsWith('//')){ if(trimmed.includes('-=-')) parsed.commentsStyle = 'parser'; else parsed.commentsStyle = 'clean'; continue; }
-        if(trimmed.startsWith(';')){ parsed.commentsStyle = 'boxed'; continue; }
-        const sec = trimmed.match(/^\[(.+?)\]$/);
-        if(sec){
-          section = sec[1];
-          currentMania = section.toLowerCase() === 'mania' ? { kv:{}, extra:{} } : null;
-          if(currentMania) parsed.mania.push(currentMania);
-          continue;
-        }
-        const kv = trimmed.match(/^([A-Za-z0-9]+)\s*[:=]\s*(.*)$/);
-        if(!kv) continue;
-        const key = kv[1];
-        const val = kv[2].trim().replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1');
-        const secLower = section.toLowerCase();
-        if(secLower === 'general') parsed.general[key] = val;
-        else if(secLower === 'fonts') parsed.fonts[key] = val;
-        else if(secLower === 'mania' && currentMania){
-          currentMania.kv[key] = val;
-          if(key === 'Keys') currentMania.Keys = Number(val);
-        }
-      }
-      return parsed;
-    }
-
-    function applyParsed(parsed){
-      state.style = parsed.commentsStyle || 'clean';
-      state.general = defaultGeneral();
-      for(const k of ALL_KEYS){ state.enabled[k] = false; state.mania[k] = defaultMania(k); }
-
-      for(const [key,val] of Object.entries(parsed.general)){
-        if(key in state.general) state.general[key] = typeof state.general[key] === 'boolean' ? val === '1' : val;
-        else state.general.extra[key] = val;
-      }
-      for(const [key,val] of Object.entries(parsed.fonts)){
-        if(key in state.general) state.general[key] = val;
-        else state.general.extra[key] = val;
-      }
-
-      for(const block of parsed.mania){
-        const keys = Number(block.Keys);
-        if(!Number.isFinite(keys) || keys < 1 || keys > 18) continue;
-        state.enabled[keys] = true;
-        const m = defaultMania(keys);
-        const kv = block.kv;
-        for(const [key,val] of Object.entries(kv)){
-          if(key in m){
-            if(typeof m[key] === 'boolean') m[key] = val === '1';
-            else m[key] = val;
-            continue;
-          }
-          if(/^Colour\d+$/.test(key)){
-            const idx = Number(key.replace('Colour',''));
-            m.Colour[idx + 1] = val;
-            continue;
-          }
-          if(/^ColourLight\d+$/.test(key)){
-            const idx = Number(key.replace('ColourLight',''));
-            m.ColourLight[idx + 1] = val;
-            continue;
-          }
-          if(/^KeyFlipWhenUpsideDown\d+D$/.test(key)){
-            const idx = Number(key.match(/\d+/)[0]);
-            m.keyFlipD[idx] = val === '1';
-            continue;
-          }
-          if(/^KeyFlipWhenUpsideDown\d+$/.test(key)){
-            const idx = Number(key.match(/\d+/)[0]);
-            m.keyFlip[idx] = val === '1';
-            continue;
-          }
-          if(/^NoteFlipWhenUpsideDown\d+H$/.test(key)){
-            const idx = Number(key.match(/\d+/)[0]);
-            m.noteFlipH[idx] = val === '1';
-            continue;
-          }
-          if(/^NoteFlipWhenUpsideDown\d+L$/.test(key)){
-            const idx = Number(key.match(/\d+/)[0]);
-            m.noteFlipL[idx] = val === '1';
-            continue;
-          }
-          if(/^NoteFlipWhenUpsideDown\d+T$/.test(key)){
-            const idx = Number(key.match(/\d+/)[0]);
-            m.noteFlipT[idx] = val === '1';
-            continue;
-          }
-          if(/^NoteFlipWhenUpsideDown\d+$/.test(key)){
-            const idx = Number(key.match(/\d+/)[0]);
-            m.noteFlip[idx] = val === '1';
-            continue;
-          }
-          if(key === 'KeyFlipWhenUpsideDown'){ m.flipKeyAll = val === '1'; continue; }
-          if(key === 'NoteFlipWhenUpsideDown'){ m.flipNoteAll = val === '1'; continue; }
-          m.extra[key] = val;
-        }
-
-        m.pKey = inferFromKV(kv, 'KeyImage', keys, '');
-        m.pKeyD = inferFromKV(kv, 'KeyImage', keys, 'D');
-        m.pNote = inferFromKV(kv, 'NoteImage', keys, '');
-        m.pNoteH = inferFromKV(kv, 'NoteImage', keys, 'H');
-        m.pNoteL = inferFromKV(kv, 'NoteImage', keys, 'L');
-        m.pNoteT = inferFromKV(kv, 'NoteImage', keys, 'T');
-        m.AutoColumnStart = isBlank(m.ColumnStart);
-        state.mania[keys] = m;
-      }
-
-      if(!ALL_KEYS.some(k=>state.enabled[k])) state.enabled[4] = true;
-      state.selectedKeys = ALL_KEYS.find(k=>state.enabled[k]) || 4;
-      if(isBlank(state.general.Version)) state.general.Version = '2.7';
+function bindPageButtons(){
+  document.querySelectorAll("[data-page]").forEach(btn=>{
+    btn.onclick = ()=>{
+      state.page = btn.dataset.page;
+      renderAll();
       saveSoon();
-      renderEditor();
-    }
-
-    function runDiagnostics(){
-      const messages = [];
-      const versionNum = state.general.Version === 'latest' ? 99 : Number(state.general.Version || 0);
-      const uses25 = ALL_KEYS.some(keys=>{
-        if(!state.enabled[keys]) return false;
-        const m = state.mania[keys];
-        return [m.StageLeft,m.StageRight,m.StageBottom,m.StageHint,m.StageLight,m.LightingN,m.LightingL,m.LightFramePerSecond,m.flipKeyAll,m.flipNoteAll].some(v=> (typeof v === 'boolean' ? v : !isBlank(v)))
-          || Object.keys(m.keyFlip).length || Object.keys(m.keyFlipD).length || Object.keys(m.noteFlip).length || Object.keys(m.noteFlipH).length || Object.keys(m.noteFlipL).length || Object.keys(m.noteFlipT).length;
-      });
-      if(uses25 && versionNum < 2.5) messages.push({type:'warn', title:'Version baixa para recursos de mania', text:'A wiki indica que a personalização completa de osu!mania e flips depende de v2.5+.'});
-      if(state.general.Version === 'latest') messages.push({type:'warn', title:'Version: latest', text:'Funciona, mas não é a melhor opção para distribuir skins; prefira uma versão fixa.'});
-      for(const keys of ALL_KEYS){
-        if(!state.enabled[keys]) continue;
-        const m = state.mania[keys];
-        if(m.AutoColumnStart) messages.push({type:'ok', title:`${keys}K usa Auto ColumnStart`, text:`Valor calculado atual: ${calcAutoColumnStart(keys, m)}`});
-        if(Object.keys(m.extra).length) messages.push({type:'ok', title:`${keys}K preserva chaves extras`, text:Object.keys(m.extra).join(', ')});
+    };
+  });
+}
+function bindModeButtons(){
+  document.querySelectorAll("[data-mode-enable]").forEach(chk=>{
+    chk.onchange = ()=>{
+      const k = Number(chk.dataset.modeEnable);
+      state.enabled[k] = !!chk.checked;
+      if(!ALL_KEYS.some(x=>state.enabled[x])){
+        state.enabled[4] = true;
       }
-      if(!messages.length) messages.push({type:'ok', title:'Sem alertas críticos', text:'O arquivo parece consistente para exportação.'});
-      $("diagnostics").innerHTML = messages.map(msg => `<div class="diagItem"><b>${escapeHtml(msg.title)}</b><br><span>${escapeHtml(msg.text)}</span></div>`).join('');
-    }
-
-    function updatePreview(){
-      const text = genIni();
-      $("preview").value = text;
-      $("previewMeta").textContent = `${text.split(/\n/).length} linhas`;
-      runDiagnostics();
-    }
-
-    function saveState(){
-      try{
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        $("saveState").textContent = 'autosave: saved';
-        setTimeout(()=> $("saveState").textContent = 'autosave: idle', 900);
-      }catch(err){
-        $("saveState").textContent = 'autosave: error';
+      if(!state.enabled[state.selectedKeys]){
+        state.selectedKeys = ALL_KEYS.find(x=>state.enabled[x]) || 4;
       }
-    }
-    const saveSoon = debounce(saveState, 250);
-
-    function loadState(){
-      try{
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if(!raw) return;
-        const data = JSON.parse(raw);
-        if(!data) return;
-        Object.assign(state, data);
-        state.general = {...defaultGeneral(), ...(data.general || {})};
-        for(const k of ALL_KEYS) state.mania[k] = {...defaultMania(k), ...(data.mania?.[k] || {})};
-      }catch(err){}
-    }
-
-    function downloadIni(){
-      const blob = new Blob([genIni()], {type:'text/plain;charset=utf-8'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'skin.ini';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    }
-
-    async function copyIni(){
-      await navigator.clipboard.writeText(genIni());
-      $("saveState").textContent = 'autosave: copied';
-      setTimeout(()=> $("saveState").textContent = 'autosave: idle', 900);
-    }
-
-    function resetAll(){
-      if(!confirm('resetar editor e apagar autosave?')) return;
-      localStorage.removeItem(STORAGE_KEY);
-      location.reload();
-    }
-
-    function setTab(tab){
-      state.uiTab = tab;
-      $("tabEditor").classList.toggle('active', tab === 'editor');
-      $("tabImport").classList.toggle('active', tab === 'import');
-      $("tabAbout").classList.toggle('active', tab === 'about');
-      if(tab === 'import') $("importDialog").showModal();
-      if(tab === 'about'){
-        $("diagnostics").innerHTML = `
-          <div class="diagItem"><b>Import mais robusto</b><br><span>Aceita linhas com : ou =.</span></div>
-          <div class="diagItem"><b>Preservação de extras</b><br><span>Chaves fora da UI continuam guardadas na seção correta.</span></div>
-          <div class="diagItem"><b>Mania expandido</b><br><span>Inclui campos extras como SplitStages, SeparateScore, LightFramePerSecond, NoteBodyStyle e flips por coluna.</span></div>
-        `;
-      } else runDiagnostics();
-    }
-
-    function initClock(){
-      const format = new Intl.DateTimeFormat('pt-BR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-      const formatDate = new Intl.DateTimeFormat('pt-BR', { weekday:'long', year:'numeric', month:'2-digit', day:'2-digit' });
-      const tick = ()=>{
-        const now = new Date();
-        $("clockText").textContent = format.format(now);
-        $("clockDate").textContent = formatDate.format(now);
-      };
-      tick();
-      setInterval(tick, 1000);
-    }
-
-    function initRain(){
-      const canvas = $("rainCanvas");
-      const ctx = canvas.getContext('2d');
-      let drops = [];
-      let raf = 0;
-
-      function resize(){
-        canvas.width = innerWidth * devicePixelRatio;
-        canvas.height = innerHeight * devicePixelRatio;
-        canvas.style.width = innerWidth + 'px';
-        canvas.style.height = innerHeight + 'px';
-        ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
-        drops = Array.from({length: Math.floor(innerWidth / 18)}, ()=>( {
-          x: Math.random() * innerWidth,
-          y: Math.random() * innerHeight,
-          len: 10 + Math.random() * 18,
-          speed: 3 + Math.random() * 5,
-          alpha: .08 + Math.random() * .18
-        }));
-      }
-
-      function frame(){
-        ctx.clearRect(0,0,innerWidth,innerHeight);
-        if(state.rain){
-          for(const d of drops){
-            ctx.strokeStyle = `rgba(255,255,255,${d.alpha})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(d.x, d.y);
-            ctx.lineTo(d.x - 3, d.y + d.len);
-            ctx.stroke();
-            d.y += d.speed;
-            d.x -= .5;
-            if(d.y > innerHeight + 20 || d.x < -20){
-              d.x = Math.random() * innerWidth + 20;
-              d.y = -20;
-            }
-          }
+      renderAll();
+      saveSoon();
+    };
+  });
+  document.querySelectorAll("[data-mode-select]").forEach(btn=>{
+    btn.onclick = ()=>{
+      state.selectedKeys = Number(btn.dataset.modeSelect);
+      renderAll();
+      saveSoon();
+    };
+  });
+}
+function extraToText(extra){
+  return Object.entries(extra).map(([k,v])=>`${k}: ${v}`).join("\\n");
+}
+function textToExtra(raw){
+  const extra = {};
+  String(raw || "").split(/\\n/).forEach(line=>{
+    const trimmed = line.trim();
+    if(!trimmed) return;
+    const m = trimmed.match(/^([A-Za-z0-9]+)\\s*:\\s*(.*)$/);
+    if(!m) return;
+    extra[m[1]] = m[2].trim();
+  });
+  return extra;
+}
+function bindInputs(){
+  const m = state.mania[state.selectedKeys];
+  m.extraText = extraToText(m.extra || {});
+  document.querySelectorAll("[data-bind]").forEach(el=>{
+    const path = el.dataset.bind;
+    el.oninput = el.onchange = ()=>{
+      let value = el.type === "checkbox" ? !!el.checked : el.value;
+      if(path.endsWith(".extraText")){
+        const base = path.replace(".extraText","");
+        pathSet(base + ".extra", textToExtra(value));
+      }else{
+        const current = pathGet(path);
+        if(typeof current === "boolean") value = !!value;
+        pathSet(path, value);
+        if(path.endsWith(".AutoColumnStart") && value){
+          pathSet(path.replace(".AutoColumnStart",".ColumnStart"), "");
         }
-        raf = requestAnimationFrame(frame);
       }
-
-      resize();
-      addEventListener('resize', resize);
-      frame();
-      return ()=> cancelAnimationFrame(raf);
+      updatePreview();
+      saveSoon();
+    };
+  });
+  document.querySelectorAll("[data-colour]").forEach(el=>{
+    el.oninput = ()=>{
+      pathSet(el.dataset.colour, hexToRgb(el.value));
+      updatePreview();
+      saveSoon();
+      renderPage();
+    };
+  });
+}
+function parseIni(text){
+  const parsed = { general:{}, fonts:{}, mania:[] };
+  let section = "";
+  let current = null;
+  String(text || "").split(/\\n/).forEach(raw=>{
+    const line = raw.replace(/\\r/g,"");
+    const trimmed = line.trim();
+    if(!trimmed) return;
+    if(trimmed.startsWith("//") || trimmed.startsWith(";")) return;
+    const sec = trimmed.match(/^\\[(.+?)\\]$/);
+    if(sec){
+      section = sec[1].toLowerCase();
+      current = section === "mania" ? { kv:{} } : null;
+      if(current) parsed.mania.push(current);
+      return;
     }
-
-    function wireGlobal(){
-      $("refreshPreview").onclick = updatePreview;
-      $("downloadIni").onclick = downloadIni;
-      $("copyIni").onclick = ()=> copyIni().catch(()=>{});
-      $("selectAll").onclick = ()=>{ $("preview").focus(); $("preview").select(); };
-      $("runChecks").onclick = runDiagnostics;
-      $("resetAll").onclick = resetAll;
-      $("toggleCommentEmpty").onclick = ()=>{ state.commentEmpty = !state.commentEmpty; renderEditor(); saveSoon(); };
-      $("rainToggle").onclick = $("toggleRainButton").onclick = ()=>{ state.rain = !state.rain; syncHeader(); saveSoon(); };
-      $("openImport").onclick = ()=>{ $("importArea").value = genIni(); $("importDialog").showModal(); setTab('import'); };
-      $("closeImport").onclick = ()=> $("importDialog").close();
-      $("applyImport").onclick = ()=>{ applyParsed(parseIni($("importArea").value)); $("importDialog").close(); setTab('editor'); };
-      $("openVersion").onclick = ()=>{ $("versionPick").value = state.general.Version; $("versionDialog").showModal(); };
-      $("closeVersion").onclick = ()=> $("versionDialog").close();
-      $("versionPick").onchange = ()=>{ state.general.Version = $("versionPick").value; $("versionDialog").close(); renderEditor(); saveSoon(); };
-      $("tabEditor").onclick = ()=> setTab('editor');
-      $("tabImport").onclick = ()=> { $("importArea").value = genIni(); setTab('import'); };
-      $("tabAbout").onclick = ()=> setTab('about');
-      document.querySelectorAll('[data-focus]').forEach(btn=> btn.onclick = ()=> $(btn.dataset.focus)?.scrollIntoView({behavior:'smooth', block:'start'}));
-      addEventListener('keydown', (e)=>{
-        if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's'){
-          e.preventDefault();
-          downloadIni();
-        }
-      });
+    const kv = trimmed.match(/^([A-Za-z0-9]+)\\s*:\\s*(.*)$/);
+    if(!kv) return;
+    const key = kv[1];
+    const val = kv[2].trim().replace(/^"(.*)"$/,"$1").replace(/^'(.*)'$/,"$1");
+    if(section === "general") parsed.general[key] = val;
+    else if(section === "fonts") parsed.fonts[key] = val;
+    else if(section === "mania" && current){
+      current.kv[key] = val;
+      if(key === "Keys") current.Keys = Number(val);
     }
+  });
+  return parsed;
+}
+function applyParsed(parsed){
+  state.general = defaultGeneral();
+  state.enabled = Object.fromEntries(ALL_KEYS.map(k=>[k,false]));
+  state.mania = Object.fromEntries(ALL_KEYS.map(k=>[k, defaultMania(k)]));
+  for(const [k,v] of Object.entries(parsed.general)){
+    if(k in state.general){
+      state.general[k] = typeof state.general[k] === "boolean" ? v === "1" : v;
+    }else{
+      state.general.extra[k] = v;
+    }
+  }
+  for(const [k,v] of Object.entries(parsed.fonts)){
+    if(k in state.general) state.general[k] = v;
+    else state.general.extra[k] = v;
+  }
+  for(const block of parsed.mania){
+    const keys = Number(block.Keys);
+    if(!Number.isFinite(keys) || keys < 1 || keys > 18) continue;
+    state.enabled[keys] = true;
+    const m = defaultMania(keys);
+    const kv = block.kv;
+    for(const [k,v] of Object.entries(kv)){
+      if(k in m){
+        m[k] = typeof m[k] === "boolean" ? v === "1" : v;
+        continue;
+      }
+      if(/^Colour\\d+$/.test(k)){
+        const idx = Number(k.replace("Colour",""));
+        m.Colour[idx+1] = v;
+        continue;
+      }
+      if(/^ColourLight\\d+$/.test(k)){
+        const idx = Number(k.replace("ColourLight",""));
+        m.ColourLight[idx+1] = v;
+        continue;
+      }
+      if(/^KeyFlipWhenUpsideDown\\d+D$/.test(k)){
+        const idx = Number(k.match(/\\d+/)[0]);
+        m.keyFlipD[idx] = v === "1";
+        continue;
+      }
+      if(/^KeyFlipWhenUpsideDown\\d+$/.test(k)){
+        const idx = Number(k.match(/\\d+/)[0]);
+        m.keyFlip[idx] = v === "1";
+        continue;
+      }
+      if(/^NoteFlipWhenUpsideDown\\d+H$/.test(k)){
+        const idx = Number(k.match(/\\d+/)[0]);
+        m.noteFlipH[idx] = v === "1";
+        continue;
+      }
+      if(/^NoteFlipWhenUpsideDown\\d+L$/.test(k)){
+        const idx = Number(k.match(/\\d+/)[0]);
+        m.noteFlipL[idx] = v === "1";
+        continue;
+      }
+      if(/^NoteFlipWhenUpsideDown\\d+T$/.test(k)){
+        const idx = Number(k.match(/\\d+/)[0]);
+        m.noteFlipT[idx] = v === "1";
+        continue;
+      }
+      if(/^NoteFlipWhenUpsideDown\\d+$/.test(k)){
+        const idx = Number(k.match(/\\d+/)[0]);
+        m.noteFlip[idx] = v === "1";
+        continue;
+      }
+      if(k === "KeyFlipWhenUpsideDown"){ m.flipKeyAll = v === "1"; continue; }
+      if(k === "NoteFlipWhenUpsideDown"){ m.flipNoteAll = v === "1"; continue; }
+      m.extra[k] = v;
+    }
+    m.pKey = inferBy(kv, "KeyImage", keys, "");
+    m.pKeyD = inferBy(kv, "KeyImage", keys, "D");
+    m.pNote = inferBy(kv, "NoteImage", keys, "");
+    m.pNoteH = inferBy(kv, "NoteImage", keys, "H");
+    m.pNoteL = inferBy(kv, "NoteImage", keys, "L");
+    m.pNoteT = inferBy(kv, "NoteImage", keys, "T");
+    m.AutoColumnStart = blank(m.ColumnStart);
+    state.mania[keys] = m;
+  }
+  if(!ALL_KEYS.some(k=>state.enabled[k])) state.enabled[4] = true;
+  state.selectedKeys = ALL_KEYS.find(k=>state.enabled[k]) || 4;
+  if(blank(state.general.Version)) state.general.Version = "2.7";
+  renderAll();
+  saveSoon();
+}
+function addKV(lines, key, value){
+  const s = cleanEnd(value);
+  if(!blank(s)) lines.push(`${key}: ${s}`);
+}
+function generateGeneral(lines){
+  lines.push("[General]");
+  addKV(lines, "Name", state.general.Name);
+  addKV(lines, "Author", state.general.Author);
+  lines.push(`Version: ${cleanEnd(state.general.Version) || "2.7"}`);
+  lines.push(`CursorCentre: ${bool01(!!state.general.CursorCentre)}`);
+  lines.push(`CursorExpand: ${bool01(!!state.general.CursorExpand)}`);
+  lines.push(`CursorRotate: ${bool01(!!state.general.CursorRotate)}`);
+  lines.push(`CursorTrailRotate: ${bool01(!!state.general.CursorTrailRotate)}`);
+  Object.entries(state.general.extra).forEach(([k,v])=>addKV(lines,k,v));
+  lines.push("");
+  const fontUsed = !blank(state.general.ScorePrefix) || !blank(state.general.ScoreOverlap) || !blank(state.general.ComboPrefix) || !blank(state.general.ComboOverlap);
+  if(fontUsed){
+    lines.push("[Fonts]");
+    addKV(lines, "ScorePrefix", state.general.ScorePrefix);
+    addKV(lines, "ScoreOverlap", state.general.ScoreOverlap);
+    addKV(lines, "ComboPrefix", state.general.ComboPrefix);
+    addKV(lines, "ComboOverlap", state.general.ComboOverlap);
+    lines.push("");
+  }
+}
+function generateMania(lines, keys){
+  const m = state.mania[keys];
+  lines.push("[Mania]");
+  lines.push(`Keys: ${keys}`);
+  lines.push(`ColumnWidth: ${padCsv(m.ColumnWidth, keys, Array.from({length:keys}, ()=>"70").join(","))}`);
+  lines.push(`ColumnSpacing: ${padCsv(m.ColumnSpacing, Math.max(0, keys-1), Array.from({length:Math.max(0,keys-1)}, ()=>"0").join(","))}`);
+  lines.push(`ColumnStart: ${m.AutoColumnStart ? calcAutoColumnStart(keys, m) : cleanEnd(m.ColumnStart)}`);
+  addKV(lines, "ColumnRight", m.ColumnRight);
+  addKV(lines, "ColumnLineWidth", padCsv(m.ColumnLineWidth, keys+1, Array.from({length:keys+1}, ()=>"0").join(",")));
+  addKV(lines, "HitPosition", m.HitPosition);
+  addKV(lines, "LightPosition", m.LightPosition);
+  addKV(lines, "ScorePosition", m.ScorePosition);
+  addKV(lines, "ComboPosition", m.ComboPosition);
+  lines.push(`JudgementLine: ${bool01(!!m.JudgementLine)}`);
+  lines.push(`KeysUnderNotes: ${bool01(!!m.KeysUnderNotes)}`);
+  lines.push(`UpsideDown: ${bool01(!!m.UpsideDown)}`);
+  addKV(lines, "BarlineHeight", m.BarlineHeight);
+  addKV(lines, "WidthForNoteHeightScale", m.WidthForNoteHeightScale);
+  addKV(lines, "LightFramePerSecond", m.LightFramePerSecond);
+  addKV(lines, "SpecialStyle", m.SpecialStyle);
+  addKV(lines, "ComboBurstStyle", m.ComboBurstStyle);
+  lines.push(`SplitStages: ${bool01(!!m.SplitStages)}`);
+  addKV(lines, "StageSeparation", m.StageSeparation);
+  lines.push(`SeparateScore: ${bool01(!!m.SeparateScore)}`);
+  addKV(lines, "NoteBodyStyle", m.NoteBodyStyle);
+  addKV(lines, "StageLeft", m.StageLeft);
+  addKV(lines, "StageRight", m.StageRight);
+  addKV(lines, "StageBottom", m.StageBottom);
+  addKV(lines, "StageHint", m.StageHint);
+  addKV(lines, "StageLight", m.StageLight);
+  addKV(lines, "LightingNWidth", m.LightingNWidth);
+  addKV(lines, "LightingLWidth", m.LightingLWidth);
+  addKV(lines, "LightingN", m.LightingN);
+  addKV(lines, "LightingL", m.LightingL);
+  for(let i=0;i<keys;i++) addKV(lines, `Colour${i}`, m.Colour[i+1] || "");
+  for(let i=0;i<keys;i++) addKV(lines, `ColourLight${i}`, m.ColourLight[i+1] || "");
+  addKV(lines, "ColourColumnLine", m.ColourColumnLine);
+  addKV(lines, "ColourBarline", m.ColourBarline);
+  addKV(lines, "ColourJudgementLine", m.ColourJudgementLine);
+  addKV(lines, "ColourKeyWarning", m.ColourKeyWarning);
+  addKV(lines, "ColourHold", m.ColourHold);
+  addKV(lines, "ColourBreak", m.ColourBreak);
+  for(let i=0;i<keys;i++) addKV(lines, `KeyImage${i}`, pattern(m.pKey, i+1));
+  for(let i=0;i<keys;i++) addKV(lines, `KeyImage${i}D`, pattern(m.pKeyD, i+1));
+  for(let i=0;i<keys;i++) addKV(lines, `NoteImage${i}`, pattern(m.pNote, i+1));
+  for(let i=0;i<keys;i++) addKV(lines, `NoteImage${i}H`, pattern(m.pNoteH, i+1));
+  for(let i=0;i<keys;i++) addKV(lines, `NoteImage${i}L`, pattern(m.pNoteL, i+1));
+  for(let i=0;i<keys;i++) addKV(lines, `NoteImage${i}T`, pattern(m.pNoteT, i+1));
+  addKV(lines, "WarningArrow", m.WarningArrow);
+  addKV(lines, "Hit0", m.Hit0);
+  addKV(lines, "Hit50", m.Hit50);
+  addKV(lines, "Hit100", m.Hit100);
+  addKV(lines, "Hit200", m.Hit200);
+  addKV(lines, "Hit300", m.Hit300);
+  addKV(lines, "Hit300g", m.Hit300g);
+  lines.push(`KeyFlipWhenUpsideDown: ${bool01(!!m.flipKeyAll)}`);
+  lines.push(`NoteFlipWhenUpsideDown: ${bool01(!!m.flipNoteAll)}`);
+  for(let i=0;i<keys;i++) addKV(lines, `KeyFlipWhenUpsideDown${i}`, bool01(!!m.keyFlip[i]));
+  for(let i=0;i<keys;i++) addKV(lines, `KeyFlipWhenUpsideDown${i}D`, bool01(!!m.keyFlipD[i]));
+  for(let i=0;i<keys;i++) addKV(lines, `NoteFlipWhenUpsideDown${i}`, bool01(!!m.noteFlip[i]));
+  for(let i=0;i<keys;i++) addKV(lines, `NoteFlipWhenUpsideDown${i}H`, bool01(!!m.noteFlipH[i]));
+  for(let i=0;i<keys;i++) addKV(lines, `NoteFlipWhenUpsideDown${i}L`, bool01(!!m.noteFlipL[i]));
+  for(let i=0;i<keys;i++) addKV(lines, `NoteFlipWhenUpsideDown${i}T`, bool01(!!m.noteFlipT[i]));
+  Object.entries(m.extra).forEach(([k,v])=>addKV(lines,k,v));
+  lines.push("");
+}
+function genIni(){
+  const lines = [];
+  generateGeneral(lines);
+  ALL_KEYS.forEach(k=>{
+    if(state.enabled[k]) generateMania(lines, k);
+  });
+  while(lines.length && lines[lines.length-1]==="") lines.pop();
+  return lines.join("\\n");
+}
+function diagnostics(){
+  const out = [];
+  const version = state.general.Version === "latest" ? 99 : Number(state.general.Version || 0);
+  if(state.general.Version === "latest"){
+    out.push({type:"warn", title:"Version latest", text:"Use a fixed version when distributing a skin."});
+  }
+  ALL_KEYS.forEach(k=>{
+    if(!state.enabled[k]) return;
+    const m = state.mania[k];
+    const usesAdvanced = [
+      m.StageLeft,m.StageRight,m.StageBottom,m.StageHint,m.StageLight,m.LightingN,m.LightingL,
+      m.LightFramePerSecond,m.flipKeyAll,m.flipNoteAll
+    ].some(v=>typeof v === "boolean" ? v : !blank(v))
+    || Object.keys(m.keyFlip).length || Object.keys(m.keyFlipD).length || Object.keys(m.noteFlip).length || Object.keys(m.noteFlipH).length || Object.keys(m.noteFlipL).length || Object.keys(m.noteFlipT).length;
+    if(usesAdvanced && version < 2.5){
+      out.push({type:"bad", title:`${k}K advanced on low version`, text:"Use 2.5 or newer for advanced mania options."});
+    }
+    if(m.AutoColumnStart){
+      out.push({type:"good", title:`${k}K auto ColumnStart`, text:`Current value: ${calcAutoColumnStart(k, m)}`});
+    }
+    if(Object.keys(m.extra).length){
+      out.push({type:"good", title:`${k}K extra commands preserved`, text:Object.keys(m.extra).join(", ")});
+    }
+  });
+  if(!out.length){
+    out.push({type:"good", title:"No critical warnings", text:"Preview looks internally consistent."});
+  }
+  return out;
+}
+function updatePreview(){
+  const text = genIni();
+  $("previewArea").value = text;
+  $("lineCount").textContent = `${text.split(/\\n/).length} lines`;
+  $("diagList").innerHTML = diagnostics().map(d=>`
+    <div class="diag ${d.type}">
+      <b>${d.title}</b>
+      <div>${d.text}</div>
+    </div>
+  `).join("");
+}
+function applySearchFilter(){
+  const q = clean($("searchBox").value).toLowerCase();
+  document.querySelectorAll("[data-search-scope]").forEach(el=>{
+    const hay = (el.dataset.searchScope || "").toLowerCase();
+    el.classList.toggle("hidden", !!q && !hay.includes(q));
+  });
+  document.querySelectorAll("[data-command-search]").forEach(el=>{
+    const hay = (el.dataset.commandSearch || "").toLowerCase();
+    el.classList.toggle("hidden", !!q && !hay.includes(q));
+  });
+}
+function saveState(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    $("savePill").textContent = "saved";
+  }catch(err){
+    $("savePill").textContent = "save error";
+  }
+}
+const saveSoon = debounce(saveState, 220);
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const parsed = JSON.parse(raw);
+    state.page = parsed.page || state.page;
+    state.selectedKeys = parsed.selectedKeys || state.selectedKeys;
+    state.enabled = parsed.enabled || state.enabled;
+    state.general = { ...defaultGeneral(), ...(parsed.general || {}) };
+    state.mania = Object.fromEntries(ALL_KEYS.map(k=>[k, { ...defaultMania(k), ...(parsed.mania?.[k] || {}) }]));
+  }catch(err){}
+}
+async function copyPreview(){
+  try{
+    await navigator.clipboard.writeText(genIni());
+    $("savePill").textContent = "copied";
+    setTimeout(()=>{$("savePill").textContent="saved";}, 700);
+  }catch(err){
+    $("savePill").textContent = "copy error";
+  }
+}
+function downloadIni(){
+  const blob = new Blob([genIni()], { type:"text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "skin.ini";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+function resetApp(){
+  if(!confirm("Reset editor and clear autosave?")) return;
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
+function wireStatic(){
+  $("searchBox").addEventListener("input", applySearchFilter);
+  $("browserTabs").addEventListener("click", (e)=>{
+    const btn = e.target.closest("[data-page]");
+    if(!btn) return;
+    state.page = btn.dataset.page;
+    renderAll();
+    saveSoon();
+  });
+  $("navList").addEventListener("click", (e)=>{
+    const btn = e.target.closest("[data-page]");
+    if(!btn) return;
+    state.page = btn.dataset.page;
+    renderAll();
+    saveSoon();
+  });
+  $("modeGrid").addEventListener("click", (e)=>{
+    const btn = e.target.closest("[data-mode-select]");
+    if(!btn) return;
+    state.selectedKeys = Number(btn.dataset.modeSelect);
+    renderAll();
+    saveSoon();
+  });
+  $("modeGrid").addEventListener("change", (e)=>{
+    const chk = e.target.closest("[data-mode-enable]");
+    if(!chk) return;
+    const k = Number(chk.dataset.modeEnable);
+    state.enabled[k] = !!chk.checked;
+    if(!ALL_KEYS.some(x=>state.enabled[x])) state.enabled[4] = true;
+    if(!state.enabled[state.selectedKeys]) state.selectedKeys = ALL_KEYS.find(x=>state.enabled[x]) || 4;
+    renderAll();
+    saveSoon();
+  });
+  $("copyBtn").onclick = copyPreview;
+  $("downloadBtn").onclick = downloadIni;
+  $("refreshBtn").onclick = updatePreview;
+  $("resetBtn").onclick = resetApp;
+  $("selectBtn").onclick = ()=>{
+    $("previewArea").focus();
+    $("previewArea").select();
+  };
+  $("openImportBtn").onclick = ()=>{
+    $("importArea").value = genIni();
+    $("importDialog").showModal();
+  };
+  $("closeImportBtn").onclick = ()=> $("importDialog").close();
+  $("applyImportBtn").onclick = ()=>{
+    applyParsed(parseIni($("importArea").value));
+    $("importDialog").close();
+  };
+  $("importStrictBtn").onclick = ()=>{
+    $("importArea").value = "";
+    $("importDialog").showModal();
+  };
+  addEventListener("keydown", (e)=>{
+    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s"){
+      e.preventDefault();
+      downloadIni();
+    }
+  });
+}
+loadState();
+wireStatic();
+renderAll();
 
-    function initIntro(){ setTimeout(()=> $("intro").classList.add('hide'), 900); }
+</script>
 
-    loadState();
-    initClock();
-    initRain();
-    wireGlobal();
-    renderEditor();
-    initIntro();
-  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </body>
 </html>
