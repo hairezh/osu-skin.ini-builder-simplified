@@ -1,353 +1,339 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>skin.ini browser editor</title>
-<style>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>skin.ini studio</title>
+  <style>
 :root{
   --bg:#0b0c0f;
   --bg2:#11131a;
   --panel:rgba(255,255,255,.05);
-  --panel-2:rgba(255,255,255,.03);
-  --panel-3:rgba(255,255,255,.02);
+  --panel2:rgba(255,255,255,.03);
+  --panel3:rgba(255,255,255,.02);
   --border:rgba(255,255,255,.12);
-  --border-2:rgba(255,255,255,.20);
-  --text:#e8e8e8;
-  --muted:rgba(232,232,232,.62);
-  --muted-2:rgba(232,232,232,.40);
-  --accent:#cdd7ff;
-  --accent-2:#98adff;
-  --good:#b7ffcb;
-  --warn:#ffd8a8;
-  --bad:#ffb6b6;
-  --shadow:0 18px 40px rgba(0,0,0,.34);
-  --radius:14px;
-  --sidebar:280px;
+  --border2:rgba(255,255,255,.18);
+  --text:#ebedf3;
+  --muted:rgba(235,237,243,.64);
+  --muted2:rgba(235,237,243,.42);
+  --accent:#c9d5ff;
+  --good:#baf5c8;
+  --warn:#ffd9a6;
+  --bad:#ffb8b8;
+  --shadow:0 20px 50px rgba(0,0,0,.35);
+  --radius:16px;
+  --sidebar:300px;
   --preview:430px;
   color-scheme:dark;
 }
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
+*{{box-sizing:border-box}}
+html,body{{height:100%}}
+body{{
   margin:0;
   background:
-    linear-gradient(rgba(0,0,0,.72), rgba(0,0,0,.72)),
+    linear-gradient(rgba(0,0,0,.72),rgba(0,0,0,.72)),
     url("https://media.discordapp.net/attachments/1473364920291557406/1479978239710597243/7.jpg?ex=69ae00a5&is=69acaf25&hm=a6042d5d44fd1c7f0f6c81061b05d708f86ec02fe29b4327d794ac480bbad284&=&format=webp&width=1463&height=822");
   background-position:center;
-  background-size:cover;
   background-repeat:no-repeat;
+  background-size:cover;
   background-attachment:fixed;
   color:var(--text);
-  font:14px/1.55 Inter, ui-sans-serif, system-ui, sans-serif;
+  font:14px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   overflow:hidden;
-}
-button,input,select,textarea{font:inherit}
-a{color:inherit;text-decoration:none}
-.hidden{display:none !important}
-.app{
+}}
+button,input,select,textarea{{font:inherit}}
+*{{
+  scrollbar-width:thin;
+  scrollbar-color:rgba(255,255,255,.18) rgba(0,0,0,.16);
+}}
+*::-webkit-scrollbar{{width:10px;height:10px}}
+*::-webkit-scrollbar-track{{background:rgba(0,0,0,.16)}}
+*::-webkit-scrollbar-thumb{{
+  background:rgba(255,255,255,.18);
+  border-radius:999px;
+  border:2px solid rgba(0,0,0,.16);
+}}
+.app{{
   height:100%;
   display:grid;
   grid-template-rows:auto 1fr auto;
-}
-.topbar{
+}}
+.topbar{{
   display:grid;
   grid-template-columns:auto 1fr auto;
   align-items:center;
   gap:14px;
   padding:12px 14px;
   border-bottom:1px solid var(--border);
-  background:rgba(0,0,0,.34);
-  backdrop-filter:blur(10px);
-}
-.brand{
+  background:rgba(0,0,0,.38);
+  backdrop-filter:blur(12px);
+}}
+.brand{{
   display:flex;
   align-items:center;
   gap:12px;
   min-width:0;
-}
-.brandMark{
-  width:40px;
-  height:40px;
-  border-radius:12px;
+}}
+.brandMark{{
+  width:42px;
+  height:42px;
+  border-radius:14px;
   border:1px solid var(--border);
-  background:rgba(0,0,0,.18);
-  box-shadow:var(--shadow);
+  background:rgba(0,0,0,.2);
   object-fit:cover;
-}
-.brandText{
-  min-width:0;
-}
-.brandText b{
+  box-shadow:var(--shadow);
+  flex:0 0 auto;
+}}
+.brandText{{min-width:0}}
+.brandText b{{
   display:block;
   font-size:14px;
   letter-spacing:.2px;
-}
-.brandText span{
+}}
+.brandText span{{
   display:block;
-  color:var(--muted);
   font-size:12px;
+  color:var(--muted);
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-}
-.browserTabs{
+}}
+.tabs{{
   display:flex;
-  align-items:center;
   gap:8px;
-  min-width:0;
   overflow:auto;
   padding-bottom:2px;
-}
-.browserTab{
+}}
+.tab{{
   flex:0 0 auto;
-  display:flex;
-  align-items:center;
-  gap:8px;
   padding:8px 12px;
-  border:1px solid var(--border);
   border-radius:999px;
-  background:rgba(255,255,255,.03);
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.04);
   color:var(--muted);
   cursor:pointer;
   transition:.18s ease;
-}
-.browserTab:hover{
+}}
+.tab:hover,.tab.active{{
   color:var(--text);
-  background:rgba(255,255,255,.08);
-  border-color:var(--border-2);
-}
-.browserTab.active{
-  color:var(--text);
-  background:rgba(255,255,255,.10);
-  border-color:var(--border-2);
-}
-.actions{
+  background:rgba(255,255,255,.1);
+  border-color:var(--border2);
+}}
+.topActions{{
   display:flex;
-  align-items:center;
   gap:8px;
   flex-wrap:wrap;
   justify-content:flex-end;
-}
-.btn{
-  cursor:pointer;
+}}
+.btn,.ghost{{
   padding:8px 12px;
   border-radius:12px;
   border:1px solid var(--border);
   background:rgba(255,255,255,.04);
   color:var(--muted);
+  cursor:pointer;
   transition:.18s ease;
-}
-.btn:hover{
+}}
+.btn:hover,.ghost:hover{{
   color:var(--text);
-  border-color:var(--border-2);
-  background:rgba(255,255,255,.10);
+  background:rgba(255,255,255,.1);
+  border-color:var(--border2);
   transform:translateY(-1px);
-}
-.btn.primary{
-  color:var(--text);
+}}
+.btn.primary{{
   background:rgba(255,255,255,.12);
-}
-.statusPill{
+  color:var(--text);
+}}
+.pill{{
   padding:7px 10px;
   border-radius:999px;
   border:1px solid var(--border);
   background:rgba(255,255,255,.04);
   color:var(--muted);
   font-size:12px;
-}
-.workspace{
+  white-space:nowrap;
+}}
+.workspace{{
   min-height:0;
   display:grid;
   grid-template-columns:var(--sidebar) 1fr var(--preview);
-}
-.sidebar{
+}}
+.sidebar{{
+  min-height:0;
   border-right:1px solid var(--border);
-  background:rgba(0,0,0,.26);
-  backdrop-filter:blur(8px);
+  background:rgba(0,0,0,.28);
+  backdrop-filter:blur(10px);
   display:flex;
   flex-direction:column;
-  min-height:0;
-}
-.sideTop{
+}}
+.sideBlock{{
   padding:12px;
-  border-bottom:1px solid var(--border);
+  border-bottom:1px solid rgba(255,255,255,.06);
   display:grid;
   gap:10px;
-}
-.searchWrap{
-  position:relative;
-}
-.search{
+}}
+.sideLabel{{
+  font-size:11px;
+  color:var(--muted2);
+  text-transform:uppercase;
+  letter-spacing:.8px;
+}}
+.search{{
   width:100%;
-  padding:10px 12px;
+  padding:11px 12px;
   border-radius:12px;
   border:1px solid var(--border);
   background:rgba(255,255,255,.04);
   color:var(--text);
   outline:none;
-}
-.search:focus{
-  border-color:var(--border-2);
+}}
+.search:focus{{
+  border-color:var(--border2);
   box-shadow:0 0 0 1px rgba(255,255,255,.06);
-}
-.sideGroup{
-  padding:10px 12px 14px;
-  border-bottom:1px solid rgba(255,255,255,.06);
-}
-.sideGroupTitle{
-  font-size:11px;
-  color:var(--muted-2);
-  letter-spacing:.7px;
-  text-transform:uppercase;
-  margin-bottom:8px;
-}
-.navList{
+}}
+.nav{{
   display:grid;
   gap:6px;
-}
-.navBtn{
+}}
+.navBtn{{
   width:100%;
   text-align:left;
   display:flex;
-  align-items:center;
   justify-content:space-between;
   gap:8px;
-  padding:9px 10px;
-  border-radius:10px;
+  padding:10px 11px;
+  border-radius:12px;
   border:1px solid rgba(255,255,255,.08);
   background:rgba(255,255,255,.03);
   color:var(--muted);
   cursor:pointer;
   transition:.18s ease;
-}
-.navBtn:hover,
-.navBtn.active{
+}}
+.navBtn b{{
+  display:block;
+  font-size:13px;
+  color:inherit;
+}}
+.navBtn span{{
+  display:block;
+  font-size:11px;
+  color:var(--muted2);
+}}
+.navBtn:hover,.navBtn.active{{
   color:var(--text);
   background:rgba(255,255,255,.08);
-  border-color:var(--border-2);
-}
-.navMeta{
-  font-size:11px;
-  color:var(--muted-2);
-}
-.modeGrid{
+  border-color:var(--border2);
+}}
+.modes{{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:6px;
-}
-.modeCard{
+}}
+.modeCard{{
   border:1px solid rgba(255,255,255,.08);
-  border-radius:10px;
-  padding:9px 10px;
+  border-radius:12px;
   background:rgba(255,255,255,.03);
+  padding:9px 10px;
   display:grid;
-  gap:6px;
-}
-.modeCardTop{
+  gap:8px;
+}}
+.modeHead{{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  gap:6px;
-}
-.modeCardTop b{font-size:12px}
-.modeCardTop span{
+  gap:8px;
+}}
+.modeHead b{{font-size:12px}}
+.modeHead span{{
+  color:var(--muted2);
   font-size:11px;
-  color:var(--muted-2);
-}
-.modeCard button{
-  width:100%;
-}
-.main{
+}}
+.switch{{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  user-select:none;
+}}
+.switch input{{accent-color:#fff}}
+.main{{
   min-height:0;
-  background:rgba(255,255,255,.02);
   display:flex;
   flex-direction:column;
-}
-.mainHead{
+  background:rgba(255,255,255,.02);
+}}
+.mainHead{{
   padding:12px 14px;
   border-bottom:1px solid var(--border);
   display:flex;
   justify-content:space-between;
-  gap:14px;
   align-items:center;
-  background:rgba(0,0,0,.22);
+  gap:12px;
+  background:rgba(0,0,0,.2);
   backdrop-filter:blur(8px);
-}
-.mainHeadTitle b{
+}}
+.mainHead b{{
   display:block;
   font-size:15px;
-}
-.mainHeadTitle span{
+}}
+.mainHead span{{
   display:block;
   font-size:12px;
   color:var(--muted);
-}
-.mainHeadTools{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-}
-.pageWrap{
+}}
+.mainBody{{
   min-height:0;
   overflow:auto;
   padding:14px;
-}
-.page{
-  display:none;
-  grid-template-columns:1fr;
-  gap:12px;
-}
-.page.active{
   display:grid;
-}
-.panel{
+  gap:12px;
+}}
+.card{{
   border:1px solid var(--border);
   border-radius:var(--radius);
   background:var(--panel);
   box-shadow:var(--shadow);
   overflow:hidden;
-}
-.panelHead{
+}}
+.cardHead{{
   padding:11px 14px;
   border-bottom:1px solid rgba(255,255,255,.08);
-  background:rgba(0,0,0,.20);
+  background:rgba(0,0,0,.18);
   display:flex;
-  align-items:center;
   justify-content:space-between;
+  align-items:center;
   gap:10px;
-}
-.panelHead b{font-size:14px}
-.panelHead span{
-  color:var(--muted);
+}}
+.cardHead b{{font-size:14px}}
+.cardHead span{{
   font-size:12px;
-}
-.panelBody{
+  color:var(--muted);
+}}
+.cardBody{{
   padding:14px;
   display:grid;
   gap:10px;
-}
-.row{
+}}
+.row{{
   display:grid;
-  grid-template-columns:180px 1fr;
-  gap:10px;
+  grid-template-columns:200px 1fr;
+  gap:12px;
   align-items:start;
-}
-.rowLabel{
+}}
+.label{{
   display:grid;
   gap:4px;
-}
-.rowLabel b{
+}}
+.label b{{
   font-size:13px;
-}
-.rowLabel span{
-  color:var(--muted);
+  font-weight:700;
+}}
+.label span{{
   font-size:11px;
-}
-.field,
-.select,
-.area{
+  color:var(--muted);
+}}
+.control,
+.area,
+.select{{
   width:100%;
   border-radius:12px;
   border:1px solid var(--border);
@@ -355,232 +341,199 @@ a{color:inherit;text-decoration:none}
   color:var(--text);
   padding:10px 12px;
   outline:none;
-}
-.field:focus,
-.select:focus,
-.area:focus{
-  border-color:var(--border-2);
+}}
+.control:focus,.area:focus,.select:focus{{
+  border-color:var(--border2);
   box-shadow:0 0 0 1px rgba(255,255,255,.06);
-}
-.area{
+}}
+.area{{
   min-height:160px;
   resize:vertical;
-  font:13px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-}
-.switch{
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-  user-select:none;
-}
-.switch input{accent-color:#fff}
-.inline{
+  font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}}
+.inline{{
   display:flex;
-  gap:8px;
   align-items:center;
+  gap:8px;
   flex-wrap:wrap;
-}
-.grid2{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-.grid3{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-}
-.grid4{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
-}
-.hint{
-  color:var(--muted-2);
+}}
+.grid2{{display:grid;grid-template-columns:1fr 1fr;gap:12px}}
+.grid3{{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}}
+.grid4{{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}}
+.hint{{
+  color:var(--muted2);
   font-size:11px;
-}
-.preview{
+}}
+.mini{{font-size:12px}}
+.infoBar{{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}}
+.noteBox{{
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+  padding:10px 12px;
+  background:rgba(255,255,255,.03);
+}}
+.noteBox b{{
+  display:block;
+  margin-bottom:3px;
+}}
+.preview{{
   min-height:0;
   border-left:1px solid var(--border);
-  background:rgba(0,0,0,.24);
-  backdrop-filter:blur(8px);
+  background:rgba(0,0,0,.26);
+  backdrop-filter:blur(10px);
   display:flex;
   flex-direction:column;
-}
-.previewHead{
+}}
+.previewHead{{
   padding:12px 14px;
   border-bottom:1px solid var(--border);
+  background:rgba(0,0,0,.2);
   display:flex;
-  align-items:center;
   justify-content:space-between;
-  gap:10px;
-  background:rgba(0,0,0,.22);
-}
-.previewBody{
+  align-items:center;
+  gap:12px;
+}}
+.previewBody{{
   min-height:0;
   overflow:auto;
   padding:12px;
   display:grid;
   gap:12px;
-}
-.code{
-  min-height:340px;
-  resize:vertical;
+}}
+.code{{
+  min-height:360px;
   width:100%;
+  resize:vertical;
   border-radius:14px;
   border:1px solid var(--border);
   background:rgba(0,0,0,.28);
   color:var(--text);
   padding:12px 14px;
-  font:13px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   outline:none;
-}
-.diagList{
-  display:grid;
-  gap:8px;
-}
-.diag{
+  font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}}
+.diagList{{display:grid;gap:8px}}
+.diag{{
   border:1px solid rgba(255,255,255,.08);
   border-radius:12px;
-  padding:10px 12px;
   background:rgba(255,255,255,.03);
-}
-.diag.good{color:var(--good)}
-.diag.warn{color:var(--warn)}
-.diag.bad{color:var(--bad)}
-.diag b{
+  padding:10px 12px;
+}}
+.diag b{{
   display:block;
   margin-bottom:2px;
   color:var(--text);
-}
-.commandTable{
+}}
+.diag.good{{color:var(--good)}}
+.diag.warn{{color:var(--warn)}}
+.diag.bad{{color:var(--bad)}}
+.commandTable{{display:grid;gap:8px}}
+.command{{
   display:grid;
-  gap:6px;
-}
-.commandItem{
-  display:grid;
-  grid-template-columns:180px 1fr 90px;
+  grid-template-columns:180px 1fr 110px;
   gap:10px;
   align-items:start;
   border:1px solid rgba(255,255,255,.08);
   border-radius:12px;
-  padding:10px 12px;
   background:rgba(255,255,255,.03);
-}
-.commandItem code{
-  font:12px/1.4 ui-monospace, monospace;
+  padding:10px 12px;
+}}
+.command code{{
+  font:12px/1.4 ui-monospace,monospace;
   color:var(--accent);
-}
-.commandItem span{
-  color:var(--muted);
-  font-size:12px;
-}
-.commandTag{
+}}
+.command small{{
+  color:var(--muted2);
   justify-self:end;
-  font-size:11px;
-  color:var(--muted-2);
-}
-.footer{
-  padding:10px 14px;
-  border-top:1px solid var(--border);
-  background:rgba(0,0,0,.26);
-  color:var(--muted-2);
-  font-size:12px;
-}
-dialog{
-  width:min(980px, calc(100% - 24px));
-  border:1px solid var(--border);
-  border-radius:16px;
-  background:rgba(10,10,12,.94);
-  color:var(--text);
-  box-shadow:0 20px 60px rgba(0,0,0,.55);
-  padding:0;
-}
-dialog::backdrop{
-  background:rgba(0,0,0,.55);
-  backdrop-filter:blur(4px);
-}
-.modal{
-  padding:14px;
-  display:grid;
-  gap:12px;
-}
-.modalHead{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-}
-.kvStack{
-  display:grid;
-  gap:8px;
-}
-.modeSelectBar{
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}}
+.sectionTabs{{
   display:flex;
   gap:8px;
   flex-wrap:wrap;
-}
-.badge{
-  padding:6px 9px;
+}}
+.sectionTab{{
+  padding:8px 11px;
   border-radius:999px;
   border:1px solid var(--border);
   background:rgba(255,255,255,.03);
   color:var(--muted);
+  cursor:pointer;
+}}
+.sectionTab.active{{
+  color:var(--text);
+  border-color:var(--border2);
+  background:rgba(255,255,255,.10);
+}}
+.footer{{
+  padding:10px 14px;
+  border-top:1px solid var(--border);
+  background:rgba(0,0,0,.28);
+  color:var(--muted2);
   font-size:12px;
-}
-.colourGrid{
+}}
+dialog{{
+  width:min(1000px, calc(100% - 24px));
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:rgba(10,10,12,.95);
+  color:var(--text);
+  box-shadow:0 20px 60px rgba(0,0,0,.55);
+  padding:0;
+}}
+dialog::backdrop{{
+  background:rgba(0,0,0,.56);
+  backdrop-filter:blur(4px);
+}}
+.modal{{
+  padding:14px;
   display:grid;
-  grid-template-columns:1fr 1fr;
   gap:12px;
-}
-.colorRow{
-  display:grid;
-  grid-template-columns:130px 1fr;
-  gap:8px;
+}}
+.modalHead{{
+  display:flex;
+  justify-content:space-between;
   align-items:center;
-}
-.small{
-  font-size:12px;
-}
-@media (max-width: 1280px){
-  .workspace{grid-template-columns:260px 1fr 380px}
-}
-@media (max-width: 1080px){
-  body{overflow:auto}
-  .app{height:auto;min-height:100%}
-  .workspace{grid-template-columns:1fr}
-  .preview{border-left:0;border-top:1px solid var(--border)}
-  .sidebar{border-right:0;border-bottom:1px solid var(--border)}
-  .mainHead{position:sticky;top:0;z-index:3}
-}
-@media (max-width: 720px){
-  .topbar{grid-template-columns:1fr}
-  .row{grid-template-columns:1fr}
-  .grid2,.grid3,.grid4,.colourGrid{grid-template-columns:1fr}
-  .commandItem{grid-template-columns:1fr}
-  .commandTag{justify-self:start}
-}
-
+  gap:12px;
+}}
+.hidden{{display:none !important}}
+@media (max-width:1320px){{
+  .workspace{{grid-template-columns:280px 1fr 390px}}
+}}
+@media (max-width:1120px){{
+  body{{overflow:auto}}
+  .app{{height:auto;min-height:100%}}
+  .workspace{{grid-template-columns:1fr}}
+  .sidebar{{border-right:0;border-bottom:1px solid var(--border)}}
+  .preview{{border-left:0;border-top:1px solid var(--border)}}
+}}
+@media (max-width:780px){{
+  .topbar{{grid-template-columns:1fr}}
+  .row{{grid-template-columns:1fr}}
+  .grid2,.grid3,.grid4,.modes,.command{{grid-template-columns:1fr}}
+  .command small{{justify-self:start}}
+}}
 </style>
 </head>
 <body>
-
 <div class="app">
   <header class="topbar">
     <div class="brand">
       <img class="brandMark" alt="logo" src="https://i.pinimg.com/originals/da/b4/cb/dab4cbf31e4e8d7688b0e830d5d640f1.gif">
       <div class="brandText">
-        <b>skin.ini browser editor</b>
-        <span>single file · browser style · osu!mania focused</span>
+        <b>skin.ini studio</b>
+        <span>single-file builder · strict colon parser · complete skin.ini coverage</span>
       </div>
     </div>
-
-    <div class="browserTabs" id="browserTabs"></div>
-
-    <div class="actions">
-      <span class="statusPill" id="pagePill">page: overview</span>
-      <span class="statusPill" id="modePill">mode: 4K</span>
-      <span class="statusPill" id="savePill">saved</span>
+    <div class="tabs" id="topTabs"></div>
+    <div class="topActions">
+      <span class="pill" id="savePill">saved</span>
+      <span class="pill" id="modePill">mode: 4K</span>
       <button class="btn" id="refreshBtn">Refresh</button>
       <button class="btn" id="copyBtn">Copy</button>
       <button class="btn primary" id="downloadBtn">Download</button>
@@ -589,57 +542,54 @@ dialog::backdrop{
 
   <section class="workspace">
     <aside class="sidebar">
-      <div class="sideTop">
-        <div class="searchWrap">
-          <input class="search" id="searchBox" placeholder="Search commands, pages, fields">
-        </div>
+      <div class="sideBlock">
+        <div class="sideLabel">Search</div>
+        <input id="searchBox" class="search" placeholder="Search commands, sections, notes">
         <div class="inline">
-          <button class="btn small" id="openImportBtn">Import</button>
-          <button class="btn small" id="importStrictBtn">Paste</button>
-          <button class="btn small" id="resetBtn">Reset</button>
+          <button class="btn mini" id="openImportBtn">Import</button>
+          <button class="btn mini" id="pasteImportBtn">Paste</button>
+          <button class="btn mini" id="resetBtn">Reset</button>
         </div>
       </div>
-
-      <div class="sideGroup">
-        <div class="sideGroupTitle">Pages</div>
-        <div class="navList" id="navList"></div>
+      <div class="sideBlock">
+        <div class="sideLabel">Sections</div>
+        <div class="nav" id="navList"></div>
       </div>
-
-      <div class="sideGroup">
-        <div class="sideGroupTitle">Keymodes</div>
-        <div class="modeGrid" id="modeGrid"></div>
+      <div class="sideBlock">
+        <div class="sideLabel">Mania keymodes</div>
+        <div class="modes" id="modeGrid"></div>
       </div>
     </aside>
 
     <main class="main">
       <div class="mainHead">
-        <div class="mainHeadTitle">
-          <b id="mainTitle">Overview</b>
-          <span id="mainNote">Project controls and quick status</span>
+        <div>
+          <b id="pageTitle">Overview</b>
+          <span id="pageNote">Project status, shortcuts and import/export.</span>
         </div>
-        <div class="mainHeadTools">
-          <button class="btn small" id="selectBtn">Select preview</button>
+        <div class="inline">
+          <button class="btn mini" id="selectPreviewBtn">Select preview</button>
         </div>
       </div>
-      <div class="pageWrap" id="pages"></div>
+      <div class="mainBody" id="mainBody"></div>
     </main>
 
     <aside class="preview">
       <div class="previewHead">
         <div>
           <b>skin.ini preview</b>
-          <div class="hint" id="lineCount">0 lines</div>
+          <div class="hint" id="previewMeta">0 lines</div>
         </div>
       </div>
       <div class="previewBody">
-        <textarea class="code" id="previewArea" readonly spellcheck="false"></textarea>
-        <div class="diagList" id="diagList"></div>
+        <textarea id="previewArea" class="code" readonly spellcheck="false"></textarea>
+        <div id="diagList" class="diagList"></div>
       </div>
     </aside>
   </section>
 
   <footer class="footer">
-    strict import uses only key: value · unknown mania commands are preserved in export · Ctrl+S downloads skin.ini
+    strict import reads only key: value · commands are case-sensitive · each mania keycount exports as its own [Mania] section
   </footer>
 </div>
 
@@ -648,15 +598,15 @@ dialog::backdrop{
     <div class="modalHead">
       <div>
         <b>Import skin.ini</b>
-        <div class="hint">Only key: value lines are read</div>
+        <div class="hint">Only key: value lines are imported. Lines with = are ignored on purpose.</div>
       </div>
       <div class="inline">
-        <button class="btn small" id="closeImportBtn" type="button">Close</button>
-        <button class="btn primary small" id="applyImportBtn" type="button">Apply</button>
+        <button class="btn mini" id="closeImportBtn" type="button">Close</button>
+        <button class="btn primary mini" id="applyImportBtn" type="button">Apply</button>
       </div>
     </div>
-    <textarea class="area" id="importArea" spellcheck="false" placeholder="[General]
-Name: ...
+    <textarea id="importArea" class="area" spellcheck="false" placeholder="[General]
+Name: Example
 [Mania]
 Keys: 4"></textarea>
   </div>
@@ -664,102 +614,13 @@ Keys: 4"></textarea>
 
 <script>
 
-const $ = (id) => document.getElementById(id);
-const STORAGE_KEY = "skinini_browser_compact_v1";
-const ALL_KEYS = Array.from({length:18}, (_,i)=>i+1);
+const META = {"pages": [{"key": "overview", "title": "Overview", "note": "Project status, shortcuts and import/export."}, {"key": "general", "title": "[General]", "note": "Metadata and global behaviour."}, {"key": "colours", "title": "[Colours]", "note": "Global colour commands."}, {"key": "fonts", "title": "[Fonts]", "note": "Number prefixes and overlap."}, {"key": "catch", "title": "[CatchTheBeat]", "note": "Catch-specific commands."}, {"key": "mania", "title": "[Mania]", "note": "osu!mania editor for the selected keymode."}, {"key": "browser", "title": "Command Browser", "note": "All supported commands with notes."}], "general": [{"key": "Name", "label": "Name", "type": "text", "note": "Skin display name.", "placeholder": "Example Skin"}, {"key": "Author", "label": "Author", "type": "text", "note": "Skin creator.", "placeholder": "your name"}, {"key": "Version", "label": "Version", "type": "select", "note": "Use a fixed version for distribution.", "default": "2.7", "options": [["", "unset"], ["1.0", "1.0"], ["2.0", "2.0"], ["2.1", "2.1"], ["2.2", "2.2"], ["2.3", "2.3"], ["2.4", "2.4"], ["2.5", "2.5"], ["2.6", "2.6"], ["2.7", "2.7"], ["latest", "latest"]]}, {"key": "AnimationFramerate", "label": "AnimationFramerate", "type": "number", "note": "Most animations. Use -1 to play all frames in one second.", "placeholder": "-1"}, {"key": "AllowSliderBallTint", "label": "AllowSliderBallTint", "type": "bool", "note": "Should combo colour tint the default slider ball? Default 0."}, {"key": "ComboBurstRandom", "label": "ComboBurstRandom", "type": "bool", "note": "Randomise comboburst order. Default 0."}, {"key": "CursorCentre", "label": "CursorCentre", "type": "bool", "note": "0 = top-left origin, 1 = centred. Default 1."}, {"key": "CursorExpand", "label": "CursorExpand", "type": "bool", "note": "Expand cursor on click. Default 1."}, {"key": "CursorRotate", "label": "CursorRotate", "type": "bool", "note": "Rotate cursor constantly. Default 1."}, {"key": "CursorTrailRotate", "label": "CursorTrailRotate", "type": "bool", "note": "Rotate cursor trail constantly. Default 1."}, {"key": "CustomComboBurstSounds", "label": "CustomComboBurstSounds", "type": "text", "note": "Comma-separated combo milestones for burst sounds.", "placeholder": "50,75,100"}, {"key": "HitCircleOverlayAboveNumber", "label": "HitCircleOverlayAboveNumber", "type": "bool", "note": "Draw hitcircleoverlay above numbers. Default 1."}, {"key": "LayeredHitSounds", "label": "LayeredHitSounds", "type": "bool", "note": "Layer hitnormal with other hitsounds."}, {"key": "SliderBallFlip", "label": "SliderBallFlip", "type": "bool", "note": "Flip sliderball on repeats."}, {"key": "SpinnerFadePlayfield", "label": "SpinnerFadePlayfield", "type": "bool", "note": "Fade playfield during spinner."}, {"key": "SpinnerFrequencyModulate", "label": "SpinnerFrequencyModulate", "type": "bool", "note": "Pitch modulate spinner sound."}, {"key": "SpinnerNoBlink", "label": "SpinnerNoBlink", "type": "bool", "note": "Disable spinner meter blinking."}], "colours": [{"key": "Combo1", "label": "Combo1", "type": "color", "note": "Combo colour.", "placeholder": "255,192,0"}, {"key": "Combo2", "label": "Combo2", "type": "color", "note": "Combo colour.", "placeholder": "255,192,0"}, {"key": "Combo3", "label": "Combo3", "type": "color", "note": "Combo colour.", "placeholder": "255,192,0"}, {"key": "Combo4", "label": "Combo4", "type": "color", "note": "Combo colour.", "placeholder": "255,192,0"}, {"key": "Combo5", "label": "Combo5", "type": "color", "note": "Combo colour.", "placeholder": "255,192,0"}, {"key": "Combo6", "label": "Combo6", "type": "color", "note": "Combo colour.", "placeholder": "255,192,0"}, {"key": "Combo7", "label": "Combo7", "type": "color", "note": "Combo colour.", "placeholder": "255,192,0"}, {"key": "Combo8", "label": "Combo8", "type": "color", "note": "Combo colour.", "placeholder": "255,192,0"}, {"key": "InputOverlayText", "label": "InputOverlayText", "type": "color", "note": "Input overlay text colour."}, {"key": "MenuGlow", "label": "MenuGlow", "type": "color", "note": "Main menu spectrum bars. Default 0,78,155."}, {"key": "SliderBall", "label": "SliderBall", "type": "color", "note": "Default slider ball colour. Default 2,170,255."}, {"key": "SliderBorder", "label": "SliderBorder", "type": "color", "note": "Slider border colour. Default 255,255,255."}, {"key": "SliderTrackOverride", "label": "SliderTrackOverride", "type": "color", "note": "Force all slider bodies to one colour."}, {"key": "SongSelectActiveText", "label": "SongSelectActiveText", "type": "color", "note": "Active panel text colour. Default 0,0,0."}, {"key": "SongSelectInactiveText", "label": "SongSelectInactiveText", "type": "color", "note": "Inactive panel text colour. Default 255,255,255."}, {"key": "SpinnerBackground", "label": "SpinnerBackground", "type": "color", "note": "Spinner background additive colour. Default 100,100,100."}, {"key": "StarBreakAdditive", "label": "StarBreakAdditive", "type": "color", "note": "star2 additive colour during breaks. Default 255,182,193."}], "fonts": [{"key": "HitCirclePrefix", "label": "HitCirclePrefix", "type": "text", "note": "Prefix for hitcircle numbers. Default default.", "placeholder": "default"}, {"key": "HitCircleOverlap", "label": "HitCircleOverlap", "type": "number", "note": "Negative values add a gap. Default -2.", "placeholder": "-2"}, {"key": "ScorePrefix", "label": "ScorePrefix", "type": "text", "note": "Prefix for score numbers. Default score.", "placeholder": "score"}, {"key": "ScoreOverlap", "label": "ScoreOverlap", "type": "number", "note": "Negative values add a gap. Default 0.", "placeholder": "0"}, {"key": "ComboPrefix", "label": "ComboPrefix", "type": "text", "note": "Prefix for combo numbers. Default score.", "placeholder": "score"}, {"key": "ComboOverlap", "label": "ComboOverlap", "type": "number", "note": "Negative values add a gap. Default 0.", "placeholder": "0"}], "catch": [{"key": "HyperDash", "label": "HyperDash", "type": "color", "note": "Dash colour. Default 255,0,0."}, {"key": "HyperDashFruit", "label": "HyperDashFruit", "type": "color", "note": "Fruit outline during hyperdash. Default uses HyperDash."}, {"key": "HyperDashAfterImage", "label": "HyperDashAfterImage", "type": "color", "note": "Afterimage colour."}], "maniaLayout": [{"key": "ColumnStart", "label": "ColumnStart", "type": "number", "note": "Left column start. Default 136.", "placeholder": "136"}, {"key": "ColumnRight", "label": "ColumnRight", "type": "number", "note": "Right edge limit. Default 19.", "placeholder": "19"}, {"key": "ColumnSpacing", "label": "ColumnSpacing", "type": "text", "note": "Comma list. Missing values use defaults. Default 0.", "placeholder": "0 or 0,0,0"}, {"key": "ColumnWidth", "label": "ColumnWidth", "type": "text", "note": "Comma list. Default 30.", "placeholder": "30 or 30,30,30"}, {"key": "ColumnLineWidth", "label": "ColumnLineWidth", "type": "text", "note": "Column separator widths. Default 2.", "placeholder": "2 or 2,2,2,2,2"}, {"key": "BarlineHeight", "label": "BarlineHeight", "type": "number", "note": "Bar separator thickness. Default 1.2.", "placeholder": "1.2"}, {"key": "LightingNWidth", "label": "LightingNWidth", "type": "text", "note": "Widths for LightingN by column.", "placeholder": "comma list"}, {"key": "LightingLWidth", "label": "LightingLWidth", "type": "text", "note": "Widths for LightingL by column.", "placeholder": "comma list"}, {"key": "WidthForNoteHeightScale", "label": "WidthForNoteHeightScale", "type": "number", "note": "Height scale source width if columns differ.", "placeholder": "number"}, {"key": "HitPosition", "label": "HitPosition", "type": "number", "note": "Judgement line height. Default 402.", "placeholder": "402"}, {"key": "LightPosition", "label": "LightPosition", "type": "number", "note": "StageLight height. Default 413.", "placeholder": "413"}, {"key": "ScorePosition", "label": "ScorePosition", "type": "number", "note": "Hitburst height.", "placeholder": "number"}, {"key": "ComboPosition", "label": "ComboPosition", "type": "number", "note": "Combo counter height.", "placeholder": "number"}], "maniaBehaviour": [{"key": "JudgementLine", "label": "JudgementLine", "type": "bool", "note": "Draw an extra line above StageHint."}, {"key": "LightFramePerSecond", "label": "LightFramePerSecond", "type": "number", "note": "FPS for StageLight animation."}, {"key": "SpecialStyle", "label": "SpecialStyle", "type": "select", "note": "Special lane style. 0 none, 1 left/outer, 2 right/inner.", "options": [["", "unset"], ["0", "0"], ["1", "1"], ["2", "2"]]}, {"key": "ComboBurstStyle", "label": "ComboBurstStyle", "type": "select", "note": "0 Left, 1 Right, 2 Both/random. Words also work in game.", "options": [["", "unset"], ["0", "0"], ["1", "1"], ["2", "2"], ["Left", "Left"], ["Right", "Right"], ["Both", "Both"]]}, {"key": "SplitStages", "label": "SplitStages", "type": "bool", "note": "Force split stages for DP-style layouts."}, {"key": "StageSeparation", "label": "StageSeparation", "type": "number", "note": "Distance between split stages. Default 40.", "placeholder": "40"}, {"key": "SeparateScore", "label": "SeparateScore", "type": "bool", "note": "Show hitburst only on the stage it was scored on. Default 1."}, {"key": "KeysUnderNotes", "label": "KeysUnderNotes", "type": "bool", "note": "Draw keys under passing notes. Default 0."}, {"key": "UpsideDown", "label": "UpsideDown", "type": "bool", "note": "Always upside down. DDR/StepMania style. Default 0."}, {"key": "KeyFlipWhenUpsideDown", "label": "KeyFlipWhenUpsideDown", "type": "bool", "note": "Flip all key images when upside down. Requires 2.5+. Default 1."}, {"key": "NoteFlipWhenUpsideDown", "label": "NoteFlipWhenUpsideDown", "type": "bool", "note": "Flip all note images when upside down. Requires 2.5+. Default 1."}, {"key": "NoteBodyStyle", "label": "NoteBodyStyle", "type": "select", "note": "0 stretch, 1 cascade from top, 2 cascade from bottom. Requires 2.5+.", "options": [["", "unset"], ["0", "0"], ["1", "1"], ["2", "2"]]}], "maniaStage": [{"key": "StageLeft", "label": "StageLeft", "type": "text", "note": "Left stage border image.", "placeholder": "path/image"}, {"key": "StageRight", "label": "StageRight", "type": "text", "note": "Right stage border image.", "placeholder": "path/image"}, {"key": "StageBottom", "label": "StageBottom", "type": "text", "note": "Bottom stage image. Not stretched to fit.", "placeholder": "path/image"}, {"key": "StageHint", "label": "StageHint", "type": "text", "note": "Graphical judgement line image.", "placeholder": "path/image"}, {"key": "StageLight", "label": "StageLight", "type": "text", "note": "Column lighting image.", "placeholder": "path/image"}, {"key": "LightingN", "label": "LightingN", "type": "text", "note": "Note lighting image.", "placeholder": "path/image"}, {"key": "LightingL", "label": "LightingL", "type": "text", "note": "Hold note lighting image.", "placeholder": "path/image"}, {"key": "WarningArrow", "label": "WarningArrow", "type": "text", "note": "Warning arrow image shown 3 barlines before start if possible.", "placeholder": "path/image"}], "maniaHits": [{"key": "Hit0", "label": "Hit0", "type": "text", "note": "Miss image path.", "placeholder": "path/image"}, {"key": "Hit50", "label": "Hit50", "type": "text", "note": "50 image path.", "placeholder": "path/image"}, {"key": "Hit100", "label": "Hit100", "type": "text", "note": "100 image path.", "placeholder": "path/image"}, {"key": "Hit200", "label": "Hit200", "type": "text", "note": "200 image path.", "placeholder": "path/image"}, {"key": "Hit300", "label": "Hit300", "type": "text", "note": "300 image path.", "placeholder": "path/image"}, {"key": "Hit300g", "label": "Hit300g", "type": "text", "note": "geki image path.", "placeholder": "path/image"}], "maniaGlobalColours": [{"key": "ColourColumnLine", "label": "ColourColumnLine", "type": "color", "note": "Column separator colour. Default 255,255,255,255."}, {"key": "ColourBarline", "label": "ColourBarline", "type": "color", "note": "Barline colour. Default 255,255,255,255."}, {"key": "ColourJudgementLine", "label": "ColourJudgementLine", "type": "color", "note": "Timing line colour. Default 255,255,255."}, {"key": "ColourKeyWarning", "label": "ColourKeyWarning", "type": "color", "note": "Keybinding reminder colour. Default 0,0,0."}, {"key": "ColourHold", "label": "ColourHold", "type": "color", "note": "Combo counter colour during holds. Default 255,191,51,255."}, {"key": "ColourBreak", "label": "ColourBreak", "type": "color", "note": "Combo counter colour on break. Default 255,0,0."}], "maniaSubpages": [{"key": "layout", "title": "Layout", "note": "Columns, positions and spacing."}, {"key": "behaviour", "title": "Behaviour", "note": "Stage logic, split, upside-down and styles."}, {"key": "stage", "title": "Stage", "note": "Stage and lighting image paths."}, {"key": "colours", "title": "Colours", "note": "Lane and line colours."}, {"key": "images", "title": "Images", "note": "Per-column key and note images."}, {"key": "hits", "title": "Hits", "note": "Hitburst image paths."}, {"key": "flip", "title": "Flip", "note": "Per-column flip commands and note body styles."}], "commands": [{"section": "[General]", "command": "Name", "note": "Skin display name."}, {"section": "[General]", "command": "Author", "note": "Skin creator."}, {"section": "[General]", "command": "Version", "note": "Use a fixed version for distribution."}, {"section": "[General]", "command": "AnimationFramerate", "note": "Most animations. Use -1 to play all frames in one second."}, {"section": "[General]", "command": "AllowSliderBallTint", "note": "Should combo colour tint the default slider ball? Default 0."}, {"section": "[General]", "command": "ComboBurstRandom", "note": "Randomise comboburst order. Default 0."}, {"section": "[General]", "command": "CursorCentre", "note": "0 = top-left origin, 1 = centred. Default 1."}, {"section": "[General]", "command": "CursorExpand", "note": "Expand cursor on click. Default 1."}, {"section": "[General]", "command": "CursorRotate", "note": "Rotate cursor constantly. Default 1."}, {"section": "[General]", "command": "CursorTrailRotate", "note": "Rotate cursor trail constantly. Default 1."}, {"section": "[General]", "command": "CustomComboBurstSounds", "note": "Comma-separated combo milestones for burst sounds."}, {"section": "[General]", "command": "HitCircleOverlayAboveNumber", "note": "Draw hitcircleoverlay above numbers. Default 1."}, {"section": "[General]", "command": "LayeredHitSounds", "note": "Layer hitnormal with other hitsounds."}, {"section": "[General]", "command": "SliderBallFlip", "note": "Flip sliderball on repeats."}, {"section": "[General]", "command": "SpinnerFadePlayfield", "note": "Fade playfield during spinner."}, {"section": "[General]", "command": "SpinnerFrequencyModulate", "note": "Pitch modulate spinner sound."}, {"section": "[General]", "command": "SpinnerNoBlink", "note": "Disable spinner meter blinking."}, {"section": "[Colours]", "command": "Combo1", "note": "Combo colour."}, {"section": "[Colours]", "command": "Combo2", "note": "Combo colour."}, {"section": "[Colours]", "command": "Combo3", "note": "Combo colour."}, {"section": "[Colours]", "command": "Combo4", "note": "Combo colour."}, {"section": "[Colours]", "command": "Combo5", "note": "Combo colour."}, {"section": "[Colours]", "command": "Combo6", "note": "Combo colour."}, {"section": "[Colours]", "command": "Combo7", "note": "Combo colour."}, {"section": "[Colours]", "command": "Combo8", "note": "Combo colour."}, {"section": "[Colours]", "command": "InputOverlayText", "note": "Input overlay text colour."}, {"section": "[Colours]", "command": "MenuGlow", "note": "Main menu spectrum bars. Default 0,78,155."}, {"section": "[Colours]", "command": "SliderBall", "note": "Default slider ball colour. Default 2,170,255."}, {"section": "[Colours]", "command": "SliderBorder", "note": "Slider border colour. Default 255,255,255."}, {"section": "[Colours]", "command": "SliderTrackOverride", "note": "Force all slider bodies to one colour."}, {"section": "[Colours]", "command": "SongSelectActiveText", "note": "Active panel text colour. Default 0,0,0."}, {"section": "[Colours]", "command": "SongSelectInactiveText", "note": "Inactive panel text colour. Default 255,255,255."}, {"section": "[Colours]", "command": "SpinnerBackground", "note": "Spinner background additive colour. Default 100,100,100."}, {"section": "[Colours]", "command": "StarBreakAdditive", "note": "star2 additive colour during breaks. Default 255,182,193."}, {"section": "[Fonts]", "command": "HitCirclePrefix", "note": "Prefix for hitcircle numbers. Default default."}, {"section": "[Fonts]", "command": "HitCircleOverlap", "note": "Negative values add a gap. Default -2."}, {"section": "[Fonts]", "command": "ScorePrefix", "note": "Prefix for score numbers. Default score."}, {"section": "[Fonts]", "command": "ScoreOverlap", "note": "Negative values add a gap. Default 0."}, {"section": "[Fonts]", "command": "ComboPrefix", "note": "Prefix for combo numbers. Default score."}, {"section": "[Fonts]", "command": "ComboOverlap", "note": "Negative values add a gap. Default 0."}, {"section": "[CatchTheBeat]", "command": "HyperDash", "note": "Dash colour. Default 255,0,0."}, {"section": "[CatchTheBeat]", "command": "HyperDashFruit", "note": "Fruit outline during hyperdash. Default uses HyperDash."}, {"section": "[CatchTheBeat]", "command": "HyperDashAfterImage", "note": "Afterimage colour."}, {"section": "[Mania]", "command": "ColumnStart", "note": "Left column start. Default 136."}, {"section": "[Mania]", "command": "ColumnRight", "note": "Right edge limit. Default 19."}, {"section": "[Mania]", "command": "ColumnSpacing", "note": "Comma list. Missing values use defaults. Default 0."}, {"section": "[Mania]", "command": "ColumnWidth", "note": "Comma list. Default 30."}, {"section": "[Mania]", "command": "ColumnLineWidth", "note": "Column separator widths. Default 2."}, {"section": "[Mania]", "command": "BarlineHeight", "note": "Bar separator thickness. Default 1.2."}, {"section": "[Mania]", "command": "LightingNWidth", "note": "Widths for LightingN by column."}, {"section": "[Mania]", "command": "LightingLWidth", "note": "Widths for LightingL by column."}, {"section": "[Mania]", "command": "WidthForNoteHeightScale", "note": "Height scale source width if columns differ."}, {"section": "[Mania]", "command": "HitPosition", "note": "Judgement line height. Default 402."}, {"section": "[Mania]", "command": "LightPosition", "note": "StageLight height. Default 413."}, {"section": "[Mania]", "command": "ScorePosition", "note": "Hitburst height."}, {"section": "[Mania]", "command": "ComboPosition", "note": "Combo counter height."}, {"section": "[Mania]", "command": "JudgementLine", "note": "Draw an extra line above StageHint."}, {"section": "[Mania]", "command": "LightFramePerSecond", "note": "FPS for StageLight animation."}, {"section": "[Mania]", "command": "SpecialStyle", "note": "Special lane style. 0 none, 1 left/outer, 2 right/inner."}, {"section": "[Mania]", "command": "ComboBurstStyle", "note": "0 Left, 1 Right, 2 Both/random. Words also work in game."}, {"section": "[Mania]", "command": "SplitStages", "note": "Force split stages for DP-style layouts."}, {"section": "[Mania]", "command": "StageSeparation", "note": "Distance between split stages. Default 40."}, {"section": "[Mania]", "command": "SeparateScore", "note": "Show hitburst only on the stage it was scored on. Default 1."}, {"section": "[Mania]", "command": "KeysUnderNotes", "note": "Draw keys under passing notes. Default 0."}, {"section": "[Mania]", "command": "UpsideDown", "note": "Always upside down. DDR/StepMania style. Default 0."}, {"section": "[Mania]", "command": "KeyFlipWhenUpsideDown", "note": "Flip all key images when upside down. Requires 2.5+. Default 1."}, {"section": "[Mania]", "command": "NoteFlipWhenUpsideDown", "note": "Flip all note images when upside down. Requires 2.5+. Default 1."}, {"section": "[Mania]", "command": "NoteBodyStyle", "note": "0 stretch, 1 cascade from top, 2 cascade from bottom. Requires 2.5+."}, {"section": "[Mania]", "command": "StageLeft", "note": "Left stage border image."}, {"section": "[Mania]", "command": "StageRight", "note": "Right stage border image."}, {"section": "[Mania]", "command": "StageBottom", "note": "Bottom stage image. Not stretched to fit."}, {"section": "[Mania]", "command": "StageHint", "note": "Graphical judgement line image."}, {"section": "[Mania]", "command": "StageLight", "note": "Column lighting image."}, {"section": "[Mania]", "command": "LightingN", "note": "Note lighting image."}, {"section": "[Mania]", "command": "LightingL", "note": "Hold note lighting image."}, {"section": "[Mania]", "command": "WarningArrow", "note": "Warning arrow image shown 3 barlines before start if possible."}, {"section": "[Mania]", "command": "Hit0", "note": "Miss image path."}, {"section": "[Mania]", "command": "Hit50", "note": "50 image path."}, {"section": "[Mania]", "command": "Hit100", "note": "100 image path."}, {"section": "[Mania]", "command": "Hit200", "note": "200 image path."}, {"section": "[Mania]", "command": "Hit300", "note": "300 image path."}, {"section": "[Mania]", "command": "Hit300g", "note": "geki image path."}, {"section": "[Mania]", "command": "ColourColumnLine", "note": "Column separator colour. Default 255,255,255,255."}, {"section": "[Mania]", "command": "ColourBarline", "note": "Barline colour. Default 255,255,255,255."}, {"section": "[Mania]", "command": "ColourJudgementLine", "note": "Timing line colour. Default 255,255,255."}, {"section": "[Mania]", "command": "ColourKeyWarning", "note": "Keybinding reminder colour. Default 0,0,0."}, {"section": "[Mania]", "command": "ColourHold", "note": "Combo counter colour during holds. Default 255,191,51,255."}, {"section": "[Mania]", "command": "ColourBreak", "note": "Combo counter colour on break. Default 255,0,0."}, {"section": "[Mania]", "command": "Colour#", "note": "Column lane colour. Current wiki uses 1-based indices for Colour# and ColourLight#."}, {"section": "[Mania]", "command": "ColourLight#", "note": "Column StageLight colour. 1-based indices."}, {"section": "[Mania]", "command": "KeyImage#", "note": "Unpressed key image. Column index family uses per-column image commands."}, {"section": "[Mania]", "command": "KeyImage#D", "note": "Pressed key image."}, {"section": "[Mania]", "command": "NoteImage#", "note": "Tap note image."}, {"section": "[Mania]", "command": "NoteImage#H", "note": "Hold head image."}, {"section": "[Mania]", "command": "NoteImage#L", "note": "Hold body image."}, {"section": "[Mania]", "command": "NoteImage#T", "note": "Hold tail image."}, {"section": "[Mania]", "command": "KeyFlipWhenUpsideDown#", "note": "Flip specific column key image. Requires 2.5+."}, {"section": "[Mania]", "command": "KeyFlipWhenUpsideDown#D", "note": "Flip specific pressed key image. Requires 2.5+."}, {"section": "[Mania]", "command": "NoteFlipWhenUpsideDown#", "note": "Flip specific note image. Requires 2.5+."}, {"section": "[Mania]", "command": "NoteFlipWhenUpsideDown#H", "note": "Flip specific hold head image. Requires 2.5+."}, {"section": "[Mania]", "command": "NoteFlipWhenUpsideDown#L", "note": "Flip specific hold body image. Requires 2.5+."}, {"section": "[Mania]", "command": "NoteFlipWhenUpsideDown#T", "note": "Flip specific hold tail image. Requires 2.5+."}, {"section": "[Mania]", "command": "NoteBodyStyle#", "note": "Per-column hold body style. Requires 2.5+."}]};
+const STORAGE_KEY = "skinini_studio_complete_v1";
+const VALID_KEYS = [1,2,3,4,5,6,7,8,9,10,12,14,16,18];
 
-const PAGES = [
-  { key:"overview", title:"Overview", note:"Project controls and quick status" },
-  { key:"general", title:"General", note:"Name, author, version and cursor options" },
-  { key:"fonts", title:"Fonts", note:"Font prefixes and overlaps" },
-  { key:"layout", title:"Layout", note:"Columns, start and positions" },
-  { key:"stage", title:"Stage", note:"Stage and lighting images" },
-  { key:"colours", title:"Colours", note:"Columns and line colours" },
-  { key:"images", title:"Images", note:"Key and note image patterns" },
-  { key:"hits", title:"Hits", note:"Hitburst image paths" },
-  { key:"flip", title:"Flip", note:"Upside-down flip switches" },
-  { key:"advanced", title:"Advanced", note:"Special mania commands and extras" },
-  { key:"commands", title:"Commands", note:"Command browser" }
-];
-
-const COMMANDS = [
-  ["Name","[General] Skin name","general"],
-  ["Author","[General] Skin author","general"],
-  ["Version","[General] Skin version","general"],
-  ["CursorCentre","Center cursor sprite","general"],
-  ["CursorExpand","Expand cursor on click","general"],
-  ["CursorRotate","Rotate cursor","general"],
-  ["CursorTrailRotate","Rotate cursor trail","general"],
-  ["ScorePrefix","Score image prefix","fonts"],
-  ["ScoreOverlap","Score digit overlap","fonts"],
-  ["ComboPrefix","Combo image prefix","fonts"],
-  ["ComboOverlap","Combo digit overlap","fonts"],
-  ["Keys","Mania keycount section","layout"],
-  ["ColumnStart","Column x start","layout"],
-  ["ColumnRight","Right padding","layout"],
-  ["ColumnSpacing","Space between columns","layout"],
-  ["ColumnWidth","Column widths","layout"],
-  ["ColumnLineWidth","Line widths","layout"],
-  ["HitPosition","Hit position y","layout"],
-  ["LightPosition","Light position y","layout"],
-  ["ScorePosition","Score position y","layout"],
-  ["ComboPosition","Combo position y","layout"],
-  ["JudgementLine","Show judgement line","advanced"],
-  ["KeysUnderNotes","Draw keys under notes","advanced"],
-  ["UpsideDown","Invert playfield","advanced"],
-  ["BarlineHeight","Barline height","advanced"],
-  ["WidthForNoteHeightScale","Scale note body using width","advanced"],
-  ["LightFramePerSecond","Stage light fps","advanced"],
-  ["SpecialStyle","Special style","advanced"],
-  ["ComboBurstStyle","Combo burst style","advanced"],
-  ["SplitStages","Split stages","advanced"],
-  ["StageSeparation","Stage separation","advanced"],
-  ["SeparateScore","Separate score position","advanced"],
-  ["NoteBodyStyle","Hold body style","advanced"],
-  ["StageLeft","Stage left sprite","stage"],
-  ["StageRight","Stage right sprite","stage"],
-  ["StageBottom","Stage bottom sprite","stage"],
-  ["StageHint","Stage hint sprite","stage"],
-  ["StageLight","Stage light sprite","stage"],
-  ["LightingNWidth","Normal light width","stage"],
-  ["LightingLWidth","Long note light width","stage"],
-  ["LightingN","Normal light sprite","stage"],
-  ["LightingL","Long note light sprite","stage"],
-  ["Colour0..17","Column colours","colours"],
-  ["ColourLight0..17","Column light colours","colours"],
-  ["ColourColumnLine","Column line colour","colours"],
-  ["ColourBarline","Barline colour","colours"],
-  ["ColourJudgementLine","Judgement line colour","colours"],
-  ["ColourKeyWarning","Key warning colour","colours"],
-  ["ColourHold","Hold colour","colours"],
-  ["ColourBreak","Break colour","colours"],
-  ["KeyImage0..17","Key images","images"],
-  ["KeyImage0D..17D","Pressed key images","images"],
-  ["NoteImage0..17","Tap note images","images"],
-  ["NoteImage0H..17H","Head note images","images"],
-  ["NoteImage0L..17L","Body note images","images"],
-  ["NoteImage0T..17T","Tail note images","images"],
-  ["WarningArrow","Warning arrow image","images"],
-  ["Hit0","Miss image","hits"],
-  ["Hit50","50 image","hits"],
-  ["Hit100","100 image","hits"],
-  ["Hit200","200 image","hits"],
-  ["Hit300","300 image","hits"],
-  ["Hit300g","geki image","hits"],
-  ["KeyFlipWhenUpsideDown","Flip all key images","flip"],
-  ["NoteFlipWhenUpsideDown","Flip all note images","flip"],
-  ["KeyFlipWhenUpsideDown0..17","Flip key image by column","flip"],
-  ["KeyFlipWhenUpsideDown0D..17D","Flip key pressed image by column","flip"],
-  ["NoteFlipWhenUpsideDown0..17","Flip note image by column","flip"],
-  ["NoteFlipWhenUpsideDown0H..17H","Flip head image by column","flip"],
-  ["NoteFlipWhenUpsideDown0L..17L","Flip body image by column","flip"],
-  ["NoteFlipWhenUpsideDown0T..17T","Flip tail image by column","flip"]
-];
-
-function blank(v){ return String(v ?? "").trim() === ""; }
-function clean(v){ return String(v ?? "").replace(/\r/g,"").trim(); }
-function cleanEnd(v){ return String(v ?? "").replace(/\r/g,"").trimEnd(); }
-function bool01(v){ return v ? "1" : "0"; }
+function clean(v){ return String(v ?? "").replace(/\r/g, "").trim(); }
+function cleanEnd(v){ return String(v ?? "").replace(/\r/g, "").trimEnd(); }
+function blank(v){ return clean(v) === ""; }
 function debounce(fn, ms){
   let t = null;
   return (...args)=>{
@@ -767,11 +628,23 @@ function debounce(fn, ms){
     t = setTimeout(()=>fn(...args), ms);
   };
 }
+function esc(v){
+  return String(v ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;");
+}
+function boolText(v){
+  if(v === "1") return "On";
+  if(v === "0") return "Off";
+  return "Unset";
+}
 function rgbToHex(rgb){
-  const m = String(rgb || "").match(/^\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*$/);
+  const m = String(rgb || "").match(/^\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})/);
   if(!m) return "#ffffff";
-  const vals = [m[1],m[2],m[3]].map(n=>Math.max(0, Math.min(255, parseInt(n,10))));
-  return "#" + vals.map(n=>n.toString(16).padStart(2,"0")).join("");
+  const vals = [m[1],m[2],m[3]].map(x=>Math.max(0, Math.min(255, parseInt(x,10))));
+  return "#" + vals.map(x=>x.toString(16).padStart(2,"0")).join("");
 }
 function hexToRgb(hex){
   const h = String(hex || "").replace("#","").trim();
@@ -781,174 +654,80 @@ function hexToRgb(hex){
   const b = parseInt(h.slice(4,6),16);
   return `${r},${g},${b}`;
 }
-function padCsv(raw, count, fallback){
-  const s = cleanEnd(raw);
-  if(!s) return fallback;
-  if(s.includes(",")) return s;
-  return Array.from({length: count}, ()=>s).join(",");
-}
-function pattern(pattern, n){
-  const p = cleanEnd(pattern);
-  return p ? p.replaceAll("{n}", String(n)) : "";
-}
 function firstNumber(raw, fallback){
-  const first = String(raw ?? "").split(",")[0].trim();
-  const n = Number(first);
+  const n = Number(String(raw ?? "").split(",")[0].trim());
   return Number.isFinite(n) ? n : fallback;
 }
-function inferPattern(values){
-  const vals = values.map(v=>cleanEnd(v)).filter(Boolean);
-  if(vals.length < 2) return "";
-  let pref = vals[0];
-  for(const v of vals){
-    let i=0;
-    while(i<pref.length && i<v.length && pref[i]===v[i]) i++;
-    pref = pref.slice(0,i);
-  }
-  let suf = vals[0];
-  for(const v of vals){
-    let i=0;
-    while(i<suf.length && i<v.length && suf[suf.length-1-i]===v[v.length-1-i]) i++;
-    suf = suf.slice(suf.length-i);
-  }
-  const inner = vals[0].slice(pref.length, vals[0].length - suf.length);
-  if(!/^\d+$/.test(inner)) return "";
-  const width = inner.length;
-  for(const start of [0,1]){
-    let ok = true;
-    for(let i=0;i<vals.length;i++){
-      const mid = vals[i].slice(pref.length, vals[i].length - suf.length);
-      if(mid !== String(start+i).padStart(width,"0")){ ok = false; break; }
-    }
-    if(ok) return `${pref}{n}${suf}`;
-  }
-  return "";
-}
-function fallbackPattern(sample){
-  const s = cleanEnd(sample);
-  if(!s) return "";
-  const m = s.match(/\d+/);
-  if(!m) return "";
-  const idx = m.index ?? 0;
-  return s.slice(0, idx) + "{n}" + s.slice(idx + m[0].length);
-}
-function inferBy(kv, base, keys, suffix=""){
-  const arr = Array.from({length:keys}, (_,i)=>kv[`${base}${i}${suffix}`] ?? "");
-  return inferPattern(arr) || fallbackPattern(arr[0]);
-}
-function getAspectRatio(m){
-  if(m.ARPreset !== "custom"){
-    const [w,h] = String(m.ARPreset || "16:9").split(":").map(Number);
+function getAspectRatio(mode){
+  const preset = cleanEnd(mode._ui.ARPreset || "16:9");
+  if(preset !== "custom"){
+    const [w,h] = preset.split(":").map(Number);
     if(Number.isFinite(w) && Number.isFinite(h) && h !== 0) return w / h;
   }
-  const w = firstNumber(m.ARW, 16);
-  const h = firstNumber(m.ARH, 9);
+  const w = firstNumber(mode._ui.ARW, 16);
+  const h = firstNumber(mode._ui.ARH, 9);
   return h === 0 ? 16/9 : w/h;
 }
-function calcAutoColumnStart(keys, m){
-  const colW = firstNumber(m.ColumnWidth, 70);
-  const colS = firstNumber(m.ColumnSpacing, 0);
-  const ar = getAspectRatio(m);
-  const offset = firstNumber(m.CenterOffset, 0);
-  const width = 480 * ar;
-  const total = (colW * keys) + (colS * Math.max(0, keys - 1));
-  return Math.round((width / 2) - (total / 2) + offset);
+function calcAutoColumnStart(keys, mode){
+  const columnWidth = firstNumber(mode.ColumnWidth, 30);
+  const columnSpacing = firstNumber(mode.ColumnSpacing, 0);
+  const ar = getAspectRatio(mode);
+  const offset = firstNumber(mode._ui.CenterOffset, 0);
+  const usableWidth = 480 * ar;
+  const columnSum = (columnWidth * keys) + (columnSpacing * Math.max(0, keys - 1));
+  return Math.round((usableWidth / 2) - (columnSum / 2) + offset);
 }
-function defaultGeneral(){
+function defaultSection(schema, preset={}){
+  const out = {};
+  schema.forEach(item=>{
+    out[item.key] = item.default ?? "";
+  });
+  out._extra = {};
+  return Object.assign(out, preset);
+}
+function defaultMode(keys){
   return {
-    Name:"",
-    Author:"",
-    Version:"2.7",
-    CursorCentre:true,
-    CursorExpand:false,
-    CursorRotate:false,
-    CursorTrailRotate:false,
-    ScorePrefix:"score",
-    ScoreOverlap:"0",
-    ComboPrefix:"combo",
-    ComboOverlap:"0",
-    extra:{}
+    Keys:String(keys),
+    _enabled: keys === 4,
+    _subpage:"layout",
+    _ui:{ AutoColumnStart:true, ARPreset:"16:9", ARW:"16", ARH:"9", CenterOffset:"0" },
+    _extra:{},
+    _colour:{},
+    _colourLight:{},
+    _image:{},
+    _imageD:{},
+    _note:{},
+    _noteH:{},
+    _noteL:{},
+    _noteT:{},
+    _keyFlip:{},
+    _keyFlipD:{},
+    _noteFlip:{},
+    _noteFlipH:{},
+    _noteFlipL:{},
+    _noteFlipT:{},
+    _noteBodyStyle:{},
+    ...defaultSection(META.maniaLayout),
+    ...defaultSection(META.maniaBehaviour),
+    ...defaultSection(META.maniaStage),
+    ...defaultSection(META.maniaHits),
+    ...defaultSection(META.maniaGlobalColours),
   };
 }
-function defaultMania(keys){
-  return {
-    Keys:keys,
-    ColumnStart:"",
-    ColumnRight:"",
-    ColumnSpacing:"0",
-    ColumnWidth:"70",
-    ColumnLineWidth:"",
-    HitPosition:"",
-    LightPosition:"",
-    ScorePosition:"",
-    ComboPosition:"",
-    JudgementLine:true,
-    KeysUnderNotes:false,
-    UpsideDown:false,
-    BarlineHeight:"",
-    WidthForNoteHeightScale:"",
-    LightFramePerSecond:"",
-    SpecialStyle:"",
-    ComboBurstStyle:"",
-    SplitStages:false,
-    StageSeparation:"",
-    SeparateScore:false,
-    NoteBodyStyle:"",
-    StageLeft:"",
-    StageRight:"",
-    StageBottom:"",
-    StageHint:"",
-    StageLight:"",
-    LightingNWidth:"",
-    LightingLWidth:"",
-    LightingN:"",
-    LightingL:"",
-    ColourColumnLine:"",
-    ColourBarline:"",
-    ColourJudgementLine:"",
-    ColourKeyWarning:"",
-    ColourHold:"",
-    ColourBreak:"",
-    Colour:{},
-    ColourLight:{},
-    pKey:"",
-    pKeyD:"",
-    pNote:"",
-    pNoteH:"",
-    pNoteL:"",
-    pNoteT:"",
-    WarningArrow:"",
-    Hit0:"",
-    Hit50:"",
-    Hit100:"",
-    Hit200:"",
-    Hit300:"",
-    Hit300g:"",
-    flipKeyAll:false,
-    flipNoteAll:false,
-    keyFlip:{},
-    keyFlipD:{},
-    noteFlip:{},
-    noteFlipH:{},
-    noteFlipL:{},
-    noteFlipT:{},
-    AutoColumnStart:true,
-    ARPreset:"16:9",
-    ARW:"16",
-    ARH:"9",
-    CenterOffset:"0",
-    extra:{}
-  };
-}
-
 const state = {
   page:"overview",
-  selectedKeys:4,
-  enabled:Object.fromEntries(ALL_KEYS.map(k=>[k, k===4])),
-  general:defaultGeneral(),
-  mania:Object.fromEntries(ALL_KEYS.map(k=>[k, defaultMania(k)]))
+  search:"",
+  selectedMode:4,
+  sections:{
+    general: defaultSection(META.general, {Version:"2.7"}),
+    colours: defaultSection(META.colours),
+    fonts: defaultSection(META.fonts),
+    catch: defaultSection(META.catch),
+  },
+  mania:Object.fromEntries(VALID_KEYS.map(k=>[k, defaultMode(k)])),
+  importReport:[],
 };
-
+function mode(k){ return state.mania[k]; }
 function pathGet(path){
   return path.split(".").reduce((acc,key)=>acc?.[key], state);
 }
@@ -958,705 +737,453 @@ function pathSet(path, value){
   for(let i=0;i<parts.length-1;i++) cur = cur[parts[i]];
   cur[parts[parts.length-1]] = value;
 }
-
-function row(label, desc, input){
-  return `
-    <div class="row" data-search-scope="${label} ${desc}">
-      <div class="rowLabel">
-        <b>${label}</b>
-        <span>${desc}</span>
+function selectOptions(meta, value){
+  if(meta.type === "bool"){
+    const opts = [["","Unset"],["0","Off"],["1","On"]];
+    return opts.map(([v,l])=>`<option value="${v}" ${String(value)===String(v) ? "selected" : ""}>${l}</option>`).join("");
+  }
+  if(meta.type === "select"){
+    return meta.options.map(([v,l])=>`<option value="${esc(v)}" ${String(value)===String(v) ? "selected" : ""}>${esc(l)}</option>`).join("");
+  }
+  return "";
+}
+function inputFor(meta, path, value){
+  if(meta.type === "bool" || meta.type === "select"){
+    return `<select class="select" data-bind="${path}">${selectOptions(meta, value)}</select>`;
+  }
+  if(meta.type === "textarea"){
+    return `<textarea class="area" data-bind="${path}" placeholder="${esc(meta.placeholder || "")}">${esc(value)}</textarea>`;
+  }
+  if(meta.type === "color"){
+    return `
+      <div class="inline">
+        <input class="control" style="width:56px;padding:2px" type="color" data-colour="${path}" value="${rgbToHex(value)}">
+        <input class="control" data-bind="${path}" value="${esc(value)}" placeholder="${esc(meta.placeholder || "255,255,255")}">
       </div>
-      <div>${input}</div>
+    `;
+  }
+  const type = meta.type === "number" ? "number" : "text";
+  return `<input class="control" type="${type}" data-bind="${path}" value="${esc(value)}" placeholder="${esc(meta.placeholder || "")}">`;
+}
+function row(meta, path){
+  const value = pathGet(path) ?? "";
+  const keywords = `${meta.label} ${meta.key || meta.label} ${meta.note || ""}`;
+  return `
+    <div class="row" data-search="${esc(keywords)}">
+      <div class="label">
+        <b>${esc(meta.label)}</b>
+        <span>${esc(meta.note || "")}</span>
+      </div>
+      <div>${inputFor(meta, path, value)}</div>
     </div>
   `;
 }
-function text(path, placeholder=""){
-  const value = pathGet(path) ?? "";
-  return `<input class="field" data-bind="${path}" value="${String(value).replaceAll('"',"&quot;")}" placeholder="${placeholder}">`;
-}
-function numberField(path, placeholder=""){
-  const value = pathGet(path) ?? "";
-  return `<input class="field" type="number" data-bind="${path}" value="${String(value).replaceAll('"',"&quot;")}" placeholder="${placeholder}">`;
-}
-function area(path, placeholder=""){
-  const value = pathGet(path) ?? "";
-  return `<textarea class="area" data-bind="${path}" placeholder="${placeholder}">${String(value).replaceAll("<","&lt;")}</textarea>`;
-}
-function boolField(path){
-  const value = !!pathGet(path);
-  return `<label class="switch"><input type="checkbox" data-bind="${path}" ${value ? "checked" : ""}><span>${value ? "On" : "Off"}</span></label>`;
-}
-function colourField(path){
-  const value = pathGet(path) ?? "";
+function extraBox(path, note){
+  const raw = extraToText(pathGet(path) || {});
   return `
-    <div class="inline">
-      <input class="field" style="width:56px;padding:2px" type="color" data-colour="${path}" value="${rgbToHex(value)}">
-      <input class="field" data-bind="${path}" value="${String(value).replaceAll('"',"&quot;")}" placeholder="255,255,255">
+    <div class="row" data-search="extra commands custom commands unknown commands">
+      <div class="label">
+        <b>Extra commands</b>
+        <span>${esc(note)}</span>
+      </div>
+      <div><textarea class="area" data-extra="${path}" placeholder="One line per command&#10;Example: CustomCommand: value">${esc(raw)}</textarea></div>
     </div>
   `;
 }
-function selectField(path, options){
-  const value = pathGet(path);
+function extraToText(obj){
+  return Object.entries(obj || {}).map(([k,v])=>`${k}: ${v}`).join("\n");
+}
+function textToExtra(text){
+  const out = {};
+  String(text || "").split(/\n/).forEach(line=>{
+    const trimmed = line.trim();
+    if(!trimmed) return;
+    const m = trimmed.match(/^([A-Za-z0-9]+)\s*:\s*(.*)$/);
+    if(!m) return;
+    out[m[1]] = m[2].trim();
+  });
+  return out;
+}
+function card(title, note, body){
   return `
-    <select class="select" data-bind="${path}">
-      ${options.map(([v,l])=>`<option value="${v}" ${String(value)===String(v) ? "selected" : ""}>${l}</option>`).join("")}
-    </select>
+    <section class="card">
+      <div class="cardHead"><b>${esc(title)}</b><span>${esc(note || "")}</span></div>
+      <div class="cardBody">${body}</div>
+    </section>
   `;
 }
-
-function renderTabs(){
-  $("browserTabs").innerHTML = PAGES.map(p=>`
-    <button class="browserTab ${state.page===p.key ? "active" : ""}" data-page="${p.key}">
-      <span>${p.title}</span>
-    </button>
+function renderTopTabs(){
+  $("topTabs").innerHTML = META.pages.map(p=>`
+    <button class="tab ${state.page===p.key ? "active" : ""}" data-page="${p.key}">${esc(p.title)}</button>
   `).join("");
 }
-function renderSidebarNav(){
-  $("navList").innerHTML = PAGES.map(p=>`
+function renderNav(){
+  $("navList").innerHTML = META.pages.map(p=>`
     <button class="navBtn ${state.page===p.key ? "active" : ""}" data-page="${p.key}">
-      <span>${p.title}</span>
-      <span class="navMeta">${p.note}</span>
+      <div>
+        <b>${esc(p.title)}</b>
+        <span>${esc(p.note)}</span>
+      </div>
     </button>
   `).join("");
 }
 function renderModes(){
-  $("modeGrid").innerHTML = ALL_KEYS.map(k=>`
+  $("modeGrid").innerHTML = VALID_KEYS.map(k=>`
     <div class="modeCard">
-      <div class="modeCardTop">
+      <div class="modeHead">
         <b>${k}K</b>
-        <span>${state.selectedKeys===k ? "selected" : "mode"}</span>
+        <span>${state.selectedMode===k ? "selected" : "mode"}</span>
       </div>
       <div class="inline">
-        <label class="switch small"><input type="checkbox" data-mode-enable="${k}" ${state.enabled[k] ? "checked" : ""}><span>${state.enabled[k] ? "On" : "Off"}</span></label>
-        <button class="btn small ${state.selectedKeys===k ? "primary" : ""}" data-mode-select="${k}">Open</button>
+        <label class="switch mini">
+          <input type="checkbox" data-enable-mode="${k}" ${mode(k)._enabled ? "checked" : ""}>
+          <span>${mode(k)._enabled ? "On" : "Off"}</span>
+        </label>
+        <button class="btn mini ${state.selectedMode===k ? "primary" : ""}" data-open-mode="${k}">Open</button>
       </div>
     </div>
   `).join("");
 }
 function renderHeader(){
-  const p = PAGES.find(x=>x.key===state.page) || PAGES[0];
-  $("mainTitle").textContent = p.title;
-  $("mainNote").textContent = p.note;
-  $("pagePill").textContent = `page: ${p.key}`;
-  $("modePill").textContent = `mode: ${state.selectedKeys}K`;
-  $("savePill").textContent = "saved";
+  const page = META.pages.find(x=>x.key===state.page) || META.pages[0];
+  $("pageTitle").textContent = page.title;
+  $("pageNote").textContent = page.note;
+  $("modePill").textContent = `mode: ${state.selectedMode}K`;
+}
+function statsHtml(){
+  const enabled = VALID_KEYS.filter(k=>mode(k)._enabled);
+  const advancedUsed = enabled.some(k=>usesVersion25(mode(k)));
+  return `
+    <div class="grid3">
+      ${card("Enabled modes", `${enabled.length} active`, `<div class="hint">${enabled.map(k=>`${k}K`).join(", ") || "none"}</div>`)}
+      ${card("Selected mode", "current editor target", `<div class="hint">${state.selectedMode}K</div>`)}
+      ${card("Version 2.5+ features", "advanced mania options", `<div class="hint">${advancedUsed ? "in use" : "not detected"}</div>`)}
+    </div>
+  `;
+}
+function renderOverview(){
+  const m = mode(state.selectedMode);
+  const notes = `
+    <div class="infoBar">
+      <span class="pill">strict parser: key: value only</span>
+      <span class="pill">case-sensitive commands</span>
+      <span class="pill">per-keycount [Mania] export</span>
+      <span class="pill">extras preserved</span>
+    </div>
+    <div class="noteBox">
+      <b>Quick notes</b>
+      <div class="hint">Colour# and ColourLight# use 1-based column numbers. Mania image families and flip families use per-column indices. Horizontal mania positioning is based on a height of 480 pixels.</div>
+    </div>
+    <div class="noteBox">
+      <b>Selected mode preview</b>
+      <div class="hint">Auto ColumnStart: ${m._ui.AutoColumnStart ? calcAutoColumnStart(state.selectedMode, m) : (cleanEnd(m.ColumnStart) || "manual empty")}</div>
+    </div>
+  `;
+  return card("Project", "Overview and builder rules", notes) + statsHtml();
+}
+function renderSimpleSection(title, note, sectionKey, schema){
+  const rows = schema.map(meta=>row(meta, `sections.${sectionKey}.${meta.key}`)).join("");
+  return card(title, note, rows + extraBox(`sections.${sectionKey}._extra`, `Unknown ${title} commands are preserved here.`));
+}
+function renderManiaSubTabs(){
+  return `
+    <div class="sectionTabs">
+      ${META.maniaSubpages.map(p=>`
+        <button class="sectionTab ${mode(state.selectedMode)._subpage===p.key ? "active" : ""}" data-mania-page="${p.key}">
+          ${esc(p.title)}
+        </button>
+      `).join("")}
+    </div>
+  `;
+}
+function renderManiaLayout(){
+  const rows = META.maniaLayout.map(meta=>row(meta, `mania.${state.selectedMode}.${meta.key}`)).join("");
+  const uiRows = [
+    row({label:"Auto ColumnStart", key:"Auto ColumnStart", type:"bool", note:"Calculate ColumnStart using aspect ratio and column width."}, `mania.${state.selectedMode}._ui.AutoColumnStart`),
+    row({label:"Aspect Ratio", key:"Aspect Ratio", type:"select", note:"Used only by Auto ColumnStart.", options:[["16:9","16:9"],["4:3","4:3"],["21:9","21:9"],["custom","custom"]]}, `mania.${state.selectedMode}._ui.ARPreset`),
+    row({label:"Custom AR Width", key:"Custom AR Width", type:"number", note:"Used when Aspect Ratio = custom.", placeholder:"16"}, `mania.${state.selectedMode}._ui.ARW`),
+    row({label:"Custom AR Height", key:"Custom AR Height", type:"number", note:"Used when Aspect Ratio = custom.", placeholder:"9"}, `mania.${state.selectedMode}._ui.ARH`),
+    row({label:"Center Offset", key:"Center Offset", type:"number", note:"Fine offset added after auto-centering.", placeholder:"0"}, `mania.${state.selectedMode}._ui.CenterOffset`),
+  ].join("");
+  return card(`${state.selectedMode}K Layout`, "Columns, widths and positions", uiRows + rows);
+}
+function renderManiaBehaviour(){
+  const rows = META.maniaBehaviour.map(meta=>row(meta, `mania.${state.selectedMode}.${meta.key}`)).join("");
+  return card(`${state.selectedMode}K Behaviour`, "Styles, split stages and upside-down logic", rows + extraBox(`mania.${state.selectedMode}._extra`, `Unknown [Mania] commands for ${state.selectedMode}K are preserved here.`));
+}
+function renderManiaStage(){
+  const rows = META.maniaStage.map(meta=>row(meta, `mania.${state.selectedMode}.${meta.key}`)).join("");
+  return card(`${state.selectedMode}K Stage`, "Stage and lighting images", rows);
+}
+function renderManiaHits(){
+  const rows = META.maniaHits.map(meta=>row(meta, `mania.${state.selectedMode}.${meta.key}`)).join("");
+  return card(`${state.selectedMode}K Hits`, "Hitburst image paths", rows);
+}
+function renderPerColumnColours(){
+  const k = state.selectedMode;
+  const left = Array.from({length:k}, (_,i)=>`
+    <div class="row" data-search="Colour${i+1} column lane colour">
+      <div class="label"><b>Colour${i+1}</b><span>Lane background colour. 1-based index.</span></div>
+      <div>${inputFor({type:"color", placeholder:"0,0,0,255"}, `mania.${k}._colour.${i+1}`, mode(k)._colour[i+1] || "")}</div>
+    </div>
+  `).join("");
+  const right = Array.from({length:k}, (_,i)=>`
+    <div class="row" data-search="ColourLight${i+1} stage light colour">
+      <div class="label"><b>ColourLight${i+1}</b><span>StageLight colour. 1-based index.</span></div>
+      <div>${inputFor({type:"color", placeholder:"55,255,255"}, `mania.${k}._colourLight.${i+1}`, mode(k)._colourLight[i+1] || "")}</div>
+    </div>
+  `).join("");
+  const globals = META.maniaGlobalColours.map(meta=>row(meta, `mania.${k}.${meta.key}`)).join("");
+  return `
+    <div class="grid2">
+      ${card(`${k}K Column colours`, "Colour# family", left)}
+      ${card(`${k}K Light colours`, "ColourLight# family", right)}
+    </div>
+    ${card(`${k}K Global colours`, "Shared mania colour commands", globals)}
+  `;
+}
+function renderPerColumnImages(){
+  const k = state.selectedMode;
+  const items = Array.from({length:k}, (_,i)=>`
+    <div class="card">
+      <div class="cardHead"><b>Column ${i}</b><span>Per-column image paths</span></div>
+      <div class="cardBody">
+        ${row({label:`KeyImage${i}`, type:"text", note:"Idle key image."}, `mania.${k}._image.${i}`)}
+        ${row({label:`KeyImage${i}D`, type:"text", note:"Pressed key image."}, `mania.${k}._imageD.${i}`)}
+        ${row({label:`NoteImage${i}`, type:"text", note:"Tap note image."}, `mania.${k}._note.${i}`)}
+        ${row({label:`NoteImage${i}H`, type:"text", note:"Hold head image."}, `mania.${k}._noteH.${i}`)}
+        ${row({label:`NoteImage${i}L`, type:"text", note:"Hold body image."}, `mania.${k}._noteL.${i}`)}
+        ${row({label:`NoteImage${i}T`, type:"text", note:"Hold tail image."}, `mania.${k}._noteT.${i}`)}
+      </div>
+    </div>
+  `).join("");
+  return items;
+}
+function renderPerColumnFlip(){
+  const k = state.selectedMode;
+  return Array.from({length:k}, (_,i)=>`
+    <div class="card">
+      <div class="cardHead"><b>Column ${i}</b><span>Flip and hold-body overrides</span></div>
+      <div class="cardBody">
+        ${row({label:`KeyFlipWhenUpsideDown${i}`, type:"bool", note:"Flip specific key image. Requires 2.5+."}, `mania.${k}._keyFlip.${i}`)}
+        ${row({label:`KeyFlipWhenUpsideDown${i}D`, type:"bool", note:"Flip pressed key image. Requires 2.5+."}, `mania.${k}._keyFlipD.${i}`)}
+        ${row({label:`NoteFlipWhenUpsideDown${i}`, type:"bool", note:"Flip note image. Requires 2.5+."}, `mania.${k}._noteFlip.${i}`)}
+        ${row({label:`NoteFlipWhenUpsideDown${i}H`, type:"bool", note:"Flip hold head image. Requires 2.5+."}, `mania.${k}._noteFlipH.${i}`)}
+        ${row({label:`NoteFlipWhenUpsideDown${i}L`, type:"bool", note:"Flip hold body image. Requires 2.5+."}, `mania.${k}._noteFlipL.${i}`)}
+        ${row({label:`NoteFlipWhenUpsideDown${i}T`, type:"bool", note:"Flip hold tail image. Requires 2.5+."}, `mania.${k}._noteFlipT.${i}`)}
+        ${row({label:`NoteBodyStyle${i}`, type:"select", note:"Per-column hold body style. Requires 2.5+.", options:[["","unset"],["0","0"],["1","1"],["2","2"]]}, `mania.${k}._noteBodyStyle.${i}`)}
+      </div>
+    </div>
+  `).join("");
+}
+function renderMania(){
+  const sub = mode(state.selectedMode)._subpage;
+  let content = "";
+  if(sub === "layout") content = renderManiaLayout();
+  if(sub === "behaviour") content = renderManiaBehaviour();
+  if(sub === "stage") content = renderManiaStage();
+  if(sub === "colours") content = renderPerColumnColours();
+  if(sub === "images") content = renderPerColumnImages();
+  if(sub === "hits") content = renderManiaHits();
+  if(sub === "flip") content = renderPerColumnFlip();
+  return renderManiaSubTabs() + content;
+}
+function renderBrowser(){
+  return card("Command Browser", "Supported commands and wiki-oriented notes", `
+    <div class="commandTable">
+      ${META.commands.map(item=>`
+        <div class="command" data-search="${esc(item.command + " " + item.section + " " + item.note)}">
+          <code>${esc(item.command)}</code>
+          <div class="hint">${esc(item.note)}</div>
+          <small>${esc(item.section)}</small>
+        </div>
+      `).join("")}
+    </div>
+  `);
 }
 function renderPage(){
-  const m = state.mania[state.selectedKeys];
-  const pages = [];
-
-  pages.push({
-    key:"overview",
-    html:`
-      <div class="panel">
-        <div class="panelHead"><b>Project</b><span>Quick actions and project status</span></div>
-        <div class="panelBody">
-          ${row("Name","Skin display name", text("general.Name","skin name"))}
-          ${row("Author","Skin author", text("general.Author","author"))}
-          ${row("Version","Fixed version recommended", selectField("general.Version", [["2.0","2.0"],["2.5","2.5"],["2.6","2.6"],["2.7","2.7"],["latest","latest"]]))}
-          <div class="grid3">
-            <div class="panel">
-              <div class="panelHead"><b>Enabled keymodes</b><span>${ALL_KEYS.filter(k=>state.enabled[k]).length} active</span></div>
-              <div class="panelBody"><div class="hint">${ALL_KEYS.filter(k=>state.enabled[k]).map(k=>`${k}K`).join(", ") || "none"}</div></div>
-            </div>
-            <div class="panel">
-              <div class="panelHead"><b>Selected mode</b><span>Editor target</span></div>
-              <div class="panelBody"><div class="hint">${state.selectedKeys}K</div></div>
-            </div>
-            <div class="panel">
-              <div class="panelHead"><b>Auto ColumnStart</b><span>Calculated value</span></div>
-              <div class="panelBody"><div class="hint">${m.AutoColumnStart ? calcAutoColumnStart(state.selectedKeys, m) : cleanEnd(m.ColumnStart) || "manual empty"}</div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panelHead"><b>Search result</b><span>Filters commands and fields</span></div>
-        <div class="panelBody">
-          <div class="hint">Use the search box in the left sidebar to filter commands, rows and command browser entries.</div>
-        </div>
-      </div>
-    `
-  });
-
-  pages.push({
-    key:"general",
-    html:`
-      <div class="panel">
-        <div class="panelHead"><b>General</b><span>Core skin metadata</span></div>
-        <div class="panelBody">
-          ${row("Name","Skin name", text("general.Name","skin name"))}
-          ${row("Author","Skin author", text("general.Author","author"))}
-          ${row("Version","Use a fixed version for distribution", selectField("general.Version", [["2.0","2.0"],["2.5","2.5"],["2.6","2.6"],["2.7","2.7"],["latest","latest"]]))}
-          ${row("CursorCentre","Center cursor sprite", boolField("general.CursorCentre"))}
-          ${row("CursorExpand","Expand cursor on click", boolField("general.CursorExpand"))}
-          ${row("CursorRotate","Rotate cursor", boolField("general.CursorRotate"))}
-          ${row("CursorTrailRotate","Rotate cursor trail", boolField("general.CursorTrailRotate"))}
-        </div>
-      </div>
-    `
-  });
-
-  pages.push({
-    key:"fonts",
-    html:`
-      <div class="panel">
-        <div class="panelHead"><b>Fonts</b><span>Score and combo prefixes</span></div>
-        <div class="panelBody">
-          ${row("ScorePrefix","Prefix for score images", text("general.ScorePrefix","score"))}
-          ${row("ScoreOverlap","Digit overlap", numberField("general.ScoreOverlap","0"))}
-          ${row("ComboPrefix","Prefix for combo images", text("general.ComboPrefix","combo"))}
-          ${row("ComboOverlap","Digit overlap", numberField("general.ComboOverlap","0"))}
-        </div>
-      </div>
-    `
-  });
-
-  pages.push({
-    key:"layout",
-    html:`
-      <div class="panel">
-        <div class="panelHead"><b>Layout</b><span>${state.selectedKeys}K playfield</span></div>
-        <div class="panelBody">
-          ${row("AutoColumnStart","Calculate ColumnStart", boolField(`mania.${state.selectedKeys}.AutoColumnStart`))}
-          ${row("Aspect Ratio","Used by auto centering", selectField(`mania.${state.selectedKeys}.ARPreset`, [["16:9","16:9"],["4:3","4:3"],["21:9","21:9"],["custom","custom"]]))}
-          ${row("Custom AR Width","Used when custom AR is selected", numberField(`mania.${state.selectedKeys}.ARW`,"16"))}
-          ${row("Custom AR Height","Used when custom AR is selected", numberField(`mania.${state.selectedKeys}.ARH`,"9"))}
-          ${row("CenterOffset","Extra offset for auto centering", numberField(`mania.${state.selectedKeys}.CenterOffset`,"0"))}
-          ${row("ColumnStart","Left start x", numberField(`mania.${state.selectedKeys}.ColumnStart`))}
-          ${row("ColumnRight","Right side spacing", numberField(`mania.${state.selectedKeys}.ColumnRight`))}
-          ${row("ColumnWidth","Single value or csv", text(`mania.${state.selectedKeys}.ColumnWidth`,"70 or 70,70,70"))}
-          ${row("ColumnSpacing","Single value or csv", text(`mania.${state.selectedKeys}.ColumnSpacing`,"0 or 0,0,0"))}
-          ${row("ColumnLineWidth","Line widths csv", text(`mania.${state.selectedKeys}.ColumnLineWidth`,"0,0,0,0,0"))}
-          ${row("HitPosition","Hit line position", numberField(`mania.${state.selectedKeys}.HitPosition`))}
-          ${row("LightPosition","Stage light position", numberField(`mania.${state.selectedKeys}.LightPosition`))}
-          ${row("ScorePosition","Score position", numberField(`mania.${state.selectedKeys}.ScorePosition`))}
-          ${row("ComboPosition","Combo position", numberField(`mania.${state.selectedKeys}.ComboPosition`))}
-        </div>
-      </div>
-    `
-  });
-
-  pages.push({
-    key:"stage",
-    html:`
-      <div class="panel">
-        <div class="panelHead"><b>Stage</b><span>Stage and lighting sprites</span></div>
-        <div class="panelBody">
-          ${row("StageLeft","Left stage image", text(`mania.${state.selectedKeys}.StageLeft`))}
-          ${row("StageRight","Right stage image", text(`mania.${state.selectedKeys}.StageRight`))}
-          ${row("StageBottom","Bottom stage image", text(`mania.${state.selectedKeys}.StageBottom`))}
-          ${row("StageHint","Stage hint image", text(`mania.${state.selectedKeys}.StageHint`))}
-          ${row("StageLight","Stage light image", text(`mania.${state.selectedKeys}.StageLight`))}
-          ${row("LightingNWidth","Normal light width", numberField(`mania.${state.selectedKeys}.LightingNWidth`))}
-          ${row("LightingLWidth","Long note light width", numberField(`mania.${state.selectedKeys}.LightingLWidth`))}
-          ${row("LightingN","Normal light image", text(`mania.${state.selectedKeys}.LightingN`))}
-          ${row("LightingL","Long note light image", text(`mania.${state.selectedKeys}.LightingL`))}
-        </div>
-      </div>
-    `
-  });
-
-  const colourLeft = Array.from({length: state.selectedKeys}, (_,i)=>`
-    <div class="colorRow">
-      <div class="hint">Colour${i}</div>
-      ${colourField(`mania.${state.selectedKeys}.Colour.${i+1}`)}
-    </div>
-  `).join("");
-  const colourRight = Array.from({length: state.selectedKeys}, (_,i)=>`
-    <div class="colorRow">
-      <div class="hint">ColourLight${i}</div>
-      ${colourField(`mania.${state.selectedKeys}.ColourLight.${i+1}`)}
-    </div>
-  `).join("");
-
-  pages.push({
-    key:"colours",
-    html:`
-      <div class="panel">
-        <div class="panelHead"><b>Colours</b><span>${state.selectedKeys}K palette</span></div>
-        <div class="panelBody">
-          <div class="colourGrid">
-            <div class="panel"><div class="panelHead"><b>Columns</b><span>Colour0..</span></div><div class="panelBody">${colourLeft}</div></div>
-            <div class="panel"><div class="panelHead"><b>Lights</b><span>ColourLight0..</span></div><div class="panelBody">${colourRight}</div></div>
-          </div>
-          ${row("ColourColumnLine","Column line colour", colourField(`mania.${state.selectedKeys}.ColourColumnLine`))}
-          ${row("ColourBarline","Barline colour", colourField(`mania.${state.selectedKeys}.ColourBarline`))}
-          ${row("ColourJudgementLine","Judgement line colour", colourField(`mania.${state.selectedKeys}.ColourJudgementLine`))}
-          ${row("ColourKeyWarning","Warning colour", colourField(`mania.${state.selectedKeys}.ColourKeyWarning`))}
-          ${row("ColourHold","Hold colour", colourField(`mania.${state.selectedKeys}.ColourHold`))}
-          ${row("ColourBreak","Break colour", colourField(`mania.${state.selectedKeys}.ColourBreak`))}
-        </div>
-      </div>
-    `
-  });
-
-  pages.push({
-    key:"images",
-    html:`
-      <div class="panel">
-        <div class="panelHead"><b>Images</b><span>Use {n} for pattern slots</span></div>
-        <div class="panelBody">
-          ${row("KeyImage#","Pattern for key images", text(`mania.${state.selectedKeys}.pKey`,"mania/key{n}"))}
-          ${row("KeyImage#D","Pattern for pressed key images", text(`mania.${state.selectedKeys}.pKeyD`,"mania/key{n}d"))}
-          ${row("NoteImage#","Pattern for tap note images", text(`mania.${state.selectedKeys}.pNote`,"mania/note{n}"))}
-          ${row("NoteImage#H","Pattern for hold head images", text(`mania.${state.selectedKeys}.pNoteH`,"mania/note{n}h"))}
-          ${row("NoteImage#L","Pattern for hold body images", text(`mania.${state.selectedKeys}.pNoteL`,"mania/note{n}l"))}
-          ${row("NoteImage#T","Pattern for hold tail images", text(`mania.${state.selectedKeys}.pNoteT`,"mania/note{n}t"))}
-          ${row("WarningArrow","Warning arrow image", text(`mania.${state.selectedKeys}.WarningArrow`))}
-        </div>
-      </div>
-    `
-  });
-
-  pages.push({
-    key:"hits",
-    html:`
-      <div class="panel">
-        <div class="panelHead"><b>Hits</b><span>Hitburst image paths</span></div>
-        <div class="panelBody">
-          ${row("Hit0","Miss image path", text(`mania.${state.selectedKeys}.Hit0`))}
-          ${row("Hit50","50 image path", text(`mania.${state.selectedKeys}.Hit50`))}
-          ${row("Hit100","100 image path", text(`mania.${state.selectedKeys}.Hit100`))}
-          ${row("Hit200","200 image path", text(`mania.${state.selectedKeys}.Hit200`))}
-          ${row("Hit300","300 image path", text(`mania.${state.selectedKeys}.Hit300`))}
-          ${row("Hit300g","Geki image path", text(`mania.${state.selectedKeys}.Hit300g`))}
-        </div>
-      </div>
-    `
-  });
-
-  const flipLeft = Array.from({length: state.selectedKeys}, (_,i)=>`
-    ${row(`KeyFlipWhenUpsideDown${i}`,"Flip key image by column", boolField(`mania.${state.selectedKeys}.keyFlip.${i}`))}
-    ${row(`KeyFlipWhenUpsideDown${i}D`,"Flip pressed key image by column", boolField(`mania.${state.selectedKeys}.keyFlipD.${i}`))}
-  `).join("");
-  const flipRight = Array.from({length: state.selectedKeys}, (_,i)=>`
-    ${row(`NoteFlipWhenUpsideDown${i}`,"Flip note image by column", boolField(`mania.${state.selectedKeys}.noteFlip.${i}`))}
-    ${row(`NoteFlipWhenUpsideDown${i}H`,"Flip head image by column", boolField(`mania.${state.selectedKeys}.noteFlipH.${i}`))}
-    ${row(`NoteFlipWhenUpsideDown${i}L`,"Flip body image by column", boolField(`mania.${state.selectedKeys}.noteFlipL.${i}`))}
-    ${row(`NoteFlipWhenUpsideDown${i}T`,"Flip tail image by column", boolField(`mania.${state.selectedKeys}.noteFlipT.${i}`))}
-  `).join("");
-
-  pages.push({
-    key:"flip",
-    html:`
-      <div class="panel">
-        <div class="panelHead"><b>Flip</b><span>Upside-down image overrides</span></div>
-        <div class="panelBody">
-          ${row("KeyFlipWhenUpsideDown","Flip all key images", boolField(`mania.${state.selectedKeys}.flipKeyAll`))}
-          ${row("NoteFlipWhenUpsideDown","Flip all note images", boolField(`mania.${state.selectedKeys}.flipNoteAll`))}
-          <div class="grid2">
-            <div class="panel"><div class="panelHead"><b>Keys</b><span>Per column</span></div><div class="panelBody">${flipLeft}</div></div>
-            <div class="panel"><div class="panelHead"><b>Notes</b><span>Per column</span></div><div class="panelBody">${flipRight}</div></div>
-          </div>
-        </div>
-      </div>
-    `
-  });
-
-  pages.push({
-    key:"advanced",
-    html:`
-      <div class="panel">
-        <div class="panelHead"><b>Advanced</b><span>Additional mania commands</span></div>
-        <div class="panelBody">
-          ${row("JudgementLine","Show judgement line", boolField(`mania.${state.selectedKeys}.JudgementLine`))}
-          ${row("KeysUnderNotes","Draw keys under notes", boolField(`mania.${state.selectedKeys}.KeysUnderNotes`))}
-          ${row("UpsideDown","Invert playfield", boolField(`mania.${state.selectedKeys}.UpsideDown`))}
-          ${row("BarlineHeight","Barline height", numberField(`mania.${state.selectedKeys}.BarlineHeight`))}
-          ${row("WidthForNoteHeightScale","Width scale for note body", numberField(`mania.${state.selectedKeys}.WidthForNoteHeightScale`))}
-          ${row("LightFramePerSecond","Stage light fps", numberField(`mania.${state.selectedKeys}.LightFramePerSecond`))}
-          ${row("SpecialStyle","Special style", numberField(`mania.${state.selectedKeys}.SpecialStyle`))}
-          ${row("ComboBurstStyle","Combo burst style", numberField(`mania.${state.selectedKeys}.ComboBurstStyle`))}
-          ${row("SplitStages","Split stages", boolField(`mania.${state.selectedKeys}.SplitStages`))}
-          ${row("StageSeparation","Stage separation", numberField(`mania.${state.selectedKeys}.StageSeparation`))}
-          ${row("SeparateScore","Separate score", boolField(`mania.${state.selectedKeys}.SeparateScore`))}
-          ${row("NoteBodyStyle","Hold body style", numberField(`mania.${state.selectedKeys}.NoteBodyStyle`))}
-          ${row("Extra commands","Unknown lines preserved in export", area(`mania.${state.selectedKeys}.extraText`,"One key: value per line"))}
-        </div>
-      </div>
-    `
-  });
-
-  pages.push({
-    key:"commands",
-    html:`
-      <div class="panel">
-        <div class="panelHead"><b>Command browser</b><span>Quick lookup</span></div>
-        <div class="panelBody">
-          <div class="commandTable" id="commandTable">
-            ${COMMANDS.map(([cmd,desc,page])=>`
-              <div class="commandItem" data-command-search="${cmd} ${desc} ${page}">
-                <code>${cmd}</code>
-                <span>${desc}</span>
-                <div class="commandTag">${page}</div>
-              </div>
-            `).join("")}
-          </div>
-        </div>
-      </div>
-    `
-  });
-
-  $("pages").innerHTML = pages.map(p=>`
-    <section class="page ${state.page===p.key ? "active" : ""}" data-page-wrap="${p.key}">
-      ${p.html}
-    </section>
-  `).join("");
-  bindInputs();
-  applySearchFilter();
+  let html = "";
+  if(state.page === "overview") html = renderOverview();
+  if(state.page === "general") html = renderSimpleSection("[General]", "Metadata and global behaviour", "general", META.general);
+  if(state.page === "colours") html = renderSimpleSection("[Colours]", "Global colour commands", "colours", META.colours);
+  if(state.page === "fonts") html = renderSimpleSection("[Fonts]", "Number prefixes and overlap", "fonts", META.fonts);
+  if(state.page === "catch") html = renderSimpleSection("[CatchTheBeat]", "Catch-specific commands", "catch", META.catch);
+  if(state.page === "mania") html = renderMania();
+  if(state.page === "browser") html = renderBrowser();
+  $("mainBody").innerHTML = html;
+  bindDynamicControls();
+  applySearch();
 }
-
 function renderAll(){
-  renderTabs();
-  renderSidebarNav();
+  renderTopTabs();
+  renderNav();
   renderModes();
   renderHeader();
   renderPage();
   updatePreview();
 }
-
-function bindPageButtons(){
-  document.querySelectorAll("[data-page]").forEach(btn=>{
-    btn.onclick = ()=>{
-      state.page = btn.dataset.page;
-      renderAll();
-      saveSoon();
-    };
-  });
-}
-function bindModeButtons(){
-  document.querySelectorAll("[data-mode-enable]").forEach(chk=>{
-    chk.onchange = ()=>{
-      const k = Number(chk.dataset.modeEnable);
-      state.enabled[k] = !!chk.checked;
-      if(!ALL_KEYS.some(x=>state.enabled[x])){
-        state.enabled[4] = true;
-      }
-      if(!state.enabled[state.selectedKeys]){
-        state.selectedKeys = ALL_KEYS.find(x=>state.enabled[x]) || 4;
-      }
-      renderAll();
-      saveSoon();
-    };
-  });
-  document.querySelectorAll("[data-mode-select]").forEach(btn=>{
-    btn.onclick = ()=>{
-      state.selectedKeys = Number(btn.dataset.modeSelect);
-      renderAll();
-      saveSoon();
-    };
-  });
-}
-function extraToText(extra){
-  return Object.entries(extra).map(([k,v])=>`${k}: ${v}`).join("\\n");
-}
-function textToExtra(raw){
-  const extra = {};
-  String(raw || "").split(/\\n/).forEach(line=>{
-    const trimmed = line.trim();
-    if(!trimmed) return;
-    const m = trimmed.match(/^([A-Za-z0-9]+)\\s*:\\s*(.*)$/);
-    if(!m) return;
-    extra[m[1]] = m[2].trim();
-  });
-  return extra;
-}
-function bindInputs(){
-  const m = state.mania[state.selectedKeys];
-  m.extraText = extraToText(m.extra || {});
-  document.querySelectorAll("[data-bind]").forEach(el=>{
-    const path = el.dataset.bind;
-    el.oninput = el.onchange = ()=>{
-      let value = el.type === "checkbox" ? !!el.checked : el.value;
-      if(path.endsWith(".extraText")){
-        const base = path.replace(".extraText","");
-        pathSet(base + ".extra", textToExtra(value));
-      }else{
-        const current = pathGet(path);
-        if(typeof current === "boolean") value = !!value;
-        pathSet(path, value);
-        if(path.endsWith(".AutoColumnStart") && value){
-          pathSet(path.replace(".AutoColumnStart",".ColumnStart"), "");
-        }
-      }
-      updatePreview();
-      saveSoon();
-    };
-  });
-  document.querySelectorAll("[data-colour]").forEach(el=>{
-    el.oninput = ()=>{
-      pathSet(el.dataset.colour, hexToRgb(el.value));
-      updatePreview();
-      saveSoon();
-      renderPage();
-    };
-  });
-}
-function parseIni(text){
-  const parsed = { general:{}, fonts:{}, mania:[] };
-  let section = "";
-  let current = null;
-  String(text || "").split(/\\n/).forEach(raw=>{
-    const line = raw.replace(/\\r/g,"");
-    const trimmed = line.trim();
-    if(!trimmed) return;
-    if(trimmed.startsWith("//") || trimmed.startsWith(";")) return;
-    const sec = trimmed.match(/^\\[(.+?)\\]$/);
-    if(sec){
-      section = sec[1].toLowerCase();
-      current = section === "mania" ? { kv:{} } : null;
-      if(current) parsed.mania.push(current);
-      return;
-    }
-    const kv = trimmed.match(/^([A-Za-z0-9]+)\\s*:\\s*(.*)$/);
-    if(!kv) return;
-    const key = kv[1];
-    const val = kv[2].trim().replace(/^"(.*)"$/,"$1").replace(/^'(.*)'$/,"$1");
-    if(section === "general") parsed.general[key] = val;
-    else if(section === "fonts") parsed.fonts[key] = val;
-    else if(section === "mania" && current){
-      current.kv[key] = val;
-      if(key === "Keys") current.Keys = Number(val);
-    }
-  });
-  return parsed;
-}
-function applyParsed(parsed){
-  state.general = defaultGeneral();
-  state.enabled = Object.fromEntries(ALL_KEYS.map(k=>[k,false]));
-  state.mania = Object.fromEntries(ALL_KEYS.map(k=>[k, defaultMania(k)]));
-  for(const [k,v] of Object.entries(parsed.general)){
-    if(k in state.general){
-      state.general[k] = typeof state.general[k] === "boolean" ? v === "1" : v;
-    }else{
-      state.general.extra[k] = v;
-    }
-  }
-  for(const [k,v] of Object.entries(parsed.fonts)){
-    if(k in state.general) state.general[k] = v;
-    else state.general.extra[k] = v;
-  }
-  for(const block of parsed.mania){
-    const keys = Number(block.Keys);
-    if(!Number.isFinite(keys) || keys < 1 || keys > 18) continue;
-    state.enabled[keys] = true;
-    const m = defaultMania(keys);
-    const kv = block.kv;
-    for(const [k,v] of Object.entries(kv)){
-      if(k in m){
-        m[k] = typeof m[k] === "boolean" ? v === "1" : v;
-        continue;
-      }
-      if(/^Colour\\d+$/.test(k)){
-        const idx = Number(k.replace("Colour",""));
-        m.Colour[idx+1] = v;
-        continue;
-      }
-      if(/^ColourLight\\d+$/.test(k)){
-        const idx = Number(k.replace("ColourLight",""));
-        m.ColourLight[idx+1] = v;
-        continue;
-      }
-      if(/^KeyFlipWhenUpsideDown\\d+D$/.test(k)){
-        const idx = Number(k.match(/\\d+/)[0]);
-        m.keyFlipD[idx] = v === "1";
-        continue;
-      }
-      if(/^KeyFlipWhenUpsideDown\\d+$/.test(k)){
-        const idx = Number(k.match(/\\d+/)[0]);
-        m.keyFlip[idx] = v === "1";
-        continue;
-      }
-      if(/^NoteFlipWhenUpsideDown\\d+H$/.test(k)){
-        const idx = Number(k.match(/\\d+/)[0]);
-        m.noteFlipH[idx] = v === "1";
-        continue;
-      }
-      if(/^NoteFlipWhenUpsideDown\\d+L$/.test(k)){
-        const idx = Number(k.match(/\\d+/)[0]);
-        m.noteFlipL[idx] = v === "1";
-        continue;
-      }
-      if(/^NoteFlipWhenUpsideDown\\d+T$/.test(k)){
-        const idx = Number(k.match(/\\d+/)[0]);
-        m.noteFlipT[idx] = v === "1";
-        continue;
-      }
-      if(/^NoteFlipWhenUpsideDown\\d+$/.test(k)){
-        const idx = Number(k.match(/\\d+/)[0]);
-        m.noteFlip[idx] = v === "1";
-        continue;
-      }
-      if(k === "KeyFlipWhenUpsideDown"){ m.flipKeyAll = v === "1"; continue; }
-      if(k === "NoteFlipWhenUpsideDown"){ m.flipNoteAll = v === "1"; continue; }
-      m.extra[k] = v;
-    }
-    m.pKey = inferBy(kv, "KeyImage", keys, "");
-    m.pKeyD = inferBy(kv, "KeyImage", keys, "D");
-    m.pNote = inferBy(kv, "NoteImage", keys, "");
-    m.pNoteH = inferBy(kv, "NoteImage", keys, "H");
-    m.pNoteL = inferBy(kv, "NoteImage", keys, "L");
-    m.pNoteT = inferBy(kv, "NoteImage", keys, "T");
-    m.AutoColumnStart = blank(m.ColumnStart);
-    state.mania[keys] = m;
-  }
-  if(!ALL_KEYS.some(k=>state.enabled[k])) state.enabled[4] = true;
-  state.selectedKeys = ALL_KEYS.find(k=>state.enabled[k]) || 4;
-  if(blank(state.general.Version)) state.general.Version = "2.7";
-  renderAll();
-  saveSoon();
-}
-function addKV(lines, key, value){
-  const s = cleanEnd(value);
-  if(!blank(s)) lines.push(`${key}: ${s}`);
-}
-function generateGeneral(lines){
-  lines.push("[General]");
-  addKV(lines, "Name", state.general.Name);
-  addKV(lines, "Author", state.general.Author);
-  lines.push(`Version: ${cleanEnd(state.general.Version) || "2.7"}`);
-  lines.push(`CursorCentre: ${bool01(!!state.general.CursorCentre)}`);
-  lines.push(`CursorExpand: ${bool01(!!state.general.CursorExpand)}`);
-  lines.push(`CursorRotate: ${bool01(!!state.general.CursorRotate)}`);
-  lines.push(`CursorTrailRotate: ${bool01(!!state.general.CursorTrailRotate)}`);
-  Object.entries(state.general.extra).forEach(([k,v])=>addKV(lines,k,v));
-  lines.push("");
-  const fontUsed = !blank(state.general.ScorePrefix) || !blank(state.general.ScoreOverlap) || !blank(state.general.ComboPrefix) || !blank(state.general.ComboOverlap);
-  if(fontUsed){
-    lines.push("[Fonts]");
-    addKV(lines, "ScorePrefix", state.general.ScorePrefix);
-    addKV(lines, "ScoreOverlap", state.general.ScoreOverlap);
-    addKV(lines, "ComboPrefix", state.general.ComboPrefix);
-    addKV(lines, "ComboOverlap", state.general.ComboOverlap);
-    lines.push("");
-  }
-}
-function generateMania(lines, keys){
-  const m = state.mania[keys];
-  lines.push("[Mania]");
-  lines.push(`Keys: ${keys}`);
-  lines.push(`ColumnWidth: ${padCsv(m.ColumnWidth, keys, Array.from({length:keys}, ()=>"70").join(","))}`);
-  lines.push(`ColumnSpacing: ${padCsv(m.ColumnSpacing, Math.max(0, keys-1), Array.from({length:Math.max(0,keys-1)}, ()=>"0").join(","))}`);
-  lines.push(`ColumnStart: ${m.AutoColumnStart ? calcAutoColumnStart(keys, m) : cleanEnd(m.ColumnStart)}`);
-  addKV(lines, "ColumnRight", m.ColumnRight);
-  addKV(lines, "ColumnLineWidth", padCsv(m.ColumnLineWidth, keys+1, Array.from({length:keys+1}, ()=>"0").join(",")));
-  addKV(lines, "HitPosition", m.HitPosition);
-  addKV(lines, "LightPosition", m.LightPosition);
-  addKV(lines, "ScorePosition", m.ScorePosition);
-  addKV(lines, "ComboPosition", m.ComboPosition);
-  lines.push(`JudgementLine: ${bool01(!!m.JudgementLine)}`);
-  lines.push(`KeysUnderNotes: ${bool01(!!m.KeysUnderNotes)}`);
-  lines.push(`UpsideDown: ${bool01(!!m.UpsideDown)}`);
-  addKV(lines, "BarlineHeight", m.BarlineHeight);
-  addKV(lines, "WidthForNoteHeightScale", m.WidthForNoteHeightScale);
-  addKV(lines, "LightFramePerSecond", m.LightFramePerSecond);
-  addKV(lines, "SpecialStyle", m.SpecialStyle);
-  addKV(lines, "ComboBurstStyle", m.ComboBurstStyle);
-  lines.push(`SplitStages: ${bool01(!!m.SplitStages)}`);
-  addKV(lines, "StageSeparation", m.StageSeparation);
-  lines.push(`SeparateScore: ${bool01(!!m.SeparateScore)}`);
-  addKV(lines, "NoteBodyStyle", m.NoteBodyStyle);
-  addKV(lines, "StageLeft", m.StageLeft);
-  addKV(lines, "StageRight", m.StageRight);
-  addKV(lines, "StageBottom", m.StageBottom);
-  addKV(lines, "StageHint", m.StageHint);
-  addKV(lines, "StageLight", m.StageLight);
-  addKV(lines, "LightingNWidth", m.LightingNWidth);
-  addKV(lines, "LightingLWidth", m.LightingLWidth);
-  addKV(lines, "LightingN", m.LightingN);
-  addKV(lines, "LightingL", m.LightingL);
-  for(let i=0;i<keys;i++) addKV(lines, `Colour${i}`, m.Colour[i+1] || "");
-  for(let i=0;i<keys;i++) addKV(lines, `ColourLight${i}`, m.ColourLight[i+1] || "");
-  addKV(lines, "ColourColumnLine", m.ColourColumnLine);
-  addKV(lines, "ColourBarline", m.ColourBarline);
-  addKV(lines, "ColourJudgementLine", m.ColourJudgementLine);
-  addKV(lines, "ColourKeyWarning", m.ColourKeyWarning);
-  addKV(lines, "ColourHold", m.ColourHold);
-  addKV(lines, "ColourBreak", m.ColourBreak);
-  for(let i=0;i<keys;i++) addKV(lines, `KeyImage${i}`, pattern(m.pKey, i+1));
-  for(let i=0;i<keys;i++) addKV(lines, `KeyImage${i}D`, pattern(m.pKeyD, i+1));
-  for(let i=0;i<keys;i++) addKV(lines, `NoteImage${i}`, pattern(m.pNote, i+1));
-  for(let i=0;i<keys;i++) addKV(lines, `NoteImage${i}H`, pattern(m.pNoteH, i+1));
-  for(let i=0;i<keys;i++) addKV(lines, `NoteImage${i}L`, pattern(m.pNoteL, i+1));
-  for(let i=0;i<keys;i++) addKV(lines, `NoteImage${i}T`, pattern(m.pNoteT, i+1));
-  addKV(lines, "WarningArrow", m.WarningArrow);
-  addKV(lines, "Hit0", m.Hit0);
-  addKV(lines, "Hit50", m.Hit50);
-  addKV(lines, "Hit100", m.Hit100);
-  addKV(lines, "Hit200", m.Hit200);
-  addKV(lines, "Hit300", m.Hit300);
-  addKV(lines, "Hit300g", m.Hit300g);
-  lines.push(`KeyFlipWhenUpsideDown: ${bool01(!!m.flipKeyAll)}`);
-  lines.push(`NoteFlipWhenUpsideDown: ${bool01(!!m.flipNoteAll)}`);
-  for(let i=0;i<keys;i++) addKV(lines, `KeyFlipWhenUpsideDown${i}`, bool01(!!m.keyFlip[i]));
-  for(let i=0;i<keys;i++) addKV(lines, `KeyFlipWhenUpsideDown${i}D`, bool01(!!m.keyFlipD[i]));
-  for(let i=0;i<keys;i++) addKV(lines, `NoteFlipWhenUpsideDown${i}`, bool01(!!m.noteFlip[i]));
-  for(let i=0;i<keys;i++) addKV(lines, `NoteFlipWhenUpsideDown${i}H`, bool01(!!m.noteFlipH[i]));
-  for(let i=0;i<keys;i++) addKV(lines, `NoteFlipWhenUpsideDown${i}L`, bool01(!!m.noteFlipL[i]));
-  for(let i=0;i<keys;i++) addKV(lines, `NoteFlipWhenUpsideDown${i}T`, bool01(!!m.noteFlipT[i]));
-  Object.entries(m.extra).forEach(([k,v])=>addKV(lines,k,v));
-  lines.push("");
-}
-function genIni(){
-  const lines = [];
-  generateGeneral(lines);
-  ALL_KEYS.forEach(k=>{
-    if(state.enabled[k]) generateMania(lines, k);
-  });
-  while(lines.length && lines[lines.length-1]==="") lines.pop();
-  return lines.join("\\n");
+function usesVersion25(m){
+  const explicit = [
+    m.KeyFlipWhenUpsideDown,
+    m.NoteFlipWhenUpsideDown,
+    m.NoteBodyStyle,
+    m.LightingNWidth,
+    m.LightingLWidth,
+  ].some(v=>!blank(v));
+  const perColumn = [
+    m._keyFlip,m._keyFlipD,m._noteFlip,m._noteFlipH,m._noteFlipL,m._noteFlipT,m._noteBodyStyle
+  ].some(group=>Object.values(group || {}).some(v=>!blank(v)));
+  return explicit || perColumn;
 }
 function diagnostics(){
-  const out = [];
-  const version = state.general.Version === "latest" ? 99 : Number(state.general.Version || 0);
-  if(state.general.Version === "latest"){
-    out.push({type:"warn", title:"Version latest", text:"Use a fixed version when distributing a skin."});
+  const items = [];
+  const version = cleanEnd(state.sections.general.Version);
+  const numericVersion = version === "latest" ? 99 : Number(version || 0);
+  if(version === "latest"){
+    items.push({type:"warn", title:"Version latest", text:"Avoid using latest when distributing skins."});
   }
-  ALL_KEYS.forEach(k=>{
-    if(!state.enabled[k]) return;
-    const m = state.mania[k];
-    const usesAdvanced = [
-      m.StageLeft,m.StageRight,m.StageBottom,m.StageHint,m.StageLight,m.LightingN,m.LightingL,
-      m.LightFramePerSecond,m.flipKeyAll,m.flipNoteAll
-    ].some(v=>typeof v === "boolean" ? v : !blank(v))
-    || Object.keys(m.keyFlip).length || Object.keys(m.keyFlipD).length || Object.keys(m.noteFlip).length || Object.keys(m.noteFlipH).length || Object.keys(m.noteFlipL).length || Object.keys(m.noteFlipT).length;
-    if(usesAdvanced && version < 2.5){
-      out.push({type:"bad", title:`${k}K advanced on low version`, text:"Use 2.5 or newer for advanced mania options."});
+  if(blank(version)){
+    items.push({type:"warn", title:"Version unset", text:"If skin.ini exists but Version is missing, legacy 1.0 behaviour can apply."});
+  }
+  VALID_KEYS.forEach(k=>{
+    const m = mode(k);
+    if(!m._enabled) return;
+    if(usesVersion25(m) && numericVersion < 2.5){
+      items.push({type:"bad", title:`${k}K needs version 2.5+`, text:"This mode uses flips, NoteBodyStyle or lighting widths."});
     }
-    if(m.AutoColumnStart){
-      out.push({type:"good", title:`${k}K auto ColumnStart`, text:`Current value: ${calcAutoColumnStart(k, m)}`});
+    if(m._ui.AutoColumnStart){
+      items.push({type:"good", title:`${k}K auto ColumnStart`, text:`Current calculated value: ${calcAutoColumnStart(k, m)}`});
     }
-    if(Object.keys(m.extra).length){
-      out.push({type:"good", title:`${k}K extra commands preserved`, text:Object.keys(m.extra).join(", ")});
+    if(Object.keys(m._extra || {}).length){
+      items.push({type:"good", title:`${k}K extra commands preserved`, text:Object.keys(m._extra).join(", ")});
     }
   });
-  if(!out.length){
-    out.push({type:"good", title:"No critical warnings", text:"Preview looks internally consistent."});
+  ["general","colours","fonts","catch"].forEach(sec=>{
+    const extra = state.sections[sec]._extra || {};
+    if(Object.keys(extra).length){
+      items.push({type:"good", title:`${sec} extra commands preserved`, text:Object.keys(extra).join(", ")});
+    }
+  });
+  (state.importReport || []).forEach(msg=>items.push(msg));
+  if(!items.length){
+    items.push({type:"good", title:"No current warnings", text:"The preview is internally consistent."});
   }
-  return out;
+  return items;
+}
+function serializeSection(schema, obj){
+  const lines = [];
+  schema.forEach(meta=>{
+    const value = cleanEnd(obj[meta.key]);
+    if(blank(value)) return;
+    lines.push(`${meta.key}: ${value}`);
+  });
+  Object.entries(obj._extra || {}).forEach(([k,v])=>{
+    if(!blank(v)) lines.push(`${k}: ${cleanEnd(v)}`);
+  });
+  return lines;
+}
+function serializeMania(modeData, keys){
+  const lines = ["[Mania]", `Keys: ${keys}`];
+  META.maniaLayout.forEach(meta=>{
+    const value = cleanEnd(modeData[meta.key]);
+    if(!blank(value)) lines.push(`${meta.key}: ${value}`);
+  });
+  META.maniaBehaviour.forEach(meta=>{
+    const value = cleanEnd(modeData[meta.key]);
+    if(!blank(value)) lines.push(`${meta.key}: ${value}`);
+  });
+  META.maniaStage.forEach(meta=>{
+    const value = cleanEnd(modeData[meta.key]);
+    if(!blank(value)) lines.push(`${meta.key}: ${value}`);
+  });
+  META.maniaHits.forEach(meta=>{
+    const value = cleanEnd(modeData[meta.key]);
+    if(!blank(value)) lines.push(`${meta.key}: ${value}`);
+  });
+  META.maniaGlobalColours.forEach(meta=>{
+    const value = cleanEnd(modeData[meta.key]);
+    if(!blank(value)) lines.push(`${meta.key}: ${value}`);
+  });
+  for(let i=1;i<=keys;i++){
+    const lane = cleanEnd(modeData._colour[i] || "");
+    const light = cleanEnd(modeData._colourLight[i] || "");
+    if(!blank(lane)) lines.push(`Colour${i}: ${lane}`);
+    if(!blank(light)) lines.push(`ColourLight${i}: ${light}`);
+  }
+  for(let i=0;i<keys;i++){
+    const families = [
+      ["KeyImage", modeData._image[i]],
+      ["KeyImage"+i+"D", null],
+    ];
+  }
+  for(let i=0;i<keys;i++){
+    const idle = cleanEnd(modeData._image[i] || "");
+    const down = cleanEnd(modeData._imageD[i] || "");
+    const tap = cleanEnd(modeData._note[i] || "");
+    const head = cleanEnd(modeData._noteH[i] || "");
+    const body = cleanEnd(modeData._noteL[i] || "");
+    const tail = cleanEnd(modeData._noteT[i] || "");
+    const keyFlip = cleanEnd(modeData._keyFlip[i] || "");
+    const keyFlipD = cleanEnd(modeData._keyFlipD[i] || "");
+    const noteFlip = cleanEnd(modeData._noteFlip[i] || "");
+    const noteFlipH = cleanEnd(modeData._noteFlipH[i] || "");
+    const noteFlipL = cleanEnd(modeData._noteFlipL[i] || "");
+    const noteFlipT = cleanEnd(modeData._noteFlipT[i] || "");
+    const noteBodyStyle = cleanEnd(modeData._noteBodyStyle[i] || "");
+    if(!blank(idle)) lines.push(`KeyImage${i}: ${idle}`);
+    if(!blank(down)) lines.push(`KeyImage${i}D: ${down}`);
+    if(!blank(tap)) lines.push(`NoteImage${i}: ${tap}`);
+    if(!blank(head)) lines.push(`NoteImage${i}H: ${head}`);
+    if(!blank(body)) lines.push(`NoteImage${i}L: ${body}`);
+    if(!blank(tail)) lines.push(`NoteImage${i}T: ${tail}`);
+    if(!blank(keyFlip)) lines.push(`KeyFlipWhenUpsideDown${i}: ${keyFlip}`);
+    if(!blank(keyFlipD)) lines.push(`KeyFlipWhenUpsideDown${i}D: ${keyFlipD}`);
+    if(!blank(noteFlip)) lines.push(`NoteFlipWhenUpsideDown${i}: ${noteFlip}`);
+    if(!blank(noteFlipH)) lines.push(`NoteFlipWhenUpsideDown${i}H: ${noteFlipH}`);
+    if(!blank(noteFlipL)) lines.push(`NoteFlipWhenUpsideDown${i}L: ${noteFlipL}`);
+    if(!blank(noteFlipT)) lines.push(`NoteFlipWhenUpsideDown${i}T: ${noteFlipT}`);
+    if(!blank(noteBodyStyle)) lines.push(`NoteBodyStyle${i}: ${noteBodyStyle}`);
+  }
+  Object.entries(modeData._extra || {}).forEach(([k,v])=>{
+    if(!blank(v)) lines.push(`${k}: ${cleanEnd(v)}`);
+  });
+  lines.push("");
+  return lines;
+}
+function generateIni(){
+  const lines = [];
+  const generalLines = serializeSection(META.general, state.sections.general);
+  if(generalLines.length){
+    lines.push("[General]", ...generalLines, "");
+  }
+  const coloursLines = serializeSection(META.colours, state.sections.colours);
+  if(coloursLines.length){
+    lines.push("[Colours]", ...coloursLines, "");
+  }
+  const fontsLines = serializeSection(META.fonts, state.sections.fonts);
+  if(fontsLines.length){
+    lines.push("[Fonts]", ...fontsLines, "");
+  }
+  const catchLines = serializeSection(META.catch, state.sections.catch);
+  if(catchLines.length){
+    lines.push("[CatchTheBeat]", ...catchLines, "");
+  }
+  VALID_KEYS.forEach(k=>{
+    if(mode(k)._enabled) lines.push(...serializeMania(mode(k), k));
+  });
+  while(lines.length && lines[lines.length-1] === "") lines.pop();
+  return lines.join("\n");
 }
 function updatePreview(){
-  const text = genIni();
+  const text = generateIni();
   $("previewArea").value = text;
-  $("lineCount").textContent = `${text.split(/\\n/).length} lines`;
-  $("diagList").innerHTML = diagnostics().map(d=>`
-    <div class="diag ${d.type}">
-      <b>${d.title}</b>
-      <div>${d.text}</div>
+  $("previewMeta").textContent = `${text ? text.split(/\n/).length : 0} lines`;
+  $("diagList").innerHTML = diagnostics().map(item=>`
+    <div class="diag ${item.type}">
+      <b>${esc(item.title)}</b>
+      <div>${esc(item.text)}</div>
     </div>
   `).join("");
-}
-function applySearchFilter(){
-  const q = clean($("searchBox").value).toLowerCase();
-  document.querySelectorAll("[data-search-scope]").forEach(el=>{
-    const hay = (el.dataset.searchScope || "").toLowerCase();
-    el.classList.toggle("hidden", !!q && !hay.includes(q));
-  });
-  document.querySelectorAll("[data-command-search]").forEach(el=>{
-    const hay = (el.dataset.commandSearch || "").toLowerCase();
-    el.classList.toggle("hidden", !!q && !hay.includes(q));
-  });
 }
 function saveState(){
   try{
@@ -1666,30 +1193,253 @@ function saveState(){
     $("savePill").textContent = "save error";
   }
 }
-const saveSoon = debounce(saveState, 220);
+const saveSoon = debounce(saveState, 250);
 function loadState(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
     if(!raw) return;
-    const parsed = JSON.parse(raw);
-    state.page = parsed.page || state.page;
-    state.selectedKeys = parsed.selectedKeys || state.selectedKeys;
-    state.enabled = parsed.enabled || state.enabled;
-    state.general = { ...defaultGeneral(), ...(parsed.general || {}) };
-    state.mania = Object.fromEntries(ALL_KEYS.map(k=>[k, { ...defaultMania(k), ...(parsed.mania?.[k] || {}) }]));
+    const data = JSON.parse(raw);
+    if(!data) return;
+    state.page = data.page || state.page;
+    state.search = data.search || "";
+    state.selectedMode = data.selectedMode || state.selectedMode;
+    ["general","colours","fonts","catch"].forEach(sec=>{
+      state.sections[sec] = { ...defaultSection(META[sec]), ...(data.sections?.[sec] || {}) };
+      state.sections[sec]._extra = { ...(data.sections?.[sec]?._extra || {}) };
+    });
+    VALID_KEYS.forEach(k=>{
+      state.mania[k] = { ...defaultMode(k), ...(data.mania?.[k] || {}) };
+      state.mania[k]._ui = { ...defaultMode(k)._ui, ...(data.mania?.[k]?._ui || {}) };
+      state.mania[k]._extra = { ...(data.mania?.[k]?._extra || {}) };
+      state.mania[k]._colour = { ...(data.mania?.[k]?._colour || {}) };
+      state.mania[k]._colourLight = { ...(data.mania?.[k]?._colourLight || {}) };
+      state.mania[k]._image = { ...(data.mania?.[k]?._image || {}) };
+      state.mania[k]._imageD = { ...(data.mania?.[k]?._imageD || {}) };
+      state.mania[k]._note = { ...(data.mania?.[k]?._note || {}) };
+      state.mania[k]._noteH = { ...(data.mania?.[k]?._noteH || {}) };
+      state.mania[k]._noteL = { ...(data.mania?.[k]?._noteL || {}) };
+      state.mania[k]._noteT = { ...(data.mania?.[k]?._noteT || {}) };
+      state.mania[k]._keyFlip = { ...(data.mania?.[k]?._keyFlip || {}) };
+      state.mania[k]._keyFlipD = { ...(data.mania?.[k]?._keyFlipD || {}) };
+      state.mania[k]._noteFlip = { ...(data.mania?.[k]?._noteFlip || {}) };
+      state.mania[k]._noteFlipH = { ...(data.mania?.[k]?._noteFlipH || {}) };
+      state.mania[k]._noteFlipL = { ...(data.mania?.[k]?._noteFlipL || {}) };
+      state.mania[k]._noteFlipT = { ...(data.mania?.[k]?._noteFlipT || {}) };
+      state.mania[k]._noteBodyStyle = { ...(data.mania?.[k]?._noteBodyStyle || {}) };
+    });
   }catch(err){}
+}
+function parseIni(text){
+  const report = [];
+  const out = {
+    general:{ _extra:{} },
+    colours:{ _extra:{} },
+    fonts:{ _extra:{} },
+    catch:{ _extra:{} },
+    mania:[]
+  };
+  let section = "";
+  let currentMania = null;
+  String(text || "").split(/\n/).forEach((rawLine, index)=>{
+    const line = rawLine.replace(/\r/g,"");
+    const trimmed = line.trim();
+    if(!trimmed) return;
+    if(trimmed.startsWith("//") || trimmed.startsWith(";")) return;
+    const sec = trimmed.match(/^\[(.+?)\]\s*$/);
+    if(sec){
+      section = sec[1];
+      currentMania = section.toLowerCase() === "mania" ? { kv:{}, _extra:{} } : null;
+      if(currentMania) out.mania.push(currentMania);
+      return;
+    }
+    if(trimmed.includes("=") && !trimmed.includes(":")){
+      report.push({type:"warn", title:`Ignored line ${index+1}`, text:"Found '=' but this importer only accepts key: value."});
+      return;
+    }
+    const kv = trimmed.match(/^([A-Za-z0-9]+)\s*:\s*(.*)$/);
+    if(!kv){
+      report.push({type:"warn", title:`Ignored line ${index+1}`, text:"Line does not match key: value."});
+      return;
+    }
+    const key = kv[1];
+    const val = kv[2].trim().replace(/^"(.*)"$/,"$1").replace(/^'(.*)'$/,"$1");
+    const lower = section.toLowerCase();
+    if(lower === "general"){
+      if(META.general.some(x=>x.key===key)) out.general[key] = val;
+      else out.general._extra[key] = val;
+      return;
+    }
+    if(lower === "colours"){
+      if(META.colours.some(x=>x.key===key)) out.colours[key] = val;
+      else out.colours._extra[key] = val;
+      return;
+    }
+    if(lower === "fonts"){
+      if(META.fonts.some(x=>x.key===key)) out.fonts[key] = val;
+      else out.fonts._extra[key] = val;
+      return;
+    }
+    if(lower === "catchthebeat"){
+      if(META.catch.some(x=>x.key===key)) out.catch[key] = val;
+      else out.catch._extra[key] = val;
+      return;
+    }
+    if(lower === "mania" && currentMania){
+      currentMania.kv[key] = val;
+      return;
+    }
+  });
+  out.report = report;
+  return out;
+}
+function applyParsed(parsed){
+  state.importReport = parsed.report || [];
+  ["general","colours","fonts","catch"].forEach(sec=>{
+    state.sections[sec] = { ...defaultSection(META[sec]), ...(parsed[sec] || {}) };
+    state.sections[sec]._extra = { ...((parsed[sec] || {})._extra || {}) };
+  });
+  VALID_KEYS.forEach(k=> state.mania[k] = defaultMode(k));
+  parsed.mania.forEach(block=>{
+    const keys = Number(block.kv.Keys);
+    if(!VALID_KEYS.includes(keys)) return;
+    const m = defaultMode(keys);
+    m._enabled = true;
+    Object.entries(block.kv).forEach(([key,val])=>{
+      if(key === "Keys"){ m.Keys = val; return; }
+      if(META.maniaLayout.some(x=>x.key===key) || META.maniaBehaviour.some(x=>x.key===key) || META.maniaStage.some(x=>x.key===key) || META.maniaHits.some(x=>x.key===key) || META.maniaGlobalColours.some(x=>x.key===key)){
+        m[key] = val;
+        return;
+      }
+      let match = null;
+      if((match = key.match(/^Colour(\d+)$/))){
+        m._colour[match[1]] = val; return;
+      }
+      if((match = key.match(/^ColourLight(\d+)$/))){
+        m._colourLight[match[1]] = val; return;
+      }
+      if((match = key.match(/^KeyImage(\d+)D$/))){
+        m._imageD[match[1]] = val; return;
+      }
+      if((match = key.match(/^KeyImage(\d+)$/))){
+        m._image[match[1]] = val; return;
+      }
+      if((match = key.match(/^NoteImage(\d+)H$/))){
+        m._noteH[match[1]] = val; return;
+      }
+      if((match = key.match(/^NoteImage(\d+)L$/))){
+        m._noteL[match[1]] = val; return;
+      }
+      if((match = key.match(/^NoteImage(\d+)T$/))){
+        m._noteT[match[1]] = val; return;
+      }
+      if((match = key.match(/^NoteImage(\d+)$/))){
+        m._note[match[1]] = val; return;
+      }
+      if((match = key.match(/^KeyFlipWhenUpsideDown(\d+)D$/))){
+        m._keyFlipD[match[1]] = val; return;
+      }
+      if((match = key.match(/^KeyFlipWhenUpsideDown(\d+)$/))){
+        m._keyFlip[match[1]] = val; return;
+      }
+      if((match = key.match(/^NoteFlipWhenUpsideDown(\d+)H$/))){
+        m._noteFlipH[match[1]] = val; return;
+      }
+      if((match = key.match(/^NoteFlipWhenUpsideDown(\d+)L$/))){
+        m._noteFlipL[match[1]] = val; return;
+      }
+      if((match = key.match(/^NoteFlipWhenUpsideDown(\d+)T$/))){
+        m._noteFlipT[match[1]] = val; return;
+      }
+      if((match = key.match(/^NoteFlipWhenUpsideDown(\d+)$/))){
+        m._noteFlip[match[1]] = val; return;
+      }
+      if((match = key.match(/^NoteBodyStyle(\d+)$/))){
+        m._noteBodyStyle[match[1]] = val; return;
+      }
+      m._extra[key] = val;
+    });
+    m._ui.AutoColumnStart = blank(m.ColumnStart);
+    state.mania[keys] = m;
+  });
+  if(!VALID_KEYS.some(k=>state.mania[k]._enabled)) state.mania[4]._enabled = true;
+  state.selectedMode = VALID_KEYS.find(k=>state.mania[k]._enabled) || 4;
+  renderAll();
+  saveSoon();
+}
+function applySearch(){
+  const q = clean(state.search).toLowerCase();
+  document.querySelectorAll("[data-search]").forEach(node=>{
+    const hay = (node.dataset.search || "").toLowerCase();
+    node.classList.toggle("hidden", !!q && !hay.includes(q));
+  });
+}
+function bindDynamicControls(){
+  document.querySelectorAll("[data-bind]").forEach(el=>{
+    el.oninput = el.onchange = ()=>{
+      pathSet(el.dataset.bind, el.value);
+      updatePreview();
+      saveSoon();
+    };
+  });
+  document.querySelectorAll("[data-colour]").forEach(el=>{
+    el.oninput = ()=>{
+      pathSet(el.dataset.colour, hexToRgb(el.value));
+      renderPage();
+      updatePreview();
+      saveSoon();
+    };
+  });
+  document.querySelectorAll("[data-extra]").forEach(el=>{
+    el.oninput = ()=>{
+      pathSet(el.dataset.extra, textToExtra(el.value));
+      updatePreview();
+      saveSoon();
+    };
+  });
+  document.querySelectorAll("[data-page]").forEach(btn=>{
+    btn.onclick = ()=>{
+      state.page = btn.dataset.page;
+      renderAll();
+      saveSoon();
+    };
+  });
+  document.querySelectorAll("[data-mania-page]").forEach(btn=>{
+    btn.onclick = ()=>{
+      mode(state.selectedMode)._subpage = btn.dataset.maniaPage;
+      renderPage();
+      saveSoon();
+    };
+  });
+  document.querySelectorAll("[data-enable-mode]").forEach(chk=>{
+    chk.onchange = ()=>{
+      const k = Number(chk.dataset.enableMode);
+      mode(k)._enabled = !!chk.checked;
+      if(!VALID_KEYS.some(x=>mode(x)._enabled)) mode(4)._enabled = true;
+      if(!mode(state.selectedMode)._enabled) state.selectedMode = VALID_KEYS.find(x=>mode(x)._enabled) || 4;
+      renderAll();
+      saveSoon();
+    };
+  });
+  document.querySelectorAll("[data-open-mode]").forEach(btn=>{
+    btn.onclick = ()=>{
+      state.selectedMode = Number(btn.dataset.openMode);
+      state.page = "mania";
+      renderAll();
+      saveSoon();
+    };
+  });
 }
 async function copyPreview(){
   try{
-    await navigator.clipboard.writeText(genIni());
+    await navigator.clipboard.writeText(generateIni());
     $("savePill").textContent = "copied";
-    setTimeout(()=>{$("savePill").textContent="saved";}, 700);
+    setTimeout(()=>{$("savePill").textContent = "saved";}, 800);
   }catch(err){
     $("savePill").textContent = "copy error";
   }
 }
-function downloadIni(){
-  const blob = new Blob([genIni()], { type:"text/plain;charset=utf-8" });
+function downloadPreview(){
+  const blob = new Blob([generateIni()], {type:"text/plain;charset=utf-8"});
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -1699,54 +1449,30 @@ function downloadIni(){
   a.remove();
   URL.revokeObjectURL(url);
 }
-function resetApp(){
-  if(!confirm("Reset editor and clear autosave?")) return;
+function resetAll(){
+  if(!confirm("Reset builder and clear autosave?")) return;
   localStorage.removeItem(STORAGE_KEY);
   location.reload();
 }
-function wireStatic(){
-  $("searchBox").addEventListener("input", applySearchFilter);
-  $("browserTabs").addEventListener("click", (e)=>{
-    const btn = e.target.closest("[data-page]");
-    if(!btn) return;
-    state.page = btn.dataset.page;
-    renderAll();
-    saveSoon();
+function bindStatic(){
+  $("searchBox").addEventListener("input", ()=>{
+    state.search = $("searchBox").value;
+    applySearch();
   });
-  $("navList").addEventListener("click", (e)=>{
-    const btn = e.target.closest("[data-page]");
-    if(!btn) return;
-    state.page = btn.dataset.page;
-    renderAll();
-    saveSoon();
-  });
-  $("modeGrid").addEventListener("click", (e)=>{
-    const btn = e.target.closest("[data-mode-select]");
-    if(!btn) return;
-    state.selectedKeys = Number(btn.dataset.modeSelect);
-    renderAll();
-    saveSoon();
-  });
-  $("modeGrid").addEventListener("change", (e)=>{
-    const chk = e.target.closest("[data-mode-enable]");
-    if(!chk) return;
-    const k = Number(chk.dataset.modeEnable);
-    state.enabled[k] = !!chk.checked;
-    if(!ALL_KEYS.some(x=>state.enabled[x])) state.enabled[4] = true;
-    if(!state.enabled[state.selectedKeys]) state.selectedKeys = ALL_KEYS.find(x=>state.enabled[x]) || 4;
-    renderAll();
-    saveSoon();
-  });
-  $("copyBtn").onclick = copyPreview;
-  $("downloadBtn").onclick = downloadIni;
   $("refreshBtn").onclick = updatePreview;
-  $("resetBtn").onclick = resetApp;
-  $("selectBtn").onclick = ()=>{
+  $("copyBtn").onclick = copyPreview;
+  $("downloadBtn").onclick = downloadPreview;
+  $("resetBtn").onclick = resetAll;
+  $("selectPreviewBtn").onclick = ()=>{
     $("previewArea").focus();
     $("previewArea").select();
   };
   $("openImportBtn").onclick = ()=>{
-    $("importArea").value = genIni();
+    $("importArea").value = generateIni();
+    $("importDialog").showModal();
+  };
+  $("pasteImportBtn").onclick = ()=>{
+    $("importArea").value = "";
     $("importDialog").showModal();
   };
   $("closeImportBtn").onclick = ()=> $("importDialog").close();
@@ -1754,4142 +1480,19 @@ function wireStatic(){
     applyParsed(parseIni($("importArea").value));
     $("importDialog").close();
   };
-  $("importStrictBtn").onclick = ()=>{
-    $("importArea").value = "";
-    $("importDialog").showModal();
-  };
-  addEventListener("keydown", (e)=>{
+  window.addEventListener("keydown", (e)=>{
     if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s"){
       e.preventDefault();
-      downloadIni();
+      downloadPreview();
     }
   });
 }
 loadState();
-wireStatic();
+bindStatic();
+$("searchBox").value = state.search;
 renderAll();
 
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </body>
 </html>
+
